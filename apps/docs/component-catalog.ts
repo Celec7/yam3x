@@ -311,6 +311,14 @@ const extensions: CatalogSection[] = [
     title: { en: 'Input and form helpers', zh: '输入与表单配套' },
     items: [
       {
+        path: 'form',
+        title: 'Form',
+        summary: {
+          en: 'Coordinate validation, submission, and error recovery.',
+          zh: '协调验证、提交与错误恢复。',
+        },
+      },
+      {
         path: 'autocomplete',
         title: 'Autocomplete',
         summary: {

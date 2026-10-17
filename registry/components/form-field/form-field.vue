@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getFormValidationControl } from '../_shared/form-control'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 
 type FieldVariant = 'outlined' | 'filled'
@@ -101,6 +102,7 @@ const stateClass = computed(() => ({
 }))
 
 let observer: MutationObserver | undefined
+let disabledObserver: MutationObserver | undefined
 let prefixObserver: ResizeObserver | undefined
 let observedForm: HTMLFormElement | null = null
 let controlsToCleanup: HTMLElement[] = []
@@ -117,14 +119,21 @@ function getValue(element: HTMLElement) {
   return typeof value === 'string' ? value.length > 0 : Boolean(value)
 }
 function isControlValid(element: HTMLElement) {
-  const candidate = element as HTMLElement & { checkValidity?: () => boolean }
-  return typeof candidate.checkValidity === 'function'
-    ? candidate.checkValidity()
-    : element.getAttribute('aria-invalid') !== 'true'
+  const candidate = getFormValidationControl(element) as HTMLElement & {
+    validity?: ValidityState
+    willValidate?: boolean
+  }
+  if (candidate.matches('input, select, textarea'))
+    return !candidate.willValidate || candidate.validity?.valid !== false
+  return element.getAttribute('aria-invalid') !== 'true'
 }
 function getValidationMessage(element: HTMLElement) {
-  return (element as HTMLElement & { validationMessage?: string }).validationMessage || ''
+  const candidate = getFormValidationControl(element) as HTMLElement & {
+    validationMessage?: string
+  }
+  return candidate.validationMessage || ''
 }
+
 function syncLabelInset() {
   if (!root.value) return
   const prefix = root.value.querySelector<HTMLElement>('.yam3x-form-field__prefix')
@@ -195,7 +204,9 @@ function syncControl() {
   const maxLength = (element as HTMLInputElement | HTMLTextAreaElement).maxLength
   characterLimit.value = Number.isInteger(maxLength) && maxLength >= 0 ? maxLength : null
   controlDisabled.value =
-    element.hasAttribute('disabled') || (element as HTMLInputElement).disabled === true
+    element.matches(':disabled') ||
+    element.hasAttribute('disabled') ||
+    (element as HTMLInputElement).disabled === true
   controlReadonly.value =
     element.hasAttribute('readonly') ||
     (element as HTMLInputElement).readOnly === true ||
@@ -246,14 +257,17 @@ function onFocusOut() {
   })
 }
 function onInput() {
-  syncControl()
-  if (nativeInvalid.value && control.value) {
-    const candidate = control.value
-    invalidState.value = !isControlValid(candidate)
-    validationMessage.value = invalidState.value ? getValidationMessage(candidate) : ''
-    if (!invalidState.value) nativeInvalid.value = false
-  }
+  void nextTick(() => {
+    syncControl()
+    if (nativeInvalid.value && control.value) {
+      const candidate = control.value
+      invalidState.value = !isControlValid(candidate)
+      validationMessage.value = invalidState.value ? getValidationMessage(candidate) : ''
+      if (!invalidState.value) nativeInvalid.value = false
+    }
+  })
 }
+
 function focusControl() {
   if (controlDisabled.value || !control.value) return
   ;(control.value as HTMLElement & { focus?: () => void }).focus?.()
@@ -267,6 +281,11 @@ watch(controlId, () => {
 })
 onMounted(() => {
   syncControl()
+  disabledObserver = new MutationObserver(syncControl)
+  for (let ancestor = root.value?.parentElement; ancestor; ancestor = ancestor.parentElement) {
+    if (ancestor.localName === 'fieldset')
+      disabledObserver.observe(ancestor, { attributes: true, attributeFilter: ['disabled'] })
+  }
   prefixObserver = new ResizeObserver(syncLabelInset)
   syncLabelInset()
   observer = new MutationObserver(() => syncControl())
@@ -288,6 +307,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   observer?.disconnect()
+  disabledObserver?.disconnect()
   prefixObserver?.disconnect()
   observedForm?.removeEventListener('reset', onReset)
   for (const element of controlsToCleanup) element.removeEventListener('invalid', onInvalid)

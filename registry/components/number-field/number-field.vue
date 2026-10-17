@@ -76,6 +76,7 @@ const inputAttrs = computed(() =>
   ),
 )
 const uid = useId().replace(/:/g, '')
+const controlId = computed(() => props.id || `yam3x-number-control-${uid}`)
 const prefixId = `yam3x-number-prefix-${uid}`
 const suffixId = `yam3x-number-suffix-${uid}`
 const input = ref<HTMLInputElement>()
@@ -149,7 +150,10 @@ function accept(value: number | null): void {
   syncNative()
   // Native submit handlers can read FormData before Vue flushes the controlled model.
   if (formValue.value) formValue.value.value = value === null ? '' : String(value)
-  if (!Object.is(previous, value)) emit('change', value)
+  if (!Object.is(previous, value)) {
+    emit('change', value)
+    input.value?.dispatchEvent(new Event('change', { bubbles: true }))
+  }
   // Controlled consumers may reject a proposed value.
   void nextTick(() => {
     if (!Object.is(modelValue.value, value)) {
@@ -297,7 +301,7 @@ defineExpose({
 
 <template>
   <FormField
-    :id="id"
+    :id="controlId"
     :label="label"
     :variant="variant"
     :hint="hint"
@@ -314,8 +318,9 @@ defineExpose({
     ></template>
     <input
       v-bind="inputAttrs"
-      :id="id"
+      :id="controlId"
       ref="input"
+      :data-form-field-control="controlId"
       class="yam3x-number-field__input"
       type="text"
       role="spinbutton"
@@ -339,6 +344,7 @@ defineExpose({
     />
     <input
       ref="formValue"
+      :data-form-field-focus="controlId"
       type="hidden"
       :name="name"
       :form="form"

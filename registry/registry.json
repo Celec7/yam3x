@@ -383,8 +383,33 @@
       "dependencies": {},
       "foundations": ["core"]
     },
+    "form": {
+      "files": [
+        "_shared/focus-trap.ts",
+        "_shared/form-control.ts",
+        "_shared/ripple.ts",
+        "form/form-section.vue",
+        "form/form.types.ts",
+        "form/form.utils.ts",
+        "form/form.vue",
+        "form/index.ts",
+        "heading/heading.vue",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "inline-message/inline-message.vue",
+        "tooltip/tooltip-controller.ts",
+        "tooltip/tooltip.types.ts",
+        "tooltip/tooltip.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
     "form-field": {
-      "files": ["form-field/form-field.vue", "form-field/index.ts"],
+      "files": ["_shared/form-control.ts", "form-field/form-field.vue", "form-field/index.ts"],
       "dependencies": {},
       "foundations": ["core"]
     },
@@ -521,6 +546,7 @@
     },
     "number-field": {
       "files": [
+        "_shared/form-control.ts",
         "_shared/ripple.ts",
         "form-field/form-field.vue",
         "icon-button/icon-button-base.vue",
@@ -555,6 +581,7 @@
     },
     "pagination": {
       "files": [
+        "_shared/form-control.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "button/button-base.vue",

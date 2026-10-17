@@ -389,13 +389,14 @@ function onPointerMove(event: PointerEvent) {
     setActive(target.dataset.value ?? null, false)
 }
 function onInvalid(event: Event) {
+  const shouldFocus = !event.defaultPrevented
   event.preventDefault()
   invalid.value = true
   trigger.value?.setAttribute('aria-invalid', 'true')
   const forwarded = new Event('invalid', { cancelable: true })
   trigger.value?.dispatchEvent(forwarded)
   emit('invalid', event)
-  trigger.value?.focus()
+  if (shouldFocus) trigger.value?.focus()
 }
 function onFormReset() {
   queueMicrotask(() => {
@@ -478,7 +479,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       ref="trigger"
       v-bind="attrs"
       class="yam3x-select__trigger"
-      data-form-field-control
+      :data-form-field-control="controlId"
       type="button"
       :role="multiple ? undefined : 'combobox'"
       aria-haspopup="listbox"
@@ -513,6 +514,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
     </button>
     <select
       ref="nativeSelect"
+      :data-form-field-focus="controlId"
       class="yam3x-select__native"
       :name="name"
       :form="form"

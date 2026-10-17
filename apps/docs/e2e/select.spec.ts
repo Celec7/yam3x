@@ -347,8 +347,11 @@ test('Select required state fails native form validation until an option is chos
   )
   expect(initiallyValid).toBe(false)
   await expect(trigger).toHaveAttribute('aria-invalid', 'true')
+  const field = page.locator('.yam3x-form-field').filter({ has: trigger })
+  await expect(field.locator('.yam3x-form-field__error')).toContainText('Please select')
   await trigger.click()
   await page.getByRole('option', { name: 'Draft' }).click()
+  await expect(field.locator('.yam3x-form-field__error')).toHaveCount(0)
   await expect(trigger).not.toHaveAttribute('aria-invalid')
   const selectedValid = await form.evaluate((element) =>
     (element as HTMLFormElement).checkValidity(),
