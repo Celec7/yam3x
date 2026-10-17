@@ -380,6 +380,14 @@ const extensions: CatalogSection[] = [
     title: { en: 'Navigation and layout helpers', zh: '导航与布局配套' },
     items: [
       {
+        path: 'pagination',
+        title: 'Pagination',
+        summary: {
+          en: 'Navigate known result pages and preserve accepted results.',
+          zh: '浏览已知页数的结果，并保留已接受的页面状态。',
+        },
+      },
+      {
         path: 'breadcrumb',
         title: 'Breadcrumb',
         summary: {
