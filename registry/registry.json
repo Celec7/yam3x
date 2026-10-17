@@ -488,6 +488,24 @@
       "dependencies": {},
       "foundations": ["core"]
     },
+    "number-field": {
+      "files": [
+        "_shared/ripple.ts",
+        "form-field/form-field.vue",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "number-field/index.ts",
+        "number-field/number-field.types.ts",
+        "number-field/number-field.utils.ts",
+        "number-field/number-field.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
     "option": {
       "files": [
         "_shared/ripple.ts",

@@ -327,6 +327,14 @@ const extensions: CatalogSection[] = [
         },
       },
       {
+        path: 'number-field',
+        title: 'Number field',
+        summary: {
+          en: 'Edit localized numeric values with optional step controls.',
+          zh: '编辑本地化数值，并提供可选步进操作。',
+        },
+      },
+      {
         path: 'option',
         title: 'Option',
         summary: {

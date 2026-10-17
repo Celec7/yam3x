@@ -69,6 +69,7 @@ These guides define project-owned compositions and behavior derived from the sha
 | File upload    | [File upload: project extension guide](components/file-upload.md)       |
 | Form           | [Form: project extension guide](components/form.md)                     |
 | Tree view      | [Tree view: project extension guide](components/tree-view.md)           |
+| Number field   | [Number field: project extension guide](components/number-field.md)     |
 | Pagination     | [Pagination: project extension guide](components/pagination.md)         |
 | Empty state    | [Empty state: project extension guide](components/empty-state.md)       |
 | Inline message | [Inline message: project extension guide](components/inline-message.md) |
