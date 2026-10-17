@@ -433,6 +433,14 @@ const extensions: CatalogSection[] = [
     title: { en: 'Display and graphics helpers', zh: '展示与图形配套' },
     items: [
       {
+        path: 'data-table',
+        title: 'Data table',
+        summary: {
+          en: 'Compare records with sorting, page selection, and query recovery.',
+          zh: '比较记录，支持排序、当前页选择和查询恢复。',
+        },
+      },
+      {
         path: 'empty-state',
         title: 'Empty state',
         summary: {
