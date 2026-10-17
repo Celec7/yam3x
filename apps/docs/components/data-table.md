@@ -95,23 +95,25 @@ Sortable columns cycle ascending, descending, then supplied order. Local compari
 
 Events: `update:sort`, `update:page`, and `update:pageSize` propose query changes; `change({ sort, page, pageSize })` reports one complete requested query. `update:selectedKeys(keys)` proposes a complete key set. `selectionChange({ selectedKeys, changedKeys, source })` identifies the affected keys and `source: 'row' \| 'page'`. `retry()` asks the application to repeat its failed query. Handle retry or provide `#error-actions` with another recovery path.
 
-## Server results and selection
-
-In server mode, pass accepted `sort`, `page`, `pageSize`, `rows`, and `total` as plain props and handle `change`. Keep the proposed query separately while loading. On success, replace the accepted query and rows together; on failure, retain them and set `error`. The demo shows this flow. The application owns transport, timeouts, stale-response rejection, and cancellation. Binding query models directly would accept the proposal before its response, so use that only when immediate acceptance is intended.
-
-Page select-all changes only selectable visible rows. It preserves other-page and non-selectable keys and never implies selection of all server results. The application owns cross-page policy, pruning deleted records, and bulk operations. Clear keys explicitly when a new filter should establish a different selection scope. Row selection remains available for the accepted records during refresh. Cells and rows do not become grid focus targets or whole-row click actions. Selection controls are unnamed and do not submit form values; native form reset preserves the accepted key set. Reset `selectedKeys` in the application when needed.
-
-## Slots
+### Slots
 
 `#cell-ID="{ row, column, value, rowIndex }"` replaces one column's cells, such as `#cell-actions` for independently named row buttons. Other columns keep their default formatting. `rowIndex` is zero-based within the accepted result order, including the page offset. Custom cell content should preserve readable names and the selected row's inherited foreground.
 
 `#actions="{ selectedKeys }"` precedes the title. `#empty="{ kind }"` replaces the empty presentation; `#empty-actions="{ kind }"` adds actions to the default Empty state. `#error-actions` replaces the default retry button. `#footer="{ total, selectedKeys }"` follows pagination; total can be unknown without server pagination. Custom actions own their labels, behavior, and focus outcomes.
 
-## Behavior and styling
+## Behavior and accessibility
+
+### Server results and selection
+
+In server mode, pass accepted `sort`, `page`, `pageSize`, `rows`, and `total` as plain props and handle `change`. Keep the proposed query separately while loading. On success, replace the accepted query and rows together; on failure, retain them and set `error`. The demo shows this flow. The application owns transport, timeouts, stale-response rejection, and cancellation. Binding query models directly would accept the proposal before its response, so use that only when immediate acceptance is intended.
+
+Page select-all changes only selectable visible rows. It preserves other-page and non-selectable keys and never implies selection of all server results. The application owns cross-page policy, pruning deleted records, and bulk operations. Clear keys explicitly when a new filter should establish a different selection scope. Row selection remains available for the accepted records during refresh. Cells and rows do not become grid focus targets or whole-row click actions. Selection controls are unnamed and do not submit form values; native form reset preserves the accepted key set. Reset `selectedKeys` in the application when needed.
 
 Column headers stay present during loading, failure, and empty states. Initial loading is not an empty result; refresh retains existing rows and uses one indeterminate group indicator. Failed requests use Inline message with recovery. Empty collections and no filter matches have distinct text. The sorted header exposes `aria-sort`; sortable controls are native buttons with full labels and distinct direction shapes. Paginated data rows expose their positions and known total, including the header row.
 
 The titled scroll region is keyboard-focusable and contains horizontal overflow. Essential columns and complete cell values remain available; there is no hover-only detail path. A disappearing built-in recovery action returns focus to that region when it still owns focus. Sort controls retain focus while a request is pending. Background changes do not pull focus from unrelated content.
+
+## Styling
 
 Project styling uses a Surface body, Surface Container Low header, Outline Variant separators, and Secondary Container/On Secondary Container selected rows. Titles use Title Medium, column headings Title Small, cells Body Medium, and supporting text Body Small. Cells have 16 px inline and 12 px block padding, with a 56 px row minimum that grows for controls and wrapped content. Selection, hover, and focus remain separate treatments.
 

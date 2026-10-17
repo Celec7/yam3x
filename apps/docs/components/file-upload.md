@@ -87,7 +87,7 @@ The queue summary is a polite live region based on state counts, not percentages
 
 Cancel requests an abort and displays `canceling` until the adapter settles. The concurrency slot stays reserved during this period, including when the row is removed. Adapters should settle promptly when aborted. A late result cannot restore a removed row or complete a canceled entry. A retry begins only after the previous attempt has settled; old progress callbacks cannot affect it. Cancellation does not prove that a remote copy was deleted. Removing or clearing started entries retains a visible notice to check stored attachments before retrying; clearing the queue does not erase that uncertainty.
 
-## Form integration
+### Form integration
 
 The queue owns its File objects. The picker is unnamed and cleared after each selection so the same file can be chosen again; its native FileList does not represent the queue. For selection-only forms, omit `upload`, retain the `change` snapshot, and append entries with `status === 'queued'` to the form's FormData inside your submit callback. Use a Form validation adapter to report missing or rejected attachments as appropriate for the application. Call the upload ref's `clear()` from `@reset`, or change its Vue `key` for a new record session. Queue removal never deletes a server attachment.
 
