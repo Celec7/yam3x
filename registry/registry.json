@@ -410,6 +410,25 @@
       "dependencies": {},
       "foundations": ["core"]
     },
+    "inline-message": {
+      "files": [
+        "_shared/ripple.ts",
+        "heading/heading.vue",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "inline-message/index.ts",
+        "inline-message/inline-message.vue",
+        "tooltip/tooltip-controller.ts",
+        "tooltip/tooltip.types.ts",
+        "tooltip/tooltip.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
     "list": {
       "files": [
         "_shared/ripple.ts",

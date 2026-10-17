@@ -417,6 +417,14 @@ const extensions: CatalogSection[] = [
         },
       },
       {
+        path: 'inline-message',
+        title: 'Inline message',
+        summary: {
+          en: 'Keep contextual feedback and recovery actions in view.',
+          zh: '持续显示相关反馈与恢复操作。',
+        },
+      },
+      {
         path: 'avatar',
         title: 'Avatar',
         summary: {
