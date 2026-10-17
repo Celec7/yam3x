@@ -52,6 +52,8 @@ The required default slot contains the message. `#icon` replaces the decorative 
 
 ## Behavior and accessibility
 
+For urgent announcements, follow the [WAI alert pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/).
+
 There is no timeout or automatic focus on appearance. Tone and announcement urgency are independent: a static error can have no live role, while a non-error update can be announced. Choose announcement urgency for each event and avoid repeated announcements for routine progress updates. Live roles apply to dynamically inserted or updated messages; a message present at initial page load is not reliably announced by assistive technology.
 
 When closing removes the focused content, focus returns to `dismissFocus()`, or to the containing element when no destination is supplied. The fallback receives a temporary programmatic focus target without entering the Tab sequence. If application code has already moved focus elsewhere, the component preserves that focus. Closing an unrelated message leaves focus alone. Keep an explicit nearby destination when the message or its parent may be removed together.
@@ -64,4 +66,4 @@ Supported overrides: `--yam3x-inline-message-container-color`, `--yam3x-inline-m
 
 ## Material references
 
-[Applying type](https://m3.material.io/styles/typography/applying-type) · [Color roles](https://m3.material.io/styles/color/roles) · [Tooltips guidelines](https://m3.material.io/components/tooltips/guidelines) · [WAI alert pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)
+[Applying type](https://m3.material.io/styles/typography/applying-type) · [Color roles](https://m3.material.io/styles/color/roles) · [Tooltips guidelines](https://m3.material.io/components/tooltips/guidelines)

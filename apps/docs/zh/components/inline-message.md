@@ -52,6 +52,8 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 ## 行为与无障碍
 
+紧急公告请参考 [WAI alert pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)。
+
 组件不会自动超时消失，也不会在出现时自动聚焦。视觉语气与公告紧急程度相互独立：静态错误可以不公告，非错误的动态更新也可以公告。请根据事件选择公告方式，避免为常规进度反复公告。实时区域角色用于动态插入或更新的消息；辅助技术不一定会公告首次页面加载时就存在的消息。
 
 当关闭移除了当前焦点所在的内容，焦点返回 `dismissFocus()` 指定的元素；未指定时返回父容器。作为后备目标的容器会临时允许程序化聚焦，但不进入 Tab 顺序。如果应用已经将焦点移到其他位置，组件保留该焦点。关闭无关提示不移动焦点。如果消息和父容器可能一起移除，请明确指定附近的恢复目标。
@@ -64,4 +66,4 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 ## Material 参考
 
-[Applying type](https://m3.material.io/styles/typography/applying-type) · [Color roles](https://m3.material.io/styles/color/roles) · [Tooltips guidelines](https://m3.material.io/components/tooltips/guidelines) · [WAI alert pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)
+[Applying type](https://m3.material.io/styles/typography/applying-type) · [Color roles](https://m3.material.io/styles/color/roles) · [Tooltips guidelines](https://m3.material.io/components/tooltips/guidelines)

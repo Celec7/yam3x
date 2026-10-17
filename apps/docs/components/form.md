@@ -100,6 +100,8 @@ Component refs expose `element`, `requestSubmit(submitter?)`, `reset()`, `invali
 
 ## Behavior and accessibility
 
+For error notification and recovery, follow [WAI form notifications](https://www.w3.org/WAI/tutorials/forms/notifications/).
+
 The form uses `novalidate` and checks native constraints itself, exposing local errors and a linked error summary without a competing browser validation popup. Untouched required fields are not reported by Form before the first submission. Inputs commit editing before the coordinator takes its snapshot. Native labels and the focus targets of Select and Number field are used in the summary. Hidden, inert, disabled, or closed content is never an error-link focus destination; unavailable fields remain explanatory text.
 
 Adapter errors clear when editing invalidates their result and are rechecked at the next submission. Native errors update after an exposed error is corrected. A failed submission focuses the summary when focus still belongs to this form; it does not pull focus back from unrelated content. Error links focus their current targets. Keep each field's local error in its existing presentation rather than adding a second label or error below it.
@@ -114,4 +116,4 @@ The form inherits its background. Direct fields use 16 px gaps; section groups u
 
 ## Material references
 
-[Text fields guidelines](https://m3.material.io/components/text-fields/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design) · [WAI form notifications](https://www.w3.org/WAI/tutorials/forms/notifications/)
+[Text fields guidelines](https://m3.material.io/components/text-fields/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)

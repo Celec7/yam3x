@@ -103,6 +103,8 @@ Events: `update:sort`, `update:page`, and `update:pageSize` propose query change
 
 ## Behavior and accessibility
 
+Sorting semantics follow the [WAI sortable table example](https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/).
+
 ### Server results and selection
 
 In server mode, pass accepted `sort`, `page`, `pageSize`, `rows`, and `total` as plain props and handle `change`. Keep the proposed query separately while loading. On success, replace the accepted query and rows together; on failure, retain them and set `error`. The demo shows this flow. The application owns transport, timeouts, stale-response rejection, and cancellation. Binding query models directly would accept the proposal before its response, so use that only when immediate acceptance is intended.
@@ -121,4 +123,4 @@ The documented `--yam3x-data-table-min-width` override defaults to `40rem`; adju
 
 ## Material references
 
-[Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design) · [WAI sortable table example](https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/)
+[Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)

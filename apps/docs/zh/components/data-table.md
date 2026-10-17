@@ -103,6 +103,8 @@ const selected = ref<DataTableKey[]>([])
 
 ## 行为与无障碍
 
+排序语义参考 [WAI sortable table example](https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/)。
+
 ### 服务端结果与选择
 
 服务端模式下，用普通属性传入已接受的 `sort`、`page`、`pageSize`、`rows` 和 `total`，并处理 `change`。加载期间单独保存提议的查询。成功时同时替换已接受的查询和记录；失败时保留它们并设置 `error`。示例展示了此流程。传输、超时、过期响应拒绝及取消由应用负责。直接绑定查询模型会在响应前接受提议，仅在需要立即接受时采用。
@@ -121,4 +123,4 @@ const selected = ref<DataTableKey[]>([])
 
 ## Material 参考
 
-[Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design) · [WAI sortable table example](https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/)
+[Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)

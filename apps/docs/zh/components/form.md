@@ -99,6 +99,8 @@ async function save({ data, signal }: FormContext) {
 
 ## 行为与无障碍
 
+错误通知与恢复请参考 [WAI form notifications](https://www.w3.org/WAI/tutorials/forms/notifications/)。
+
 表单使用 `novalidate` 并主动检查原生约束，同时显示本地错误和可链接的错误摘要，避免出现互相竞争的浏览器验证气泡。首次提交前，Form 不报告未触碰的必填字段。输入组件在协调器读取快照前先提交编辑。摘要使用原生标签，并支持 Select 和 Number field 的焦点目标。隐藏、inert、禁用或折叠内容不会成为错误链接的焦点目标；不可访问的字段仅显示说明文字。
 
 编辑会使适配器结果过期并清除其错误，下次提交时重新验证。已暴露的原生错误在修正后更新。提交失败时，如果焦点仍属于此表单，则聚焦摘要；不会从无关内容处抢回焦点。错误链接聚焦当前可用的目标。每个字段的本地错误保留在其已有展示中，不再添加第二套标签或错误。
@@ -113,4 +115,4 @@ async function save({ data, signal }: FormContext) {
 
 ## Material 参考
 
-[Text fields guidelines](https://m3.material.io/components/text-fields/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design) · [WAI form notifications](https://www.w3.org/WAI/tutorials/forms/notifications/)
+[Text fields guidelines](https://m3.material.io/components/text-fields/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)
