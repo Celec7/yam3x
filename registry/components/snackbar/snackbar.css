@@ -1,0 +1,211 @@
+.yam3x-snackbar-host {
+  --_yam3x-snackbar-density-scale: var(--md-sys-density-spacing-scale, 1);
+  --_yam3x-snackbar-spacing-8: calc(8px * var(--_yam3x-snackbar-density-scale));
+  --_yam3x-snackbar-spacing-12: calc(12px * var(--_yam3x-snackbar-density-scale));
+  --_yam3x-snackbar-host-inset: calc(16px * var(--_yam3x-snackbar-density-scale));
+  --_yam3x-snackbar-host-z-index: 1000;
+  --_yam3x-snackbar-anchor-offset: 0px;
+  --_yam3x-snackbar-bottom-offset: 0px;
+  --_yam3x-snackbar-obstruction-offset: 0px;
+  --_yam3x-snackbar-host-margin: 16px;
+  position: fixed;
+  z-index: var(--_yam3x-snackbar-host-z-index);
+  inset-inline: 0;
+  bottom: calc(
+    var(--_yam3x-snackbar-host-margin) + var(--_yam3x-snackbar-anchor-offset) +
+      var(--_yam3x-snackbar-bottom-offset) + var(--_yam3x-snackbar-obstruction-offset)
+  );
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--_yam3x-snackbar-host-inset);
+  pointer-events: none;
+}
+.yam3x-snackbar-host--start {
+  justify-content: flex-start;
+}
+.yam3x-snackbar {
+  --_yam3x-snackbar-container-color: var(--md-sys-color-inverse-surface);
+  --_yam3x-snackbar-container-shape: var(--md-sys-shape-corner-extra-small, 4px);
+  --_yam3x-snackbar-container-shadow: var(
+    --md-sys-elevation-level3,
+    0 4px 8px 3px rgb(0 0 0 / 0.15)
+  );
+  --_yam3x-snackbar-supporting-text-color: var(--md-sys-color-inverse-on-surface);
+  --_yam3x-snackbar-supporting-text-font-family: var(--md-sys-typescale-body-medium-font-family);
+  --_yam3x-snackbar-supporting-text-font-size: var(--md-sys-typescale-body-medium-font-size);
+  --_yam3x-snackbar-supporting-text-font-weight: var(--md-sys-typescale-body-medium-font-weight);
+  --_yam3x-snackbar-supporting-text-line-height: var(--md-sys-typescale-body-medium-line-height);
+  --_yam3x-snackbar-supporting-text-tracking: var(--md-sys-typescale-body-medium-tracking);
+  --_yam3x-snackbar-action-color: var(--md-sys-color-inverse-primary);
+  --_yam3x-snackbar-action-font-family: var(--md-sys-typescale-label-large-font-family);
+  --_yam3x-snackbar-action-font-size: var(--md-sys-typescale-label-large-font-size);
+  --_yam3x-snackbar-action-font-weight: var(--md-sys-typescale-label-large-font-weight);
+  --_yam3x-snackbar-action-line-height: var(--md-sys-typescale-label-large-line-height);
+  --_yam3x-snackbar-action-tracking: var(--md-sys-typescale-label-large-tracking);
+  --_yam3x-snackbar-close-icon-color: var(--md-sys-color-inverse-on-surface);
+  --_yam3x-snackbar-focus-ring-color: var(--md-sys-color-inverse-primary);
+  --_yam3x-snackbar-hover-state-layer-opacity: 8%;
+  --_yam3x-snackbar-interaction-state-layer-opacity: 10%;
+  --_yam3x-snackbar-focus-ring-width: 3px;
+  --_yam3x-snackbar-focus-ring-offset: 2px;
+  --_yam3x-snackbar-reduced-motion-duration: 1ms;
+  --_yam3x-snackbar-enter-effects-motion: var(--md-sys-motion-spring-fast-effects);
+  --_yam3x-snackbar-close-icon-size: 24px;
+  --_yam3x-snackbar-container-min-height: 48px;
+  --_yam3x-snackbar-container-min-width: min(344px, calc(100vw - 32px));
+  --_yam3x-snackbar-container-max-width: 600px;
+  --_yam3x-snackbar-container-padding-inline: var(--_yam3x-snackbar-spacing-8);
+  --_yam3x-snackbar-message-indent: var(--_yam3x-snackbar-spacing-8);
+  --_yam3x-snackbar-message-min-inline-size: 120px;
+  --_yam3x-snackbar-message-padding-block: calc(14px * var(--_yam3x-snackbar-density-scale));
+  --_yam3x-snackbar-action-padding-inline: var(--_yam3x-snackbar-spacing-12);
+  --_yam3x-snackbar-action-min-width: 64px;
+  --_yam3x-snackbar-action-min-height: 48px;
+  --_yam3x-snackbar-close-target-size: 48px;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  width: min(100%, var(--_yam3x-snackbar-container-max-width));
+  min-width: var(--_yam3x-snackbar-container-min-width);
+  min-height: var(--_yam3x-snackbar-container-min-height);
+  padding-inline: var(--_yam3x-snackbar-container-padding-inline);
+  border-radius: var(--_yam3x-snackbar-container-shape);
+  background: var(--_yam3x-snackbar-container-color);
+  color: var(--_yam3x-snackbar-supporting-text-color);
+  box-shadow: var(--_yam3x-snackbar-container-shadow);
+  font-family: var(--_yam3x-snackbar-supporting-text-font-family);
+  font-size: var(--_yam3x-snackbar-supporting-text-font-size);
+  font-weight: var(--_yam3x-snackbar-supporting-text-font-weight);
+  line-height: var(--_yam3x-snackbar-supporting-text-line-height);
+  letter-spacing: var(--_yam3x-snackbar-supporting-text-tracking);
+  pointer-events: auto;
+}
+.yam3x-snackbar__message {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  margin-inline-start: var(--_yam3x-snackbar-message-indent);
+  padding-block: var(--_yam3x-snackbar-message-padding-block);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.yam3x-snackbar__action,
+.yam3x-snackbar__close {
+  flex: 0 0 auto;
+  min-width: var(--_yam3x-snackbar-action-min-width);
+  min-height: var(--_yam3x-snackbar-action-min-height);
+  padding-inline: var(--_yam3x-snackbar-action-padding-inline);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--_yam3x-snackbar-action-color);
+  font-family: var(--_yam3x-snackbar-action-font-family);
+  font-size: var(--_yam3x-snackbar-action-font-size);
+  font-weight: var(--_yam3x-snackbar-action-font-weight);
+  line-height: var(--_yam3x-snackbar-action-line-height);
+  letter-spacing: var(--_yam3x-snackbar-action-tracking);
+  cursor: pointer;
+}
+.yam3x-snackbar--long-action {
+  flex-wrap: wrap;
+}
+.yam3x-snackbar--long-action .yam3x-snackbar__close {
+  order: 1;
+}
+.yam3x-snackbar--long-action .yam3x-snackbar__action {
+  order: 2;
+  box-sizing: border-box;
+  flex-basis: 100%;
+  width: 100%;
+  max-width: 100%;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+.yam3x-snackbar__close {
+  display: grid;
+  width: var(--_yam3x-snackbar-close-target-size);
+  min-width: var(--_yam3x-snackbar-close-target-size);
+  padding: var(--_yam3x-snackbar-spacing-12);
+  place-items: center;
+  color: var(--_yam3x-snackbar-close-icon-color);
+}
+.yam3x-snackbar__close .yam3x-icon {
+  --yam3x-icon-size: var(--_yam3x-snackbar-close-icon-size);
+}
+.yam3x-snackbar__action:hover {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-snackbar-action-color) var(--_yam3x-snackbar-hover-state-layer-opacity),
+    transparent
+  );
+}
+.yam3x-snackbar__close:hover {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-snackbar-close-icon-color) var(--_yam3x-snackbar-hover-state-layer-opacity),
+    transparent
+  );
+}
+.yam3x-snackbar__action:active {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-snackbar-action-color) var(--_yam3x-snackbar-interaction-state-layer-opacity),
+    transparent
+  );
+}
+.yam3x-snackbar__close:active {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-snackbar-close-icon-color) var(--_yam3x-snackbar-interaction-state-layer-opacity),
+    transparent
+  );
+}
+.yam3x-snackbar__action:focus-visible,
+.yam3x-snackbar__close:focus-visible {
+  outline: var(--_yam3x-snackbar-focus-ring-width) solid var(--_yam3x-snackbar-focus-ring-color);
+  outline-offset: var(--_yam3x-snackbar-focus-ring-offset);
+}
+.yam3x-snackbar-enter-active {
+  transition: opacity var(--_yam3x-snackbar-enter-effects-motion);
+}
+.yam3x-snackbar-leave-active {
+  pointer-events: none;
+  transition: opacity var(--_yam3x-snackbar-enter-effects-motion);
+}
+.yam3x-snackbar-enter-from,
+.yam3x-snackbar-leave-to {
+  opacity: 0;
+}
+@media (max-width: 599px) {
+  .yam3x-snackbar {
+    --_yam3x-snackbar-message-padding-block: calc(12px * var(--_yam3x-snackbar-density-scale));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-snackbar-enter-active,
+  .yam3x-snackbar-leave-active {
+    transition-duration: var(--_yam3x-snackbar-reduced-motion-duration);
+  }
+  .yam3x-snackbar-enter-from,
+  .yam3x-snackbar-leave-to {
+    opacity: 0;
+  }
+}
+@media (forced-colors: active) {
+  .yam3x-snackbar {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+  .yam3x-snackbar__action,
+  .yam3x-snackbar__close {
+    color: LinkText;
+  }
+  .yam3x-snackbar__action:focus-visible,
+  .yam3x-snackbar__close:focus-visible {
+    outline-color: Highlight;
+  }
+}

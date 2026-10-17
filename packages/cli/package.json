@@ -1,0 +1,42 @@
+{
+  "name": "yam3x",
+  "version": "0.1.0",
+  "description": "Add editable Material 3 Expressive Vue components to your app.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Celec7/yam3x.git"
+  },
+  "homepage": "https://yam3x.iscccc.cc/",
+  "bugs": {
+    "url": "https://github.com/Celec7/yam3x/issues"
+  },
+  "type": "module",
+  "files": [
+    "src/index.mjs",
+    "registry/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "yam3x": "src/index.mjs"
+  },
+  "scripts": {
+    "prepack": "node ../../scripts/prepare-cli-package.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "semver": "catalog:"
+  },
+  "keywords": [
+    "vue",
+    "material",
+    "material-3-expressive",
+    "components",
+    "cli",
+    "registry"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

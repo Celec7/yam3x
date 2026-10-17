@@ -1,0 +1,8 @@
+export { default as Chip } from './chip.vue'
+export { default as ChipSet } from './chip-set.vue'
+export { default as AssistChip } from './assist-chip.vue'
+export { default as SuggestionChip } from './suggestion-chip.vue'
+export { default as InputChip } from './input-chip.vue'
+export { default as InputChipSet } from './input-chip-set.vue'
+export { default as FilterChip } from '../filter-chip/filter-chip.vue'
+export { default as FilterChipSet } from '../filter-chip-set/filter-chip-set.vue'

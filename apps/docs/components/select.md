@@ -1,0 +1,101 @@
+<script setup>
+import SelectExample from './demos/SelectExample.vue'
+</script>
+
+# Select
+
+Select is a project form control for choosing one or more values from a popup list. It composes project field and option primitives while preserving native form submission and validation.
+
+## Interactive example
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectExample /></div>
+
+::: details View demo source
+
+<<< ./demos/SelectExample.vue{vue}
+
+:::
+
+## Use in your app
+
+First run `pnpm dlx yam3x@latest add select option form-field`, then compose the components:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { FormField } from './components/yam3x/form-field'
+import { Option } from './components/yam3x/option'
+import { Select } from './components/yam3x/select'
+
+const frequency = ref('daily')
+</script>
+
+<template>
+  <FormField label="Notification frequency">
+    <Select
+      v-model="frequency"
+      name="frequency"
+      required
+    >
+      <Option
+        value="immediate"
+        label="Immediately"
+      />
+      <Option
+        value="daily"
+        label="Daily digest"
+      />
+      <Option
+        value="weekly"
+        label="Weekly digest"
+      />
+    </Select>
+  </FormField>
+</template>
+```
+
+Use an array model for multiple selection; the popup stays open as options are toggled. Group related options with labeled `OptionGroup`s. The option panel scrolls when its content overflows.
+
+## API
+
+| Prop                     | Type                         | Default   | Description                                                |
+| ------------------------ | ---------------------------- | --------- | ---------------------------------------------------------- |
+| `id`                     | `string`                     | Generated | Trigger ID.                                                |
+| `modelValue` / `v-model` | `string \| string[] \| null` | `null`    | Selected value, or selected values with `multiple`.        |
+| `open` / `v-model:open`  | `boolean`                    | `false`   | Controlled popup visibility.                               |
+| `name`                   | `string`                     | —         | Native form field name.                                    |
+| `form`                   | `string`                     | —         | Associate with a form by id when outside the form subtree. |
+| `required`               | `boolean`                    | `false`   | Require a selection during native form validation.         |
+| `disabled`               | `boolean`                    | `false`   | Disable the trigger and selection.                         |
+| `multiple`               | `boolean`                    | `false`   | Allow several selected values.                             |
+| `hideSelectionIndicator` | `boolean`                    | `false`   | Hide option selection indicators.                          |
+| `panelClass`             | `string`                     | `''`      | Class applied to the floating option panel.                |
+| `fitAnchorWidth`         | `boolean`                    | `true`    | Match the option panel to the trigger width.               |
+| `anchorOffset`           | `number`                     | `4`       | Gap between trigger and panel in CSS pixels.               |
+| `closeOnTab`             | `boolean`                    | `true`    | Close the panel when Tab leaves the trigger.               |
+
+Use the default slot for `Option` or `OptionGroup`. `#value` receives `{ value, options }`; `#arrow` replaces the dropdown icon, and `#no-data` supplies the empty-list message. Slotted options need unique string values and labels.
+
+A cancellable DOM `beforeinput` event fires before the value changes; cancelling it preserves the current value. `input` and `change` receive `{ value, source }`; `beforetoggle` is cancellable, and `toggle` receives `{ open, source }`. The component also emits `open`, `close`, and `invalid`.
+
+## Behavior and accessibility
+
+The single-select trigger is named by its surrounding `FormField` label or `aria-label`/`aria-labelledby`. It uses combobox semantics; the active option is exposed with `aria-activedescendant` while DOM focus stays on the trigger. In multiple mode, the trigger is a button whose accessible description gives the selected values. Opening it moves focus to the active option in a multiselect listbox; arrow keys move option focus, Space or Enter toggles selection, and the list stays open. Escape closes the list and returns focus to the trigger. Tab closes the list and continues out of the field.
+
+## Styling
+
+Set these project-defined custom properties on the Select root. The trigger shape maps to the System small corner by default; the focus and open colors map to System roles.
+
+| Property                                | Description                                          |
+| --------------------------------------- | ---------------------------------------------------- |
+| `--yam3x-select-container-shape`        | Trigger corner radius.                               |
+| `--yam3x-select-icon-size`              | Dropdown icon size.                                  |
+| `--yam3x-select-disabled-color`         | Disabled trigger color before opacity is applied.    |
+| `--yam3x-select-disabled-color-opacity` | Disabled trigger color opacity.                      |
+| `--yam3x-select-panel-max-width`        | Maximum popup width; defaults to the viewport width. |
+
+The popup uses the [Option styling](/components/option#styling) for its surface, rows, and status content.
+
+## Material references
+
+[Text fields overview](https://m3.material.io/components/text-fields/overview) · [Menus overview](https://m3.material.io/components/menus/overview)

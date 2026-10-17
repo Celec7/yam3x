@@ -1,0 +1,43 @@
+{
+  "name": "yam3x-workspace",
+  "private": true,
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": ">=12.0.0 <13.0.0",
+      "onFail": "download"
+    }
+  },
+  "scripts": {
+    "dev": "pnpm tokens:generate && pnpm --filter yam3x-docs dev",
+    "build": "pnpm tokens:generate && pnpm --filter yam3x-docs build",
+    "typecheck": "pnpm --filter yam3x-docs typecheck",
+    "test": "pnpm tokens:generate && pnpm --filter yam3x-docs test",
+    "test:cli": "pnpm registry:check && pnpm --filter yam3x test",
+    "registry:generate": "node scripts/generate-registry.mjs",
+    "registry:check": "node scripts/generate-registry.mjs --check",
+    "test:e2e": "pnpm tokens:generate && pnpm --filter yam3x-docs test:e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "tokens:generate": "node --import ./scripts/register-mcu-esm-loader.mjs scripts/generate-foundation-tokens.mjs",
+    "yam3x": "node packages/cli/src/index.mjs",
+    "motion:generate": "node scripts/generate-motion.mjs",
+    "docs:dev": "pnpm dev",
+    "docs:build": "pnpm build"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@vue/compiler-sfc": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-vue": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "semver": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "yaml": "catalog:"
+  }
+}

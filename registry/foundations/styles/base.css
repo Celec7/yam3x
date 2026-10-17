@@ -1,0 +1,239 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: Roboto, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+@layer base {
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    color: inherit;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 3px;
+}
+
+::selection {
+  color: var(--md-sys-color-on-primary-container);
+  background: var(--md-sys-color-primary-container);
+}
+
+.yam3x-state-layer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Visual sizes stay independent of the 48px interactive area. The target follows
+   the rendered box and its corner shape; margins reserve room for expansion. */
+.yam3x-touch-target {
+  position: relative;
+  overflow: visible;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  margin-block: max(
+    0px,
+    calc((var(--md-sys-touch-target-size) - var(--yam3x-control-height, 48px)) / 2)
+  );
+}
+.yam3x-touch-target::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, var(--md-sys-touch-target-size));
+  height: max(100%, var(--md-sys-touch-target-size));
+  border-radius: inherit;
+  transform: translate(-50%, -50%);
+}
+.yam3x-touch-target:disabled::before {
+  pointer-events: none;
+}
+
+/* M3 Expressive common button dimensions; shared by button and icon button. */
+.yam3x-control-size--extra-small {
+  --yam3x-control-height: calc(32px * var(--md-sys-density-container-scale, 1));
+  --yam3x-control-padding: calc(12px * var(--md-sys-density-spacing-scale, 1));
+  --yam3x-control-icon-size: 20px;
+  --yam3x-control-gap: var(--md-sys-spacing-8, 8px);
+  --yam3x-control-icon-label-gap: 4px;
+  --yam3x-control-outline: 1px;
+  --yam3x-control-square-shape: var(--md-sys-shape-corner-medium);
+  --yam3x-control-pressed-shape: var(--md-sys-shape-corner-small);
+}
+.yam3x-control-size--small {
+  --yam3x-control-height: calc(40px * var(--md-sys-density-container-scale, 1));
+  --yam3x-control-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
+  --yam3x-control-icon-size: 20px;
+  --yam3x-control-gap: var(--md-sys-spacing-8, 8px);
+  --yam3x-control-icon-label-gap: 8px;
+  --yam3x-control-outline: 1px;
+  --yam3x-control-square-shape: var(--md-sys-shape-corner-medium);
+  --yam3x-control-pressed-shape: var(--md-sys-shape-corner-small);
+}
+.yam3x-control-size--medium {
+  --yam3x-control-height: calc(56px * var(--md-sys-density-container-scale, 1));
+  --yam3x-control-padding: calc(24px * var(--md-sys-density-spacing-scale, 1));
+  --yam3x-control-icon-size: 24px;
+  --yam3x-control-gap: var(--md-sys-spacing-8, 8px);
+  --yam3x-control-icon-label-gap: 8px;
+  --yam3x-control-outline: 1px;
+  --yam3x-control-square-shape: var(--md-sys-shape-corner-large);
+  --yam3x-control-pressed-shape: var(--md-sys-shape-corner-medium);
+}
+.yam3x-control-size--large {
+  --yam3x-control-height: calc(96px * var(--md-sys-density-container-scale, 1));
+  --yam3x-control-padding: calc(48px * var(--md-sys-density-spacing-scale, 1));
+  --yam3x-control-icon-size: 32px;
+  --yam3x-control-gap: var(--md-sys-spacing-12, 12px);
+  --yam3x-control-icon-label-gap: 12px;
+  --yam3x-control-outline: 2px;
+  --yam3x-control-square-shape: var(--md-sys-shape-corner-extra-large);
+  --yam3x-control-pressed-shape: var(--md-sys-shape-corner-large);
+}
+.yam3x-control-size--extra-large {
+  --yam3x-control-height: calc(136px * var(--md-sys-density-container-scale, 1));
+  --yam3x-control-padding: calc(64px * var(--md-sys-density-spacing-scale, 1));
+  --yam3x-control-icon-size: 40px;
+  --yam3x-control-gap: var(--md-sys-spacing-16, 16px);
+  --yam3x-control-icon-label-gap: 16px;
+  --yam3x-control-outline: 3px;
+  --yam3x-control-square-shape: var(--md-sys-shape-corner-extra-large);
+  --yam3x-control-pressed-shape: var(--md-sys-shape-corner-large);
+}
+
+.yam3x-state-layer::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--yam3x-state-layer-color, currentColor);
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--md-sys-motion-duration-fast-effects)
+    var(--md-sys-motion-easing-fast-effects);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-state-layer:hover:not(:disabled):not([aria-disabled='true'])::after {
+    opacity: var(--md-sys-state-hover-opacity);
+  }
+}
+
+.yam3x-state-layer:focus-visible:not(:disabled):not([aria-disabled='true'])::after {
+  opacity: var(--md-sys-state-focus-opacity);
+}
+
+.yam3x-state-layer:is(:active, [data-yam3x-pressed]):not(:disabled):not(
+    [aria-disabled='true']
+  )::after {
+  opacity: var(--md-sys-state-pressed-opacity);
+}
+
+.yam3x-state-layer:disabled::after,
+.yam3x-state-layer[aria-disabled='true']::after {
+  opacity: 0;
+}
+
+.yam3x-ripple-container {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.yam3x-ripple {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  border-radius: 50%;
+  background: var(--yam3x-ripple-color, var(--yam3x-state-layer-color, currentColor));
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0);
+  transform-origin: center;
+  transition:
+    transform var(--yam3x-ripple-enter-duration, 450ms)
+      var(--md-sys-motion-easing-emphasized-decelerate),
+    opacity 150ms linear;
+}
+
+.yam3x-ripple--visible {
+  opacity: var(--md-sys-state-pressed-opacity);
+  transform: scale(1);
+}
+
+.yam3x-ripple--visible.yam3x-ripple--exiting {
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity var(--yam3x-ripple-exit-duration, 350ms) var(--md-sys-motion-easing-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-state-layer::after {
+    transition: none;
+  }
+  .yam3x-ripple {
+    transition-duration: 10ms;
+  }
+  .yam3x-ripple--visible {
+    transition-duration: 10ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .yam3x-state-layer::after,
+  .yam3x-ripple {
+    display: none;
+  }
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+.yam3x-elevation-1 {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.yam3x-elevation-2 {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.yam3x-elevation-3 {
+  box-shadow: var(--md-sys-elevation-level3);
+}
+
+.yam3x-elevation-4 {
+  box-shadow: var(--md-sys-elevation-level4);
+}
+
+.yam3x-elevation-5 {
+  box-shadow: var(--md-sys-elevation-level5);
+}

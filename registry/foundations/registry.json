@@ -1,0 +1,59 @@
+{
+  "core": {
+    "files": [
+      {
+        "source": "foundations/entry.css",
+        "target": "src/yam3x.css"
+      },
+      {
+        "source": "foundations/styles/base.css",
+        "target": "src/styles/yam3x-base.css"
+      },
+      {
+        "source": "foundations/styles/tokens.css",
+        "target": "src/styles/yam3x-tokens.css"
+      },
+      {
+        "source": "foundations/tokens",
+        "target": "src/lib/yam3x/tokens"
+      },
+      {
+        "source": "foundations/theme/types.ts",
+        "target": "src/lib/yam3x/theme/types.ts"
+      },
+      {
+        "source": "foundations/theme/generate.ts",
+        "target": "src/lib/yam3x/theme/generate.ts"
+      },
+      {
+        "source": "foundations/theme/generate-core.mjs",
+        "target": "src/lib/yam3x/theme/generate-core.mjs"
+      },
+      {
+        "source": "foundations/theme/generate-core.d.mts",
+        "target": "src/lib/yam3x/theme/generate-core.d.mts"
+      },
+      {
+        "source": "foundations/theme/apply.ts",
+        "target": "src/lib/yam3x/theme/apply.ts"
+      },
+      {
+        "source": "foundations/theme/image.ts",
+        "target": "src/lib/yam3x/theme/image.ts"
+      },
+      {
+        "source": "foundations/theme/controller.ts",
+        "target": "src/lib/yam3x/theme/controller.ts"
+      },
+      {
+        "source": "foundations/theme/theme-preview-icon.vue",
+        "target": "src/lib/yam3x/theme/theme-preview-icon.vue"
+      },
+      {
+        "source": "foundations/gestures",
+        "target": "src/lib/yam3x/gestures"
+      }
+    ],
+    "devDependencies": ["@tailwindcss/vite", "tailwindcss"]
+  }
+}

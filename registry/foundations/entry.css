@@ -1,0 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block');
+@import 'tailwindcss';
+@import './styles/yam3x-tokens.css';
+@import './styles/yam3x-base.css';
+@source "./components/yam3x/**/*.{vue,ts}";

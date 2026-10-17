@@ -1,0 +1,158 @@
+.yam3x-chip {
+  --_yam3x-chip-container-height: calc(32px * var(--md-sys-density-container-scale, 1));
+  --yam3x-control-height: var(--_yam3x-chip-container-height);
+  --_yam3x-chip-gap: var(--md-sys-spacing-8, calc(8px * var(--md-sys-density-spacing-scale, 1)));
+  --_yam3x-chip-inline-padding: var(
+    --md-sys-spacing-16,
+    calc(16px * var(--md-sys-density-spacing-scale, 1))
+  );
+  --_yam3x-chip-icon-inline-padding: var(
+    --md-sys-spacing-8,
+    calc(8px * var(--md-sys-density-spacing-scale, 1))
+  );
+  --_yam3x-chip-shape: var(--md-sys-shape-corner-small);
+  --_yam3x-chip-outline-color: var(--md-sys-color-outline-variant);
+  --_yam3x-chip-label-color: var(--md-sys-color-on-surface);
+  --_yam3x-chip-label-font: var(--md-sys-typescale-label-large-font);
+  --_yam3x-chip-motion: var(--md-sys-motion-spring-fast-effects);
+  --_yam3x-chip-focus-indicator: var(--md-sys-color-secondary);
+  --_yam3x-chip-elevated-container-color: var(--md-sys-color-surface-container-low);
+  --_yam3x-chip-elevation: var(--md-sys-elevation-level1);
+  --_yam3x-chip-icon-size: 18px;
+  --_yam3x-chip-icon-color: var(--md-sys-color-primary);
+  --_yam3x-chip-disabled-container: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 12%,
+    transparent
+  );
+  --_yam3x-chip-disabled-content: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 38%,
+    transparent
+  );
+  --_yam3x-chip-state-layer-color: var(--_yam3x-chip-label-color);
+  display: inline-flex;
+  position: relative;
+  min-height: var(--yam3x-control-height);
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_yam3x-chip-gap);
+  padding-inline: var(--_yam3x-chip-inline-padding);
+  border: 1px solid var(--_yam3x-chip-outline-color);
+  border-radius: var(--_yam3x-chip-shape);
+  background: transparent;
+  color: var(--_yam3x-chip-label-color);
+  font: var(--_yam3x-chip-label-font);
+  text-decoration: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  transition:
+    background-color var(--_yam3x-chip-motion),
+    color var(--_yam3x-chip-motion),
+    box-shadow var(--_yam3x-chip-motion);
+}
+
+.yam3x-chip[hidden] {
+  display: none;
+}
+.yam3x-chip--has-icon {
+  padding-inline-start: var(--_yam3x-chip-icon-inline-padding);
+}
+.yam3x-chip--has-trailing {
+  padding-inline-end: var(--_yam3x-chip-icon-inline-padding);
+}
+.yam3x-chip--elevated {
+  border-color: transparent;
+  background: var(--_yam3x-chip-elevated-container-color);
+  box-shadow: var(--_yam3x-chip-elevation);
+}
+.yam3x-chip--action {
+  min-width: 48px;
+  --_yam3x-chip-outline-color: var(--md-sys-color-outline);
+  color: var(--_yam3x-chip-label-color);
+  cursor: pointer;
+}
+.yam3x-chip--suggestion {
+  --_yam3x-chip-label-color: var(--md-sys-color-on-surface-variant);
+}
+
+.yam3x-chip.yam3x-chip--action:focus-visible {
+  outline: 3px solid var(--_yam3x-chip-focus-indicator);
+  outline-offset: 2px;
+}
+.yam3x-chip--action:is(:disabled, [aria-disabled='true']) {
+  cursor: not-allowed;
+  border-color: var(--_yam3x-chip-disabled-container);
+  background: transparent;
+  color: var(--_yam3x-chip-disabled-content);
+  box-shadow: none;
+}
+.yam3x-chip--action.yam3x-chip--elevated:is(:disabled, [aria-disabled='true']) {
+  border-color: transparent;
+  background: var(--_yam3x-chip-disabled-container);
+}
+.yam3x-chip__icon,
+.yam3x-chip__trailing {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  width: var(--_yam3x-chip-icon-size);
+  height: var(--_yam3x-chip-icon-size);
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--_yam3x-chip-icon-color);
+}
+.yam3x-chip__icon svg,
+.yam3x-chip__trailing svg {
+  width: var(--_yam3x-chip-icon-size);
+  height: var(--_yam3x-chip-icon-size);
+}
+.yam3x-chip__label {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-chip--action.yam3x-chip--elevated:hover:not(:disabled, [aria-disabled='true']) {
+    box-shadow: var(--_yam3x-chip-elevation-hover);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-chip {
+    transition: none;
+  }
+}
+
+.yam3x-chip--action {
+  --_yam3x-chip-elevation-hover: var(--md-sys-elevation-level2);
+  --yam3x-state-layer-color: var(--_yam3x-chip-state-layer-color);
+}
+
+.yam3x-chip--assist {
+  --_yam3x-chip-state-layer-color: var(--md-sys-color-on-surface);
+}
+
+.yam3x-chip--suggestion {
+  --_yam3x-chip-state-layer-color: var(--md-sys-color-on-surface-variant);
+}
+@media (forced-colors: active) {
+  .yam3x-chip {
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+  .yam3x-chip:is(:disabled, [aria-disabled='true']) {
+    border-color: GrayText;
+    color: GrayText;
+  }
+  .yam3x-chip__icon,
+  .yam3x-chip__trailing {
+    color: currentColor;
+  }
+  .yam3x-chip.yam3x-chip--action:focus-visible {
+    outline-color: Highlight;
+  }
+}

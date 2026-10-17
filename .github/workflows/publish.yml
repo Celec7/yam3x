@@ -1,0 +1,153 @@
+name: Publish npm package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Verify and pack release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      package_name: ${{ steps.release.outputs.package_name }}
+      version: ${{ steps.release.outputs.version }}
+      archive: ${{ steps.release.outputs.archive }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Validate release tag
+        id: release
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from 'node:fs';
+
+          const { name, version } = JSON.parse(readFileSync('packages/cli/package.json', 'utf8'));
+          const tag = process.env.GITHUB_REF_NAME;
+
+          if (!/^v\d+\.\d+\.\d+$/.test(tag) || tag !== `v${version}`) {
+            console.error(`Tag ${tag} must match the stable package version v${version}.`);
+            process.exit(1);
+          }
+
+          const archive = `${name.replace(/^@/, '').replaceAll('/', '-')}-${version}.tgz`;
+          appendFileSync(process.env.GITHUB_OUTPUT, `package_name=${name}\nversion=${version}\narchive=${archive}\n`);
+          NODE
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: CLI and registry tests
+        run: pnpm test:cli
+
+      - name: Build documentation site
+        run: pnpm build
+
+      - name: Pack CLI
+        working-directory: packages/cli
+        run: pnpm pack --pack-destination "$RUNNER_TEMP"
+
+      - name: Upload package archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: cli-package
+          path: ${{ runner.temp }}/${{ steps.release.outputs.archive }}
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish to npm
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Download package archive
+        uses: actions/download-artifact@v8
+        with:
+          name: cli-package
+          path: ${{ runner.temp }}/package
+
+      - name: Check whether this version is already published
+        id: registry
+        env:
+          PACKAGE_NAME: ${{ needs.package.outputs.package_name }}
+          PACKAGE_VERSION: ${{ needs.package.outputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+
+          const packageUrl = `https://registry.npmjs.org/${encodeURIComponent(process.env.PACKAGE_NAME)}/${encodeURIComponent(process.env.PACKAGE_VERSION)}`;
+          const response = await fetch(packageUrl);
+
+          if (response.status === 404) {
+            console.log(`${process.env.PACKAGE_NAME}@${process.env.PACKAGE_VERSION} is not published yet.`);
+            appendFileSync(process.env.GITHUB_OUTPUT, 'published=false\n');
+          } else if (response.ok) {
+            console.log(`${process.env.PACKAGE_NAME}@${process.env.PACKAGE_VERSION} already exists; skipping the publish.`);
+            appendFileSync(process.env.GITHUB_OUTPUT, 'published=true\n');
+          } else {
+            throw new Error(`npm registry returned HTTP ${response.status}.`);
+          }
+          NODE
+
+      - name: Publish package with npm trusted publishing
+        if: steps.registry.outputs.published == 'false'
+        env:
+          PACKAGE_ARCHIVE: ${{ needs.package.outputs.archive }}
+          PACKAGE_VERSION: ${{ needs.package.outputs.version }}
+        run: >-
+          pnpm publish
+          "${RUNNER_TEMP}/package/${PACKAGE_ARCHIVE}"
+          --access public
+          --no-git-checks
+          --publish-wait-timeout 600000

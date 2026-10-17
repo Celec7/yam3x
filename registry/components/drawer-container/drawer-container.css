@@ -1,0 +1,232 @@
+.yam3x-drawer {
+  --_yam3x-drawer-system-color-on-surface: var(--md-sys-color-on-surface);
+  --_yam3x-drawer-system-color-surface: var(--md-sys-color-surface);
+  --_yam3x-drawer-system-color-surface-container-low: var(--md-sys-color-surface-container-low);
+  --_yam3x-drawer-system-color-outline-variant: var(--md-sys-color-outline-variant);
+  --_yam3x-drawer-system-color-secondary: var(--md-sys-color-secondary);
+  --_yam3x-drawer-system-color-scrim: var(--md-sys-color-scrim);
+  --_yam3x-drawer-system-motion-duration-default-spatial: var(
+    --md-sys-motion-duration-default-spatial
+  );
+  --_yam3x-drawer-system-motion-easing-default-spatial: var(--md-sys-motion-easing-default-spatial);
+  --_yam3x-drawer-system-shape-corner-large: var(--md-sys-shape-corner-large);
+  --_yam3x-drawer-system-elevation-level0: var(--md-sys-elevation-level0);
+  --_yam3x-drawer-system-elevation-level1: var(--md-sys-elevation-level1);
+  --_yam3x-drawer-system-density-spacing-scale: var(--md-sys-density-spacing-scale);
+  --_yam3x-drawer-overlay-scrim-opacity: var(
+    --yam3x-drawer-container-scrim-opacity,
+    var(--_yam3x-overlay-scrim-opacity)
+  );
+  --_yam3x-drawer-motion-duration: var(
+    --_yam3x-drawer-system-motion-duration-default-spatial,
+    513ms
+  );
+  --_yam3x-drawer-motion-easing: var(
+    --_yam3x-drawer-system-motion-easing-default-spatial,
+    cubic-bezier(0.2, 0, 0, 1)
+  );
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, var(--_yam3x-drawer-start-track)) minmax(0, 1fr) minmax(
+      0,
+      var(--_yam3x-drawer-end-track)
+    );
+  min-inline-size: 0;
+  min-block-size: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: clip;
+  color: var(--_yam3x-drawer-system-color-on-surface);
+  transition: grid-template-columns var(--_yam3x-drawer-motion-duration)
+    var(--_yam3x-drawer-motion-easing);
+}
+.yam3x-drawer__panel,
+.yam3x-drawer__content {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+.yam3x-drawer__panel {
+  z-index: 1;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--yam3x-drawer-container-color, var(--_yam3x-drawer-system-color-surface));
+  box-shadow: var(
+    --yam3x-drawer-container-elevation,
+    var(--_yam3x-drawer-system-elevation-level0, none)
+  );
+  transition:
+    transform var(--_yam3x-drawer-motion-duration) var(--_yam3x-drawer-motion-easing),
+    background-color var(--_yam3x-drawer-motion-duration) var(--_yam3x-drawer-motion-easing),
+    box-shadow var(--_yam3x-drawer-motion-duration) var(--_yam3x-drawer-motion-easing);
+}
+.yam3x-drawer__panel--start {
+  grid-column: 1;
+  grid-row: 1;
+}
+.yam3x-drawer__panel--end {
+  grid-column: 3;
+  grid-row: 1;
+}
+.yam3x-drawer__panel--overlay {
+  position: absolute;
+  grid-column: 2;
+  grid-row: 1;
+  inset-block: 0;
+  inline-size: min(
+    var(--yam3x-drawer-container-width, var(--_yam3x-drawer-prop-width, 360px)),
+    var(--yam3x-drawer-container-max-width, var(--_yam3x-drawer-prop-max-width, 360px)),
+    100%
+  );
+  z-index: 3;
+  touch-action: pan-y;
+}
+.yam3x-drawer__panel--overlay.yam3x-drawer__panel--start {
+  inset-inline-start: 0;
+  transform: translateX(-100%);
+  border-start-end-radius: var(
+    --yam3x-modal-drawer-end-shape,
+    var(--_yam3x-drawer-system-shape-corner-large, 16px)
+  );
+  border-end-end-radius: var(
+    --yam3x-modal-drawer-end-shape,
+    var(--_yam3x-drawer-system-shape-corner-large, 16px)
+  );
+}
+.yam3x-drawer__panel--overlay.yam3x-drawer__panel--end {
+  inset-inline-end: 0;
+  transform: translateX(100%);
+  border-start-start-radius: var(
+    --yam3x-modal-drawer-start-shape,
+    var(--_yam3x-drawer-system-shape-corner-large, 16px)
+  );
+  border-end-start-radius: var(
+    --yam3x-modal-drawer-start-shape,
+    var(--_yam3x-drawer-system-shape-corner-large, 16px)
+  );
+}
+.yam3x-drawer__panel--overlay.yam3x-drawer__panel--open {
+  background: var(
+    --yam3x-modal-drawer-container-color,
+    var(--yam3x-drawer-container-color, var(--_yam3x-drawer-system-color-surface-container-low))
+  );
+  box-shadow: var(
+    --yam3x-modal-drawer-elevation,
+    var(
+      --yam3x-drawer-container-elevation,
+      var(--_yam3x-drawer-system-elevation-level1, 0 1px 3px 1px rgb(0 0 0 / 0.15))
+    )
+  );
+}
+.yam3x-drawer__panel--overlay.yam3x-drawer__panel--open.yam3x-drawer__panel--start {
+  transform: translateX(calc(0px - var(--_yam3x-drawer-start-drag, 0px)));
+}
+.yam3x-drawer__panel--overlay.yam3x-drawer__panel--open.yam3x-drawer__panel--end {
+  transform: translateX(var(--_yam3x-drawer-end-drag, 0px));
+}
+.yam3x-drawer:dir(rtl) .yam3x-drawer__panel--overlay.yam3x-drawer__panel--start {
+  transform: translateX(100%);
+}
+.yam3x-drawer:dir(rtl) .yam3x-drawer__panel--overlay.yam3x-drawer__panel--end {
+  transform: translateX(-100%);
+}
+.yam3x-drawer:dir(rtl)
+  .yam3x-drawer__panel--overlay.yam3x-drawer__panel--open.yam3x-drawer__panel--start {
+  transform: translateX(var(--_yam3x-drawer-start-drag, 0px));
+}
+.yam3x-drawer:dir(rtl)
+  .yam3x-drawer__panel--overlay.yam3x-drawer__panel--open.yam3x-drawer__panel--end {
+  transform: translateX(calc(0px - var(--_yam3x-drawer-end-drag, 0px)));
+}
+.yam3x-drawer__panel--overlay.yam3x-drawer__panel--dragging {
+  transition: none;
+  user-select: none;
+}
+.yam3x-drawer__content {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.yam3x-drawer__toggles {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: calc(8px * var(--_yam3x-drawer-system-density-spacing-scale, 1));
+  padding: calc(8px * var(--_yam3x-drawer-system-density-spacing-scale, 1));
+}
+.yam3x-drawer__content-body {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.yam3x-drawer__panel--side.yam3x-drawer__panel--start[data-divider] {
+  border-inline-end: var(--yam3x-drawer-divider-thickness, 1px) solid
+    var(--yam3x-drawer-divider-color, var(--_yam3x-drawer-system-color-outline-variant));
+}
+.yam3x-drawer__panel--side.yam3x-drawer__panel--end[data-divider] {
+  border-inline-start: var(--yam3x-drawer-divider-thickness, 1px) solid
+    var(--yam3x-drawer-divider-color, var(--_yam3x-drawer-system-color-outline-variant));
+}
+.yam3x-drawer__scrim {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-drawer-system-color-scrim) var(--_yam3x-drawer-overlay-scrim-opacity),
+    transparent
+  );
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  overscroll-behavior: contain;
+  transition:
+    opacity var(--_yam3x-drawer-motion-duration) var(--_yam3x-drawer-motion-easing),
+    visibility 0s linear var(--_yam3x-drawer-motion-duration);
+  cursor: default;
+}
+.yam3x-drawer__scrim--active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.yam3x-drawer :focus-visible {
+  outline: 3px solid var(--_yam3x-drawer-system-color-secondary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-drawer,
+  .yam3x-drawer__panel {
+    transition-duration: 0ms;
+  }
+  .yam3x-drawer__scrim {
+    animation-duration: 0ms;
+  }
+}
+@media (forced-colors: active) {
+  .yam3x-drawer__panel {
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+    border: 1px solid CanvasText;
+  }
+  .yam3x-drawer__scrim {
+    background: rgb(0 0 0 / 0.55);
+  }
+  .yam3x-drawer :focus-visible {
+    outline-color: Highlight;
+  }
+}

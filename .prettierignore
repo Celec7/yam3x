@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.references/
+pnpm-lock.yaml
+apps/docs/public/
+apps/docs/--host/
+apps/docs/.vitepress/cache/
+**/*.svg

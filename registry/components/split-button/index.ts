@@ -1,0 +1,7 @@
+export { default as SplitButton } from './split-button.vue'
+export { default as SplitButtonLayout } from './split-button-layout.vue'
+export { default as SplitButtonLeadingButton } from './split-button-leading-button.vue'
+export { default as SplitButtonTrailingButton } from './split-button-trailing-button.vue'
+export type { MenuItem } from '../menu/menu.types'
+export type { ButtonSize, ButtonShape } from '../button/button.variants'
+export type { SplitButtonVariant } from './split-button.types'

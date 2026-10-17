@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+packages/cli/registry/
+packages/cli/LICENSE
+.DS_Store
+.references/
+.local/

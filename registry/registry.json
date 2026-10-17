@@ -1,0 +1,724 @@
+{
+  "schemaVersion": 3,
+  "foundations": {
+    "core": {
+      "files": [
+        { "source": "foundations/entry.css", "target": "src/yam3x.css" },
+        {
+          "source": "foundations/gestures/binding.ts",
+          "target": "src/lib/yam3x/gestures/binding.ts"
+        },
+        { "source": "foundations/gestures/index.ts", "target": "src/lib/yam3x/gestures/index.ts" },
+        { "source": "foundations/gestures/input.ts", "target": "src/lib/yam3x/gestures/input.ts" },
+        {
+          "source": "foundations/gestures/long-press.ts",
+          "target": "src/lib/yam3x/gestures/long-press.ts"
+        },
+        {
+          "source": "foundations/gestures/multi-pointer.ts",
+          "target": "src/lib/yam3x/gestures/multi-pointer.ts"
+        },
+        { "source": "foundations/gestures/pan.ts", "target": "src/lib/yam3x/gestures/pan.ts" },
+        { "source": "foundations/gestures/phase.ts", "target": "src/lib/yam3x/gestures/phase.ts" },
+        {
+          "source": "foundations/gestures/pointer-tracker.ts",
+          "target": "src/lib/yam3x/gestures/pointer-tracker.ts"
+        },
+        {
+          "source": "foundations/gestures/recognizer.ts",
+          "target": "src/lib/yam3x/gestures/recognizer.ts"
+        },
+        {
+          "source": "foundations/gestures/repeat.ts",
+          "target": "src/lib/yam3x/gestures/repeat.ts"
+        },
+        {
+          "source": "foundations/gestures/resolver.ts",
+          "target": "src/lib/yam3x/gestures/resolver.ts"
+        },
+        {
+          "source": "foundations/gestures/rotate.ts",
+          "target": "src/lib/yam3x/gestures/rotate.ts"
+        },
+        { "source": "foundations/gestures/scale.ts", "target": "src/lib/yam3x/gestures/scale.ts" },
+        {
+          "source": "foundations/gestures/sequence.ts",
+          "target": "src/lib/yam3x/gestures/sequence.ts"
+        },
+        { "source": "foundations/gestures/swipe.ts", "target": "src/lib/yam3x/gestures/swipe.ts" },
+        { "source": "foundations/gestures/tap.ts", "target": "src/lib/yam3x/gestures/tap.ts" },
+        {
+          "source": "foundations/gestures/transform.ts",
+          "target": "src/lib/yam3x/gestures/transform.ts"
+        },
+        { "source": "foundations/gestures/types.ts", "target": "src/lib/yam3x/gestures/types.ts" },
+        { "source": "foundations/gestures/vue.ts", "target": "src/lib/yam3x/gestures/vue.ts" },
+        { "source": "foundations/styles/base.css", "target": "src/styles/yam3x-base.css" },
+        { "source": "foundations/styles/tokens.css", "target": "src/styles/yam3x-tokens.css" },
+        { "source": "foundations/theme/apply.ts", "target": "src/lib/yam3x/theme/apply.ts" },
+        {
+          "source": "foundations/theme/controller.ts",
+          "target": "src/lib/yam3x/theme/controller.ts"
+        },
+        {
+          "source": "foundations/theme/generate-core.d.mts",
+          "target": "src/lib/yam3x/theme/generate-core.d.mts"
+        },
+        {
+          "source": "foundations/theme/generate-core.mjs",
+          "target": "src/lib/yam3x/theme/generate-core.mjs"
+        },
+        { "source": "foundations/theme/generate.ts", "target": "src/lib/yam3x/theme/generate.ts" },
+        { "source": "foundations/theme/image.ts", "target": "src/lib/yam3x/theme/image.ts" },
+        {
+          "source": "foundations/theme/theme-preview-icon.vue",
+          "target": "src/lib/yam3x/theme/theme-preview-icon.vue"
+        },
+        { "source": "foundations/theme/types.ts", "target": "src/lib/yam3x/theme/types.ts" },
+        {
+          "source": "foundations/tokens/foundation-tokens.d.mts",
+          "target": "src/lib/yam3x/tokens/foundation-tokens.d.mts"
+        },
+        {
+          "source": "foundations/tokens/foundation-tokens.mjs",
+          "target": "src/lib/yam3x/tokens/foundation-tokens.mjs"
+        }
+      ],
+      "dependencies": { "@material/material-color-utilities": "^0.4.0", "vue": "^3.5.44" },
+      "devDependencies": { "@tailwindcss/vite": "^4.3.3", "tailwindcss": "^4.3.3" }
+    }
+  },
+  "components": {
+    "app-bar": {
+      "files": [
+        "_shared/ripple.ts",
+        "app-bar/app-bar.types.ts",
+        "app-bar/app-bar.vue",
+        "app-bar/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "autocomplete": {
+      "files": [
+        "_shared/ripple.ts",
+        "autocomplete/autocomplete.types.ts",
+        "autocomplete/autocomplete.vue",
+        "autocomplete/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "avatar": {
+      "files": ["avatar/avatar.vue", "avatar/index.ts"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "badge": {
+      "files": ["badge/badge.vue", "badge/index.ts"],
+      "dependencies": { "@floating-ui/dom": "^1.8.0", "composed-offset-position": "^0.0.6" },
+      "foundations": ["core"]
+    },
+    "bottom-sheet": {
+      "files": [
+        "bottom-sheet/bottom-sheet-action.vue",
+        "bottom-sheet/bottom-sheet.context.ts",
+        "bottom-sheet/bottom-sheet.css",
+        "bottom-sheet/bottom-sheet.types.ts",
+        "bottom-sheet/bottom-sheet.vue",
+        "bottom-sheet/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": { "@ark-ui/vue": "^5.39.3" },
+      "foundations": ["core"]
+    },
+    "breadcrumb": {
+      "files": [
+        "_shared/ripple.ts",
+        "breadcrumb/breadcrumb.types.ts",
+        "breadcrumb/breadcrumb.vue",
+        "breadcrumb/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "button": {
+      "files": [
+        "_shared/ripple.ts",
+        "button/button-base.vue",
+        "button/button.variants.ts",
+        "button/button.vue",
+        "button/index.ts",
+        "button/toggle-button.vue"
+      ],
+      "dependencies": { "tailwind-variants": "^3.3.1" },
+      "foundations": ["core"]
+    },
+    "button-group": {
+      "files": [
+        "_shared/ripple.ts",
+        "button-group/button-group-item.vue",
+        "button-group/button-group-selection.vue",
+        "button-group/button-group.types.ts",
+        "button-group/button-group.vue",
+        "button-group/index.ts",
+        "button/button-base.vue",
+        "button/button.variants.ts",
+        "button/toggle-button.vue",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-toggle-button.vue"
+      ],
+      "dependencies": { "tailwind-variants": "^3.3.1" },
+      "foundations": ["core"]
+    },
+    "calendar": {
+      "files": [
+        "calendar/calendar.vue",
+        "calendar/index.ts",
+        "date-picker/date-utils.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "card": {
+      "files": ["_shared/ripple.ts", "card/card.vue", "card/index.ts"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "carousel": {
+      "files": [
+        "_shared/ripple.ts",
+        "carousel/carousel.types.ts",
+        "carousel/carousel.vue",
+        "carousel/index.ts"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "checkbox": {
+      "files": [
+        "_shared/ripple.ts",
+        "checkbox/checkbox-base.vue",
+        "checkbox/checkbox.types.ts",
+        "checkbox/checkbox.vue",
+        "checkbox/index.ts",
+        "checkbox/tri-state-checkbox.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "chips": {
+      "files": [
+        "_shared/ripple.ts",
+        "chips/action-chip.vue",
+        "chips/assist-chip.vue",
+        "chips/chip-set.vue",
+        "chips/chip.styles.css",
+        "chips/chip.vue",
+        "chips/index.ts",
+        "chips/input-chip-set.vue",
+        "chips/input-chip.vue",
+        "chips/suggestion-chip.vue",
+        "filter-chip-set/filter-chip-set.types.ts",
+        "filter-chip-set/filter-chip-set.vue",
+        "filter-chip/filter-chip.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "date-input": {
+      "files": [
+        "date-input/date-input.utils.ts",
+        "date-input/date-input.vue",
+        "date-input/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "date-picker": {
+      "files": [
+        "_shared/focus-trap.ts",
+        "date-picker/date-picker-core.vue",
+        "date-picker/date-picker-range-fields.vue",
+        "date-picker/date-picker.components.ts",
+        "date-picker/date-picker.css",
+        "date-picker/date-picker.types.ts",
+        "date-picker/date-picker.vue",
+        "date-picker/date-range-picker.vue",
+        "date-picker/date-utils.ts",
+        "date-picker/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "dialog": {
+      "files": [
+        "dialog/dialog.vue",
+        "dialog/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": { "@ark-ui/vue": "^5.39.3" },
+      "foundations": ["core"]
+    },
+    "divider": {
+      "files": [
+        "divider/divider-base.vue",
+        "divider/divider.types.ts",
+        "divider/horizontal-divider.vue",
+        "divider/index.ts",
+        "divider/vertical-divider.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "drawer-container": {
+      "files": [
+        "_shared/focus-trap.ts",
+        "drawer-container/drawer-container.css",
+        "drawer-container/drawer-container.types.ts",
+        "drawer-container/drawer-container.vue",
+        "drawer-container/index.ts"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "fab": {
+      "files": [
+        "_shared/ripple.ts",
+        "fab/extended-fab.vue",
+        "fab/fab-base.vue",
+        "fab/fab.types.ts",
+        "fab/floating-action-button.vue",
+        "fab/index.ts",
+        "fab/toggle-floating-action-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "fab-menu": {
+      "files": [
+        "_shared/ripple.ts",
+        "fab-menu/fab-menu.tokens.ts",
+        "fab-menu/fab-menu.types.ts",
+        "fab-menu/fab-menu.vue",
+        "fab-menu/floating-action-button-menu-item.vue",
+        "fab-menu/floating-action-button-menu.context.ts",
+        "fab-menu/floating-action-button-menu.vue",
+        "fab-menu/index.ts",
+        "fab/fab-base.vue",
+        "fab/fab.types.ts",
+        "fab/floating-action-button.vue",
+        "fab/toggle-floating-action-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "filter-chip": {
+      "files": [
+        "_shared/ripple.ts",
+        "filter-chip/filter-chip.vue",
+        "filter-chip/index.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "filter-chip-set": {
+      "files": [
+        "_shared/ripple.ts",
+        "filter-chip-set/filter-chip-set.types.ts",
+        "filter-chip-set/filter-chip-set.vue",
+        "filter-chip-set/index.ts",
+        "filter-chip/filter-chip.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "form-field": {
+      "files": ["form-field/form-field.vue", "form-field/index.ts"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "heading": {
+      "files": ["heading/heading.vue", "heading/index.ts"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "icon": {
+      "files": ["icon/icon-registry.ts", "icon/icon.types.ts", "icon/icon.vue", "icon/index.ts"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "icon-button": {
+      "files": [
+        "_shared/ripple.ts",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-button.vue",
+        "icon-button/icon-toggle-button.vue",
+        "icon-button/index.ts"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "list": {
+      "files": [
+        "_shared/ripple.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "list/action-list.vue",
+        "list/expandable-list-item.vue",
+        "list/index.ts",
+        "list/list-action.vue",
+        "list/list-item-layout.vue",
+        "list/list-item.vue",
+        "list/list-option.vue",
+        "list/list.css",
+        "list/list.types.ts",
+        "list/list.vue",
+        "list/selection-list.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "loading-indicator": {
+      "files": [
+        "loading-indicator/index.ts",
+        "loading-indicator/loading-indicator.vue",
+        "loading-indicator/loading-shapes.ts"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "menu": {
+      "files": [
+        "_shared/ripple.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "menu/index.ts",
+        "menu/menu-panel.vue",
+        "menu/menu.types.ts",
+        "menu/menu.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "navigation-bar": {
+      "files": [
+        "_shared/ripple.ts",
+        "navigation-bar/index.ts",
+        "navigation-bar/navigation-bar-item.vue",
+        "navigation-bar/navigation-bar.types.ts",
+        "navigation-bar/navigation-bar.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "navigation-drawer": {
+      "files": [
+        "_shared/focus-trap.ts",
+        "_shared/ripple.ts",
+        "drawer-container/drawer-container.css",
+        "drawer-container/drawer-container.types.ts",
+        "drawer-container/drawer-container.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "navigation-drawer/index.ts",
+        "navigation-drawer/navigation-drawer-divider.vue",
+        "navigation-drawer/navigation-drawer-item.vue",
+        "navigation-drawer/navigation-drawer-section.vue",
+        "navigation-drawer/navigation-drawer.context.ts",
+        "navigation-drawer/navigation-drawer.css",
+        "navigation-drawer/navigation-drawer.types.ts",
+        "navigation-drawer/navigation-drawer.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "navigation-rail": {
+      "files": [
+        "_shared/ripple.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "navigation-rail/index.ts",
+        "navigation-rail/navigation-rail.types.ts",
+        "navigation-rail/navigation-rail.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "option": {
+      "files": [
+        "_shared/ripple.ts",
+        "_shared/select-option.context.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "option/index.ts",
+        "option/option-group.vue",
+        "option/option-panel.vue",
+        "option/option.types.ts",
+        "option/option.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "progress-indicator": {
+      "files": [
+        "progress-indicator/circular-progress-indicator.vue",
+        "progress-indicator/index.ts",
+        "progress-indicator/linear-progress-indicator.vue",
+        "progress-indicator/progress-utils.ts"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "radio-group": {
+      "files": [
+        "_shared/ripple.ts",
+        "radio-group/index.ts",
+        "radio-group/radio-button.vue",
+        "radio-group/radio-group.types.ts",
+        "radio-group/radio-group.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "search": {
+      "files": [
+        "_shared/page-scroll-lock.ts",
+        "_shared/ripple.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "search/index.ts",
+        "search/search.types.ts",
+        "search/search.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "segmented-button": {
+      "files": [
+        "_shared/ripple.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "segmented-button/index.ts",
+        "segmented-button/multi-choice-segmented-button-row.vue",
+        "segmented-button/segmented-button-row.vue",
+        "segmented-button/segmented-button.types.ts",
+        "segmented-button/segmented-button.vue",
+        "segmented-button/single-choice-segmented-button-row.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "select": {
+      "files": [
+        "_shared/select-option.context.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "option/option-panel.vue",
+        "option/option.types.ts",
+        "select/index.ts",
+        "select/select.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "shape": {
+      "files": ["shape/index.ts", "shape/shape-polygons.ts", "shape/shape.vue"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "side-sheet": {
+      "files": [
+        "_shared/focus-trap.ts",
+        "_shared/ripple.ts",
+        "drawer-container/drawer-container.css",
+        "drawer-container/drawer-container.types.ts",
+        "drawer-container/drawer-container.vue",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "side-sheet/index.ts",
+        "side-sheet/side-sheet.css",
+        "side-sheet/side-sheet.types.ts",
+        "side-sheet/side-sheet.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "slider": {
+      "files": [
+        "slider/index.ts",
+        "slider/range-slider.vue",
+        "slider/slider-base.vue",
+        "slider/slider-utils.ts",
+        "slider/slider.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "snackbar": {
+      "files": [
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "snackbar/index.ts",
+        "snackbar/snackbar-provider.vue",
+        "snackbar/snackbar.context.ts",
+        "snackbar/snackbar.css"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "split-button": {
+      "files": [
+        "_shared/ripple.ts",
+        "button/button-base.vue",
+        "button/button.variants.ts",
+        "button/button.vue",
+        "icon-button/icon-button-base.vue",
+        "icon-button/icon-button.types.ts",
+        "icon-button/icon-button.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "menu/menu-panel.vue",
+        "menu/menu.types.ts",
+        "menu/menu.vue",
+        "split-button/index.ts",
+        "split-button/split-button-layout.vue",
+        "split-button/split-button-leading-button.vue",
+        "split-button/split-button-trailing-button.vue",
+        "split-button/split-button.context.ts",
+        "split-button/split-button.tokens.ts",
+        "split-button/split-button.types.ts",
+        "split-button/split-button.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "foundations": ["core"]
+    },
+    "split-pane": {
+      "files": [
+        "split-pane/index.ts",
+        "split-pane/split-pane.types.ts",
+        "split-pane/split-pane.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "switch": {
+      "files": [
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "switch/index.ts",
+        "switch/switch.vue"
+      ],
+      "dependencies": { "@ark-ui/vue": "^5.39.3" },
+      "foundations": ["core"]
+    },
+    "tabs": {
+      "files": [
+        "_shared/ripple.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "tabs/index.ts",
+        "tabs/tabs.types.ts",
+        "tabs/tabs.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "textarea-autosize": {
+      "files": ["textarea-autosize/index.ts", "textarea-autosize/textarea-autosize.ts"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "time-picker": {
+      "files": [
+        "_shared/focus-trap.ts",
+        "_shared/page-scroll-lock.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "time-picker/index.ts",
+        "time-picker/time-input.vue",
+        "time-picker/time-picker-control.vue",
+        "time-picker/time-picker-dialog.vue",
+        "time-picker/time-picker-panel.vue",
+        "time-picker/time-picker.types.ts",
+        "time-picker/time-picker.utils.ts",
+        "time-picker/time-picker.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    },
+    "toolbar": {
+      "files": ["toolbar/index.ts", "toolbar/toolbar.vue"],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
+    "tooltip": {
+      "files": [
+        "tooltip/index.ts",
+        "tooltip/rich-tooltip-action.vue",
+        "tooltip/rich-tooltip.vue",
+        "tooltip/tooltip-controller.ts",
+        "tooltip/tooltip.types.ts",
+        "tooltip/tooltip.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
+      "foundations": ["core"]
+    }
+  }
+}

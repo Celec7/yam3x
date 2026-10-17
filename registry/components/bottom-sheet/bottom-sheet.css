@@ -1,0 +1,336 @@
+.yam3x-bottom-sheet__positioner {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.yam3x-bottom-sheet__scrim {
+  --_yam3x-bottom-sheet-system-color-scrim: var(--md-sys-color-scrim);
+  --_yam3x-bottom-sheet-system-motion-spring-default-effects: var(
+    --md-sys-motion-spring-default-effects
+  );
+  --_yam3x-bottom-sheet-scrim-color: var(
+    --yam3x-bottom-sheet-scrim-color,
+    var(--_yam3x-bottom-sheet-system-color-scrim)
+  );
+  --_yam3x-bottom-sheet-scrim-opacity: var(
+    --yam3x-bottom-sheet-scrim-opacity,
+    var(--_yam3x-overlay-scrim-opacity)
+  );
+  position: fixed;
+  z-index: 59;
+  inset: 0;
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-bottom-sheet-scrim-color) var(--_yam3x-bottom-sheet-scrim-opacity),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity var(--_yam3x-bottom-sheet-system-motion-spring-default-effects);
+}
+.yam3x-bottom-sheet__scrim[data-state='open'] {
+  opacity: 1;
+}
+.yam3x-bottom-sheet {
+  --_yam3x-bottom-sheet-system-color-on-surface: var(--md-sys-color-on-surface, currentColor);
+  --_yam3x-bottom-sheet-system-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --_yam3x-bottom-sheet-system-color-surface-container-low: var(
+    --md-sys-color-surface-container-low
+  );
+  --_yam3x-bottom-sheet-system-color-secondary: var(--md-sys-color-secondary);
+  --_yam3x-bottom-sheet-system-shape-corner-extra-large: var(
+    --md-sys-shape-corner-extra-large,
+    28px
+  );
+  --_yam3x-bottom-sheet-system-elevation-level1: var(
+    --md-sys-elevation-level1,
+    0 1px 3px 1px rgb(0 0 0 / 0.15)
+  );
+  --_yam3x-bottom-sheet-system-motion-spring-default-spatial: var(
+    --md-sys-motion-spring-default-spatial
+  );
+  --_yam3x-bottom-sheet-system-density-spacing-scale: var(--md-sys-density-spacing-scale, 1);
+  --_yam3x-bottom-sheet-system-typescale-line-height-scale: var(
+    --md-sys-typescale-line-height-scale,
+    1.07
+  );
+  --_yam3x-bottom-sheet-container-color: var(
+    --yam3x-bottom-sheet-container-color,
+    var(--_yam3x-bottom-sheet-system-color-surface-container-low)
+  );
+  --_yam3x-bottom-sheet-color: var(
+    --yam3x-bottom-sheet-color,
+    var(--_yam3x-bottom-sheet-system-color-on-surface)
+  );
+  --_yam3x-bottom-sheet-container-shape: var(
+    --yam3x-bottom-sheet-container-shape,
+    var(--_yam3x-bottom-sheet-system-shape-corner-extra-large)
+  );
+  --_yam3x-bottom-sheet-minimized-container-shape: var(
+    --yam3x-bottom-sheet-minimized-container-shape,
+    0
+  );
+  --_yam3x-bottom-sheet-expanded-container-shape: var(
+    --yam3x-bottom-sheet-expanded-container-shape,
+    var(--_yam3x-bottom-sheet-container-shape)
+  );
+  --_yam3x-bottom-sheet-elevation: var(
+    --yam3x-bottom-sheet-elevation,
+    var(--_yam3x-bottom-sheet-system-elevation-level1)
+  );
+  --_yam3x-bottom-sheet-expanded-elevation: var(
+    --yam3x-bottom-sheet-expanded-elevation,
+    var(--_yam3x-bottom-sheet-elevation)
+  );
+  --_yam3x-bottom-sheet-modal-elevation: var(
+    --yam3x-bottom-sheet-modal-elevation,
+    var(--_yam3x-bottom-sheet-elevation)
+  );
+  --_yam3x-bottom-sheet-width: var(--yam3x-bottom-sheet-width, 100%);
+  --_yam3x-bottom-sheet-inline-size: min(calc(100% - 112px), var(--_yam3x-bottom-sheet-width));
+  --_yam3x-bottom-sheet-compact-inline-size: min(100%, var(--_yam3x-bottom-sheet-width));
+  --_yam3x-bottom-sheet-max-inline-size: min(
+    var(--yam3x-bottom-sheet-max-width, 640px),
+    var(--_yam3x-bottom-sheet-prop-max-width, 640px)
+  );
+  --_yam3x-bottom-sheet-top-space: var(--yam3x-bottom-sheet-top-space, 56px);
+  --_yam3x-bottom-sheet-compact-top-space: var(--yam3x-bottom-sheet-compact-top-space, 72px);
+  --_yam3x-bottom-sheet-runtime-height: var(--_yam3x-bottom-sheet-height, 50dvh);
+  --_yam3x-bottom-sheet-peek-height: var(--yam3x-bottom-sheet-peek-height);
+  --_yam3x-bottom-sheet-padding-block: var(--yam3x-bottom-sheet-padding-block);
+  --_yam3x-bottom-sheet-drag-handle-container-height: var(
+    --yam3x-bottom-sheet-drag-handle-container-height,
+    48px
+  );
+  --_yam3x-bottom-sheet-handle-width: var(--yam3x-bottom-sheet-handle-width, 32px);
+  --_yam3x-bottom-sheet-handle-height: var(--yam3x-bottom-sheet-handle-height, 4px);
+  --_yam3x-bottom-sheet-handle-shape: var(--yam3x-bottom-sheet-handle-shape, 999px);
+  --_yam3x-bottom-sheet-handle-color: var(
+    --yam3x-bottom-sheet-handle-color,
+    var(--_yam3x-bottom-sheet-system-color-on-surface-variant)
+  );
+  --_yam3x-bottom-sheet-handle-focus-ring-offset: var(
+    --yam3x-bottom-sheet-handle-focus-ring-offset,
+    2px
+  );
+  --_yam3x-bottom-sheet-padding-inline: var(
+    --yam3x-bottom-sheet-padding-inline,
+    calc(24px * var(--_yam3x-bottom-sheet-system-density-spacing-scale))
+  );
+  --_yam3x-bottom-sheet-header-padding-block: var(
+    --_yam3x-bottom-sheet-padding-block,
+    calc(8px * var(--_yam3x-bottom-sheet-system-density-spacing-scale))
+  );
+  --_yam3x-bottom-sheet-body-padding-block: var(
+    --_yam3x-bottom-sheet-padding-block,
+    calc(24px * var(--_yam3x-bottom-sheet-system-density-spacing-scale))
+  );
+  --_yam3x-bottom-sheet-header-font-size: var(--yam3x-bottom-sheet-header-font-size, 24px);
+  --_yam3x-bottom-sheet-header-font-weight: var(--yam3x-bottom-sheet-header-font-weight, 400);
+  --_yam3x-bottom-sheet-header-line-height: var(--yam3x-bottom-sheet-header-line-height, 32px);
+  --_yam3x-bottom-sheet-header-tracking: var(--yam3x-bottom-sheet-header-tracking, 0);
+  --_yam3x-bottom-sheet-content-font-size: var(--yam3x-bottom-sheet-content-font-size, 16px);
+  --_yam3x-bottom-sheet-content-font-weight: var(--yam3x-bottom-sheet-content-font-weight, 400);
+  --_yam3x-bottom-sheet-content-line-height: var(--yam3x-bottom-sheet-content-line-height, 24px);
+  --_yam3x-bottom-sheet-content-tracking: var(--yam3x-bottom-sheet-content-tracking, 0.5px);
+  --_yam3x-bottom-sheet-z-index-override: var(--yam3x-bottom-sheet-z-index);
+  --_yam3x-bottom-sheet-z-index: var(--_yam3x-bottom-sheet-z-index-override, 61);
+  position: fixed;
+  z-index: var(--_yam3x-bottom-sheet-z-index);
+  inset-block-end: 0;
+  left: 50%;
+  box-sizing: border-box;
+  display: flex;
+  inline-size: var(--_yam3x-bottom-sheet-inline-size);
+  max-inline-size: var(--_yam3x-bottom-sheet-max-inline-size);
+  max-block-size: calc(100dvh - var(--_yam3x-bottom-sheet-top-space));
+  block-size: min(
+    var(--_yam3x-bottom-sheet-runtime-height),
+    calc(100dvh - var(--_yam3x-bottom-sheet-top-space))
+  );
+  flex-direction: column;
+  overflow: hidden;
+  transform: translate(-50%, 100%);
+  border-start-start-radius: var(--_yam3x-bottom-sheet-container-shape);
+  border-start-end-radius: var(--_yam3x-bottom-sheet-container-shape);
+  color: var(--_yam3x-bottom-sheet-color);
+  background: var(--_yam3x-bottom-sheet-container-color);
+  box-shadow: var(--_yam3x-bottom-sheet-elevation);
+  transition:
+    transform var(--_yam3x-bottom-sheet-system-motion-spring-default-spatial),
+    block-size var(--_yam3x-bottom-sheet-system-motion-spring-default-spatial);
+  pointer-events: auto;
+}
+.yam3x-bottom-sheet[data-open='false'] {
+  border-start-start-radius: var(--_yam3x-bottom-sheet-minimized-container-shape);
+  border-start-end-radius: var(--_yam3x-bottom-sheet-minimized-container-shape);
+}
+.yam3x-bottom-sheet--standard[data-detent='expanded'],
+.yam3x-bottom-sheet--modal[data-detent='expanded'] {
+  border-start-start-radius: var(--_yam3x-bottom-sheet-expanded-container-shape);
+  border-start-end-radius: var(--_yam3x-bottom-sheet-expanded-container-shape);
+  box-shadow: var(--_yam3x-bottom-sheet-expanded-elevation);
+}
+.yam3x-bottom-sheet--modal:not([data-detent='expanded']) {
+  box-shadow: var(--_yam3x-bottom-sheet-modal-elevation);
+}
+.yam3x-bottom-sheet--standard {
+  --_yam3x-bottom-sheet-z-index: var(--_yam3x-bottom-sheet-z-index-override, 30);
+  z-index: var(--_yam3x-bottom-sheet-z-index);
+}
+.yam3x-bottom-sheet[data-dragging='true'] {
+  transition: none;
+  user-select: none;
+}
+.yam3x-bottom-sheet[hidden] {
+  display: none;
+}
+.yam3x-bottom-sheet--modal[data-state='open'],
+.yam3x-bottom-sheet--standard[data-open='true'] {
+  transform: translate(-50%, 0);
+}
+.yam3x-bottom-sheet__handle-row {
+  position: relative;
+  display: flex;
+  flex: 0 0 var(--_yam3x-bottom-sheet-drag-handle-container-height);
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: grab;
+}
+.yam3x-bottom-sheet__handle-row[data-dragging='true'],
+.yam3x-bottom-sheet__handle-row[data-dragging='true'] button.yam3x-bottom-sheet__handle-button {
+  cursor: grabbing;
+}
+button.yam3x-bottom-sheet__handle-button {
+  display: grid;
+  inline-size: 48px;
+  block-size: 48px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: inherit;
+  background: transparent;
+  cursor: grab;
+}
+button.yam3x-bottom-sheet__handle-button:hover {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-bottom-sheet-system-color-on-surface) 8%,
+    transparent
+  );
+}
+button.yam3x-bottom-sheet__handle-button:active {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-bottom-sheet-system-color-on-surface) 12%,
+    transparent
+  );
+}
+.yam3x-bottom-sheet__handle-button:focus-visible,
+.yam3x-bottom-sheet__resize:focus-visible,
+.yam3x-bottom-sheet__close:focus-visible {
+  outline: 3px solid var(--_yam3x-bottom-sheet-system-color-secondary);
+  outline-offset: var(--_yam3x-bottom-sheet-handle-focus-ring-offset);
+}
+.yam3x-bottom-sheet__handle {
+  inline-size: var(--_yam3x-bottom-sheet-handle-width);
+  block-size: var(--_yam3x-bottom-sheet-handle-height);
+  border-radius: var(--_yam3x-bottom-sheet-handle-shape);
+  background: var(--_yam3x-bottom-sheet-handle-color);
+}
+.yam3x-bottom-sheet__resize {
+  min-inline-size: 48px;
+  min-block-size: 48px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+.yam3x-bottom-sheet__header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: calc(16px * var(--_yam3x-bottom-sheet-system-density-spacing-scale));
+  min-inline-size: 0;
+  margin-inline: var(--_yam3x-bottom-sheet-padding-inline);
+  padding-block: var(--_yam3x-bottom-sheet-header-padding-block)
+    calc(16px * var(--_yam3x-bottom-sheet-system-density-spacing-scale));
+}
+.yam3x-bottom-sheet .yam3x-bottom-sheet__title {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  margin: 0;
+  font-size: var(--_yam3x-bottom-sheet-header-font-size);
+  font-weight: var(--_yam3x-bottom-sheet-header-font-weight);
+  line-height: calc(
+    (var(--_yam3x-bottom-sheet-header-line-height)) *
+      var(--_yam3x-bottom-sheet-system-typescale-line-height-scale)
+  );
+  letter-spacing: var(--_yam3x-bottom-sheet-header-tracking);
+}
+.yam3x-bottom-sheet__close {
+  display: grid;
+  flex: 0 0 48px;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  border: 0;
+  border-radius: 999px;
+  color: inherit;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+.yam3x-bottom-sheet__body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--_yam3x-bottom-sheet-padding-inline) var(--_yam3x-bottom-sheet-body-padding-block);
+  font-size: var(--_yam3x-bottom-sheet-content-font-size);
+  font-weight: var(--_yam3x-bottom-sheet-content-font-weight);
+  line-height: calc(
+    (var(--_yam3x-bottom-sheet-content-line-height)) *
+      var(--_yam3x-bottom-sheet-system-typescale-line-height-scale)
+  );
+  letter-spacing: var(--_yam3x-bottom-sheet-content-tracking);
+}
+@media (max-width: 640px) {
+  .yam3x-bottom-sheet {
+    inline-size: var(--_yam3x-bottom-sheet-compact-inline-size);
+    max-block-size: calc(100dvh - var(--_yam3x-bottom-sheet-compact-top-space));
+    block-size: min(
+      var(--_yam3x-bottom-sheet-runtime-height),
+      calc(100dvh - var(--_yam3x-bottom-sheet-compact-top-space))
+    );
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-bottom-sheet,
+  .yam3x-bottom-sheet__scrim {
+    transition-duration: 0ms;
+  }
+}
+@media (forced-colors: active) {
+  .yam3x-bottom-sheet {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+  .yam3x-bottom-sheet__handle {
+    background: CanvasText;
+  }
+  .yam3x-bottom-sheet__scrim {
+    background: rgb(0 0 0 / 0.55);
+  }
+  .yam3x-bottom-sheet__handle-button:focus-visible,
+  .yam3x-bottom-sheet__resize:focus-visible,
+  .yam3x-bottom-sheet__close:focus-visible {
+    outline-color: Highlight;
+  }
+}

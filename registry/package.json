@@ -1,0 +1,17 @@
+{
+  "name": "yam3x-registry-source",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ark-ui/vue": "catalog:",
+    "@floating-ui/dom": "catalog:",
+    "@material/material-color-utilities": "catalog:",
+    "composed-offset-position": "catalog:",
+    "tailwind-variants": "catalog:",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "catalog:",
+    "tailwindcss": "catalog:"
+  }
+}
