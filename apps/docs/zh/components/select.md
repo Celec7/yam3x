@@ -18,7 +18,7 @@ Select 是项目表单控件，用于从弹出列表中选择一个或多个值�
 
 ## 在应用中导入
 
-先运行 `pnpm dlx yam3x@latest add select option form-field`，然后组合使用：
+先运行 `pnpm dlx @celec7/yam3x@latest add select option form-field`，然后组合使用：
 
 ```vue
 <script setup lang="ts">

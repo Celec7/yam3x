@@ -1,10 +1,10 @@
 # Release the CLI
 
-The public package is `yam3x` in `packages/cli`. It bundles the generated registry and installs editable component source into an existing Vue/Vite app. The CLI binary is also named `yam3x`.
+The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generated registry and installs editable component source into an existing Vue/Vite app. The CLI binary is named `yam3x`.
 
 ## Before the first release
 
-1. Confirm that the unscoped npm name `yam3x` is available to the release owner. If the package name changes, update `packages/cli/package.json` and every `pnpm dlx` command in the READMEs and English/Chinese docs, including this release procedure.
+1. Confirm that the npm package `@celec7/yam3x` can be published by the release owner. If the package name changes, update `packages/cli/package.json` and every `pnpm dlx` command in the READMEs and English/Chinese docs, including this release procedure.
 2. Confirm that `packages/cli/package.json` links to the canonical GitHub repository, documentation site, and issue tracker.
 3. Review the package version, MIT copyright notice, README, and generated source list.
 4. From the repository root, run:
@@ -34,7 +34,7 @@ cd packages/cli
 pnpm publish --access public
 ```
 
-After that initial publish, configure trusted publishing when preparing the first new version that CI will publish. Open `yam3x` on npmjs.com and add a GitHub Actions trusted publisher with:
+After that initial publish, configure trusted publishing when preparing the first new version that CI will publish. Open `@celec7/yam3x` on npmjs.com and add a GitHub Actions trusted publisher with:
 
 - GitHub owner: `Celec7`
 - Repository: `yam3x`

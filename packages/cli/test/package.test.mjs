@@ -9,6 +9,7 @@ import test from 'node:test'
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const cliRoot = join(repositoryRoot, 'packages/cli')
+const cliManifest = JSON.parse(await readFile(join(cliRoot, 'package.json'), 'utf8'))
 
 test('packed CLI contains a runnable registry and installs a component', async () => {
   const temporaryRoot = await mkdtemp(join(tmpdir(), 'yam3x-pack-'))
@@ -20,14 +21,15 @@ test('packed CLI contains a runnable registry and installs a component', async (
     })
     assert.equal(packResult.status, 0, `${packResult.stdout}\n${packResult.stderr}`)
 
-    const tarball = join(temporaryRoot, 'yam3x-0.1.0.tgz')
+    const tarballName = `${cliManifest.name.replace(/^@/, '').replaceAll('/', '-')}-${cliManifest.version}.tgz`
+    const tarball = join(temporaryRoot, tarballName)
     assert.ok(existsSync(tarball), 'pnpm pack should create the CLI tarball')
     const packageRoot = join(temporaryRoot, 'package')
     await mkdir(packageRoot)
     execFileSync('tar', ['-xzf', tarball, '-C', packageRoot])
 
     const manifest = JSON.parse(await readFile(join(packageRoot, 'package/package.json'), 'utf8'))
-    assert.equal(manifest.name, 'yam3x')
+    assert.equal(manifest.name, cliManifest.name)
     assert.deepEqual(manifest.bin, { yam3x: 'src/index.mjs' })
     assert.ok(manifest.dependencies.semver)
     assert.ok(existsSync(join(packageRoot, 'package/registry/registry.json')))

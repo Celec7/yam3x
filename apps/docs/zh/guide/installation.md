@@ -3,8 +3,8 @@
 YAM3X 通过 CLI 将 Vue 源码组件复制到你的应用。目标项目需要 Vue、Vite、Tailwind CSS v4，并提供 `package.json` 与 `src/main.ts` 或 `src/main.js`。
 
 ```sh
-pnpm dlx yam3x@latest init
-pnpm dlx yam3x@latest add button switch dialog
+pnpm dlx @celec7/yam3x@latest init
+pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
 在目标应用根目录运行以上命令。`init` 会复制共享基础文件、声明依赖，并在应用入口导入 `yam3x.css`。`add` 会复制组件源码并声明组件所需依赖。如果尚未配置 Tailwind Vite 插件，请在现有 Vite 配置中添加：

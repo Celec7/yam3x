@@ -11,8 +11,8 @@ YAM3X 提供原生适配 Vue 的 Material 3 Expressive 组件，并以可编辑�
 在已有的 Vue/Vite 应用中，先初始化基础配置，再添加组件。应用需要包含 `src/main.ts` 或 `src/main.js`：
 
 ```sh
-pnpm dlx yam3x@latest init
-pnpm dlx yam3x@latest add button switch dialog
+pnpm dlx @celec7/yam3x@latest init
+pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
 CLI 会复制可编辑源码并声明依赖。如果应用尚未配置，请将 `@tailwindcss/vite` 添加到 Vite 插件中；CLI 不会修改 Vite 配置。完整步骤请参阅[安装指南](apps/docs/zh/guide/installation.md)。

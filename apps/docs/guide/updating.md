@@ -1,6 +1,6 @@
 # Update copied source
 
-Your app maintains installed components and foundation files. Running `pnpm dlx yam3x@latest add` again adds missing files only; it does not overwrite files already copied or edited, and it does not merge upstream changes automatically.
+Your app maintains installed components and foundation files. Running `pnpm dlx @celec7/yam3x@latest add` again adds missing files only; it does not overwrite files already copied or edited, and it does not merge upstream changes automatically.
 
 To adopt a newer version from this repository:
 

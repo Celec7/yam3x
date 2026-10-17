@@ -18,7 +18,7 @@ Select is a project form control for choosing one or more values from a popup li
 
 ## Use in your app
 
-First run `pnpm dlx yam3x@latest add select option form-field`, then compose the components:
+First run `pnpm dlx @celec7/yam3x@latest add select option form-field`, then compose the components:
 
 ```vue
 <script setup lang="ts">

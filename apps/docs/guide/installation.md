@@ -3,8 +3,8 @@
 YAM3X uses a CLI to copy Vue component source into your application. The target project needs Vue, Vite, Tailwind CSS v4, a `package.json`, and either `src/main.ts` or `src/main.js`.
 
 ```sh
-pnpm dlx yam3x@latest init
-pnpm dlx yam3x@latest add button switch dialog
+pnpm dlx @celec7/yam3x@latest init
+pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
 Run these commands from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. `add` copies component source and declares component dependencies. If Tailwind's Vite plugin is not configured, add it to the existing Vite configuration:
