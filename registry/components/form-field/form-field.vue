@@ -176,8 +176,11 @@ function syncControl() {
       .split(/\s+/)
       .filter(Boolean)
       .filter((id) => !internalIds.includes(id))
-    if (existing.length) element.setAttribute('aria-describedby', existing.join(' '))
-    else element.removeAttribute('aria-describedby')
+    if (existing.length) {
+      const next = existing.join(' ')
+      if (element.getAttribute('aria-describedby') !== next)
+        element.setAttribute('aria-describedby', next)
+    } else element.removeAttribute('aria-describedby')
   }
   if (invalid.value && element.getAttribute('aria-invalid') !== 'true') {
     element.setAttribute('aria-invalid', 'true')
