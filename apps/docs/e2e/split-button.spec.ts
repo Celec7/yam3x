@@ -14,6 +14,8 @@ test('keeps primary and menu actions independent and exposes the group and popup
   const group = mainDemo(page).getByRole('group', { name: 'Save actions' })
   const primary = group.getByRole('button', { name: 'Save', exact: true })
   const more = group.getByRole('button', { name: 'More Save options' })
+  // Keep enough viewport space for this test's below-placement assertions.
+  await more.evaluate((element) => element.scrollIntoView({ block: 'center' }))
   await expect(primary).toHaveAttribute('type', 'button')
   await expect(more).toHaveAttribute('aria-haspopup', 'menu')
   await expect(more).toHaveAttribute('aria-expanded', 'false')
@@ -303,11 +305,37 @@ test('opens custom popups with an anchor and closes them back to the menu contro
   await expect(more).toBeFocused()
 })
 
+test('flips the menu above the trailing control when the viewport has no room below', async ({
+  page,
+}) => {
+  // split-button.menu.placement
+  await page.setViewportSize({ width: 480, height: 560 })
+  const more = mainDemo(page)
+    .getByRole('group', { name: 'Save actions' })
+    .getByRole('button', { name: 'More Save options' })
+  await more.evaluate((element) => element.scrollIntoView({ block: 'end' }))
+  await more.click()
+  const menu = page.getByRole('menu', { name: 'Save options' })
+  await expect(menu).toBeVisible()
+  const trigger = (await more.boundingBox())!
+  const popup = (await menu.boundingBox())!
+  expect(560 - trigger.y - trigger.height).toBeLessThan(popup.height + 4 + 8)
+  expect(Math.abs(popup.x - trigger.x)).toBeLessThanOrEqual(1)
+  expect(Math.abs(popup.y + popup.height + 4 - trigger.y)).toBeLessThanOrEqual(1)
+  expect(popup.y).toBeGreaterThanOrEqual(8)
+  expect(popup.y + popup.height).toBeLessThanOrEqual(560 - 8)
+  await expect(menu.getByRole('menuitemradio', { name: 'Save document' })).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(menu).toHaveCount(0)
+  await expect(more).toBeFocused()
+})
+
 test('v-model:open can open and close the menu from outside the split button', async ({ page }) => {
   const openMenu = page.getByRole('button', { name: 'Open menu externally' })
   const closeMenu = page.getByRole('button', { name: 'Close menu externally' })
   const group = mainDemo(page).getByRole('group', { name: 'Save actions' })
   const more = group.getByRole('button', { name: 'More Save options' })
+  await more.evaluate((element) => element.scrollIntoView({ block: 'center' }))
   await openMenu.click()
   const menu = page.getByRole('menu', { name: 'Save options' })
   await expect(menu).toBeVisible()
