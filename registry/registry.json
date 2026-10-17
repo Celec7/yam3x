@@ -357,6 +357,25 @@
       "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
     },
+    "file-upload": {
+      "files": [
+        "_shared/ripple.ts",
+        "button/button-base.vue",
+        "button/button.variants.ts",
+        "button/button.vue",
+        "file-upload/file-upload.types.ts",
+        "file-upload/file-upload.vue",
+        "file-upload/index.ts",
+        "file-upload/use-file-upload.ts",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "progress-indicator/linear-progress-indicator.vue",
+        "progress-indicator/progress-utils.ts"
+      ],
+      "dependencies": { "tailwind-variants": "^3.3.1" },
+      "foundations": ["core"]
+    },
     "filter-chip": {
       "files": [
         "_shared/ripple.ts",

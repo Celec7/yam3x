@@ -311,6 +311,14 @@ const extensions: CatalogSection[] = [
     title: { en: 'Input and form helpers', zh: '输入与表单配套' },
     items: [
       {
+        path: 'file-upload',
+        title: 'File upload',
+        summary: {
+          en: 'Choose files and manage independent transfers with recovery.',
+          zh: '选择文件，管理独立传输并从失败中恢复。',
+        },
+      },
+      {
         path: 'form',
         title: 'Form',
         summary: {
