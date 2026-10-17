@@ -146,7 +146,10 @@ export const vRipple: ObjectDirective<HTMLElement> = {
         return
       const isSpaceControl =
         host.dataset.yam3xRippleRole === 'checkbox' || host.dataset.yam3xRippleRole === 'radio'
-      const isButton = host instanceof HTMLButtonElement || host.getAttribute('role') === 'button'
+      const isButton =
+        host instanceof HTMLButtonElement ||
+        host.getAttribute('role') === 'button' ||
+        host.dataset.yam3xRippleRole === 'button'
       const isLink = host instanceof HTMLAnchorElement && host.hasAttribute('href')
       if (
         isSpaceControl

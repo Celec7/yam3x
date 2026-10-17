@@ -433,6 +433,14 @@ const extensions: CatalogSection[] = [
     title: { en: 'Display and graphics helpers', zh: '展示与图形配套' },
     items: [
       {
+        path: 'tree-view',
+        title: 'Tree view',
+        summary: {
+          en: 'Explore hierarchical records with selection, checks, and branch loading.',
+          zh: '浏览层级记录，支持选择、勾选与分支加载。',
+        },
+      },
+      {
         path: 'data-table',
         title: 'Data table',
         summary: {

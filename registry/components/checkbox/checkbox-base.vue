@@ -16,6 +16,7 @@ const props = withDefaults(
     invalid?: boolean
     state: CheckboxState
     initialState: CheckboxState
+    inputTabindex?: number
   }>(),
   {
     description: undefined,
@@ -133,6 +134,7 @@ function onReset(): void {
           ref="input"
           class="yam3x-checkbox__input"
           type="checkbox"
+          :tabindex="inputTabindex"
           :name="state === 'indeterminate' ? undefined : name"
           :value="value"
           :form="form"

@@ -1,0 +1,325 @@
+.yam3x-tree-view {
+  --_yam3x-tree-view-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-tree-view-indent: calc(24px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-tree-view-height: calc(56px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-tree-view-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-tree-view-label-min-width: var(--yam3x-tree-view-label-min-width, 10rem);
+  --_yam3x-tree-view-row-shape: var(--yam3x-tree-view-row-shape, var(--md-sys-shape-corner-medium));
+  --_yam3x-tree-view-color: var(--md-sys-color-on-surface);
+  --_yam3x-tree-view-metadata: var(--md-sys-color-on-surface-variant);
+  --_yam3x-tree-view-selected: var(--md-sys-color-secondary-container);
+  --_yam3x-tree-view-on-selected: var(--md-sys-color-on-secondary-container);
+  --_yam3x-tree-view-focus: var(--md-sys-color-secondary);
+  --_yam3x-tree-view-error: var(--md-sys-color-error);
+  --_yam3x-tree-view-disabled: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  --_yam3x-tree-view-hover: var(--md-sys-state-hover-opacity);
+  --_yam3x-tree-view-branch-duration: var(--md-sys-motion-duration-default-spatial);
+  --_yam3x-tree-view-branch-easing: var(--md-sys-motion-easing-default-spatial);
+  --_yam3x-tree-view-effects-duration: var(--md-sys-motion-duration-fast-effects);
+  --_yam3x-tree-view-effects-easing: var(--md-sys-motion-easing-fast-effects);
+  --_yam3x-tree-view-pressed: var(--md-sys-state-pressed-opacity);
+  --_yam3x-tree-view-motion-duration: var(--md-sys-motion-duration-fast-spatial);
+  --_yam3x-tree-view-motion-easing: var(--md-sys-motion-easing-fast-spatial);
+  --_yam3x-tree-view-title-font: var(--md-sys-typescale-title-medium-font-family);
+  --_yam3x-tree-view-title-size: var(--md-sys-typescale-title-medium-font-size);
+  --_yam3x-tree-view-title-weight: var(--md-sys-typescale-title-medium-font-weight);
+  --_yam3x-tree-view-title-height: var(--md-sys-typescale-title-medium-line-height);
+  --_yam3x-tree-view-title-tracking: var(--md-sys-typescale-title-medium-tracking);
+  --_yam3x-tree-view-label-font: var(--md-sys-typescale-body-large-font-family);
+  --_yam3x-tree-view-label-size: var(--md-sys-typescale-body-large-font-size);
+  --_yam3x-tree-view-label-weight: var(--md-sys-typescale-body-large-font-weight);
+  --_yam3x-tree-view-label-height: var(--md-sys-typescale-body-large-line-height);
+  --_yam3x-tree-view-label-tracking: var(--md-sys-typescale-body-large-tracking);
+  --_yam3x-tree-view-support-font: var(--md-sys-typescale-body-small-font-family);
+  --_yam3x-tree-view-support-size: var(--md-sys-typescale-body-small-font-size);
+  --_yam3x-tree-view-support-weight: var(--md-sys-typescale-body-small-font-weight);
+  --_yam3x-tree-view-support-height: var(--md-sys-typescale-body-small-line-height);
+  --_yam3x-tree-view-support-tracking: var(--md-sys-typescale-body-small-tracking);
+  display: grid;
+  gap: var(--_yam3x-tree-view-gap);
+  min-inline-size: 0;
+  color: var(--_yam3x-tree-view-color);
+}
+.yam3x-tree-view .yam3x-tree-view__title,
+.yam3x-tree-view .yam3x-tree-view__support,
+.yam3x-tree-view .yam3x-tree-view__feedback p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.yam3x-tree-view .yam3x-tree-view__feedback p {
+  font: inherit;
+  letter-spacing: inherit;
+}
+.yam3x-tree-view__scroll {
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+.yam3x-tree-view .yam3x-tree-view__tree,
+.yam3x-tree-view .yam3x-tree-view__group {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.yam3x-tree-view .yam3x-tree-view__item {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.yam3x-tree-view__item:focus-visible {
+  outline: none;
+}
+.yam3x-tree-view__item:focus-visible > .yam3x-tree-view__row {
+  outline: 3px solid var(--_yam3x-tree-view-focus);
+  outline-offset: -3px;
+}
+.yam3x-tree-view__row {
+  --_yam3x-tree-view-row-metadata: var(--_yam3x-tree-view-metadata);
+  border-radius: var(--_yam3x-tree-view-row-shape);
+  position: relative;
+  isolation: isolate;
+  cursor: pointer;
+  transition:
+    background-color var(--_yam3x-tree-view-effects-duration) var(--_yam3x-tree-view-effects-easing),
+    color var(--_yam3x-tree-view-effects-duration) var(--_yam3x-tree-view-effects-easing);
+  display: flex;
+  align-items: center;
+  gap: var(--_yam3x-tree-view-gap);
+  min-block-size: var(--_yam3x-tree-view-height);
+  min-inline-size: calc(
+    var(--_yam3x-tree-view-padding) * 2 + (var(--_yam3x-tree-view-level) - 1) *
+      var(--_yam3x-tree-view-indent) + 48px + var(--_yam3x-tree-view-check-space) +
+      var(--_yam3x-tree-view-leading-space) + var(--_yam3x-tree-view-label-min-width) +
+      var(--_yam3x-tree-view-gap)
+  );
+  padding-block: 4px;
+  padding-inline: calc(
+      var(--_yam3x-tree-view-padding) + (var(--_yam3x-tree-view-level) - 1) *
+        var(--_yam3x-tree-view-indent)
+    )
+    var(--_yam3x-tree-view-padding);
+  color: var(--_yam3x-tree-view-color);
+}
+.yam3x-tree-view__row--selected {
+  --_yam3x-tree-view-row-metadata: var(--_yam3x-tree-view-on-selected);
+  color: var(--_yam3x-tree-view-on-selected);
+  background: var(--_yam3x-tree-view-selected);
+}
+.yam3x-tree-view__row--disabled {
+  cursor: default;
+  --_yam3x-tree-view-row-metadata: var(--_yam3x-tree-view-disabled);
+  color: var(--_yam3x-tree-view-disabled);
+}
+.yam3x-tree-view__disclosure,
+.yam3x-tree-view__disclosure-space {
+  display: inline-flex;
+  flex: 0 0 48px;
+  align-items: center;
+  justify-content: center;
+  inline-size: 48px;
+  block-size: 48px;
+}
+.yam3x-tree-view__disclosure {
+  position: relative;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.yam3x-tree-view__disclosure:disabled {
+  cursor: default;
+}
+.yam3x-tree-view__chevron {
+  inline-size: 24px;
+  block-size: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--_yam3x-tree-view-motion-duration)
+    var(--_yam3x-tree-view-motion-easing);
+}
+.yam3x-tree-view__chevron:dir(rtl) {
+  transform: rotate(180deg);
+}
+.yam3x-tree-view__chevron--expanded,
+.yam3x-tree-view__chevron--expanded:dir(rtl) {
+  transform: rotate(90deg);
+}
+.yam3x-tree-view__leading {
+  display: flex;
+  flex: 0 0 auto;
+}
+.yam3x-tree-view__check {
+  flex: 0 0 auto;
+}
+.yam3x-tree-view__text {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-inline-size: var(--_yam3x-tree-view-label-min-width);
+  overflow-wrap: anywhere;
+}
+.yam3x-tree-view__label {
+  color: inherit;
+}
+.yam3x-tree-view__metadata {
+  color: var(--_yam3x-tree-view-row-metadata);
+}
+.yam3x-tree-view__feedback {
+  display: grid;
+  gap: var(--_yam3x-tree-view-gap);
+  padding-block: var(--_yam3x-tree-view-gap);
+  padding-inline: calc(
+      var(--_yam3x-tree-view-padding) + (var(--_yam3x-tree-view-level) - 1) *
+        var(--_yam3x-tree-view-indent) + 48px
+    )
+    var(--_yam3x-tree-view-padding);
+}
+.yam3x-tree-view__feedback [role='alert'] {
+  color: var(--_yam3x-tree-view-error);
+}
+.yam3x-tree-view__retry {
+  position: relative;
+  border-radius: var(--_yam3x-tree-view-row-shape);
+  justify-self: start;
+  min-block-size: 48px;
+  min-inline-size: 48px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.yam3x-tree-view .yam3x-tree-view__sr-only,
+.yam3x-tree-view__check .yam3x-checkbox__label-text {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.yam3x-tree-view[hidden] {
+  display: none;
+}
+/* Keep feedback on the node row, outside the nested group. */
+.yam3x-tree-view__row::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: currentColor;
+  content: '';
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--_yam3x-tree-view-effects-duration)
+    var(--_yam3x-tree-view-effects-easing);
+}
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-tree-view__row:not(.yam3x-tree-view__row--disabled):hover::after {
+    opacity: var(--_yam3x-tree-view-hover);
+  }
+}
+.yam3x-tree-view__item[data-yam3x-pressed]
+  > .yam3x-tree-view__row:not(.yam3x-tree-view__row--disabled)::after {
+  opacity: var(--_yam3x-tree-view-pressed);
+}
+.yam3x-tree-view__row .yam3x-ripple {
+  transition:
+    transform var(--_yam3x-tree-view-motion-duration) var(--_yam3x-tree-view-motion-easing),
+    opacity var(--_yam3x-tree-view-effects-duration) var(--_yam3x-tree-view-effects-easing);
+}
+.yam3x-tree-view__row .yam3x-ripple--exiting {
+  transition: opacity var(--_yam3x-tree-view-effects-duration)
+    var(--_yam3x-tree-view-effects-easing);
+}
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-tree-view__chevron,
+  .yam3x-tree-view__row,
+  .yam3x-tree-view__row::after,
+  .yam3x-tree-view__row .yam3x-ripple {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .yam3x-tree-view__row::after {
+    display: none;
+  }
+  .yam3x-tree-view__row--selected {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+  .yam3x-tree-view__item:focus-visible > .yam3x-tree-view__row {
+    outline-color: Highlight;
+  }
+}
+
+.yam3x-tree-view .yam3x-tree-view__title {
+  font-family: var(--_yam3x-tree-view-title-font);
+  font-size: var(--_yam3x-tree-view-title-size);
+  font-weight: var(--_yam3x-tree-view-title-weight);
+  line-height: var(--_yam3x-tree-view-title-height);
+  letter-spacing: var(--_yam3x-tree-view-title-tracking);
+}
+
+.yam3x-tree-view__label {
+  font-family: var(--_yam3x-tree-view-label-font);
+  font-size: var(--_yam3x-tree-view-label-size);
+  font-weight: var(--_yam3x-tree-view-label-weight);
+  line-height: var(--_yam3x-tree-view-label-height);
+  letter-spacing: var(--_yam3x-tree-view-label-tracking);
+}
+
+.yam3x-tree-view .yam3x-tree-view__support,
+.yam3x-tree-view .yam3x-tree-view__metadata,
+.yam3x-tree-view .yam3x-tree-view__feedback {
+  font-family: var(--_yam3x-tree-view-support-font);
+  font-size: var(--_yam3x-tree-view-support-size);
+  font-weight: var(--_yam3x-tree-view-support-weight);
+  line-height: var(--_yam3x-tree-view-support-height);
+  letter-spacing: var(--_yam3x-tree-view-support-tracking);
+}
+
+.yam3x-tree-view__check-target {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-inline-size: 48px;
+  min-block-size: 48px;
+}
+.yam3x-tree-view__tree:empty {
+  min-block-size: 48px;
+}
+
+.yam3x-tree-view__branch {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.yam3x-tree-view__branch-clip {
+  min-block-size: 0;
+  overflow: hidden;
+}
+.yam3x-tree-view-branch-enter-active,
+.yam3x-tree-view-branch-leave-active {
+  transition:
+    grid-template-rows var(--_yam3x-tree-view-branch-duration) var(--_yam3x-tree-view-branch-easing),
+    opacity var(--_yam3x-tree-view-effects-duration) var(--_yam3x-tree-view-effects-easing);
+}
+.yam3x-tree-view-branch-enter-from,
+.yam3x-tree-view-branch-leave-to {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .yam3x-tree-view-branch-enter-active,
+  .yam3x-tree-view-branch-leave-active {
+    transition: none;
+  }
+}

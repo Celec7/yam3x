@@ -883,6 +883,29 @@
       ],
       "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
+    },
+    "tree-view": {
+      "files": [
+        "_shared/ripple.ts",
+        "checkbox/checkbox-base.vue",
+        "checkbox/checkbox.types.ts",
+        "empty-state/empty-state.vue",
+        "heading/heading.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "progress-indicator/linear-progress-indicator.vue",
+        "progress-indicator/progress-utils.ts",
+        "tree-view/index.ts",
+        "tree-view/tree-view-node.vue",
+        "tree-view/tree-view.context.ts",
+        "tree-view/tree-view.css",
+        "tree-view/tree-view.types.ts",
+        "tree-view/tree-view.utils.ts",
+        "tree-view/tree-view.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
     }
   }
 }
