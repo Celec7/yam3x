@@ -14,12 +14,13 @@ Add editable Material 3 Expressive Vue component source to an existing Vue/Vite 
 Run from the target app root:
 
 ```sh
+pnpm dlx @celec7/yam3x@latest --version
 pnpm dlx @celec7/yam3x@latest list
 pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-`list` prints the component names accepted by `add`. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry. `add` copies the requested components and declares their dependencies. The CLI installs dependencies with the package manager declared by the app, inferred from its lockfile, or npm by default.
+`--version` prints the CLI version. `list` prints the component names accepted by `add`. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry. `add` copies the requested components and declares their dependencies. The CLI installs dependencies with the package manager declared by the app, inferred from its lockfile, or npm by default.
 
 Add `@tailwindcss/vite` to the existing Vite plugin list if it is not configured. The CLI prints a reminder but does not edit Vite configuration.
 

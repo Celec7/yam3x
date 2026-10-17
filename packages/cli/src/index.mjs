@@ -199,9 +199,15 @@ async function addComponent(projectRoot, name, registry) {
 
 async function run() {
   const [command, ...args] = process.argv.slice(2)
+  if (command === '--version' || command === '-v') {
+    const { version } = await readJson(join(packageRoot, 'package.json'))
+    console.log(`yam3x ${version}`)
+    return
+  }
+
   if (!command || command === '--help' || command === '-h') {
     console.log(
-      'Usage: yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]',
+      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]',
     )
     return
   }

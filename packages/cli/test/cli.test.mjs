@@ -264,6 +264,19 @@ function runCli(args, cwd) {
   })
 }
 
+test('prints its manifest version without requiring a target project', async () => {
+  const manifest = JSON.parse(
+    await readFile(join(projectRoot, 'packages/cli/package.json'), 'utf8'),
+  )
+  const result = spawnSync(process.execPath, [cliPath, '--version'], {
+    cwd: projectRoot,
+    encoding: 'utf8',
+  })
+
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.equal(result.stdout.trim(), `yam3x ${manifest.version}`)
+})
+
 test('add copies editable component sources and declares only required packages', async (t) => {
   const directory = await fixture(t)
   const result = runCli(['add', 'button', 'switch', 'navigation-bar', 'breadcrumb'], directory)
