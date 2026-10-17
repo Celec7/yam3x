@@ -59,6 +59,20 @@ The [component guide template](TEMPLATE.md) defines the intended scope and conte
 | Select                                    | [Select menus: project extension guide](components/select.md)                        |
 | Text fields                               | [Text fields: project design guide](components/form-field.md)                        |
 
+## Application extensions
+
+These guides define project-owned compositions and behavior derived from the shared Material foundations. They do not add entries to the official Material component catalog or declare installable registry modules.
+
+| Extension      | Project design guide                                                    |
+| -------------- | ----------------------------------------------------------------------- |
+| Data table     | [Data table: project extension guide](components/data-table.md)         |
+| File upload    | [File upload: project extension guide](components/file-upload.md)       |
+| Form           | [Form: project extension guide](components/form.md)                     |
+| Tree view      | [Tree view: project extension guide](components/tree-view.md)           |
+| Pagination     | [Pagination: project extension guide](components/pagination.md)         |
+| Empty state    | [Empty state: project extension guide](components/empty-state.md)       |
+| Inline message | [Inline message: project extension guide](components/inline-message.md) |
+
 Use [TEMPLATE.md](TEMPLATE.md) for a new guide and [foundations.md](foundations.md) for shared design guidance.
 
 Shared foundation pages: [cross-component design guidance](foundations.md) and [theme and color](foundations/theme.md).
