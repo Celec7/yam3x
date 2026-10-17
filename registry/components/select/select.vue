@@ -491,7 +491,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       :aria-disabled="disabled ? 'true' : undefined"
       :aria-invalid="invalid ? 'true' : undefined"
       :disabled="disabled"
-      :required="required"
+      :required="required || undefined"
       :value="displayValue"
       @click="requestOpen(!open, 'trigger')"
       @keydown="onKeydown"
