@@ -6,6 +6,7 @@ import { applyTheme } from '@registry/foundations/theme/apply'
 import { generateTheme } from '@registry/foundations/theme/generate'
 import { createThemeController, type ThemeController } from '@registry/foundations/theme/controller'
 import { docsDemoTheme } from './demo-theme'
+import RegistrySlug from '../../components/RegistrySlug.vue'
 
 const { isDark } = useData()
 const docsTheme = generateTheme('#6750a4')
@@ -61,5 +62,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <DefaultTheme.Layout />
+  <DefaultTheme.Layout>
+    <template #doc-before>
+      <RegistrySlug />
+    </template>
+  </DefaultTheme.Layout>
 </template>

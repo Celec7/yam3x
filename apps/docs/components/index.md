@@ -11,13 +11,4 @@ Copy these Vue components into your app with the CLI. The categories follow the 
 
 <CatalogGroups :groups="materialComponentGroups" />
 
-## CLI names
-
-The names accepted by `add` come from the bundled registry. Run `list` to see the names available in the CLI version you are using, then pass one or more names to `add`:
-
-```sh
-pnpm dlx @celec7/yam3x@latest list
-pnpm dlx @celec7/yam3x@latest add button switch
-```
-
-For setup and import examples, see [Installation and first use](/guide/installation).
+Each component page shows its registry slug above the page title. Pass that slug to `add`; run `pnpm dlx @celec7/yam3x@latest list` to see all slugs supported by the CLI version you use. For setup and import examples, see [Installation and first use](/guide/installation).

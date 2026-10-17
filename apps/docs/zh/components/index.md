@@ -11,13 +11,4 @@ const { materialComponentGroups } = getComponentCatalog('zh')
 
 <CatalogGroups :groups="materialComponentGroups" base-path="/zh" />
 
-## CLI 名称
-
-`add` 接受的名称来自随 CLI 打包的注册表。运行 `list` 可查看当前 CLI 版本支持的名称，再将一个或多个名称传给 `add`：
-
-```sh
-pnpm dlx @celec7/yam3x@latest list
-pnpm dlx @celec7/yam3x@latest add button switch
-```
-
-初始化和源码导入示例见[安装与首次使用](/zh/guide/installation)。
+每个组件页面标题上方都会显示其注册表 slug，可将其传给 `add`。运行 `pnpm dlx @celec7/yam3x@latest list` 可查看当前 CLI 版本支持的所有 slug。初始化和源码导入示例见[安装与首次使用](/zh/guide/installation)。
