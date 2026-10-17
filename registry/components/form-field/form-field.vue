@@ -559,6 +559,9 @@ onBeforeUnmount(() => {
   top: 0;
   transform: translateY(-50%) scale(0.75);
 }
+.yam3x-form-field:dir(rtl) .yam3x-form-field__label {
+  transform-origin: top right;
+}
 .yam3x-form-field__prefix,
 .yam3x-form-field__suffix {
   position: relative;

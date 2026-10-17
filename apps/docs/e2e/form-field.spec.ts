@@ -116,6 +116,25 @@ test('FormField variants, wrapping, RTL, focus, and reduced motion work on deskt
   expect(prefixBox).not.toBeNull()
   expect(labelBox).not.toBeNull()
   expect(labelBox!.x + labelBox!.width).toBeLessThanOrEqual(prefixBox!.x - 16)
+  // form-field.geometry.anatomy: floating labels retain their leading inset in RTL.
+  await field.locator('input').fill('person@example.com')
+  await expect(field).toHaveClass(/yam3x-form-field--floating/)
+  await expect
+    .poll(() =>
+      field.locator('.yam3x-form-field__label').evaluate((element) => {
+        const container = element.closest('.yam3x-form-field__container')!
+        const style = getComputedStyle(element)
+        const box = container.getBoundingClientRect()
+        const label = element.getBoundingClientRect()
+        return Math.abs(
+          box.right -
+            label.right -
+            parseFloat(style.insetInlineStart) -
+            parseFloat(getComputedStyle(container).borderRightWidth),
+        )
+      }),
+    )
+    .toBeLessThanOrEqual(1)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   const duration = await field
     .locator('.yam3x-form-field__label')

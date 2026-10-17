@@ -6,7 +6,7 @@ This project wrapper applies Material text-field presentation to native single-l
 
 ## Design target
 
-- Use the filled or outlined treatment and the relationships among input, label, icons, supporting text, and optional counter shown in [Text field guidelines](https://m3.material.io/components/text-fields/guidelines) and [specifications](https://m3.material.io/components/text-fields/specs).
+- `form-field.geometry.anatomy`: Use the filled or outlined treatment and the relationships among input, label, icons, supporting text, and optional counter shown in [Text field guidelines](https://m3.material.io/components/text-fields/guidelines) and [specifications](https://m3.material.io/components/text-fields/specs).
 - `form-field.geometry.focus-indicator`: Use the specified enabled and focused indicator geometry: Outlined fields use a 1dp enabled outline and a 3dp focused outline; Filled fields use the active-indicator dimensions defined by their component tokens. See [Text field specifications](https://m3.material.io/components/text-fields/specs).
 - `form-field.color.hover`: Show the hover state with the specified on-surface label/indicator roles and state layer. Keep the error state treatment distinct. See [Text field specifications](https://m3.material.io/components/text-fields/specs).
 - `form-field.color.error`: Keep input text and supporting text in their specified error-state roles; error hover changes the indicator, label, and trailing icon while retaining the base error color for supporting text. Do not rely on color alone to convey validation. See [Text field specifications](https://m3.material.io/components/text-fields/specs).
