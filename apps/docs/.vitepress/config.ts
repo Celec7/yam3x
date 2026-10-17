@@ -144,7 +144,7 @@ export default defineConfig({
       'link',
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add,architecture,arrow_back,arrow_drop_down,arrow_forward,block,bookmark,calendar_month,chat_bubble,check,check_box,check_box_outline_blank,chevron_left,chevron_right,close,create_new_folder,dashboard,description,dialpad,download,edit,expand_more,favorite,favorite_border,format_bold,format_italic,format_underlined,grid_view,history,home,inbox,info,link,map,menu,menu_open,more_horiz,music_note,person,photo_camera,photo_library,push_pin,radio_button_checked,radio_button_unchecked,remove,save,schedule,search,settings,share,star,upload_file,video_library,view_list,warning,widgets&display=block',
+        href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add,architecture,arrow_back,arrow_drop_down,arrow_forward,block,bookmark,bookmarks,calendar_month,chat_bubble,check,check_box,check_box_outline_blank,chevron_left,chevron_right,close,create_new_folder,dashboard,description,dialpad,download,draft,edit,expand_more,favorite,favorite_border,format_bold,format_italic,format_underlined,grid_view,history,home,inbox,info,link,map,menu,menu_open,more_horiz,music_note,person,photo_camera,photo_library,push_pin,radio_button_checked,radio_button_unchecked,remove,save,schedule,search,search_off,settings,share,star,upload_file,video_library,view_list,warning,widgets&display=block',
       },
     ],
   ],

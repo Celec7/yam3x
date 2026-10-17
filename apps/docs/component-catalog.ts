@@ -409,6 +409,14 @@ const extensions: CatalogSection[] = [
     title: { en: 'Display and graphics helpers', zh: '展示与图形配套' },
     items: [
       {
+        path: 'empty-state',
+        title: 'Empty state',
+        summary: {
+          en: 'Explain empty collections and offer a useful next step.',
+          zh: '解释空集合并提供有用的下一步操作。',
+        },
+      },
+      {
         path: 'avatar',
         title: 'Avatar',
         summary: {

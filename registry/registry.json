@@ -308,6 +308,18 @@
       "dependencies": {},
       "foundations": ["core"]
     },
+    "empty-state": {
+      "files": [
+        "empty-state/empty-state.vue",
+        "empty-state/index.ts",
+        "heading/heading.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue"
+      ],
+      "dependencies": {},
+      "foundations": ["core"]
+    },
     "fab": {
       "files": [
         "_shared/ripple.ts",
