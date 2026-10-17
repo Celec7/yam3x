@@ -7,7 +7,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-在目标应用根目录运行以上命令。`init` 会复制共享基础文件、声明依赖，并在应用入口导入 `yam3x.css`。`add` 会复制组件源码并声明组件所需依赖。如果尚未配置 Tailwind Vite 插件，请在现有 Vite 配置中添加：
+在目标应用根目录运行 `init` 和 `add`。`init` 会复制共享基础文件、声明依赖，并在应用入口导入 `yam3x.css`。`add` 会复制组件源码并声明组件所需依赖。可在任意目录运行 `pnpm dlx @celec7/yam3x@latest list` 查看 CLI 接受的组件名称；分类后的组件说明见[组件目录](/zh/components/)。如果尚未配置 Tailwind Vite 插件，请在现有 Vite 配置中添加：
 
 ```ts
 import tailwindcss from '@tailwindcss/vite'

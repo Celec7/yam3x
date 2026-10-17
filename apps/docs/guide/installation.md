@@ -7,7 +7,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-Run these commands from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. `add` copies component source and declares component dependencies. If Tailwind's Vite plugin is not configured, add it to the existing Vite configuration:
+Run `init` and `add` from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. `add` copies component source and declares component dependencies. To find accepted component names, run `pnpm dlx @celec7/yam3x@latest list` from any directory; see the [component catalog](/components/) for categorized documentation. If Tailwind's Vite plugin is not configured, add it to the existing Vite configuration:
 
 ```ts
 import tailwindcss from '@tailwindcss/vite'

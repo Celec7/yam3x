@@ -201,13 +201,18 @@ async function run() {
   const [command, ...args] = process.argv.slice(2)
   if (!command || command === '--help' || command === '-h') {
     console.log(
-      'Usage: yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]',
+      'Usage: yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]',
     )
     return
   }
 
-  const options = parseOptions(args)
   const registry = await readJson(join(registryRoot, 'registry.json'))
+  if (command === 'list') {
+    console.log(Object.keys(registry.components).sort().join('\n'))
+    return
+  }
+
+  const options = parseOptions(args)
   let project = await readJson(join(options.cwd, 'package.json'))
   const allFiles = []
   const allDependencies = []
