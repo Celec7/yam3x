@@ -33,6 +33,11 @@ function onBeforeBranchEnter(element: Element) {
   <li
     :ref="(element) => ctx.register(node.key, element)"
     v-ripple
+    :style="
+      ctx.virtual.value
+        ? { position: 'absolute', insetInline: 0, top: `${ctx.offset(node.key)}px` }
+        : undefined
+    "
     data-yam3x-ripple
     data-yam3x-ripple-role="button"
     data-yam3x-ripple-target=":scope > .yam3x-tree-view__row"
@@ -149,12 +154,14 @@ function onBeforeBranchEnter(element: Element) {
     </div>
     <Transition
       name="yam3x-tree-view-branch"
+      :css="!ctx.virtual.value"
       @before-enter="onBeforeBranchEnter"
       @before-leave="onBeforeBranchLeave"
     >
       <div
         v-if="expanded && (ctx.branch(node) || load)"
         class="yam3x-tree-view__branch"
+        :class="{ 'yam3x-tree-view__branch--virtual': ctx.virtual.value }"
       >
         <div class="yam3x-tree-view__branch-clip">
           <div
@@ -199,7 +206,7 @@ function onBeforeBranchEnter(element: Element) {
             :aria-busy="load === 'loading' ? 'true' : undefined"
           >
             <TreeViewNode
-              v-for="child in ctx.children(node) ?? []"
+              v-for="child in ctx.renderedChildren(node)"
               :key="child.key"
               :node="child"
             >

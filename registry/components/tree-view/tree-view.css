@@ -1,4 +1,5 @@
 .yam3x-tree-view {
+  --_yam3x-tree-view-virtual-max-height: var(--yam3x-tree-view-virtual-max-height, 400px);
   --_yam3x-tree-view-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-tree-view-indent: calc(24px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-tree-view-height: calc(56px * var(--md-sys-density-spacing-scale, 1));
@@ -322,4 +323,17 @@
   .yam3x-tree-view-branch-leave-active {
     transition: none;
   }
+}
+
+.yam3x-tree-view__scroll--virtual {
+  max-block-size: var(--_yam3x-tree-view-virtual-max-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.yam3x-tree-view__tree--virtual {
+  position: relative;
+  overflow-anchor: none;
+}
+.yam3x-tree-view__branch--virtual > .yam3x-tree-view__branch-clip {
+  overflow: visible;
 }

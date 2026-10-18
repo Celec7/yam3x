@@ -8,3 +8,4 @@ export type {
   TreeViewLoader,
   TreeViewMessages,
 } from './tree-view.types'
+export type { VirtualListOptions } from '../_shared/use-virtual-list'

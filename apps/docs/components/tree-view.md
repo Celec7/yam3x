@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TreeViewExample from './demos/TreeViewExample.vue'
+import TreeViewVirtualExample from './demos/TreeViewVirtualExample.vue'
 </script>
 
 # Tree view
@@ -13,6 +14,18 @@ import TreeViewExample from './demos/TreeViewExample.vue'
 ::: details View demo source
 
 <<< ./demos/TreeViewExample.vue{vue}
+
+:::
+
+### Large record trees
+
+Use `virtual` for a measured window over the expanded nodes. The example keeps ten thousand children in the data while mounting the viewport, its overscan, the focused node, and their ancestors.
+
+<div class="vp-raw yam3x-doc-demo-theme"><TreeViewVirtualExample /></div>
+
+::: details View demo source
+
+<<< ./demos/TreeViewVirtualExample.vue{vue}
 
 :::
 
@@ -55,6 +68,7 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 | Prop or model   | Default                            | Use                                                                                                                                       |
 | --------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `nodes`         | Required                           | Acyclic forest of `TreeViewNode` records with globally unique keys within this tree.                                                      |
+| `virtual`       | `false`                            | `boolean \| VirtualListOptions`; measured windowing with optional `estimateSize` (56px) and `overscan` (4 rows).                          |
 | `label`         | Required                           | Visible Title Medium title and accessible tree name.                                                                                      |
 | `description`   | Empty                              | Persistent explanation associated with the tree.                                                                                          |
 | `expandedKeys`  | `[]`                               | Model for expanded branches.                                                                                                              |
@@ -105,6 +119,14 @@ Only accepted, visible expanded branches begin reads. Each loader returns the co
 Collapse, removal, reload, and unmount request cancellation. Read adapters should honor the signal; obsolete results are ignored even if they settle later. A new read can supersede a canceled read because the adapter is a read operation. Do not use it for mutations that require serialized execution or server rollback guarantees.
 
 Loaded children are cached by stable node key across collapse and metadata replacement. Explicit `children` props take precedence. Removing a branch prunes its cache; use `reload` for a changed remote resource, or a new Vue `key` when loading a different tree session. A loader function change does not itself clear cached data.
+
+### Virtualization
+
+`virtual` is opt-in. `true` uses an initial row estimate of 56px and four extra rows on each side of the viewport; an object can override `estimateSize` and `overscan`. Import `VirtualListOptions` from the Tree view entry. Rows are measured rather than forced to a fixed height. `--yam3x-tree-view-virtual-max-height` caps the scrolling viewport at 400px by default.
+
+The window contains expanded records in tree order and keeps the focused node and required ancestors mounted. Ancestors retain their labelled tree items and groups; each node reports its level and its position within the complete immediate sibling collection. Navigation, selection, cascading checks, disabled descendants, and loader caches use the complete data, including records outside the window. Virtualization does not load records or define a server paging contract.
+
+`focus(key)` accepts a visible logical node and returns `true` before mounting and focusing it on Vue's next render. A hidden or unknown key returns `false`. Collapsing or removing the focused node restores focus to a surviving ancestor, while unrelated external focus is preserved. Window recycling and branch insertion/removal are immediate in virtual mode; row press feedback remains available. Use the default mode when animated branch geometry is the priority.
 
 ## Styling
 

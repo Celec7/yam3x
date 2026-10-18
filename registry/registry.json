@@ -1396,6 +1396,7 @@
     "tree-view": {
       "files": [
         "_shared/ripple.ts",
+        "_shared/use-virtual-list.ts",
         "checkbox/checkbox-base.vue",
         "checkbox/checkbox.types.ts",
         "empty-state/empty-state.vue",

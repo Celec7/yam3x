@@ -16,7 +16,9 @@ export interface TreeViewContext {
   checking: ComputedRef<boolean>
   disabled: ComputedRef<boolean>
   messages: ComputedRef<TreeViewMessages>
-  children: (node: TreeViewNode) => readonly TreeViewNode[] | undefined
+  virtual: ComputedRef<boolean>
+  renderedChildren: (node: TreeViewNode) => readonly TreeViewNode[]
+  offset: (key: TreeViewKey) => number
   branch: (node: TreeViewNode) => boolean
   checkState: (node: TreeViewNode) => TreeViewCheckState
   loadState: (key: TreeViewKey) => 'loading' | 'error' | 'empty' | undefined

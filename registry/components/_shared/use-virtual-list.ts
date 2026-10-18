@@ -199,5 +199,9 @@ export function useVirtualList<K extends Key>(config: {
     elements.clear()
     heights.clear()
   })
-  return { items, totalSize, measure, scrollToKey }
+  function offsetFor(key: K) {
+    const index = keys.value.indexOf(key)
+    return index < 0 ? 0 : offsets.value[index]!
+  }
+  return { items, totalSize, measure, scrollToKey, offsetFor }
 }

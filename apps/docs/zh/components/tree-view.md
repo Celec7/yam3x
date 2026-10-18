@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TreeViewExample from '../../components/demos/TreeViewExample.vue'
+import TreeViewVirtualExample from '../../components/demos/TreeViewVirtualExample.vue'
 </script>
 
 # Tree view
@@ -13,6 +14,18 @@ import TreeViewExample from '../../components/demos/TreeViewExample.vue'
 ::: details 查看示例源码
 
 <<< ../../components/demos/TreeViewExample.vue{vue}
+
+:::
+
+### 大型记录树
+
+使用 `virtual` 为已展开节点渲染按实际行高测量的窗口。示例的数据保留一万个子节点，仅挂载视口、额外缓冲区、焦点节点及其祖先。
+
+<div class="vp-raw yam3x-doc-demo-theme"><TreeViewVirtualExample /></div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/TreeViewVirtualExample.vue{vue}
 
 :::
 
@@ -52,21 +65,22 @@ const selected = ref<TreeViewKey[]>([])
 
 内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的共享配置。显式 `locale` 和 `messages` 优先；未配置 provider 时默认使用 `en-US`。
 
-| 属性或模型      | 默认值                        | 用途                                                                           |
-| --------------- | ----------------------------- | ------------------------------------------------------------------------------ |
-| `nodes`         | 必需                          | 无环的 `TreeViewNode` 森林，同一棵树内所有键唯一。                             |
-| `label`         | 必需                          | 可见 Title Medium 标题与树的无障碍名称。                                       |
-| `description`   | 空                            | 与树关联的常驻说明。                                                           |
-| `expandedKeys`  | `[]`                          | 展开分支的模型。                                                               |
-| `selectedKeys`  | `[]`                          | 节点选择模型，单选最多使用一个键。                                             |
-| `checkedKeys`   | `[]`                          | 显式勾选记录及派生的完整分支键模型。                                           |
-| `selectionMode` | `single`，勾选模式下为 `none` | `none`、`single` 或无需修饰键的 `multiple`。                                   |
-| `checkMode`     | `none`                        | `none`、`independent` 或 `cascade`；带加载器的树始终独立勾选。                 |
-| `loadChildren`  | 无                            | `(node, { signal }) => Promise<readonly TreeViewNode[]>`；未解析分支必须提供。 |
-| `disabled`      | `false`                       | 禁止展开、激活、选择、勾选、重试和新读取。已有读取可完成，焦点导航仍可用。     |
-| `locale`        | Provider → `en-US`            | 随语言变化的前缀查找及内置中英文文案。                                         |
-| `instructions`  | 内置可见键盘说明              | 自定义文字，或在其他位置提供同等说明后设为 false。                             |
-| `messages`      | 内置文案                      | 部分 `TreeViewMessages`，覆盖名称、说明、加载、失败和空状态。                  |
+| 属性或模型      | 默认值                        | 用途                                                                                                      |
+| --------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `nodes`         | 必需                          | 无环的 `TreeViewNode` 森林，同一棵树内所有键唯一。                                                        |
+| `virtual`       | `false`                       | `boolean \| VirtualListOptions`；按实际行高渲染窗口，可配置 `estimateSize`（56px）和 `overscan`（4 行）。 |
+| `label`         | 必需                          | 可见 Title Medium 标题与树的无障碍名称。                                                                  |
+| `description`   | 空                            | 与树关联的常驻说明。                                                                                      |
+| `expandedKeys`  | `[]`                          | 展开分支的模型。                                                                                          |
+| `selectedKeys`  | `[]`                          | 节点选择模型，单选最多使用一个键。                                                                        |
+| `checkedKeys`   | `[]`                          | 显式勾选记录及派生的完整分支键模型。                                                                      |
+| `selectionMode` | `single`，勾选模式下为 `none` | `none`、`single` 或无需修饰键的 `multiple`。                                                              |
+| `checkMode`     | `none`                        | `none`、`independent` 或 `cascade`；带加载器的树始终独立勾选。                                            |
+| `loadChildren`  | 无                            | `(node, { signal }) => Promise<readonly TreeViewNode[]>`；未解析分支必须提供。                            |
+| `disabled`      | `false`                       | 禁止展开、激活、选择、勾选、重试和新读取。已有读取可完成，焦点导航仍可用。                                |
+| `locale`        | Provider → `en-US`            | 随语言变化的前缀查找及内置中英文文案。                                                                    |
+| `instructions`  | 内置可见键盘说明              | 自定义文字，或在其他位置提供同等说明后设为 false。                                                        |
+| `messages`      | 内置文案                      | 部分 `TreeViewMessages`，覆盖名称、说明、加载、失败和空状态。                                             |
 
 节点必须包含 `key: string \| number` 和 `label`，还可包含 `description`、`icon`、不透明的 `value`、`children`、`hasChildren`、`disabled`、`selectable` 和 `checkable`。键在更新之间标识同一记录，必须在整棵树中唯一，包括已加载子项。说明作为树条目的无障碍描述。图标具有装饰意义，使用项目的 Icon 组件。
 
@@ -105,6 +119,14 @@ const selected = ref<TreeViewKey[]>([])
 折叠、移除、重读和卸载会请求取消。读取适配器应响应信号；即使旧结果迟到，也不会应用。新读取可取代取消的读取，因为适配器是读取操作。不要将它用于需要串行执行或服务端回滚保证的写操作。
 
 加载的子项按稳定节点键缓存，折叠和元数据对象替换后仍保留。显式 `children` 属性优先。移除分支会清除其缓存；远端资源变化时调用 `reload`，不同树会话使用新的 Vue `key`。仅改变加载器函数不会自动清空缓存。
+
+### 虚拟化
+
+`virtual` 默认关闭。设为 `true` 时，初始行高估计为 56px，并在视口两侧各额外渲染四行；也可以传入对象覆盖 `estimateSize` 和 `overscan`。可从 Tree view 入口导入 `VirtualListOptions`。行高会按实际内容测量，不会被固定。`--yam3x-tree-view-virtual-max-height` 控制滚动视口的最大高度，默认为 400px。
+
+窗口按树顺序包含已展开记录，并保留焦点节点及必要祖先。祖先仍具有带标签的树节点和分组；每个节点报告其层级及其在完整直接同级集合中的位置。导航、选择、级联勾选、禁用后代和加载缓存均基于完整数据，包括窗口以外的记录。虚拟化不会加载记录，也不定义服务端分页约定。
+
+`focus(key)` 接受逻辑上可见的节点，并在返回 `true` 后于 Vue 的下一次渲染中挂载和聚焦该节点；隐藏或未知的键返回 `false`。折叠或移除焦点节点时，焦点会恢复到仍存在的祖先，同时不会抢走外部焦点。虚拟模式下窗口回收和分支插入、移除立即完成，仍保留行的按下反馈。优先需要分支几何动画时，使用默认模式。
 
 ## 样式
 

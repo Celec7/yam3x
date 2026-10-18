@@ -12,6 +12,7 @@ import {
   useId,
   watch,
 } from 'vue'
+import { useVirtualList, type VirtualListOptions } from '../_shared/use-virtual-list'
 import TreeViewNodeView from './tree-view-node.vue'
 import EmptyState from '../empty-state/empty-state.vue'
 import { treeViewKey } from './tree-view.context'
@@ -35,6 +36,7 @@ import './tree-view.css'
 
 const props = withDefaults(
   defineProps<{
+    virtual?: boolean | VirtualListOptions
     nodes: readonly TreeViewNode[]
     label: string
     description?: string
@@ -47,6 +49,7 @@ const props = withDefaults(
     messages?: Partial<TreeViewMessages>
   }>(),
   {
+    virtual: false,
     description: '',
     selectionMode: undefined,
     checkMode: 'none',
@@ -140,6 +143,38 @@ function children(node: TreeViewNode) {
 }
 const records = computed(() => treeRecords(props.nodes, children))
 const visible = computed(() => visibleTreeRecords(records.value, expanded.value))
+const virtualEnabled = computed(() => props.virtual !== false)
+const windowed = useVirtualList({
+  keys: () => visible.value.map((record) => record.node.key),
+  scroller: () => scroller.value,
+  enabled: () => virtualEnabled.value,
+  options: () => ({
+    estimateSize: 56,
+    ...(typeof props.virtual === 'object' ? props.virtual : {}),
+  }),
+  keepMounted: () => focused.value,
+})
+const virtualChildren = computed(() => {
+  const retained = new Set(windowed.items.value.map((item) => item.key))
+  for (const key of [...retained]) {
+    let parent = records.value.get(key)?.parent
+    while (parent != null) {
+      retained.add(parent)
+      parent = records.value.get(parent)?.parent
+    }
+  }
+  const result = new Map<TreeViewKey | null, TreeViewNode[]>()
+  for (const record of visible.value) {
+    if (!retained.has(record.node.key)) continue
+    const siblings = result.get(record.parent) ?? []
+    siblings.push(record.node)
+    result.set(record.parent, siblings)
+  }
+  return result
+})
+const renderedRoots = computed(() =>
+  virtualEnabled.value ? (virtualChildren.value.get(null) ?? []) : props.nodes,
+)
 function branch(node: TreeViewNode) {
   return isTreeBranch(node, children)
 }
@@ -157,6 +192,18 @@ function elementLabelId(key: TreeViewKey) {
   return ids.get(key)!
 }
 function focus(key: TreeViewKey) {
+  if (virtualEnabled.value) {
+    if (!visible.value.some((record) => record.node.key === key)) return false
+    focused.value = key
+    windowed.scrollToKey(key)
+    void nextTick(() => {
+      if (focused.value !== key) return
+      const element = elements.get(key)
+      element?.focus({ preventScroll: true })
+      element?.firstElementChild?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+    })
+    return true
+  }
   const element = elements.get(key)
   if (!element?.isConnected || !visible.value.some((record) => record.node.key === key))
     return false
@@ -449,7 +496,13 @@ provide(treeViewKey, {
   checking,
   disabled: computed(() => props.disabled),
   messages,
-  children,
+  virtual: virtualEnabled,
+  renderedChildren: (node) =>
+    virtualEnabled.value ? (virtualChildren.value.get(node.key) ?? []) : (children(node) ?? []),
+  offset: (key) => {
+    const parent = records.value.get(key)?.parent
+    return windowed.offsetFor(key) - (parent == null ? 0 : windowed.offsetFor(parent))
+  },
   branch,
   checkState: state,
   loadState: (key) => states.value.get(key),
@@ -457,6 +510,7 @@ provide(treeViewKey, {
   register: (key, element) => {
     if (element instanceof HTMLElement) elements.set(key, element)
     else elements.delete(key)
+    windowed.measure(key, virtualEnabled.value && element instanceof HTMLElement ? element : null)
   },
   focus,
   toggle,
@@ -499,6 +553,7 @@ defineExpose({ focus, reload })
     <div
       ref="scroller"
       class="yam3x-tree-view__scroll"
+      :class="{ 'yam3x-tree-view__scroll--virtual': virtualEnabled }"
       role="region"
       :aria-labelledby="labelId"
       :aria-describedby="scrollId"
@@ -508,6 +563,12 @@ defineExpose({ focus, reload })
         ref="tree"
         role="tree"
         class="yam3x-tree-view__tree"
+        :class="{ 'yam3x-tree-view__tree--virtual': virtualEnabled }"
+        :style="
+          virtualEnabled && visible.length
+            ? { blockSize: `${windowed.totalSize.value}px` }
+            : undefined
+        "
         :aria-labelledby="labelId"
         :aria-describedby="
           [description && descriptionId, instructionText && instructionsId]
@@ -524,7 +585,7 @@ defineExpose({ focus, reload })
         @focusout="onFocusOut"
       >
         <TreeViewNodeView
-          v-for="node in nodes"
+          v-for="node in renderedRoots"
           :key="node.key"
           :node="node"
         >
