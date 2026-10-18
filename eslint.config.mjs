@@ -12,6 +12,8 @@ export default tseslint.config(
       '**/coverage/**',
       '**/.vitepress/cache/**',
       '**/.vitepress/dist/**',
+      '**/.vitepress/*.timestamp-*.mjs',
+      'packages/cli/registry/**',
       '**/test-results/**',
       '**/playwright-report/**',
       '.references/**',
