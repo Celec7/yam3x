@@ -164,7 +164,28 @@ export interface TimePickerMessages {
   outsideRange: string
 }
 
+export interface DatePickerMessages {
+  label: string
+  startDate: string
+  endDate: string
+  calendar: string
+  previousMonth: string
+  nextMonth: string
+  previousYear: string
+  nextYear: string
+  confirm: string
+  cancel: string
+  clear: string
+  showCalendar: string
+  enterDate: string
+  invalidDate: string
+  invalidRange: string
+  chooseMonth: (month?: string) => string
+  chooseYear: (year?: string) => string
+}
+
 export interface LocaleMessages {
+  datePicker: DatePickerMessages
   timePicker: TimePickerMessages
   dateInput: DateInputMessages
   calendar: CalendarMessages

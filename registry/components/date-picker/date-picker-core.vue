@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+import { useComponentLocale } from '../localization/context'
 import { trapTabKey } from '../_shared/focus-trap'
 import Icon from '../icon/icon.vue'
 import './date-picker.css'
@@ -58,20 +59,20 @@ const props = withDefaults(
     open: undefined,
     yearRange: () => [1900, 2100],
     locale: undefined,
-    label: 'Select date',
-    startDateLabel: 'Start date',
-    endDateLabel: 'End date',
+    label: undefined,
+    startDateLabel: undefined,
+    endDateLabel: undefined,
     supportingText: undefined,
     placeholder: undefined,
     clearable: false,
-    calendarLabel: 'Open calendar',
-    previousMonthLabel: 'Previous month',
-    nextMonthLabel: 'Next month',
-    previousYearLabel: 'Previous year',
-    nextYearLabel: 'Next year',
-    confirmLabel: 'OK',
-    cancelLabel: 'Cancel',
-    clearLabel: 'Clear',
+    calendarLabel: undefined,
+    previousMonthLabel: undefined,
+    nextMonthLabel: undefined,
+    previousYearLabel: undefined,
+    nextYearLabel: undefined,
+    confirmLabel: undefined,
+    cancelLabel: undefined,
+    clearLabel: undefined,
   },
 )
 
@@ -82,8 +83,23 @@ const emit = defineEmits<{
   invalid: [value: string]
 }>()
 
-const locale = computed(
-  () => props.locale || (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
+const { locale, messages } = useComponentLocale(
+  'datePicker',
+  () => props.locale,
+  () => ({
+    label: props.label,
+    startDate: props.startDateLabel,
+    endDate: props.endDateLabel,
+    calendar: props.calendarLabel,
+    previousMonth: props.previousMonthLabel,
+    nextMonth: props.nextMonthLabel,
+    previousYear: props.previousYearLabel,
+    nextYear: props.nextYearLabel,
+    confirm: props.confirmLabel,
+    cancel: props.cancelLabel,
+    clear: props.clearLabel,
+  }),
+  () => (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
 )
 const availability = computed(() => ({
   minDate: props.minDate,
@@ -125,13 +141,50 @@ const view = ref<'days' | 'months' | 'years'>('days')
 const inputMode = ref(false)
 const typedValue = ref('')
 const isTyping = ref(false)
-const typedRange = ref<DateRangeValue>({ start: null, end: null })
+const typedRange = ref<DateRangeValue>({
+  start: selectedRange.value.start ? formatShort(selectedRange.value.start) : '',
+  end: selectedRange.value.end ? formatShort(selectedRange.value.end) : '',
+})
 const rangeDirty = ref({ start: false, end: false })
-const errorMessage = ref('')
+const errorIssue = ref<'invalidDate' | 'invalidRange' | null>(null)
+const errorMessage = computed(() =>
+  errorIssue.value === null ? '' : messages.value[errorIssue.value],
+)
+const typedLocale = ref(locale.value)
+const rangeLocales = ref({ start: locale.value, end: locale.value })
 const root = ref<HTMLElement>()
 const calendarButton = ref<HTMLButtonElement>()
 const modeViewport = ref<HTMLElement>()
 const rovingDate = ref(selectedSingle.value ?? selectedRange.value.start ?? today)
+
+watch(locale, async () => {
+  const document = root.value?.ownerDocument
+  const focused = document?.activeElement
+  const focusedDate =
+    focused && root.value?.contains(focused) ? focused.getAttribute('data-date') : null
+  if (!isTyping.value || !typedValue.value.trim()) typedLocale.value = locale.value
+  if (!isTyping.value) {
+    const date =
+      opened.value && resolvedMode.value === 'modal' ? draftSingle.value : selectedSingle.value
+    typedValue.value = date ? formatShort(date) : ''
+  }
+  const range =
+    opened.value && resolvedMode.value === 'modal' ? draftRange.value : selectedRange.value
+  for (const part of ['start', 'end'] as const) {
+    if (rangeDirty.value[part]) {
+      if (!typedRange.value[part]?.trim()) rangeLocales.value[part] = locale.value
+      continue
+    }
+    typedRange.value[part] = range[part] ? formatShort(range[part]!) : ''
+    rangeLocales.value[part] = locale.value
+  }
+  if (!focusedDate || !document) return
+  await nextTick()
+  if (document.activeElement === document.body || root.value?.contains(document.activeElement))
+    root.value
+      ?.querySelector<HTMLButtonElement>(`button[data-date="${focusedDate}"]:not(:disabled)`)
+      ?.focus()
+})
 
 watch(
   () => props.open,
@@ -156,7 +209,12 @@ onMounted(() => {
 })
 onBeforeUnmount(() => breakpointQuery?.removeEventListener('change', syncBreakpoint))
 watch(
-  () => [props.modelValue, props.selection] as const,
+  [
+    () => props.selection,
+    selectedSingle,
+    () => selectedRange.value.start,
+    () => selectedRange.value.end,
+  ],
   () => {
     draftSingle.value = selectedSingle.value
     draftRange.value = { ...selectedRange.value }
@@ -336,10 +394,12 @@ const calendarProps = computed(() => ({
   allowed,
   isSelected,
   isInRange,
-  previousMonthLabel: props.previousMonthLabel,
-  nextMonthLabel: props.nextMonthLabel,
-  previousYearLabel: props.previousYearLabel,
-  nextYearLabel: props.nextYearLabel,
+  chooseMonthLabel: messages.value.chooseMonth,
+  chooseYearLabel: messages.value.chooseYear,
+  previousMonthLabel: messages.value.previousMonth,
+  nextMonthLabel: messages.value.nextMonth,
+  previousYearLabel: messages.value.previousYear,
+  nextYearLabel: messages.value.nextYear,
 }))
 
 function firstDayOfWeek(): number {
@@ -411,6 +471,9 @@ function setOpen(value: boolean, restoreFocus = true): void {
     )
   }
   if (value) {
+    typedLocale.value = locale.value
+    rangeLocales.value = { start: locale.value, end: locale.value }
+    isTyping.value = false
     draftSingle.value = selectedSingle.value
     draftRange.value = { ...selectedRange.value }
     typedValue.value = selectedSingle.value ? formatShort(selectedSingle.value) : ''
@@ -421,7 +484,7 @@ function setOpen(value: boolean, restoreFocus = true): void {
     rangeDirty.value = { start: false, end: false }
     view.value = 'days'
     inputMode.value = false
-    errorMessage.value = ''
+    errorIssue.value = null
     const date =
       parseIsoDate(selectedSingle.value) ??
       parseIsoDate(selectedRange.value.start) ??
@@ -435,13 +498,15 @@ function toggleOpen(): void {
   setOpen(!opened.value)
 }
 function onFieldInput(event: Event): void {
+  if (!isTyping.value) typedLocale.value = locale.value
   isTyping.value = true
   typedValue.value = (event.target as HTMLInputElement).value
 }
 function updateRangeInput(part: 'start' | 'end', value: string): void {
+  if (!rangeDirty.value[part]) rangeLocales.value[part] = locale.value
   typedRange.value = { ...typedRange.value, [part]: value }
   rangeDirty.value = { ...rangeDirty.value, [part]: true }
-  errorMessage.value = ''
+  errorIssue.value = null
 }
 function writeRange(next: DateRangeValue): void {
   if (resolvedMode.value === 'modal') draftRange.value = next
@@ -456,28 +521,33 @@ function commitRangeInput(part: 'start' | 'end'): void {
     if (part === 'start') next.end = null
     writeRange(next)
     rangeDirty.value = { ...rangeDirty.value, [part]: false }
-    errorMessage.value = ''
+    errorIssue.value = null
     return
   }
-  const parsed = parseLocalizedDate(raw, locale.value)
+  const parsed = parseLocalizedDate(raw, rangeLocales.value[part])
   if (!parsed || !allowed(parsed)) {
-    errorMessage.value = 'Enter a valid date.'
+    errorIssue.value = 'invalidDate'
     emit('invalid', raw)
     return
   }
   const next = { ...current, [part]: parsed }
   if (part === 'start' && next.end && parsed > next.end) next.end = null
   if (part === 'end' && next.start && parsed < next.start) {
-    errorMessage.value = 'End date must be on or after the start date.'
+    errorIssue.value = 'invalidRange'
     emit('invalid', raw)
     return
   }
-  errorMessage.value = ''
+  errorIssue.value = null
   writeRange(next)
+  typedRange.value = { ...typedRange.value, [part]: formatShort(parsed) }
+  rangeLocales.value[part] = locale.value
   rangeDirty.value = { ...rangeDirty.value, [part]: false }
 }
 function toggleInputMode(): void {
   if (!inputMode.value) {
+    typedLocale.value = locale.value
+    rangeLocales.value = { start: locale.value, end: locale.value }
+    isTyping.value = false
     typedValue.value = draftSingle.value ? formatShort(draftSingle.value) : ''
     typedRange.value = {
       start: draftRange.value.start ? formatShort(draftRange.value.start) : '',
@@ -494,22 +564,25 @@ function commitTypedDate(): void {
       if (resolvedMode.value === 'modal') draftSingle.value = null
       else commit(null)
     }
-    errorMessage.value = ''
+    errorIssue.value = null
     isTyping.value = false
     return
   }
-  const parsed = parseLocalizedDate(raw, locale.value)
+  const parsed = parseLocalizedDate(raw, typedLocale.value)
   if (!parsed || !allowed(parsed)) {
-    errorMessage.value = 'Enter a valid date.'
+    errorIssue.value = 'invalidDate'
     emit('invalid', raw)
     isTyping.value = false
     typedValue.value = fieldText.value
+    typedLocale.value = locale.value
     return
   }
-  errorMessage.value = ''
+  errorIssue.value = null
   if (resolvedMode.value === 'modal') draftSingle.value = parsed
   else commit(parsed)
   visibleMonth.value = monthStart(parseIsoDate(parsed)!)
+  typedValue.value = formatShort(parsed)
+  typedLocale.value = locale.value
   isTyping.value = false
 }
 function commit(value: PickerValue): void {
@@ -533,13 +606,13 @@ function chooseDate(date: Date): void {
 function confirm(): void {
   if (resolvedMode.value === 'modal' && inputMode.value && props.selection === 'range') {
     commitRangeInput('start')
-    if (errorMessage.value) return
+    if (errorIssue.value !== null) return
     commitRangeInput('end')
-    if (errorMessage.value) return
+    if (errorIssue.value !== null) return
   } else if (resolvedMode.value === 'modal' && inputMode.value && typedValue.value.trim()) {
-    const parsed = parseLocalizedDate(typedValue.value.trim(), locale.value)
+    const parsed = parseLocalizedDate(typedValue.value.trim(), typedLocale.value)
     if (!parsed || !allowed(parsed)) {
-      errorMessage.value = 'Enter a valid date.'
+      errorIssue.value = 'invalidDate'
       emit('invalid', typedValue.value)
       return
     }
@@ -750,16 +823,16 @@ defineExpose({
             <div
               class="yam3x-date-picker__range-inputs"
               role="group"
-              :aria-label="label"
+              :aria-label="messages.label"
             >
               <DatePickerRangeFields
                 :id-prefix="uid"
-                :start-date-label="startDateLabel"
-                :end-date-label="endDateLabel"
+                :start-date-label="messages.startDate"
+                :end-date-label="messages.endDate"
                 :start-value="typedRange.start || ''"
                 :end-value="typedRange.end || ''"
                 :placeholder="localizedPlaceholder"
-                :invalid="Boolean(errorMessage)"
+                :invalid="errorIssue !== null"
                 :error-id="`${uid}-error`"
                 :support-id="supportingText ? `${uid}-support` : undefined"
                 show-separator
@@ -773,7 +846,7 @@ defineExpose({
               ref="calendarButton"
               class="yam3x-date-picker__icon-button"
               type="button"
-              :aria-label="calendarLabel"
+              :aria-label="messages.calendar"
               :aria-expanded="opened"
               @click="toggleOpen"
             >
@@ -784,7 +857,7 @@ defineExpose({
             <label
               class="yam3x-date-picker__field-label"
               :for="`${uid}-field`"
-              >{{ label }}</label
+              >{{ messages.label }}</label
             >
             <input
               :id="`${uid}-field`"
@@ -795,7 +868,7 @@ defineExpose({
               :aria-describedby="
                 errorMessage ? `${uid}-error` : supportingText ? `${uid}-support` : undefined
               "
-              :aria-invalid="errorMessage ? 'true' : undefined"
+              :aria-invalid="errorIssue !== null ? 'true' : undefined"
               @input="onFieldInput"
               @keydown.enter.prevent="commitTypedDate"
               @blur="commitTypedDate"
@@ -804,7 +877,7 @@ defineExpose({
               ref="calendarButton"
               class="yam3x-date-picker__icon-button"
               type="button"
-              :aria-label="calendarLabel"
+              :aria-label="messages.calendar"
               :aria-expanded="opened"
               @click="toggleOpen"
             >
@@ -817,7 +890,7 @@ defineExpose({
           class="yam3x-date-picker__surface"
           :class="`is-${dockedPlacement}`"
           role="dialog"
-          :aria-label="label"
+          :aria-label="messages.label"
         >
           <DatePickerCalendar
             v-bind="calendarProps"
@@ -831,9 +904,9 @@ defineExpose({
           />
           <DatePickerActions
             :clearable="clearable"
-            :clear-label="clearLabel"
-            :cancel-label="cancelLabel"
-            :confirm-label="confirmLabel"
+            :clear-label="messages.clear"
+            :cancel-label="messages.cancel"
+            :confirm-label="messages.confirm"
             @clear="clear"
             @cancel="cancel"
             @confirm="confirm"
@@ -861,10 +934,10 @@ defineExpose({
       <button
         class="yam3x-date-picker__modal-trigger"
         type="button"
-        :aria-label="label"
+        :aria-label="messages.label"
         @click="toggleOpen"
       >
-        <span>{{ fieldText || placeholder || label }}</span>
+        <span>{{ fieldText || placeholder || messages.label }}</span>
         <Icon name="calendar_month" />
       </button>
       <div
@@ -876,11 +949,11 @@ defineExpose({
           class="yam3x-date-picker__modal"
           role="dialog"
           aria-modal="true"
-          :aria-label="label"
+          :aria-label="messages.label"
           :aria-describedby="supportingText ? `${uid}-modal-support` : undefined"
         >
           <header class="yam3x-date-picker__modal-head">
-            <p class="yam3x-date-picker__headline">{{ label }}</p>
+            <p class="yam3x-date-picker__headline">{{ messages.label }}</p>
             <p
               v-if="supportingText"
               :id="`${uid}-modal-support`"
@@ -893,17 +966,18 @@ defineExpose({
               aria-live="polite"
             >
               <template v-if="selection === 'single'">{{
-                draftSingle ? dayLabel(draftSingle) : 'Select date'
+                draftSingle ? dayLabel(draftSingle) : messages.label
               }}</template>
               <template v-else
-                >{{ draftRange.start ? dayLabel(draftRange.start) : 'Start date' }}<span> – </span
-                >{{ draftRange.end ? dayLabel(draftRange.end) : 'End date' }}</template
+                >{{ draftRange.start ? dayLabel(draftRange.start) : messages.startDate
+                }}<span> – </span
+                >{{ draftRange.end ? dayLabel(draftRange.end) : messages.endDate }}</template
               >
             </div>
             <button
               class="yam3x-date-picker__mode-toggle"
               type="button"
-              :aria-label="inputMode ? 'Show calendar' : 'Enter date manually'"
+              :aria-label="inputMode ? messages.showCalendar : messages.enterDate"
               @click="toggleInputMode"
             >
               <Icon :name="inputMode ? 'calendar_month' : 'edit'" />
@@ -939,12 +1013,12 @@ defineExpose({
               >
                 <DatePickerRangeFields
                   :id-prefix="`${uid}-modal`"
-                  :start-date-label="startDateLabel"
-                  :end-date-label="endDateLabel"
+                  :start-date-label="messages.startDate"
+                  :end-date-label="messages.endDate"
                   :start-value="typedRange.start || ''"
                   :end-value="typedRange.end || ''"
                   :placeholder="localizedPlaceholder"
-                  :invalid="Boolean(errorMessage)"
+                  :invalid="errorIssue !== null"
                   :error-id="`${uid}-error`"
                   :support-id="supportingText ? `${uid}-modal-support` : undefined"
                   @update:start="updateRangeInput('start', $event)"
@@ -966,13 +1040,13 @@ defineExpose({
                 key="single-input"
                 class="yam3x-date-picker__mode-page yam3x-date-picker__manual-entry"
               >
-                <label :for="`${uid}-manual`">{{ label }}</label>
+                <label :for="`${uid}-manual`">{{ messages.label }}</label>
                 <input
                   :id="`${uid}-manual`"
-                  v-model="typedValue"
+                  :value="typedValue"
                   type="text"
                   :placeholder="localizedPlaceholder"
-                  :aria-invalid="errorMessage ? 'true' : undefined"
+                  :aria-invalid="errorIssue !== null ? 'true' : undefined"
                   :aria-describedby="
                     errorMessage
                       ? `${uid}-error`
@@ -980,6 +1054,7 @@ defineExpose({
                         ? `${uid}-modal-support`
                         : undefined
                   "
+                  @input="onFieldInput"
                   @keydown.enter.prevent="commitTypedDate"
                 />
                 <p
@@ -1007,9 +1082,9 @@ defineExpose({
           </div>
           <DatePickerActions
             :clearable="clearable"
-            :clear-label="clearLabel"
-            :cancel-label="cancelLabel"
-            :confirm-label="confirmLabel"
+            :clear-label="messages.clear"
+            :cancel-label="messages.cancel"
+            :confirm-label="messages.confirm"
             @clear="clear"
             @cancel="cancel"
             @confirm="confirm"

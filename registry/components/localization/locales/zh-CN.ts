@@ -1,5 +1,24 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  datePicker: {
+    label: '选择日期',
+    startDate: '开始日期',
+    endDate: '结束日期',
+    calendar: '打开日历',
+    previousMonth: '上个月',
+    nextMonth: '下个月',
+    previousYear: '上一年',
+    nextYear: '下一年',
+    confirm: '确定',
+    cancel: '取消',
+    clear: '清除',
+    showCalendar: '显示日历',
+    enterDate: '手动输入日期',
+    invalidDate: '请输入有效的日期。',
+    invalidRange: '结束日期不能早于开始日期。',
+    chooseMonth: (month) => (month === undefined ? '选择月份' : `选择月份，${month}`),
+    chooseYear: (year) => (year === undefined ? '选择年份' : `选择年份，${year}`),
+  },
   timePicker: {
     label: '选择时间',
     hour: '小时',

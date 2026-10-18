@@ -349,7 +349,20 @@
         "date-picker/index.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",
-        "icon/icon.vue"
+        "icon/icon.vue",
+        "localization/context.ts",
+        "localization/locales/ar.ts",
+        "localization/locales/de.ts",
+        "localization/locales/en-US.ts",
+        "localization/locales/es.ts",
+        "localization/locales/fr.ts",
+        "localization/locales/it.ts",
+        "localization/locales/ja.ts",
+        "localization/locales/ko.ts",
+        "localization/locales/pt.ts",
+        "localization/locales/ru.ts",
+        "localization/locales/zh-CN.ts",
+        "localization/messages.types.ts"
       ],
       "dependencies": {},
       "foundations": ["core"]

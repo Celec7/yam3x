@@ -50,14 +50,14 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 
 ## API
 
-| 属性       | 默认值                        | 用途                                                                                                                                                                                   |
-| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | 父 provider，再回退到 `en-US` | BCP 47 语言标记，用于选择内置文案及组件已有的语言敏感操作。                                                                                                                            |
-| `messages` | 继承的覆盖项                  | `LocaleOverrides`，以 `timePicker`、`dateInput`、`calendar`、`numberField`、`pagination`、`form`、`fileUpload`、`dataTable` 和 `treeView` 为键的部分对象；各命名空间接受部分文案覆盖。 |
+| 属性       | 默认值                        | 用途                                                                                                                                                                                                 |
+| ---------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `locale`   | 父 provider，再回退到 `en-US` | BCP 47 语言标记，用于选择内置文案及组件已有的语言敏感操作。                                                                                                                                          |
+| `messages` | 继承的覆盖项                  | `LocaleOverrides`，以 `datePicker`、`timePicker`、`dateInput`、`calendar`、`numberField`、`pagination`、`form`、`fileUpload`、`dataTable` 和 `treeView` 为键的部分对象；各命名空间接受部分文案覆盖。 |
 
 默认插槽直接渲染子内容，不增加 DOM 元素。provider 没有模型、事件或公开方法。`LocaleMessages` 描述完整的命名空间契约；原有的组件文案类型导出继续可用。
 
-目前支持 provider 的组件包括 [Time pickers](/zh/components/time-picker)、[Date input](/zh/components/date-input)、[Calendar](/zh/components/calendar)、[Number field](/zh/components/number-field)、[Pagination](/zh/components/pagination)、[Form](/zh/components/form)、[File upload](/zh/components/file-upload)、[Data table](/zh/components/data-table) 和 [Tree view](/zh/components/tree-view)。其他组件保留各自的语言和标签 API。
+目前支持 provider 的组件包括 [Date pickers](/zh/components/date-picker)、[Time pickers](/zh/components/time-picker)、[Date input](/zh/components/date-input)、[Calendar](/zh/components/calendar)、[Number field](/zh/components/number-field)、[Pagination](/zh/components/pagination)、[Form](/zh/components/form)、[File upload](/zh/components/file-upload)、[Data table](/zh/components/data-table) 和 [Tree view](/zh/components/tree-view)。其他组件保留各自的语言和标签 API。
 
 `numberField` 的 `rangeUnderflow(minimum)`、`rangeOverflow(maximum)`、`increment(label)` 和 `decrement(label)` 是函数，接收已格式化边界值或字段标签。Number field 自身的 `messages` 继续接受原有字符串，并优先于 provider 文案。
 
@@ -67,11 +67,13 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 
 `timePicker` 支持字段、模式、操作与弹窗标签，以及 `dialValue({ value, unit, max })`、`invalidPart(unit)` 和 `outsideRange` 文案。`period` 可覆盖 AM/PM 分组名称；默认分组和选项名称由 `Intl` 生成。
 
+`datePicker` 支持字段、范围端点、导航、模式切换、操作和验证文案。`chooseMonth(month?)`、`chooseYear(year?)` 接收格式化标签；省略参数时生成列表框名称。原有独立标签属性优先于 provider 文案。
+
 ## 行为与无障碍
 
 对每个已支持的组件，配置按以下顺序解析：
 
-1. 组件 `locale`、最近 provider 的 `locale`，再回退到组件独立默认值（`en-US`；Calendar、Date input 和 Time pickers 在客户端使用浏览器语言）。
+1. 组件 `locale`、最近 provider 的 `locale`，再回退到组件独立默认值（`en-US`；Calendar、Date input、Date pickers 和 Time pickers 在客户端使用浏览器语言）。
 2. 内置英文文案，再叠加适用语言的内置文案。
 3. 同语言的父 provider 覆盖、最近 provider 覆盖、组件 `messages` 或独立标签/文案属性。
 

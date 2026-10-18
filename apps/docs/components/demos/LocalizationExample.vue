@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
+import { DatePicker, DateRangePicker, type DateRangeValue } from '@registry/components/date-picker'
 import { TimePickerDialog, type TimeValue } from '@registry/components/time-picker'
 import { DateInput } from '@registry/components/date-input'
 import { Calendar } from '@registry/components/calendar'
@@ -17,6 +18,8 @@ const { locale: demoLocale } = useDemoLocale()
 const locale = ref(demoLocale.value === 'zh' ? 'zh-CN' : 'en-US')
 const page = ref(2)
 const date = ref<string | null>('2026-10-05')
+const pickerDate = ref<string | null>('2026-10-04')
+const pickerRange = ref<DateRangeValue>({ start: null, end: null })
 const pickerTime = ref<TimeValue>({ hour: 13, minute: 7 })
 const inputDate = ref<Date | null>(null)
 const quantity = ref<number | null>(2.5)
@@ -42,6 +45,20 @@ const quantity = ref<number | null>(2.5)
           :step="0.1"
           data-testid="locale-number"
         />
+        <DatePicker
+          v-model="pickerDate"
+          mode="modal"
+          data-testid="locale-date-picker"
+        />
+        <output data-testid="locale-picker-date-value">{{ pickerDate }}</output>
+        <DateRangePicker
+          v-model="pickerRange"
+          mode="modal"
+          data-testid="locale-range-picker"
+        />
+        <output data-testid="locale-picker-range-value"
+          >{{ pickerRange.start }} / {{ pickerRange.end }}</output
+        >
         <TimePickerDialog
           v-model="pickerTime"
           mode="input"

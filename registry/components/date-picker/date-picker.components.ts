@@ -38,6 +38,8 @@ export const DatePickerCalendar = defineComponent({
     allowed: { type: Function as PropType<(value: string) => boolean>, required: true },
     isSelected: { type: Function as PropType<(value: string) => boolean>, required: true },
     isInRange: { type: Function as PropType<(value: string) => boolean>, required: true },
+    chooseMonthLabel: { type: Function as PropType<(month?: string) => string>, required: true },
+    chooseYearLabel: { type: Function as PropType<(year?: string) => string>, required: true },
     previousMonthLabel: { type: String, required: true },
     nextMonthLabel: { type: String, required: true },
     previousYearLabel: { type: String, required: true },
@@ -301,7 +303,7 @@ export const DatePickerCalendar = defineComponent({
                   h(
                     'div',
                     {
-                      key: props.titleMonth,
+                      key: toIsoDate(props.visibleMonth),
                       class: 'yam3x-date-picker__date-rows',
                       role: 'presentation',
                     },
@@ -321,7 +323,7 @@ export const DatePickerCalendar = defineComponent({
         ),
       ])
     const continuousMonthGrid = (month: CalendarMonth) =>
-      h('section', { key: month.title, class: 'yam3x-date-picker__continuous-month' }, [
+      h('section', { key: toIsoDate(month.month), class: 'yam3x-date-picker__continuous-month' }, [
         h('h3', { class: 'yam3x-date-picker__continuous-month-title' }, month.title),
         h('div', { class: 'yam3x-date-picker__grid', role: 'grid', 'aria-label': month.title }, [
           h(
@@ -362,7 +364,8 @@ export const DatePickerCalendar = defineComponent({
         {
           class: 'yam3x-date-picker__option-grid',
           role: 'listbox',
-          'aria-label': optionView === 'months' ? 'Choose month' : 'Choose year',
+          'aria-label':
+            optionView === 'months' ? props.chooseMonthLabel() : props.chooseYearLabel(),
         },
         (() => {
           const isMonths = optionView === 'months'
@@ -375,7 +378,7 @@ export const DatePickerCalendar = defineComponent({
                 h(
                   'button',
                   {
-                    key: month,
+                    key: index,
                     type: 'button',
                     role: 'option',
                     'aria-selected': index === selectedIndex,
@@ -455,7 +458,7 @@ export const DatePickerCalendar = defineComponent({
             {
               type: 'button',
               class: 'yam3x-date-picker__period',
-              'aria-label': `Choose month, ${props.titleMonthOnly}`,
+              'aria-label': props.chooseMonthLabel(props.titleMonthOnly),
               onClick: () => emit('select-month-view'),
             },
             props.titleMonthOnly,
@@ -465,7 +468,7 @@ export const DatePickerCalendar = defineComponent({
             {
               type: 'button',
               class: 'yam3x-date-picker__period',
-              'aria-label': `Choose year, ${props.titleYearOnly}`,
+              'aria-label': props.chooseYearLabel(props.titleYearOnly),
               onClick: () => emit('select-year-view'),
             },
             props.titleYearOnly,

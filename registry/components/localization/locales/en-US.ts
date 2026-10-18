@@ -1,5 +1,24 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  datePicker: {
+    label: 'Select date',
+    startDate: 'Start date',
+    endDate: 'End date',
+    calendar: 'Open calendar',
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
+    previousYear: 'Previous year',
+    nextYear: 'Next year',
+    confirm: 'OK',
+    cancel: 'Cancel',
+    clear: 'Clear',
+    showCalendar: 'Show calendar',
+    enterDate: 'Enter date manually',
+    invalidDate: 'Enter a valid date.',
+    invalidRange: 'End date must be on or after the start date.',
+    chooseMonth: (month) => (month === undefined ? 'Choose month' : `Choose month, ${month}`),
+    chooseYear: (year) => (year === undefined ? 'Choose year' : `Choose year, ${year}`),
+  },
   timePicker: {
     label: 'Select time',
     hour: 'Hour',

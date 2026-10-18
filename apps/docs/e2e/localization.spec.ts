@@ -158,3 +158,50 @@ test('moves Time picker focus to hours when inherited hour cycle removes the act
   await expect(trigger).toBeFocused()
   await expect(page.getByTestId('locale-time-value')).toHaveText('13:7')
 })
+
+test('preserves Date picker manual input parsing and confirmation across language changes', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const picker = page.getByTestId('locale-date-picker')
+  const trigger = picker.getByRole('button')
+  await trigger.click()
+  const dialog = picker.getByRole('dialog')
+  await dialog.getByRole('button', { name: 'Enter date manually', exact: true }).click()
+  const input = dialog.getByRole('textbox', { name: 'Select date', exact: true })
+  await input.fill('10/05/2026')
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  const localized = dialog.getByRole('textbox', { name: '选择日期', exact: true })
+  await expect(localized).toHaveValue('10/05/2026')
+  await expect(localized).toBeFocused()
+  await expect(page.getByTestId('locale-picker-date-value')).toHaveText('2026-10-04')
+  await dialog.getByRole('button', { name: '确定', exact: true }).click()
+  await expect(dialog).toBeHidden()
+  await expect(page.getByTestId('locale-picker-date-value')).toHaveText('2026-10-05')
+  await expect(trigger).toBeFocused()
+})
+
+test('parses Date range endpoints independently when their editing languages differ', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const picker = page.getByTestId('locale-range-picker')
+  await picker.getByRole('button').click()
+  const dialog = picker.getByRole('dialog')
+  await dialog.getByRole('button', { name: 'Enter date manually', exact: true }).click()
+  const start = dialog.getByRole('textbox', { name: 'Start date', exact: true })
+  await start.fill('10/05/2026')
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(dialog.getByRole('textbox', { name: '开始日期', exact: true })).toHaveValue(
+    '10/05/2026',
+  )
+  await dialog.getByRole('textbox', { name: '结束日期', exact: true }).fill('2026/10/07')
+  await expect(page.getByTestId('locale-picker-range-value')).toHaveText('/')
+  await dialog.getByRole('button', { name: '确定', exact: true }).click()
+  await expect(dialog).toBeHidden()
+  await expect(page.getByTestId('locale-picker-range-value')).toHaveText('2026-10-05 / 2026-10-07')
+})
