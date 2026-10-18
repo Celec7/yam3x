@@ -1086,11 +1086,11 @@ import { ref } from 'vue'
 import { DataTable, type DataTableColumn, type DataTableFilters, type DataTableQuery } from './components/yam3x/data-table'
 interface Row { id: number; status: string }
 const rows: Row[] = [{ id: 1, status: 'active' }]
-const columns: DataTableColumn<Row>[] = [{ id: 'status', label: 'Status', value: row => row.status, filter: { options: [{ value: 'active', label: 'Active' }] } }]
+const columns: DataTableColumn<Row>[] = [{ id: 'status', label: 'Status', value: row => row.status, fixed: 'start', width: '12rem', filter: { options: [{ value: 'active', label: 'Active' }] } }]
 const filters = ref<DataTableFilters>({})
 const query = ref<DataTableQuery>()
 </script>
-<template><DataTable v-model:filters="filters" caption="Projects" :rows="rows" :columns="columns" :row-key="row => row.id" @change="query = $event" /></template>
+<template><DataTable v-model:filters="filters" sticky-header max-height="20rem" caption="Projects" :rows="rows" :columns="columns" :row-key="row => row.id" @change="query = $event" /></template>
 `,
   )
   const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {

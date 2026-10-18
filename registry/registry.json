@@ -366,6 +366,7 @@
         "data-table/data-table.utils.ts",
         "data-table/data-table.vue",
         "data-table/index.ts",
+        "data-table/use-data-table-sticky.ts",
         "empty-state/empty-state.vue",
         "form-field/form-field.vue",
         "heading/heading.vue",

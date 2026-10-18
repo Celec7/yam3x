@@ -75,6 +75,21 @@ const columns = computed<Array<DataTableColumn<Project>>>(() => [
   },
   { id: 'actions', label: t('Actions', '操作') },
 ])
+const pinnedColumns = computed<Array<DataTableColumn<Project>>>(() => [
+  { ...columns.value[0]!, fixed: 'start', width: '10rem', supporting: undefined },
+  {
+    id: 'owner',
+    label: t('Owner', '负责人'),
+    value: (row) => row.owner,
+    fixed: 'start',
+    width: '12rem',
+  },
+  { ...columns.value[1]!, width: '12rem' },
+  { ...columns.value[2]!, width: '10rem' },
+  { ...columns.value[3]!, fixed: 'end', width: '8rem' },
+])
+const pinnedRtl = ref(false)
+const pinned = ref<DataTableKey[]>([])
 const page = ref(1)
 const pageSize = ref(3)
 const sort = ref<DataTableSort | null>(null)
@@ -273,6 +288,37 @@ function fail() {
         @click="request(accepted)"
         >{{ t('Refresh records', '刷新记录') }}</Button
       >
+    </section>
+    <section
+      data-testid="table-pinned"
+      class="data-table-demo__section"
+    >
+      <Checkbox
+        v-model="pinnedRtl"
+        :label="t('Use RTL for fixed columns', '固定列使用 RTL')"
+      />
+      <DataTable
+        v-model:selected-keys="pinned"
+        :caption="t('Scrollable projects', '可滚动项目')"
+        :columns="pinnedColumns"
+        :rows="projects"
+        :row-key="(row) => row.id"
+        :locale="fieldLocale"
+        :dir="pinnedRtl ? 'rtl' : 'ltr'"
+        sticky-header
+        max-height="16rem"
+        selectable
+        style="--yam3x-data-table-min-width: 64rem"
+      >
+        <template #cell-actions="{ row }"
+          ><Button
+            variant="text"
+            :aria-label="`${t('Inspect', '查看')} ${row.name}`"
+            @click="inspected = row.name"
+            >{{ t('Inspect', '查看') }}</Button
+          ></template
+        >
+      </DataTable>
     </section>
   </div>
 </template>

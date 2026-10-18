@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T">
 import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, ref, useId } from 'vue'
+import { useDataTableSticky } from './use-data-table-sticky'
 import DataTableFilter from './data-table-filter.vue'
 import CheckboxBase from '../checkbox/checkbox-base.vue'
 import Pagination from '../pagination/pagination.vue'
@@ -23,6 +24,8 @@ import type {
 
 const props = withDefaults(
   defineProps<{
+    stickyHeader?: boolean
+    maxHeight?: string
     caption: string
     columns: ReadonlyArray<DataTableColumn<T>>
     rows: readonly T[]
@@ -47,6 +50,8 @@ const props = withDefaults(
     messages?: Partial<DataTableMessages>
   }>(),
   {
+    stickyHeader: false,
+    maxHeight: undefined,
     rowLabel: undefined,
     mode: 'client',
     sort: null,
@@ -89,6 +94,18 @@ const captionId = `${uid}-caption`
 const scrollId = `${uid}-scroll`
 const sortId = `${uid}-sort`
 const scroll = ref<HTMLElement>()
+const header = ref<HTMLTableRowElement>()
+const {
+  side: fixedSide,
+  cellStyle: fixedStyle,
+  scrollStyle,
+} = useDataTableSticky(
+  header,
+  scroll,
+  () => props.columns,
+  () => props.selectable,
+  () => props.stickyHeader,
+)
 const { locale, messages } = useComponentLocale(
   'dataTable',
   () => props.locale,
@@ -241,7 +258,10 @@ function onRecover(event: MouseEvent, action: () => void) {
 </script>
 
 <template>
-  <div class="yam3x-data-table">
+  <div
+    class="yam3x-data-table"
+    :class="{ 'yam3x-data-table--sticky-header': stickyHeader }"
+  >
     <div
       v-if="$slots.actions"
       class="yam3x-data-table__actions"
@@ -291,6 +311,7 @@ function onRecover(event: MouseEvent, action: () => void) {
     <div
       ref="scroll"
       class="yam3x-data-table__scroll"
+      :style="{ ...scrollStyle, '--_yam3x-data-table-max-height': maxHeight }"
       role="region"
       :aria-labelledby="captionId"
       :aria-describedby="scrollId"
@@ -304,11 +325,16 @@ function onRecover(event: MouseEvent, action: () => void) {
         :aria-rowcount="numbered ? totalRows! + 1 : undefined"
       >
         <thead>
-          <tr :aria-rowindex="numbered ? 1 : undefined">
+          <tr
+            ref="header"
+            :aria-rowindex="numbered ? 1 : undefined"
+          >
             <th
               v-if="selectable"
               scope="col"
               class="yam3x-data-table__selection-cell"
+              :class="{ 'yam3x-data-table__fixed': fixedSide(0) }"
+              :style="fixedStyle(0)"
             >
               <CheckboxBase
                 class="yam3x-data-table__check"
@@ -320,16 +346,20 @@ function onRecover(event: MouseEvent, action: () => void) {
               />
             </th>
             <th
-              v-for="column in columns"
+              v-for="(column, columnIndex) in columns"
               :key="column.id"
               scope="col"
               class="yam3x-data-table__header"
               :class="{
                 'yam3x-data-table__numeric': column.numeric,
+                'yam3x-data-table__fixed': fixedSide(columnIndex + (selectable ? 1 : 0)),
                 'yam3x-data-table__header--sortable': column.sortable,
                 'yam3x-data-table__header--filterable': column.filter,
               }"
-              :style="{ inlineSize: column.width }"
+              :style="{
+                inlineSize: column.width,
+                ...fixedStyle(columnIndex + (selectable ? 1 : 0)),
+              }"
               :aria-sort="
                 sort?.column === column.id && column.sortable ? sort.direction : undefined
               "
@@ -392,6 +422,8 @@ function onRecover(event: MouseEvent, action: () => void) {
             <td
               v-if="selectable"
               class="yam3x-data-table__selection-cell"
+              :class="{ 'yam3x-data-table__fixed': fixedSide(0) }"
+              :style="fixedStyle(0)"
             >
               <CheckboxBase
                 class="yam3x-data-table__check"
@@ -404,11 +436,15 @@ function onRecover(event: MouseEvent, action: () => void) {
             </td>
             <component
               :is="column.rowHeader ? 'th' : 'td'"
-              v-for="column in columns"
+              v-for="(column, columnIndex) in columns"
               :key="column.id"
               :scope="column.rowHeader ? 'row' : undefined"
               class="yam3x-data-table__cell"
-              :class="{ 'yam3x-data-table__numeric': column.numeric }"
+              :class="{
+                'yam3x-data-table__numeric': column.numeric,
+                'yam3x-data-table__fixed': fixedSide(columnIndex + (selectable ? 1 : 0)),
+              }"
+              :style="fixedStyle(columnIndex + (selectable ? 1 : 0))"
             >
               <slot
                 :name="`cell-${column.id}`"
@@ -553,7 +589,11 @@ function onRecover(event: MouseEvent, action: () => void) {
 }
 .yam3x-data-table__scroll {
   max-inline-size: 100%;
-  overflow-x: auto;
+  overflow: auto;
+  max-block-size: var(--_yam3x-data-table-max-height, none);
+  scroll-padding-block-start: var(--_yam3x-data-table-scroll-top, 0px);
+  scroll-padding-inline-start: var(--_yam3x-data-table-scroll-start, 0px);
+  scroll-padding-inline-end: var(--_yam3x-data-table-scroll-end, 0px);
 }
 .yam3x-data-table__table {
   display: table;
@@ -566,6 +606,24 @@ function onRecover(event: MouseEvent, action: () => void) {
   font: inherit;
   background: var(--_yam3x-data-table-surface);
   text-align: start;
+}
+.yam3x-data-table--sticky-header .yam3x-data-table__table,
+.yam3x-data-table__table:has(.yam3x-data-table__fixed) {
+  border-collapse: separate;
+}
+.yam3x-data-table__table .yam3x-data-table__fixed {
+  position: sticky;
+  inset-inline-start: var(--_yam3x-data-table-fixed-start, auto);
+  inset-inline-end: var(--_yam3x-data-table-fixed-end, auto);
+  z-index: 1;
+}
+.yam3x-data-table--sticky-header thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+}
+.yam3x-data-table__table thead .yam3x-data-table__fixed {
+  z-index: 3;
 }
 .yam3x-data-table__caption {
   margin: 0;
@@ -660,6 +718,9 @@ function onRecover(event: MouseEvent, action: () => void) {
   font-weight: var(--_yam3x-data-table-body-weight);
   color: inherit;
   background: transparent;
+}
+.yam3x-data-table__table tbody .yam3x-data-table__fixed {
+  background: inherit;
 }
 .yam3x-data-table__table tr {
   border: 0;

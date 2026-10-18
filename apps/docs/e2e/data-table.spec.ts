@@ -315,3 +315,119 @@ test('data-table.filter.accepted: failed server filtering retains records and ma
   ).toBeVisible()
   expect(await keys(server)).toEqual(['cedar'])
 })
+
+test('data-table.fixed.context: retains one header and measured fixed groups while scrolling in LTR and RTL', async ({
+  page,
+}) => {
+  const group = page.getByTestId('table-pinned')
+  const region = group.getByRole('region', { name: 'Scrollable projects', exact: true })
+  await region.scrollIntoViewIfNeeded()
+  await expect(region.locator('thead .yam3x-data-table__fixed')).toHaveCount(4)
+  await expect(group.getByRole('table')).toHaveCount(1)
+  await expect(group.getByRole('checkbox', { name: 'Select Delta', exact: true })).toHaveCount(1)
+  await group.getByRole('checkbox', { name: 'Select Delta', exact: true }).check()
+  await expect(group.locator('[data-row-key="delta"]')).toHaveClass(/--selected/)
+  for (const rtl of [false, true]) {
+    if (rtl)
+      await group.getByRole('checkbox', { name: 'Use RTL for fixed columns', exact: true }).check()
+    await region.evaluate((element, isRtl) => {
+      element.scrollTop = 150
+      element.scrollLeft = isRtl ? -220 : 220
+    }, rtl)
+    await expect
+      .poll(() => region.evaluate((element) => Math.abs(element.scrollLeft)))
+      .toBeGreaterThan(100)
+    const geometry = await region.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const headers = Array.from(element.querySelectorAll('thead th'), (cell) => {
+        const rect = cell.getBoundingClientRect()
+        return { left: rect.left, right: rect.right, top: rect.top }
+      })
+      const row = element.querySelector('[data-row-key="delta"]')!
+      const fixed = Array.from(row.querySelectorAll('.yam3x-data-table__fixed'), (cell) => {
+        const rect = cell.getBoundingClientRect()
+        return {
+          left: rect.left,
+          right: rect.right,
+          background: getComputedStyle(cell).backgroundColor,
+        }
+      })
+      return {
+        left: box.left + element.clientLeft,
+        right: box.left + element.clientLeft + element.clientWidth,
+        top: box.top + element.clientTop,
+        headers,
+        fixed,
+        background: getComputedStyle(row).backgroundColor,
+      }
+    })
+    for (const cell of geometry.headers) expect(Math.abs(cell.top - geometry.top)).toBeLessThan(2)
+    const headers = geometry.headers
+    if (!rtl) {
+      expect(Math.abs(headers[0]!.left - geometry.left)).toBeLessThan(2)
+      expect(Math.abs(headers[1]!.left - headers[0]!.right)).toBeLessThan(2)
+      expect(Math.abs(headers[2]!.left - headers[1]!.right)).toBeLessThan(2)
+      expect(Math.abs(headers[5]!.right - geometry.right)).toBeLessThan(2)
+    } else {
+      expect(Math.abs(headers[0]!.right - geometry.right)).toBeLessThan(2)
+      expect(Math.abs(headers[1]!.right - headers[0]!.left)).toBeLessThan(2)
+      expect(Math.abs(headers[2]!.right - headers[1]!.left)).toBeLessThan(2)
+      expect(Math.abs(headers[5]!.left - geometry.left)).toBeLessThan(2)
+    }
+    for (const cell of geometry.fixed) expect(cell.background).toBe(geometry.background)
+  }
+  const filter = group.getByRole('button', { name: 'Filter Status', exact: true })
+  await filter.focus()
+  await expect
+    .poll(() =>
+      filter.evaluate((button) => {
+        const rect = button.getBoundingClientRect()
+        return button.contains(
+          button.ownerDocument.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2),
+        )
+      }),
+    )
+    .toBe(true)
+  await page.keyboard.press('Enter')
+  const menu = page.getByRole('menu', { name: 'Filter Status', exact: true })
+  await expect(menu.getByRole('menuitemcheckbox', { name: 'Archived', exact: true })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(filter).toBeFocused()
+  await region.screenshot({ path: '/tmp/yam3x-data-table-fixed-rtl.png' })
+})
+
+test('data-table.fixed.adaptation: releases oversized fixed groups and restores measured offsets after resizing', async ({
+  page,
+}) => {
+  const group = page.getByTestId('table-pinned')
+  const region = group.getByRole('region', { name: 'Scrollable projects', exact: true })
+  await expect(region.locator('thead .yam3x-data-table__fixed')).toHaveCount(4)
+  await page.setViewportSize({ width: 375, height: 900 })
+  await expect(region.locator('thead .yam3x-data-table__fixed')).toHaveCount(0)
+  await region.evaluate((element) => {
+    element.scrollLeft = 300
+    element.scrollTop = 140
+  })
+  expect(await region.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+  await expect(region.locator('thead th').first()).toHaveCSS('position', 'sticky')
+  await expect(region.locator('thead th')).toHaveCount(6)
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await expect(region.locator('thead .yam3x-data-table__fixed')).toHaveCount(4)
+  await region.evaluate((element) => {
+    element.querySelector<HTMLElement>('thead th:nth-child(2)')!.style.inlineSize = '14rem'
+  })
+  await expect
+    .poll(() =>
+      region.evaluate((element) => {
+        const cells = element.querySelectorAll('thead th')
+        const previous = cells[1]!.getBoundingClientRect()
+        const current = cells[2]!.getBoundingClientRect()
+        return Math.abs(current.left - previous.right)
+      }),
+    )
+    .toBeLessThan(2)
+  await page.evaluate(() => document.documentElement.classList.add('dark'))
+  await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' })
+  await expect(group.getByRole('checkbox', { name: 'Select Delta', exact: true })).toBeEnabled()
+  await region.screenshot({ path: '/tmp/yam3x-data-table-fixed-forced-colors.png' })
+})

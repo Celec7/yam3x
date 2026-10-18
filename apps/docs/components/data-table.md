@@ -93,6 +93,8 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 | `mode`             | `client`                               | `client` filters, sorts, and pages locally; `server` renders the supplied rows unchanged.             |
 | `sort`             | `null`                                 | `{ column, direction: 'ascending' \| 'descending' }` or null.                                         |
 | `filters`          | Undefined                              | Accepted `DataTableFilters`: column IDs mapped to readonly arrays of string/number option keys.       |
+| `stickyHeader`     | `false`                                | Keeps column headers at the block start of the table's own scroll region.                             |
+| `maxHeight`        | Undefined                              | CSS maximum block size for that region, such as `24rem`; enables vertical scrolling when needed.      |
 | `selectable`       | `false`                                | Shows row checkboxes and the current-page select-all control.                                         |
 | `selectedKeys`     | `[]`                                   | Accepted keys, including keys from other pages.                                                       |
 | `isRowSelectable`  | All rows                               | `(row) => boolean`; false disables selection without removing a retained key.                         |
@@ -107,7 +109,7 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 | `locale`           | Provider → `en-US`                     | Built-in English/Chinese text and local text comparison.                                              |
 | `messages`         | Built-in text                          | Partial `DataTableMessages` for state text, selection names, and instructions.                        |
 
-Columns have `id`, `label`, and optional `value(row)`, `format(value, row)`, `supporting(row)`, `sortable`, `compare(leftRow, rightRow)`, `numeric`, `rowHeader`, and CSS `width`. A value is text, a number, a boolean, a Date, null, or undefined. Formatters own domain-specific currency and date display; default text is `String(value)` with blank nullish values. `supporting` adds Body Small text. `numeric` end-aligns cells and uses tabular figures. `rowHeader` renders native row-header cells. Width is a layout hint rather than a truncation policy.
+Columns have `id`, `label`, and optional `value(row)`, `format(value, row)`, `supporting(row)`, `sortable`, `compare(leftRow, rightRow)`, `numeric`, `rowHeader`, `fixed`, and CSS `width`. A value is text, a number, a boolean, a Date, null, or undefined. Formatters own domain-specific currency and date display; default text is `String(value)` with blank nullish values. `supporting` adds Body Small text. `numeric` end-aligns cells and uses tabular figures. `rowHeader` renders native row-header cells. Width is a layout hint rather than a truncation policy.
 
 Sortable columns cycle ascending, descending, then supplied order. Local comparison handles numbers, Dates, booleans, and locale-aware natural text, keeping empty/invalid values last in either direction and ties in supplied order. Use a consistent value type per column or provide `compare` for domain-specific rules. A custom comparator owns missing-value policy. All client rows are sorted before paging; the input array is not mutated. Client column filters run before sorting and paging; application-owned search can also reduce the supplied collection. Reset `page` when external search changes. An out-of-range page offers a first-page request.
 
@@ -120,6 +122,12 @@ Set a column's `filter: { options, matches? }` to show a separate filter menu. E
 The menu edits a draft. Apply proposes the draft, Clear proposes removing that column's condition, and Escape or outside dismissal discards edits. Other accepted filters, sorting, and selection keys are retained; filter requests return to page one. The trigger reports only the accepted selection count. Local zero-match results use the filtered empty state automatically when the supplied collection is nonempty; use `emptyKind` for external/server filtering.
 
 `update:filters(filters)` proposes the complete filter map. `DataTableQuery` and `change` include optional `filters` after a filter request or when the `filters` prop is supplied; otherwise their previous shape is preserved. Sort and page requests carry accepted filters. Filter application and page reset form one `change` request, even though model updates are separate events.
+
+### Fixed headers and columns
+
+Use `sticky-header` with a bounded `max-height` to retain headers within the table's own scroll region. This does not attach the table header to the page viewport. Set `column.fixed` to logical `'start'` or `'end'`; arrange fixed start columns first and fixed end columns last in source order. RTL mirrors the edges automatically. Selection stays at start whenever a start column is fixed. Column `width` remains a hint: offsets use measured rendered widths and update after resizing or content changes.
+
+For example, use `:columns="[{ id: 'name', label: 'Name', value: row => row.name, fixed: 'start', width: '12rem' }, ...otherColumns]" sticky-header max-height="24rem"`. Choose small fixed groups that leave comparison space. If their combined width would fill the scroll region, inline fixation releases and every column remains reachable by scrolling. Header fixation remains enabled. Fixed cells inherit the header or selected/hovered row surface, and there is only one set of interactive controls.
 
 ### Slots
 

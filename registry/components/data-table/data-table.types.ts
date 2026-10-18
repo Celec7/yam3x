@@ -31,6 +31,7 @@ export interface DataTableColumn<T> {
   numeric?: boolean
   rowHeader?: boolean
   filter?: DataTableColumnFilter<T>
+  fixed?: 'start' | 'end'
   width?: string
 }
 export interface DataTableSelection {

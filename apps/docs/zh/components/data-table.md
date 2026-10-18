@@ -93,6 +93,8 @@ const selected = ref<DataTableKey[]>([])
 | `mode`             | `client`                      | `client` 在本地筛选、排序和分页；`server` 原样呈现传入记录。               |
 | `sort`             | `null`                        | `{ column, direction: 'ascending' \| 'descending' }` 或 null。             |
 | `filters`          | 未定义                        | 已接受的 `DataTableFilters`：列 ID 映射到只读的字符串/数字选项键数组。     |
+| `stickyHeader`     | `false`                       | 将列标题保留在表格自身滚动区域的块起始端。                                 |
+| `maxHeight`        | 未定义                        | 区域的 CSS 最大块尺寸，例如 `24rem`；需要时启用纵向滚动。                  |
 | `selectable`       | `false`                       | 显示行复选框及当前页全选控件。                                             |
 | `selectedKeys`     | `[]`                          | 已接受的键，包括其他页的键。                                               |
 | `isRowSelectable`  | 所有行                        | `(row) => boolean`；false 禁用选择，但不移除已保留的键。                   |
@@ -107,7 +109,7 @@ const selected = ref<DataTableKey[]>([])
 | `locale`           | Provider → `en-US`            | 内置中英文文案与本地文字比较。                                             |
 | `messages`         | 内置文案                      | 部分 `DataTableMessages`，覆盖状态、选择名称与说明。                       |
 
-列包含 `id`、`label`，以及可选的 `value(row)`、`format(value, row)`、`supporting(row)`、`sortable`、`compare(leftRow, rightRow)`、`numeric`、`rowHeader` 和 CSS `width`。值可以是文字、数值、布尔值、Date、null 或 undefined。格式化函数负责货币和日期等领域显示；默认使用 `String(value)`，空值显示为空。`supporting` 添加 Body Small 辅助文字。`numeric` 使用尾端对齐及等宽数字。`rowHeader` 呈现原生行标题单元格。宽度是布局提示，不是截断策略。
+列包含 `id`、`label`，以及可选的 `value(row)`、`format(value, row)`、`supporting(row)`、`sortable`、`compare(leftRow, rightRow)`、`numeric`、`rowHeader`、`fixed` 和 CSS `width`。值可以是文字、数值、布尔值、Date、null 或 undefined。格式化函数负责货币和日期等领域显示；默认使用 `String(value)`，空值显示为空。`supporting` 添加 Body Small 辅助文字。`numeric` 使用尾端对齐及等宽数字。`rowHeader` 呈现原生行标题单元格。宽度是布局提示，不是截断策略。
 
 可排序列依次切换升序、降序和传入顺序。本地比较支持数值、Date、布尔值及随语言变化的自然文字排序；空值或无效值在两个方向都位于末尾，相等值保留原有顺序。每列应使用一致的值类型，或提供 `compare` 处理领域规则。自定义比较函数自行处理缺失值。所有客户端记录先排序，再分页，不修改输入数组。客户端列筛选先于排序和分页执行；应用自有搜索也可先缩小传入集合。外部搜索变化时请重置 `page`。超出范围的页面提供返回第一页的请求。
 
@@ -120,6 +122,12 @@ const selected = ref<DataTableKey[]>([])
 菜单编辑临时草稿。应用操作提议草稿，清除操作提议移除该列条件，Escape 或外部关闭丢弃未应用的编辑。保留其他已接受筛选、排序和选择键；筛选请求回到第一页。触发按钮仅报告已接受的选择数量。传入集合非空但本地筛选无匹配时，自动使用筛选空状态；外部或服务端筛选使用 `emptyKind`。
 
 `update:filters(filters)` 提议完整筛选映射。在筛选请求后，或传入 `filters` 属性时，`DataTableQuery` 与 `change` 包含可选的 `filters`；否则保留原有结构。排序和翻页请求携带已接受筛选。应用筛选和重置页码形成一次 `change` 请求，模型更新仍是独立事件。
+
+### 固定表头与列
+
+结合 `sticky-header` 和有界的 `max-height`，可将表头保留在表格自身滚动区域内，不会将它吸附到页面视口。将 `column.fixed` 设为逻辑 `'start'` 或 `'end'`；源码顺序中，起始端固定列排在前面，结束端固定列排在最后。RTL 自动镜像边缘。有起始端固定列时，选择列也保留在起始端。列 `width` 仍是提示：偏移采用实际渲染宽度，在尺寸或内容变化后更新。
+
+例如：`:columns="[{ id: 'name', label: '名称', value: row => row.name, fixed: 'start', width: '12rem' }, ...otherColumns]" sticky-header max-height="24rem"`。应选择较小的固定组，为其他列留出比较空间。如果固定组总宽度占满滚动区域，就解除行内固定，各列仍可通过滚动访问；表头固定保留。固定单元格继承表头或所选/悬停行的表面，每个交互控件仅保留一份。
 
 ### 插槽
 
