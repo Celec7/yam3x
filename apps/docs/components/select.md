@@ -1,5 +1,6 @@
 <script setup>
 import SelectExample from './demos/SelectExample.vue'
+import SelectVirtualExample from './demos/SelectVirtualExample.vue'
 </script>
 
 # Select
@@ -13,6 +14,16 @@ Select is a project form control for choosing one or more values from a popup li
 ::: details View demo source
 
 <<< ./demos/SelectExample.vue{vue}
+
+:::
+
+### Large option catalogs
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectVirtualExample /></div>
+
+::: details View large catalog demo source
+
+<<< ./demos/SelectVirtualExample.vue{vue}
 
 :::
 
@@ -60,26 +71,27 @@ Use an array model for multiple selection; the popup stays open as options are t
 
 Built-in empty text can inherit [LocaleProvider](/components/localization)'s `select` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; the `#no-data` slot takes precedence. Language updates preserve popup state and single or multiple selection values.
 
-| Prop                      | Type                         | Default      | Description                                                                                                 |
-| ------------------------- | ---------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
-| `options`                 | `readonly SelectOption[]`    | Undefined    | Data-driven catalog; when supplied, renders options instead of the default slot.                            |
-| `searchable`              | `boolean`                    | `false`      | Use an editable search input; text filters choices without replacing accepted values.                       |
-| `query` / `v-model:query` | `string`                     | `''`         | Independent filter text, cleared after acceptance or dismissal.                                             |
-| `filter`                  | `SelectFilter`               | `'contains'` | Case-insensitive `contains`, `starts-with`, `ends-with`, or `none` / custom `(option, query) => boolean`.   |
-| `id`                      | `string`                     | Generated    | Trigger ID.                                                                                                 |
-| `modelValue` / `v-model`  | `string \| string[] \| null` | `null`       | Selected value, or selected values with `multiple`.                                                         |
-| `open` / `v-model:open`   | `boolean`                    | `false`      | Controlled popup visibility.                                                                                |
-| `name`                    | `string`                     | —            | Native form field name.                                                                                     |
-| `form`                    | `string`                     | —            | Associate with a form by id when outside the form subtree.                                                  |
-| `required`                | `boolean`                    | `false`      | Require a selection during native form validation.                                                          |
-| `disabled`                | `boolean`                    | `false`      | Disable the trigger and selection.                                                                          |
-| `multiple`                | `boolean`                    | `false`      | Allow several selected values.                                                                              |
-| `selectionDisplay`        | `'text' \| 'chips'`          | `'text'`     | Display accepted multiple values as text or removable input chips. Single selection keeps its text display. |
-| `hideSelectionIndicator`  | `boolean`                    | `false`      | Hide option selection indicators.                                                                           |
-| `panelClass`              | `string`                     | `''`         | Class applied to the floating option panel.                                                                 |
-| `fitAnchorWidth`          | `boolean`                    | `true`       | Match the option panel to the trigger width.                                                                |
-| `anchorOffset`            | `number`                     | `4`          | Gap between trigger and panel in CSS pixels.                                                                |
-| `closeOnTab`              | `boolean`                    | `true`       | Close the panel when Tab leaves the trigger.                                                                |
+| Prop                      | Type                            | Default      | Description                                                                                                 |
+| ------------------------- | ------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
+| `options`                 | `readonly SelectOption[]`       | Undefined    | Data-driven catalog; when supplied, renders options instead of the default slot.                            |
+| `virtual`                 | `boolean \| VirtualListOptions` | `false`      | Enable measured windowing for data-driven `options`; requires a data catalog rather than slotted options.   |
+| `searchable`              | `boolean`                       | `false`      | Use an editable search input; text filters choices without replacing accepted values.                       |
+| `query` / `v-model:query` | `string`                        | `''`         | Independent filter text, cleared after acceptance or dismissal.                                             |
+| `filter`                  | `SelectFilter`                  | `'contains'` | Case-insensitive `contains`, `starts-with`, `ends-with`, or `none` / custom `(option, query) => boolean`.   |
+| `id`                      | `string`                        | Generated    | Trigger ID.                                                                                                 |
+| `modelValue` / `v-model`  | `string \| string[] \| null`    | `null`       | Selected value, or selected values with `multiple`.                                                         |
+| `open` / `v-model:open`   | `boolean`                       | `false`      | Controlled popup visibility.                                                                                |
+| `name`                    | `string`                        | —            | Native form field name.                                                                                     |
+| `form`                    | `string`                        | —            | Associate with a form by id when outside the form subtree.                                                  |
+| `required`                | `boolean`                       | `false`      | Require a selection during native form validation.                                                          |
+| `disabled`                | `boolean`                       | `false`      | Disable the trigger and selection.                                                                          |
+| `multiple`                | `boolean`                       | `false`      | Allow several selected values.                                                                              |
+| `selectionDisplay`        | `'text' \| 'chips'`             | `'text'`     | Display accepted multiple values as text or removable input chips. Single selection keeps its text display. |
+| `hideSelectionIndicator`  | `boolean`                       | `false`      | Hide option selection indicators.                                                                           |
+| `panelClass`              | `string`                        | `''`         | Class applied to the floating option panel.                                                                 |
+| `fitAnchorWidth`          | `boolean`                       | `true`       | Match the option panel to the trigger width.                                                                |
+| `anchorOffset`            | `number`                        | `4`          | Gap between trigger and panel in CSS pixels.                                                                |
+| `closeOnTab`              | `boolean`                       | `true`       | Close the panel when Tab leaves the trigger.                                                                |
 
 Use the default slot for `Option` or `OptionGroup`. `#value` receives `{ value, options }`; `#arrow` replaces the dropdown icon, and `#no-data` supplies the empty-list message. Slotted options need unique string values and labels.
 
@@ -90,6 +102,12 @@ A cancellable DOM `beforeinput` event fires before the value changes; cancelling
 Pass `:options="[{ value: 'daily', label: 'Daily digest' }, { value: 'weekly', label: 'Weekly digest', disabled: true }]"` to use a flat data catalog. `SelectOption` has a unique nonempty string `value`, a `label`, optional `disabled`, and optional initial `selected`. Import its type from the Select module; this mode does not require importing Option in the application. Use the existing default slot for grouped/custom Option compositions instead.
 
 `#option="{ option, selected, active }"` customizes the content of a data-driven row; its accessible name remains `option.label`. Keep content noninteractive. `#value` continues to customize the trigger. If metadata temporarily omits an accepted value, the trigger uses its raw value and native submission retains it. When its metadata arrives, the label updates without emitting a selection change. Clear the model explicitly when your application removes a choice permanently.
+
+### Virtualization
+
+Use `:options="options" virtual` for a large catalog. Import `VirtualListOptions` from the Select module to configure `estimateSize` (default `48` CSS pixels) and `overscan` (default `4` rows on each side), for example `:virtual="{ estimateSize: 64, overscan: 6 }"`. The estimate applies only before measurement and never fixes content height; visible rows are measured again when wrapping, fonts, or density change.
+
+Only nearby and active options mount; navigation and filtering still use the complete catalog. Distant keyboard targets mount and scroll into view, with option positions and totals representing the full filtered result. Native proxies contain accepted values only, submitted in catalog order followed by accepted values with missing metadata. Selection, cancellable events, reset, and required validation retain their semantics. Virtualization requires data-driven `options` because unmounted slots cannot supply a complete catalog; a slotted-only configuration reports an error.
 
 ### Searchable selection
 

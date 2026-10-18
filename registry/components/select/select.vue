@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useVirtualList, type VirtualListOptions } from '../_shared/use-virtual-list'
 import { useComponentLocale } from '../localization/context'
 import {
   computed,
@@ -30,6 +31,7 @@ defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
     options?: readonly SelectOption[]
+    virtual?: boolean | VirtualListOptions
     searchable?: boolean
     filter?: SelectFilter
     locale?: string
@@ -48,6 +50,7 @@ const props = withDefaults(
   }>(),
   {
     options: undefined,
+    virtual: false,
     searchable: false,
     filter: 'contains',
     id: undefined,
@@ -151,26 +154,66 @@ const searchText = computed(() =>
 let composing = false
 let dispatchingNativeInput = false
 const activeValue = ref<string | null>(null)
+const dataRecords = computed(() =>
+  (props.options ?? []).map((option, index) => ({ option, index })),
+)
+const filteredDataRecords = computed(() =>
+  dataRecords.value.filter((record) => matchesOption(record.option)),
+)
+watch(
+  () => [props.virtual, props.options] as const,
+  ([virtual, options]) => {
+    if (virtual && options === undefined)
+      throw new Error('Select virtualization requires a data-driven options catalog.')
+  },
+  { immediate: true },
+)
+const virtualEnabled = computed(() => Boolean(props.virtual))
+const windowed = useVirtualList({
+  keys: () => filteredDataRecords.value.map((record) => record.option.value),
+  scroller: () => panel.value?.panel,
+  enabled: () => virtualEnabled.value,
+  options: () => (typeof props.virtual === 'object' ? props.virtual : undefined),
+  keepMounted: () => activeValue.value,
+})
+const filteredPositions = computed(
+  () => new Map(filteredDataRecords.value.map((record, index) => [record.option.value, index])),
+)
+const renderedDataRecords = computed(() =>
+  virtualEnabled.value
+    ? windowed.items.value.map((item) => ({
+        ...filteredDataRecords.value[item.index]!,
+        position: item.index,
+        offset: item.offset,
+      }))
+    : dataRecords.value.map((record) => ({
+        ...record,
+        position: filteredPositions.value.get(record.option.value) ?? -1,
+        offset: 0,
+      })),
+)
 const invalid = ref(false)
 const values = computed<readonly string[]>(() => {
   const value = modelValue.value
   if (Array.isArray(value)) return value
   return value == null || value === '' ? [] : [value]
 })
+const optionMap = computed(() => new Map(options.value.map((option) => [option.value, option])))
+const selectedValues = computed(() => new Set(values.value))
 const selectedOptions = computed(() =>
   values.value
-    .map((value) => options.value.find((option) => option.value === value))
+    .map((value) => optionMap.value.get(value))
     .filter((option): option is SelectOptionRecord => Boolean(option)),
 )
 const displayValue = computed(() =>
-  values.value
-    .map((value) => options.value.find((option) => option.value === value)?.label ?? value)
-    .join(', '),
+  values.value.map((value) => optionMap.value.get(value)?.label ?? value).join(', '),
 )
 const nativeOptions = computed(() => [
-  ...options.value,
+  ...(virtualEnabled.value
+    ? options.value.filter((option) => selectedValues.value.has(option.value))
+    : options.value),
   ...values.value
-    .filter((value) => !options.value.some((option) => option.value === value))
+    .filter((value) => !optionMap.value.has(value))
     .map((value) => ({ value, label: value, disabled: false })),
 ])
 const activeOption = computed(() =>
@@ -188,7 +231,7 @@ function selectedValuesForMode(next: readonly string[]): string | string[] | nul
   return props.multiple ? [...next] : (next[0] ?? null)
 }
 function selected(value: string) {
-  return values.value.includes(value)
+  return selectedValues.value.has(value)
 }
 function sortOptions(records: SelectOptionRecord[]) {
   return records.sort((a, b) => {
@@ -202,21 +245,29 @@ function sortOptions(records: SelectOptionRecord[]) {
   })
 }
 function register(option: SelectOptionRecord) {
+  if (virtualEnabled.value) windowed.measure(option.value, option.element)
   mountedOptions.value = sortOptions([
     ...mountedOptions.value.filter((item) => item.value !== option.value),
     option,
   ])
-  if (option.selected && !values.value.length) {
+  if (props.options === undefined && option.selected && !values.value.length) {
     modelValue.value = selectedValuesForMode([option.value])
-  } else if (props.multiple && option.selected && !values.value.includes(option.value)) {
+  } else if (
+    props.options === undefined &&
+    props.multiple &&
+    option.selected &&
+    !values.value.includes(option.value)
+  ) {
     modelValue.value = selectedValuesForMode([...values.value, option.value])
   }
   return () => {
+    if (mountedOptions.value.includes(option)) windowed.measure(option.value, null)
     mountedOptions.value = mountedOptions.value.filter((item) => item !== option)
   }
 }
 function setActive(value: string | null, scrollIntoView = true) {
   activeValue.value = value
+  if (virtualEnabled.value && value !== null && scrollIntoView) windowed.scrollToKey(value)
   const option = options.value.find((item) => item.value === value)
   if (scrollIntoView && option?.element && panel.value) {
     option.element.scrollIntoView({ block: 'nearest' })
@@ -362,14 +413,14 @@ function openFromChip(value: string, event: MouseEvent) {
   if (props.searchable) query.value = ''
   requestOpen(true, 'trigger')
   if (open.value) {
-    const option = options.value.find((option) => option.value === value)
+    const option = optionMap.value.get(value)
     if (option && !option.disabled) setActive(value)
     scheduleFocusUpdate()
   }
 }
 async function removeChip(value: string, event: MouseEvent | KeyboardEvent) {
   if (props.disabled || !props.multiple || !values.value.includes(value)) return
-  if (options.value.find((option) => option.value === value)?.disabled) return
+  if (optionMap.value.get(value)?.disabled) return
   const index = values.value.indexOf(value)
   const next = values.value.filter((item) => item !== value)
   const source = event instanceof KeyboardEvent || event.detail === 0 ? 'keyboard' : 'pointer'
@@ -585,6 +636,13 @@ watch(query, (value) => {
   if (value && props.searchable && open.value)
     void nextTick(() => setActive(firstEnabled()?.value ?? null))
 })
+watch(virtualEnabled, (enabled) => {
+  if (enabled)
+    void nextTick(() => {
+      for (const option of mountedOptions.value) windowed.measure(option.value, option.element)
+      if (activeValue.value !== null) windowed.scrollToKey(activeValue.value)
+    })
+})
 watch(
   visibleOptions,
   (current) => {
@@ -614,6 +672,14 @@ watch(
   },
 )
 onMounted(() => {
+  if (props.options !== undefined) {
+    const defaults = options.value
+      .filter((option) => option.selected && !option.disabled)
+      .map((option) => option.value)
+    if (props.multiple && defaults.length)
+      modelValue.value = [...new Set([...values.value, ...defaults])]
+    else if (!values.value.length && defaults.length) modelValue.value = defaults[0]!
+  }
   initialValue = Array.isArray(modelValue.value) ? [...modelValue.value] : modelValue.value
   if (!values.value.length) {
     const initiallySelected = options.value.find((option) => option.selected && !option.disabled)
@@ -658,9 +724,9 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
         v-for="value in values"
         :key="value"
         :value="value"
-        :label="options.find((option) => option.value === value)?.label ?? value"
+        :label="optionMap.get(value)?.label ?? value"
         :locale="props.locale"
-        :disabled="disabled || options.find((option) => option.value === value)?.disabled"
+        :disabled="disabled || optionMap.get(value)?.disabled"
         @click="openFromChip(value, $event)"
         @remove="removeChip"
       />
@@ -803,16 +869,33 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
     >
       <div
         class="yam3x-select__options"
-        :class="{ 'yam3x-select__options--searchable': searchable }"
+        :class="{
+          'yam3x-select__options--searchable': searchable,
+          'yam3x-select__options--virtual': virtualEnabled,
+        }"
+        :style="
+          virtualEnabled && filteredDataRecords.length
+            ? { blockSize: `${windowed.totalSize.value}px` }
+            : undefined
+        "
         @pointerdown="searchable && $event.preventDefault()"
         @pointermove="onPointerMove"
         @keydown="onMultiListKeydown"
       >
         <template v-if="props.options !== undefined">
           <Option
-            v-for="(option, index) in props.options"
+            v-for="{ option, index, position, offset } in renderedDataRecords"
             :id="`${listboxId}-option-${index}`"
             :key="option.value"
+            :aria-setsize="virtualEnabled ? filteredDataRecords.length : undefined"
+            :aria-posinset="virtualEnabled ? position + 1 : undefined"
+            :first="position === 0"
+            :last="position === filteredDataRecords.length - 1"
+            :style="
+              virtualEnabled
+                ? { position: 'absolute', insetInline: '0', top: `${offset}px` }
+                : undefined
+            "
             :value="option.value"
             :label="option.label"
             :disabled="option.disabled"
@@ -994,6 +1077,11 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+.yam3x-select__options--virtual {
+  position: relative;
+  flex: none;
+  overflow-anchor: none;
 }
 .yam3x-select__options {
   display: flex;

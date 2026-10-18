@@ -356,6 +356,7 @@
         "_shared/form-control.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
+        "_shared/use-virtual-list.ts",
         "button/button-base.vue",
         "button/button.variants.ts",
         "button/button.vue",
@@ -1019,6 +1020,7 @@
         "_shared/form-control.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
+        "_shared/use-virtual-list.ts",
         "button/button-base.vue",
         "button/button.variants.ts",
         "button/button.vue",
@@ -1128,6 +1130,7 @@
       "files": [
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
+        "_shared/use-virtual-list.ts",
         "chips/chip.styles.css",
         "chips/input-chip.vue",
         "icon-button/icon-button-base.vue",

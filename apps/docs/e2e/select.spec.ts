@@ -649,3 +649,114 @@ test('select.search.composition: native text editing and composition do not acci
   await page.keyboard.press('Escape')
   await expect(input).toHaveValue('TypeScript')
 })
+
+test('select.virtual.catalog: ten thousand variable-height options keep bounded DOM and reveal distant keyboard targets', async ({
+  page,
+}) => {
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-virtual')
+  const trigger = example.getByRole('combobox', { name: 'Large catalog', exact: true })
+  await trigger.focus()
+  await page.keyboard.press('ArrowDown')
+  const list = page.getByRole('listbox', { name: 'Large catalog', exact: true })
+  const last = list.getByRole('option', { name: 'Item 10000', exact: true })
+  await expect(last).toBeInViewport({ ratio: 0.95 })
+  await expect(last).toHaveAttribute('aria-posinset', '10000')
+  await expect(last).toHaveAttribute('aria-setsize', '10000')
+  expect(await list.getByRole('option').count()).toBeLessThan(35)
+  expect(await example.locator('.yam3x-select__native option').count()).toBeLessThan(6)
+  await page.keyboard.press('Home')
+  const first = list.getByRole('option', { name: 'Item 1', exact: true })
+  await expect(first).toBeInViewport({ ratio: 0.95 })
+  const firstBounds = await first.boundingBox()
+  const secondBounds = await list.getByRole('option', { name: 'Item 2', exact: true }).boundingBox()
+  expect(firstBounds!.height).toBeGreaterThan(secondBounds!.height + 8)
+  await first.evaluate((element) => {
+    element.style.paddingBlock = '12px'
+  })
+  await expect
+    .poll(async () => {
+      const first = await list.getByRole('option', { name: 'Item 1', exact: true }).boundingBox()
+      const second = await list.getByRole('option', { name: 'Item 2', exact: true }).boundingBox()
+      return second!.y - first!.y - first!.height
+    })
+    .toBeCloseTo(0, 1)
+  await page.keyboard.press('End')
+  await page.keyboard.press('ArrowUp')
+  const enabled = list.getByRole('option', { name: 'Item 9998', exact: true })
+  await expect(enabled).toBeInViewport({ ratio: 0.95 })
+  await expect(trigger).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(trigger).toHaveAttribute('value', 'Item 9998')
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).get('large-item')),
+  ).toBe('item-9997')
+  await example.getByRole('button', { name: 'Reset large catalog', exact: true }).click()
+  await expect(trigger).toHaveAttribute('value', 'Item 10000')
+  expect(errors).toEqual([])
+})
+
+test('select.virtual.focus: multi-select retains its focused row while scrolling and crosses window boundaries', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-virtual')
+  const trigger = example.getByRole('button', { name: 'Large collection', exact: true })
+  await trigger.click()
+  const list = page.getByRole('listbox', { name: 'Large collection', exact: true })
+  await page.keyboard.press('End')
+  const last = list.getByRole('option', { name: 'Item 10000', exact: true })
+  await expect(last).toBeFocused()
+  await expect(last).toBeInViewport({ ratio: 0.95 })
+  await list.evaluate((element) => {
+    element.scrollTop = 0
+  })
+  await expect(last).toBeFocused()
+  expect(await list.getByRole('option').count()).toBeLessThan(35)
+  await page.keyboard.press('ArrowUp')
+  const target = list.getByRole('option', { name: 'Item 9998', exact: true })
+  await expect(target).toBeFocused()
+  await expect(target).toBeInViewport({ ratio: 0.95 })
+  await page.keyboard.press('Space')
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).getAll('large-items')),
+  ).toEqual(['item-1', 'item-9997'])
+  await page.keyboard.press('Escape')
+  await expect(trigger).toBeFocused()
+})
+
+test('select.virtual.catalog: filtering uses full data and reports filtered positions without dropping accepted values', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-virtual')
+  await example.getByRole('checkbox', { name: 'Search catalog', exact: true }).check()
+  const input = example.getByRole('combobox', { name: 'Large catalog', exact: true })
+  await input.fill('Item 10000')
+  const list = page.getByRole('listbox', { name: 'Large catalog', exact: true })
+  await expect(list.getByRole('option')).toHaveCount(1)
+  const option = list.getByRole('option', { name: 'Item 10000', exact: true })
+  await expect(option).toHaveAttribute('aria-setsize', '1')
+  await expect(option).toHaveAttribute('aria-posinset', '1')
+  await expect(input).toBeFocused()
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).get('large-item')),
+  ).toBe('item-9999')
+  await input.fill('no-such-item')
+  await expect(list.getByRole('option')).toHaveCount(0)
+  const status = list.getByRole('status')
+  await expect(status).toHaveText('No options')
+  const listBounds = await list.boundingBox()
+  const statusBounds = await status.boundingBox()
+  expect(listBounds!.height).toBeGreaterThanOrEqual(statusBounds!.height)
+  await page.keyboard.press('Escape')
+  await expect(input).toHaveValue('Item 10000')
+})

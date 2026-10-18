@@ -1164,13 +1164,14 @@ test('Select data and searchable options install their row implementation and bu
     join(directory, 'src/App.vue'),
     `<script setup lang="ts">
 import { ref } from 'vue'
-import { Select, type SelectOption, type SelectFilter } from './components/yam3x/select'
+import { Select, type SelectOption, type SelectFilter, type VirtualListOptions } from './components/yam3x/select'
 const options: readonly SelectOption[] = [{ value: 'ts', label: 'TypeScript' }, { value: 'rust', label: 'Rust', disabled: true }]
 const value = ref<string | string[] | null>('ts')
 const values = ref(['ts'])
+const virtual: VirtualListOptions = { estimateSize: 56, overscan: 3 }
 const filter: SelectFilter = (option, query) => option.label.toLowerCase().includes(query.toLowerCase())
 </script>
-<template><Select v-model="value" :options="options" searchable :filter="filter" aria-label="Language" name="language"><template #option="{ option, selected }">{{ option.label }} {{ selected ? 'chosen' : '' }}</template></Select><Select v-model="values" :options="options" searchable multiple selection-display="chips" aria-label="Languages" /></template>
+<template><Select v-model="value" :options="options" :virtual="virtual" searchable :filter="filter" aria-label="Language" name="language"><template #option="{ option, selected }">{{ option.label }} {{ selected ? 'chosen' : '' }}</template></Select><Select v-model="values" :options="options" searchable multiple selection-display="chips" aria-label="Languages" /></template>
 `,
   )
   const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {
