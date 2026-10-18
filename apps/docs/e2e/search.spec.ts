@@ -157,7 +157,9 @@ test('docked results escape a horizontally scrolling, clipping pane and track th
   const view = page.locator('.yam3x-search__view')
   const viewport = page.locator('.search-demo__viewport')
   await resizePane(page, 1200)
-  await field.scrollIntoViewIfNeeded()
+  await field.evaluate((element) =>
+    element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }),
+  )
   await field.focus()
   await expect(view).toHaveAttribute('popover', 'manual')
   await expect.poll(() => view.evaluate((element) => element.matches(':popover-open'))).toBe(true)
@@ -178,6 +180,7 @@ test('docked results escape a horizontally scrolling, clipping pane and track th
         .left,
       clippingPaneRight: pane.right,
       viewportWidth: window.innerWidth,
+      probeIsInViewport: y >= 0 && y < window.innerHeight,
       probeIsOutsidePane: x > pane.right && x < window.innerWidth,
       probeHitsPanel: view.contains(document.elementFromPoint(x, y)),
     }
@@ -185,6 +188,7 @@ test('docked results escape a horizontally scrolling, clipping pane and track th
   const anchorOffset = geometry.panelLeft - geometry.anchorLeft
   expect(geometry.panelRight).toBeGreaterThan(geometry.clippingPaneRight)
   expect(geometry.probeIsOutsidePane).toBe(true)
+  expect(geometry.probeIsInViewport).toBe(true)
   expect(geometry.probeHitsPanel).toBe(true)
 
   await viewport.evaluate((element) => {
