@@ -68,6 +68,9 @@ These guides define project-owned compositions and behavior derived from the sha
 | Data table     | [Data table: project extension guide](components/data-table.md)         |
 | File upload    | [File upload: project extension guide](components/file-upload.md)       |
 | Form           | [Form: project extension guide](components/form.md)                     |
+| TreeSelect     | [TreeSelect: project extension guide](components/tree-select.md)        |
+| Cascader       | [Cascader: project extension guide](components/cascader.md)             |
+| Descriptions   | [Descriptions: project extension guide](components/descriptions.md)     |
 | Tree view      | [Tree view: project extension guide](components/tree-view.md)           |
 | Number field   | [Number field: project extension guide](components/number-field.md)     |
 | Pagination     | [Pagination: project extension guide](components/pagination.md)         |
