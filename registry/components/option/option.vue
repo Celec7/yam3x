@@ -74,6 +74,15 @@ const parts = computed(() => {
 })
 const selectContext = inject(selectOptionContextKey, null)
 const selected = computed(() => selectContext?.isSelected(props.value) ?? props.selected)
+const visible = computed(
+  () =>
+    selectContext?.isVisible?.({
+      value: props.value,
+      label: props.label,
+      disabled: props.disabled,
+      selected: props.selected,
+    }) ?? true,
+)
 const active = computed(() => selectContext?.activeValue.value === props.value)
 const generatedId = useId().replace(/:/g, '')
 const optionId = computed(() => props.id || `yam3x-option-${generatedId}`)
@@ -126,6 +135,7 @@ function onKeydown(event: KeyboardEvent) {
       'yam3x-option--first': first,
       'yam3x-option--last': last,
     }"
+    :hidden="!visible || undefined"
     :data-value="value"
     role="option"
     :tabindex="disabled ? -1 : tabindex"
@@ -173,6 +183,10 @@ function onKeydown(event: KeyboardEvent) {
 </template>
 
 <style>
+.yam3x-option[hidden] {
+  display: none;
+}
+
 .yam3x-option {
   --_yam3x-option-spacing-scale: var(--md-sys-density-spacing-scale, 1);
   --_yam3x-option-container-scale: var(--md-sys-density-container-scale, 1);

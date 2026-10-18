@@ -1155,7 +1155,7 @@ onMounted(async () => {
   assert.equal(build.status, 0, build.stderr || build.stdout)
 })
 
-test('Select data options install their row implementation and build independently', async (t) => {
+test('Select data and searchable options install their row implementation and build independently', async (t) => {
   const directory = await fixture(t, { isolatedDependencies: true })
   const add = runCli(['add', 'select'], directory)
   assert.equal(add.status, 0, add.stderr || add.stdout)
@@ -1164,11 +1164,13 @@ test('Select data options install their row implementation and build independent
     join(directory, 'src/App.vue'),
     `<script setup lang="ts">
 import { ref } from 'vue'
-import { Select, type SelectOption } from './components/yam3x/select'
+import { Select, type SelectOption, type SelectFilter } from './components/yam3x/select'
 const options: readonly SelectOption[] = [{ value: 'ts', label: 'TypeScript' }, { value: 'rust', label: 'Rust', disabled: true }]
 const value = ref<string | string[] | null>('ts')
+const values = ref(['ts'])
+const filter: SelectFilter = (option, query) => option.label.toLowerCase().includes(query.toLowerCase())
 </script>
-<template><Select v-model="value" :options="options" aria-label="Language" name="language"><template #option="{ option, selected }">{{ option.label }} {{ selected ? 'chosen' : '' }}</template></Select></template>
+<template><Select v-model="value" :options="options" searchable :filter="filter" aria-label="Language" name="language"><template #option="{ option, selected }">{{ option.label }} {{ selected ? 'chosen' : '' }}</template></Select><Select v-model="values" :options="options" searchable multiple selection-display="chips" aria-label="Languages" /></template>
 `,
   )
   const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {

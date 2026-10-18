@@ -556,3 +556,96 @@ test('select.selection.chips: native cancellation leaves the focused remove acti
   await expect(example.getByRole('button', { name: 'remote', exact: true })).toBeFocused()
   await expect(trigger).toHaveAttribute('aria-description', 'remote')
 })
+
+test('select.search.query: grouped filtering preserves native accepted values until a keyboard choice is confirmed', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-search')
+  const input = example.getByRole('combobox', { name: 'Searchable language *', exact: true })
+  await input.fill('ru')
+  await expect(input).toBeFocused()
+  await expect(input).toHaveCSS('outline-width', '0px')
+  const list = page.getByRole('listbox', { name: 'Searchable language *', exact: true })
+  await expect(list.getByRole('option')).toHaveCount(2)
+  await expect(list.getByRole('group', { name: 'Web', exact: true })).toHaveCount(0)
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).get('search-language')),
+  ).toBe('ts')
+  await page.keyboard.press('ArrowDown')
+  await expect(input).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(input).toHaveValue('Rust')
+  await expect(input).toHaveAttribute('aria-expanded', 'false')
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).get('search-language')),
+  ).toBe('rust')
+  await input.fill('missing')
+  await expect(list.getByRole('option')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(input).toHaveValue('Rust')
+  await example.getByRole('button', { name: 'Reset languages', exact: true }).click()
+  await expect(input).toHaveValue('TypeScript')
+})
+
+test('select.search.focus: multiple search retains input focus, cancels acceptance, and keeps chips in sync', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-search')
+  const input = example.getByRole('combobox', { name: 'Searchable collection', exact: true })
+  await input.fill('rus')
+  await input.evaluate((element) =>
+    element.addEventListener('beforeinput', (event) => event.preventDefault(), { once: true }),
+  )
+  await page.keyboard.press('Enter')
+  await expect(input).toHaveValue('rus')
+  await expect(input).toHaveAttribute('aria-description', 'TypeScript')
+  await page.keyboard.press('Enter')
+  await expect(input).toBeFocused()
+  await expect(input).toHaveValue('')
+  await expect(input).toHaveAttribute('aria-expanded', 'true')
+  await expect(input).toHaveAttribute('aria-description', 'TypeScript, Rust')
+  await expect(example.getByRole('button', { name: 'Remove Rust', exact: true })).toBeVisible()
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).getAll('search-languages')),
+  ).toEqual(['ts', 'rust'])
+  await page
+    .getByRole('listbox', { name: 'Searchable collection', exact: true })
+    .getByRole('option', { name: 'Rust', exact: true })
+    .click()
+  await expect(input).toBeFocused()
+  await expect(input).toHaveAttribute('aria-description', 'TypeScript')
+  await page.keyboard.press('Tab')
+  await expect(input).toHaveAttribute('aria-expanded', 'false')
+  await expect(example.getByRole('button', { name: 'Reset languages', exact: true })).toBeFocused()
+})
+
+test('select.search.composition: native text editing and composition do not accidentally accept a selection', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-search')
+  const input = example.getByRole('combobox', { name: 'Searchable language *', exact: true })
+  await input.fill('rus')
+  await page.keyboard.press('Home')
+  await page.keyboard.type('x')
+  await expect(input).toHaveValue('xrus')
+  await page.keyboard.press('Escape')
+  await input.click()
+  await input.dispatchEvent('compositionstart')
+  await input.fill('TypeS')
+  await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })
+  const list = page.getByRole('listbox', { name: 'Searchable language *', exact: true })
+  await expect(list.getByRole('option')).toHaveCount(3)
+  await input.dispatchEvent('compositionend')
+  await expect(list.getByRole('option')).toHaveCount(1)
+  await page.keyboard.press('Escape')
+  await expect(input).toHaveValue('TypeScript')
+})

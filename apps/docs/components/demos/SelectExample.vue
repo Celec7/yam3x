@@ -16,6 +16,13 @@ const selectionEvents = ref<string[]>([])
 const dataChoice = ref('forest')
 const dataChoices = ref(['violet', 'remote'])
 const remoteCatalog = ref(false)
+const searchChoice = ref('ts')
+const searchChoices = ref(['ts'])
+const searchOptions = [
+  { value: 'ts', label: 'TypeScript' },
+  { value: 'rust', label: 'Rust' },
+  { value: 'ruby', label: 'Ruby', disabled: true },
+]
 const dataOptions = computed<readonly SelectOption[]>(() =>
   remoteCatalog.value
     ? [{ value: 'remote', label: t('Remote preset', '远程预设') }]
@@ -156,6 +163,48 @@ function record(event: string) {
       </Select>
     </FormField>
     <form id="external-select-form"></form>
+    <section
+      class="select-demo__data"
+      data-testid="select-search"
+    >
+      <form id="select-search-form">
+        <FormField :label="t('Searchable language', '可搜索的语言')"
+          ><Select
+            v-model="searchChoice"
+            name="search-language"
+            searchable
+            required
+          >
+            <OptionGroup :label="t('Web', '网页')"
+              ><Option
+                value="ts"
+                label="TypeScript"
+            /></OptionGroup>
+            <OptionGroup :label="t('Systems', '系统')"
+              ><Option
+                value="rust"
+                label="Rust" /><Option
+                value="ruby"
+                label="Ruby"
+                disabled
+            /></OptionGroup> </Select
+        ></FormField>
+        <FormField :label="t('Searchable collection', '可搜索的集合')"
+          ><Select
+            v-model="searchChoices"
+            :options="searchOptions"
+            name="search-languages"
+            searchable
+            multiple
+            selection-display="chips"
+        /></FormField>
+        <Button
+          type="reset"
+          variant="text"
+          >{{ t('Reset languages', '重置语言') }}</Button
+        >
+      </form>
+    </section>
     <section
       data-testid="select-data"
       class="select-demo__data"

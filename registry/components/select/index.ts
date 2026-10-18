@@ -1,2 +1,2 @@
 export { default as Select } from './select.vue'
-export type { SelectOption } from './select.types'
+export type { SelectOption, SelectFilter } from './select.types'

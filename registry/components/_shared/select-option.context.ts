@@ -12,6 +12,7 @@ export interface SelectOptionRecord {
 export interface SelectOptionContext {
   values: ComputedRef<readonly string[]>
   activeValue: Ref<string | null>
+  isVisible?(option: Pick<SelectOptionRecord, 'value' | 'label' | 'disabled' | 'selected'>): boolean
   isSelected(value: string): boolean
   select(value: string, source: 'pointer' | 'keyboard' | 'programmatic'): void
   register(option: SelectOptionRecord): () => void

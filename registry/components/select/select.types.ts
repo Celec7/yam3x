@@ -4,3 +4,10 @@ export interface SelectOption {
   disabled?: boolean
   selected?: boolean
 }
+
+export type SelectFilter =
+  | 'contains'
+  | 'starts-with'
+  | 'ends-with'
+  | 'none'
+  | ((option: SelectOption, query: string) => boolean)

@@ -18,17 +18,20 @@ import type {
   OptionSelectionSource,
   OptionToggleDetail,
 } from '../option/option.types'
-import type { SelectOption } from './select.types'
+import type { SelectOption, SelectFilter } from './select.types'
 import Option from '../option/option.vue'
 import OptionPanel from '../option/option-panel.vue'
 import Icon from '../icon/icon.vue'
 import InputChip from '../chips/input-chip.vue'
+import IconButton from '../icon-button/icon-button.vue'
 
 defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
     options?: readonly SelectOption[]
+    searchable?: boolean
+    filter?: SelectFilter
     locale?: string
     id?: string
     name?: string
@@ -45,6 +48,8 @@ const props = withDefaults(
   }>(),
   {
     options: undefined,
+    searchable: false,
+    filter: 'contains',
     id: undefined,
     name: undefined,
     form: undefined,
@@ -62,6 +67,7 @@ const props = withDefaults(
 
 const modelValue = defineModel<string | string[] | null>({ default: null })
 const open = defineModel<boolean>('open', { default: false })
+const query = defineModel<string>('query', { default: '' })
 const emit = defineEmits<{
   beforeinput: [event: Event]
   input: [detail: OptionSelectionDetail]
@@ -91,12 +97,17 @@ const { messages } = useComponentLocale(
   () => props.locale,
   () => undefined,
 )
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
+)
 const attrs = useAttrs()
 const uid = useId().replace(/:/g, '')
 const controlId = computed(() => props.id || `yam3x-select-${uid}`)
 const listboxId = `yam3x-select-listbox-${uid}`
 const root = ref<HTMLElement | null>(null)
-const trigger = ref<HTMLButtonElement | null>(null)
+const trigger = ref<HTMLButtonElement | HTMLInputElement | null>(null)
 const chipDisplay = computed(() => props.multiple && props.selectionDisplay === 'chips')
 const chipContainer = ref<HTMLElement | null>(null)
 const nativeSelect = ref<HTMLSelectElement | null>(null)
@@ -118,6 +129,27 @@ const options = computed<SelectOptionRecord[]>(() => {
     element: mounted.get(option.value)?.element ?? null,
   }))
 })
+function matchesOption(option: SelectOption) {
+  if (!props.searchable || !query.value || props.filter === 'none') return true
+  if (typeof props.filter === 'function') return props.filter(option, query.value)
+  const label = option.label.toLocaleLowerCase()
+  const term = query.value.toLocaleLowerCase()
+  if (props.filter === 'starts-with') return label.startsWith(term)
+  if (props.filter === 'ends-with') return label.endsWith(term)
+  return label.includes(term)
+}
+const visibleOptions = computed(() => options.value.filter(matchesOption))
+const searchText = computed(() =>
+  open.value
+    ? query.value
+    : props.multiple
+      ? chipDisplay.value
+        ? ''
+        : displayValue.value
+      : displayValue.value,
+)
+let composing = false
+let dispatchingNativeInput = false
 const activeValue = ref<string | null>(null)
 const invalid = ref(false)
 const values = computed<readonly string[]>(() => {
@@ -142,7 +174,7 @@ const nativeOptions = computed(() => [
     .map((value) => ({ value, label: value, disabled: false })),
 ])
 const activeOption = computed(() =>
-  options.value.find((option) => option.value === activeValue.value && !option.disabled),
+  visibleOptions.value.find((option) => option.value === activeValue.value && !option.disabled),
 )
 const labelledby = ref('')
 const typeahead = ref('')
@@ -199,7 +231,9 @@ function scheduleFocusUpdate() {
   cancelAnimationFrame(focusFrame)
   focusFrame = requestAnimationFrame(() => {
     focusFrame = 0
-    if (open.value && props.multiple) focusActiveOption()
+    if (open.value) activeOption.value?.element?.scrollIntoView({ block: 'nearest' })
+    if (open.value && props.searchable) trigger.value?.focus({ preventScroll: true })
+    else if (open.value && props.multiple) focusActiveOption()
     else if (!open.value && restoreFocusAfterClose) {
       restoreFocusAfterClose = false
       trigger.value?.focus({ preventScroll: true })
@@ -207,13 +241,14 @@ function scheduleFocusUpdate() {
   })
 }
 function firstEnabled(fromEnd = false) {
-  const enabled = options.value.filter((option) => !option.disabled)
+  const enabled = visibleOptions.value.filter((option) => !option.disabled)
   return fromEnd ? enabled.at(-1) : enabled[0]
 }
 function activeOrSelected() {
   return (
-    options.value.find((option) => values.value.includes(option.value) && !option.disabled) ??
-    firstEnabled()
+    visibleOptions.value.find(
+      (option) => values.value.includes(option.value) && !option.disabled,
+    ) ?? firstEnabled()
   )
 }
 function requestOpen(
@@ -277,7 +312,12 @@ function onPanelToggle(detail: OptionToggleDetail) {
   else emit('close')
 }
 function dispatchNativeInput(type: 'input' | 'change') {
-  trigger.value?.dispatchEvent(new Event(type, { bubbles: true }))
+  dispatchingNativeInput = true
+  try {
+    trigger.value?.dispatchEvent(new Event(type, { bubbles: true }))
+  } finally {
+    dispatchingNativeInput = false
+  }
 }
 function selectValue(value: string, source: OptionSelectionSource = 'pointer') {
   const option = options.value.find((item) => item.value === value)
@@ -297,6 +337,7 @@ function selectValue(value: string, source: OptionSelectionSource = 'pointer') {
   }
   if (!commitSelection(next, value, source)) return
   if (!props.multiple) requestOpen(false, 'programmatic')
+  else if (props.searchable) trigger.value?.focus({ preventScroll: true })
   else if (source === 'pointer' && open.value) option.element?.focus({ preventScroll: true })
 }
 function commitSelection(next: readonly string[], value: string, source: OptionSelectionSource) {
@@ -305,6 +346,7 @@ function commitSelection(next: readonly string[], value: string, source: OptionS
   trigger.value?.dispatchEvent(before)
   if (before.defaultPrevented) return false
   modelValue.value = selectedValuesForMode(next)
+  if (props.searchable) query.value = ''
   invalid.value = false
   trigger.value?.removeAttribute('aria-invalid')
   const detail: OptionSelectionDetail = { value, source }
@@ -317,6 +359,7 @@ function commitSelection(next: readonly string[], value: string, source: OptionS
 function openFromChip(value: string, event: MouseEvent) {
   event.preventDefault()
   if (props.disabled) return
+  if (props.searchable) query.value = ''
   requestOpen(true, 'trigger')
   if (open.value) {
     const option = options.value.find((option) => option.value === value)
@@ -347,7 +390,7 @@ async function removeChip(value: string, event: MouseEvent | KeyboardEvent) {
 }
 
 function updateActiveBy(delta: number) {
-  const enabled = options.value.filter((option) => !option.disabled)
+  const enabled = visibleOptions.value.filter((option) => !option.disabled)
   if (!enabled.length) return
   const currentIndex = enabled.findIndex((option) => option.value === activeValue.value)
   const nextIndex =
@@ -368,11 +411,52 @@ function findTypeaheadMatch(character: string) {
   typeaheadTimer = setTimeout(() => {
     typeahead.value = ''
   }, 700)
-  const enabled = options.value.filter((option) => !option.disabled)
+  const enabled = visibleOptions.value.filter((option) => !option.disabled)
   const current = enabled.findIndex((option) => option.value === activeValue.value)
   const rotated = [...enabled.slice(current + 1), ...enabled.slice(0, current + 1)]
   const match = rotated.find((option) => option.label.toLocaleLowerCase().startsWith(query))
   if (match) setActive(match.value)
+}
+function onSearchInput(event: Event) {
+  if (dispatchingNativeInput || composing || props.disabled) return
+  query.value = (event.target as HTMLInputElement).value
+  requestOpen(true, 'keyboard')
+  setActive(firstEnabled()?.value ?? null)
+}
+function onCompositionEnd(event: CompositionEvent) {
+  composing = false
+  onSearchInput(event)
+}
+function onSearchKeydown(event: KeyboardEvent) {
+  if (event.defaultPrevented || event.isComposing || composing || props.disabled) return
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+    event.preventDefault()
+    if (!open.value) {
+      requestOpen(true, 'keyboard')
+      if (!values.value.length && event.key === 'ArrowUp') moveToEdge(true)
+    } else updateActiveBy(event.key === 'ArrowDown' ? 1 : -1)
+  } else if (event.key === 'Enter' && open.value) {
+    event.preventDefault()
+    if (activeOption.value) selectValue(activeOption.value.value, 'keyboard')
+  } else if (event.key === 'Escape' && open.value) {
+    event.preventDefault()
+    requestOpen(false, 'keyboard')
+  } else if (event.key === 'Tab' && props.closeOnTab && open.value) {
+    requestOpen(false, 'keyboard')
+    restoreFocusAfterClose = false
+  }
+}
+function onSearchBlur(event: FocusEvent) {
+  if (!props.closeOnTab) return
+  const target = event.relatedTarget as Node | null
+  if (target && (root.value?.contains(target) || panel.value?.panel?.contains(target))) return
+  requestOpen(false, 'outside')
+  restoreFocusAfterClose = false
+}
+function toggleSearch() {
+  requestOpen(!open.value, 'trigger')
+  trigger.value?.focus({ preventScroll: true })
 }
 function onKeydown(event: KeyboardEvent) {
   if (event.defaultPrevented || event.isComposing || props.disabled) return
@@ -472,6 +556,7 @@ function onInvalid(event: Event) {
 }
 function onFormReset() {
   queueMicrotask(() => {
+    query.value = ''
     modelValue.value = Array.isArray(initialValue) ? [...initialValue] : initialValue
     invalid.value = false
     trigger.value?.removeAttribute('aria-invalid')
@@ -488,9 +573,20 @@ watch(
   () => [props.form, props.name, props.required, props.disabled],
   () => nextTick(attachFormResetListener),
 )
-watch(open, scheduleFocusUpdate, { flush: 'post' })
 watch(
-  options,
+  open,
+  (value) => {
+    if (!value && props.searchable) query.value = ''
+    scheduleFocusUpdate()
+  },
+  { flush: 'post' },
+)
+watch(query, (value) => {
+  if (value && props.searchable && open.value)
+    void nextTick(() => setActive(firstEnabled()?.value ?? null))
+})
+watch(
+  visibleOptions,
   (current) => {
     if (
       activeValue.value &&
@@ -534,6 +630,7 @@ onBeforeUnmount(() => {
 provide(selectOptionContextKey, {
   values,
   activeValue,
+  isVisible: matchesOption,
   isSelected: selected,
   select: selectValue,
   register,
@@ -547,6 +644,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
     class="yam3x-select"
     :class="{
       'yam3x-select--chips': chipDisplay,
+      'yam3x-select--searchable': searchable,
       'yam3x-select--open': open,
       'yam3x-select--disabled': disabled,
     }"
@@ -567,7 +665,36 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
         @remove="removeChip"
       />
     </div>
+    <input
+      v-if="searchable"
+      :id="controlId"
+      ref="trigger"
+      v-bind="attrs"
+      class="yam3x-select__search"
+      :data-form-field-control="controlId"
+      type="text"
+      role="combobox"
+      autocomplete="off"
+      :form="form"
+      aria-autocomplete="list"
+      aria-haspopup="listbox"
+      :aria-expanded="open ? 'true' : 'false'"
+      :aria-controls="open ? listboxId : undefined"
+      :aria-activedescendant="open ? activeOption?.id : undefined"
+      :aria-description="multiple && displayValue ? displayValue : undefined"
+      :aria-required="required ? 'true' : undefined"
+      :aria-invalid="invalid ? 'true' : undefined"
+      :disabled="disabled"
+      :value="searchText"
+      @click="requestOpen(true, 'trigger')"
+      @input="onSearchInput"
+      @keydown="onSearchKeydown"
+      @compositionstart="composing = true"
+      @compositionend="onCompositionEnd"
+      @blur="onSearchBlur"
+    />
     <button
+      v-else
       :id="controlId"
       ref="trigger"
       v-bind="attrs"
@@ -605,6 +732,26 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
         <slot name="arrow"><Icon name="arrow_drop_down" /></slot>
       </span>
     </button>
+    <span
+      v-if="searchable"
+      class="yam3x-select__toggle"
+    >
+      <IconButton
+        variant="standard"
+        tabindex="-1"
+        :aria-label="actionMessages.options"
+        aria-haspopup="listbox"
+        :aria-expanded="open ? 'true' : 'false'"
+        :aria-controls="open ? listboxId : undefined"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="toggleSearch"
+        ><span
+          class="yam3x-select__arrow"
+          aria-hidden="true"
+          ><slot name="arrow"><Icon name="arrow_drop_down" /></slot></span
+      ></IconButton>
+    </span>
     <select
       ref="nativeSelect"
       :data-form-field-focus="controlId"
@@ -638,7 +785,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       :id="listboxId"
       ref="panel"
       v-model:open="open"
-      :anchor="chipDisplay ? root : trigger"
+      :anchor="chipDisplay || searchable ? root : trigger"
       :locale="props.locale"
       :label="typeof attrs['aria-label'] === 'string' ? attrs['aria-label'] : undefined"
       :labelledby="labelledby || undefined"
@@ -656,6 +803,8 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
     >
       <div
         class="yam3x-select__options"
+        :class="{ 'yam3x-select__options--searchable': searchable }"
+        @pointerdown="searchable && $event.preventDefault()"
         @pointermove="onPointerMove"
         @keydown="onMultiListKeydown"
       >
@@ -668,7 +817,8 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
             :label="option.label"
             :disabled="option.disabled"
             :selected="option.selected"
-            :tabindex="multiple && activeValue === option.value ? 0 : -1"
+            :tabindex="multiple && !searchable && activeValue === option.value ? 0 : -1"
+            :term="searchable ? query : ''"
             :hide-selection-indicator="hideSelectionIndicator"
           >
             <template
@@ -691,7 +841,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
           :select="selectValue"
         />
         <div
-          v-if="options.length === 0"
+          v-if="visibleOptions.length === 0"
           class="yam3x-option-panel__status"
           role="status"
         >
@@ -769,6 +919,41 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   min-inline-size: 48px;
   min-block-size: 48px;
   margin-inline-start: auto;
+}
+.yam3x-select.yam3x-select--searchable {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.yam3x-select.yam3x-select--searchable .yam3x-select__search {
+  flex: 1 1 96px;
+  inline-size: 0;
+  min-inline-size: 48px;
+  min-block-size: 48px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.yam3x-select--searchable .yam3x-select__chips {
+  flex: 1 1 100%;
+}
+.yam3x-select__toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+}
+.yam3x-select.yam3x-select--searchable
+  .yam3x-select__search:focus-visible:not(.yam3x-form-field__control *) {
+  outline: 2px solid var(--_yam3x-select-focus-color);
+  outline-offset: -2px;
+  border-radius: inherit;
+}
+.yam3x-select__options--searchable .yam3x-option-group:not(:has(.yam3x-option:not([hidden]))) {
+  display: none;
 }
 .yam3x-select__trigger:disabled {
   cursor: default;

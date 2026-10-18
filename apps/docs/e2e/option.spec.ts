@@ -228,7 +228,7 @@ test('OptionPanel loading and empty states are statuses rather than selectable o
 }) => {
   await page.goto('/components/option')
   const trigger = page.getByRole('button', { name: 'Project view' })
-  const mode = page.getByLabel('Panel content')
+  const mode = page.getByRole('combobox', { name: 'Panel content', exact: true })
   const panel = page.getByRole('listbox')
   await selectM3Option(page, mode, 'loading')
   await trigger.click()
