@@ -15,3 +15,4 @@ This project extension combines direct date or time entry in a form field. Mater
 
 - Project-defined: The component supports date-only, time-only, and combined date-time entry. A combined mode composes the Material date and time patterns.
 - Project-defined: Parsing, validation, free-text acceptance, and locale policy belong to the consuming form. Keep typed input editable and explain invalid or incomplete values.
+- Project-defined (**date-input.behavior.locale-draft**): A locale change preserves unfinished edits and the focused segment. Keep the original automatic hour cycle while a time draft is incomplete so that changing display language cannot reinterpret its value; adopt the new locale's cycle once the draft is validly committed or cleared.

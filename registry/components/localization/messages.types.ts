@@ -123,7 +123,32 @@ export interface CalendarMessages {
   chooseYear: (period: string) => string
 }
 
+export interface DateInputMessages {
+  date: string
+  time: string
+  datetime: string
+  groupFallback: string
+  required: string
+  invalid: string
+  earlyDate: string
+  lateDate: string
+  earlyTime: string
+  lateTime: string
+  unavailable: string
+  periodPlaceholder: string
+  am: string
+  pm: string
+  month?: string
+  day?: string
+  year?: string
+  hour?: string
+  minute?: string
+  second?: string
+  period?: string
+}
+
 export interface LocaleMessages {
+  dateInput: DateInputMessages
   calendar: CalendarMessages
   numberField: NumberFieldLocaleMessages
   pagination: PaginationMessages

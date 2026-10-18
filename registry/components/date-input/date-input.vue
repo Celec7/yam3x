@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import Icon from '../icon/icon.vue'
+import { useComponentLocale } from '../localization/context'
+import english from '../localization/locales/en-US'
 import {
   dateFromSegments,
   getDateInputSegmentLabel,
@@ -83,35 +85,36 @@ const initialValue = copyDate(props.modelValue ?? props.value ?? null)
 const draft = ref<Partial<Record<DateInputSegment, string>>>({})
 const activeSegment = ref<DateInputSegment>('month')
 const changedSinceFocus = ref(false)
-const locale = computed(
-  () => props.locale || (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
+const { locale, messages } = useComponentLocale(
+  'dateInput',
+  () => props.locale,
+  () => ({ required: props.requiredMessage, invalid: props.invalidMessage }),
+  () => (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
 )
-const resolvedLabel = computed(() => {
-  if (props.label) return props.label
-  const language = new Intl.Locale(locale.value).language
-  const labels: Record<string, Record<DateInputType, string>> = {
-    ar: { date: 'التاريخ', time: 'الوقت', datetime: 'التاريخ والوقت' },
-    de: { date: 'Datum', time: 'Uhrzeit', datetime: 'Datum und Uhrzeit' },
-    en: { date: 'Date', time: 'Time', datetime: 'Date and time' },
-    es: { date: 'Fecha', time: 'Hora', datetime: 'Fecha y hora' },
-    fr: { date: 'Date', time: 'Heure', datetime: 'Date et heure' },
-    it: { date: 'Data', time: 'Ora', datetime: 'Data e ora' },
-    ja: { date: '日付', time: '時刻', datetime: '日付と時刻' },
-    ko: { date: '날짜', time: '시간', datetime: '날짜 및 시간' },
-    pt: { date: 'Data', time: 'Hora', datetime: 'Data e hora' },
-    ru: { date: 'Дата', time: 'Время', datetime: 'Дата и время' },
-    zh: { date: '日期', time: '时间', datetime: '日期与时间' },
-  }
-  return labels[language]?.[props.type] ?? labels.en![props.type]
-})
-const resolvedTimeFormat = computed(() => resolveTimeFormat(locale.value, props.timeFormat))
+const resolvedLabel = computed(() => props.label ?? messages.value[props.type])
+const draftTimeFormat = ref<'12' | '24'>()
+const hasPendingTimeDraft = computed(() =>
+  (['hour', 'minute', 'second', 'period'] as const).some((id) => draft.value[id] !== undefined),
+)
+const resolvedTimeFormat = computed(() =>
+  props.timeFormat === 'auto' && hasPendingTimeDraft.value && draftTimeFormat.value
+    ? draftTimeFormat.value
+    : resolveTimeFormat(locale.value, props.timeFormat),
+)
+function setDraft(value: typeof draft.value): void {
+  if (!hasPendingTimeDraft.value) draftTimeFormat.value = resolvedTimeFormat.value
+  draft.value = value
+}
 const parts = computed(() =>
   getDateInputParts(locale.value, props.type, resolvedTimeFormat.value, props.showSeconds).map(
     (part) =>
       part.kind === 'field'
         ? {
             ...part,
-            label: props.labels?.[part.id] || getDateInputSegmentLabel(locale.value, part.id),
+            label:
+              props.labels?.[part.id] ??
+              messages.value[part.id] ??
+              getDateInputSegmentLabel(locale.value, part.id),
           }
         : part,
   ),
@@ -124,16 +127,6 @@ const visibleParts = computed(() =>
 const direction = computed(() => (/^(ar|fa|he|ur)(-|$)/i.test(locale.value) ? 'rtl' : 'ltr'))
 const visibleValue = (id: DateInputSegment) =>
   draft.value[id] ?? getSegmentDisplayValue(currentValue.value, id, resolvedTimeFormat.value)
-const requiredMessage = computed(
-  () =>
-    props.requiredMessage ||
-    (/^zh/i.test(locale.value) ? '此字段为必填项。' : 'This field is required.'),
-)
-const invalidMessage = computed(
-  () =>
-    props.invalidMessage ||
-    (/^zh/i.test(locale.value) ? '请输入有效的日期或时间。' : 'Enter a valid date or time.'),
-)
 
 function copyDate(value: Date | null | undefined): Date | null {
   return value instanceof Date && Number.isFinite(value.getTime())
@@ -169,46 +162,30 @@ function activeDateParts(): Partial<Record<DateInputSegment, number>> {
 function validCandidate(
   date: Date,
 ): { message: string; validity: 'rangeUnderflow' | 'rangeOverflow' | 'customError' } | null {
-  const messages = /^zh/i.test(locale.value)
-    ? {
-        earlyDate: '日期早于允许范围。',
-        lateDate: '日期晚于允许范围。',
-        earlyTime: '时间早于允许范围。',
-        lateTime: '时间晚于允许范围。',
-        unavailable: '此日期或时间不可用。',
-      }
-    : {
-        earlyDate: 'Date is too early.',
-        lateDate: 'Date is too late.',
-        earlyTime: 'Time is too early.',
-        lateTime: 'Time is too late.',
-        unavailable: 'Date or time is unavailable.',
-      }
+  const text = messages.value
   if (props.type !== 'time') {
     const day = new Date(date.getFullYear(), date.getMonth(), date.getDate())
     if (props.minDate && day < props.minDate)
-      return { message: messages.earlyDate, validity: 'rangeUnderflow' }
+      return { message: text.earlyDate, validity: 'rangeUnderflow' }
     if (props.maxDate && day > props.maxDate)
-      return { message: messages.lateDate, validity: 'rangeOverflow' }
+      return { message: text.lateDate, validity: 'rangeOverflow' }
     if (props.isDateSelectable?.(new Date(day)) === false || props.blackoutDates?.(new Date(day)))
-      return { message: messages.unavailable, validity: 'customError' }
+      return { message: text.unavailable, validity: 'customError' }
   }
   if (props.type !== 'date') {
     const parts = { hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds() }
     const value = parts.hour * 3600 + parts.minute * 60 + parts.second
     const min = timeLimit(props.minTime),
       max = timeLimit(props.maxTime)
-    if (min !== null && value < min)
-      return { message: messages.earlyTime, validity: 'rangeUnderflow' }
-    if (max !== null && value > max)
-      return { message: messages.lateTime, validity: 'rangeOverflow' }
+    if (min !== null && value < min) return { message: text.earlyTime, validity: 'rangeUnderflow' }
+    if (max !== null && value > max) return { message: text.lateTime, validity: 'rangeOverflow' }
     if (props.isTimeSelectable?.(parts) === false || props.blackoutTimes?.(parts))
-      return { message: messages.unavailable, validity: 'customError' }
+      return { message: text.unavailable, validity: 'customError' }
   }
   return null
 }
-const error = computed(() => {
-  if (props.disabled || props.readonly) return ''
+const problem = computed(() => {
+  if (props.disabled || props.readonly) return null
   const values = activeDateParts()
   const any = Object.values(values).some((value) => value !== undefined)
   const completeDate =
@@ -220,9 +197,9 @@ const error = computed(() => {
       values.minute !== undefined &&
       (resolvedTimeFormat.value === '24' || values.period !== undefined) &&
       (!props.showSeconds || values.second !== undefined))
-  if (!any && props.required) return requiredMessage.value
-  if (any && (!completeDate || !completeTime)) return invalidMessage.value
-  if (!completeDate || !completeTime) return ''
+  if (!any && props.required) return messages.value.required
+  if (any && (!completeDate || !completeTime)) return messages.value.invalid
+  if (!completeDate || !completeTime) return null
   const date = dateFromSegments(
     values,
     props.type,
@@ -230,9 +207,16 @@ const error = computed(() => {
     props.showSeconds,
     currentValue.value,
   )
-  if (!date) return invalidMessage.value
-  return validCandidate(date)?.message || ''
+  if (!date) return messages.value.invalid
+  return validCandidate(date)?.message ?? null
 })
+
+const error = computed(() => problem.value ?? '')
+const nativeValidationMessage = computed(() =>
+  problem.value === null
+    ? ''
+    : problem.value || messages.value.invalid || english.dateInput.invalid,
+)
 
 watch(
   () => [props.modelValue, props.value] as const,
@@ -240,22 +224,31 @@ watch(
     const incoming = copyDate(modelValue !== undefined ? modelValue : value)
     if (incoming?.getTime() !== currentValue.value?.getTime()) {
       currentValue.value = incoming
-      draft.value = {}
+      setDraft({})
     }
   },
 )
 watch(
-  error,
-  (message) => {
+  [nativeValidationMessage, parts],
+  ([message]) => {
+    for (const field of fields.values()) field.setCustomValidity('')
     firstField()?.setCustomValidity(message)
   },
   { flush: 'post', immediate: true },
 )
 watch(
   parts,
-  (value) => {
+  async (value) => {
+    const document = root.value?.ownerDocument
+    const focused = [...fields].find(([, field]) => field === document?.activeElement)?.[0]
     const first = value.find((part) => part.kind === 'field')
-    if (first?.kind === 'field') activeSegment.value = first.id
+    if (focused && value.some((part) => part.kind === 'field' && part.id === focused))
+      activeSegment.value = focused
+    else if (first?.kind === 'field') activeSegment.value = first.id
+    if (!focused || !document) return
+    await nextTick()
+    if (document.activeElement === document.body || root.value?.contains(document.activeElement))
+      fields.get(activeSegment.value)?.focus()
   },
   { immediate: true },
 )
@@ -288,7 +281,7 @@ function emitValue(value: Date | null, input = true): void {
 }
 function clearPart(id: DateInputSegment): void {
   const nextDraft = { ...draft.value, [id]: '' }
-  draft.value = nextDraft
+  setDraft(nextDraft)
   const values = activeDateParts()
   delete values[id]
   const value = dateFromSegments(
@@ -331,7 +324,7 @@ function commitDraft(id: DateInputSegment): void {
   if (value) {
     const problem = validCandidate(value)
     if (!problem) {
-      draft.value = { ...draft.value, [id]: undefined }
+      setDraft({})
       emitValue(value)
     }
   }
@@ -350,7 +343,7 @@ function inputSegment(event: Event, id: DateInputSegment, maxLength: number): vo
     if (numeric !== text) text = numeric
   }
   if (text.length > maxLength) text = text.slice(0, maxLength)
-  draft.value = { ...draft.value, [id]: text }
+  setDraft({ ...draft.value, [id]: text })
   input.value = text
   const values = activeDateParts()
   const segment = parts.value.find((part) => part.kind === 'field' && part.id === id)
@@ -395,9 +388,10 @@ function onInvalid(event: Event): void {
         : validity.customError
           ? 'customError'
           : 'typeMismatch'
-  emit('invalid', { message: error.value, validity: reason })
+  emit('invalid', { message: nativeValidationMessage.value, validity: reason })
 }
 function increment(id: DateInputSegment, amount: number): void {
+  const format = resolvedTimeFormat.value
   const segment = parts.value.find((part) => part.kind === 'field' && part.id === id)
   if (!segment || segment.kind !== 'field') return
   const values = activeDateParts()
@@ -424,16 +418,18 @@ function increment(id: DateInputSegment, amount: number): void {
       ((((current - min + amount) % (max - min + 1)) + (max - min + 1)) % (max - min + 1)) + min
   }
   values[id] = current
-  draft.value = { ...draft.value, [id]: undefined }
+  setDraft({ ...draft.value, [id]: undefined })
   const candidate = dateFromSegments(
     values,
     props.type,
-    resolvedTimeFormat.value,
+    format,
     props.showSeconds,
     currentValue.value,
   )
-  if (candidate && !validCandidate(candidate)) emitValue(candidate)
-  else if (id === 'period' && currentValue.value) {
+  if (candidate && !validCandidate(candidate)) {
+    setDraft({})
+    emitValue(candidate)
+  } else if (id === 'period' && currentValue.value) {
     const adjusted = new Date(currentValue.value)
     adjusted.setHours(adjusted.getHours() + (current === 1 ? 12 : -12))
     if (!validCandidate(adjusted)) emitValue(adjusted)
@@ -468,7 +464,7 @@ function keydown(event: KeyboardEvent, id: DateInputSegment): void {
       const segment = parts.value.find((part) => part.kind === 'field' && part.id === id)
       if (segment?.kind === 'field') {
         const limits = segmentLimits(id, segment.max)
-        draft.value = { ...draft.value, [id]: String(event.key === 'Home' ? limits[0] : limits[1]) }
+        setDraft({ ...draft.value, [id]: String(event.key === 'Home' ? limits[0] : limits[1]) })
         commitDraft(id)
       }
     } else
@@ -484,16 +480,16 @@ function keydown(event: KeyboardEvent, id: DateInputSegment): void {
       )
   }
 }
-function displayedFieldValue(id: DateInputSegment, label: string): string {
+function displayedFieldValue(id: DateInputSegment): string {
   const value = visibleValue(id)
   if (id !== 'period') return value
-  if (value === '')
-    return label === 'Period' && locale.value.startsWith('zh') ? '上午/下午' : 'AM/PM'
+  if (value === '') return messages.value.periodPlaceholder
   const hour = value === '1' ? 13 : 1
   return (
     new Intl.DateTimeFormat(locale.value, { hour: 'numeric', hour12: true, timeZone: 'UTC' })
       .formatToParts(new Date(Date.UTC(2000, 0, 1, hour)))
-      .find((part) => part.type === 'dayPeriod')?.value || (value === '1' ? 'PM' : 'AM')
+      .find((part) => part.type === 'dayPeriod')?.value ||
+    (value === '1' ? messages.value.pm : messages.value.am)
   )
 }
 function fieldNumber(id: DateInputSegment): number | undefined {
@@ -515,7 +511,7 @@ function onGroupFocusOut(): void {
     const active = document.activeElement as HTMLInputElement | null
     if (active && [...fields.values()].includes(active)) return
     for (const id of Object.keys(draft.value) as DateInputSegment[]) commitDraft(id)
-    draft.value = {}
+    setDraft({})
     if (changedSinceFocus.value) {
       changedSinceFocus.value = false
       emit('change', copyDate(currentValue.value))
@@ -524,14 +520,14 @@ function onGroupFocusOut(): void {
 }
 function onFormReset(): void {
   currentValue.value = copyDate(initialValue)
-  draft.value = {}
+  setDraft({})
   emit('update:modelValue', copyDate(initialValue))
   emit('update:value', copyDate(initialValue))
 }
 let form: HTMLFormElement | null = null
 onMounted(() => {
   form = root.value?.closest('form') ?? null
-  firstField()?.setCustomValidity(error.value)
+  firstField()?.setCustomValidity(nativeValidationMessage.value)
   form?.addEventListener('reset', onFormReset)
 })
 onBeforeUnmount(() => form?.removeEventListener('reset', onFormReset))
@@ -539,9 +535,9 @@ onBeforeUnmount(() => form?.removeEventListener('reset', onFormReset))
 defineExpose({
   focus: () => firstField()?.focus(),
   blur: () => (document.activeElement as HTMLElement | null)?.blur(),
-  checkValidity: () => !error.value,
+  checkValidity: () => problem.value === null,
   get validityMessage() {
-    return error.value
+    return nativeValidationMessage.value
   },
 })
 </script>
@@ -565,8 +561,8 @@ defineExpose({
       class="yam3x-date-input"
       role="group"
       :aria-labelledby="resolvedLabel ? `${uid}-label` : undefined"
-      :aria-label="resolvedLabel ? undefined : 'Date input'"
-      :aria-invalid="error ? 'true' : undefined"
+      :aria-label="resolvedLabel ? undefined : messages.groupFallback"
+      :aria-invalid="problem !== null ? 'true' : undefined"
       :aria-errormessage="error ? `${uid}-error` : undefined"
       :aria-describedby="error ? `${uid}-error` : undefined"
       :aria-disabled="disabled ? 'true' : undefined"
@@ -595,15 +591,13 @@ defineExpose({
             'is-year': part.id === 'year',
             'is-period': part.id === 'period',
           }"
-          :aria-label="labels?.[part.id] || part.label"
+          :aria-label="part.label"
           role="spinbutton"
           :aria-valuemin="segmentLimits(part.id, part.max)[0]"
           :aria-valuemax="segmentLimits(part.id, part.max)[1]"
           :aria-valuenow="fieldNumber(part.id)"
-          :aria-valuetext="
-            part.id === 'period' ? displayedFieldValue(part.id, part.label) : undefined
-          "
-          :aria-invalid="error ? 'true' : undefined"
+          :aria-valuetext="part.id === 'period' ? displayedFieldValue(part.id) : undefined"
+          :aria-invalid="problem !== null ? 'true' : undefined"
           :aria-errormessage="error ? `${uid}-error` : undefined"
           :aria-describedby="error ? `${uid}-error` : undefined"
           :disabled="disabled"
@@ -616,9 +610,7 @@ defineExpose({
           :maxlength="part.maxLength"
           :placeholder="
             part.id === 'period'
-              ? locale.startsWith('zh')
-                ? '上午/下午'
-                : 'AM/PM'
+              ? messages.periodPlaceholder
               : part.id === 'year'
                 ? 'YYYY'
                 : part.id === 'minute' || part.id === 'second' || part.id === 'hour'
@@ -627,7 +619,7 @@ defineExpose({
                     ? 'MM'
                     : 'DD'
           "
-          :value="displayedFieldValue(part.id, part.label)"
+          :value="displayedFieldValue(part.id)"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"

@@ -1,5 +1,21 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  dateInput: {
+    date: '日期',
+    time: '时间',
+    datetime: '日期与时间',
+    groupFallback: '日期输入',
+    required: '此字段为必填项。',
+    invalid: '请输入有效的日期或时间。',
+    earlyDate: '日期早于允许范围。',
+    lateDate: '日期晚于允许范围。',
+    earlyTime: '时间早于允许范围。',
+    lateTime: '时间晚于允许范围。',
+    unavailable: '此日期或时间不可用。',
+    periodPlaceholder: '上午/下午',
+    am: '上午',
+    pm: '下午',
+  },
   calendar: {
     label: '日历',
     previousMonth: '上个月',

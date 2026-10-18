@@ -5,6 +5,7 @@ import { renderToString } from 'vue/server-renderer'
 import { LocaleProvider } from '../../../../registry/components/localization'
 import { useComponentLocale } from '../../../../registry/components/localization/context'
 import type { LocaleOverrides } from '../../../../registry/components/localization'
+import DateInput from '../../../../registry/components/date-input/date-input.vue'
 import Calendar from '../../../../registry/components/calendar/calendar.vue'
 import NumberField from '../../../../registry/components/number-field/number-field.vue'
 import Pagination from '../../../../registry/components/pagination/pagination.vue'
@@ -351,6 +352,116 @@ describe('shared localization', () => {
     expect(chinese).toContain('aria-label="继续"')
     expect(chinese).toContain('2026年10月')
     expect(chinese).not.toContain('Forward')
+  })
+  it('shares Date input labels, segment overrides, and validation text without emitting values', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: {
+        locale: 'en-US',
+        messages: { dateInput: { month: 'Billing month', required: 'Choose a date' } },
+      },
+      slots: { default: () => h(DateInput, { required: true }) },
+    })
+    expect(wrapper.find('[aria-label="Billing month"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Choose a date')
+    await wrapper.setProps({ locale: 'zh-CN', messages: {} })
+    expect(wrapper.text()).toContain('日期')
+    expect(wrapper.text()).toContain('此字段为必填项。')
+    expect(wrapper.getComponent(DateInput).emitted('update:modelValue')).toBeUndefined()
+  })
+  it('preserves Date input invalid drafts and local overrides when inherited language changes', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'en-US' },
+      slots: {
+        default: () =>
+          h(DateInput, {
+            label: 'Invoice',
+            labels: { month: 'Month override' },
+            invalidMessage: 'Incomplete',
+          }),
+      },
+    })
+    await wrapper.get('[aria-label="Month override"]').setValue('10')
+    await wrapper.setProps({ locale: 'zh-CN' })
+    expect(wrapper.get<HTMLInputElement>('[aria-label="Month override"]').element.value).toBe('10')
+    expect(wrapper.text()).toContain('Invoice')
+    expect(wrapper.text()).toContain('Incomplete')
+    expect(wrapper.getComponent(DateInput).emitted('update:modelValue')).toBeUndefined()
+  })
+  it.each([
+    ['ar', 'التاريخ'],
+    ['de', 'Datum'],
+    ['es', 'Fecha'],
+    ['fr', 'Date'],
+    ['it', 'Data'],
+    ['ja', '日付'],
+    ['ko', '날짜'],
+    ['pt', 'Data'],
+    ['ru', 'Дата'],
+  ])('retains Date input existing %s translation through provider inheritance', (locale, label) => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale },
+      slots: { default: () => h(DateInput) },
+    })
+    expect(wrapper.get('.yam3x-date-input-field__label').text()).toBe(label)
+  })
+  // date-input.behavior.locale-draft
+  it('keeps incomplete 12-hour drafts in their original cycle until a valid value is committed', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'en-US' },
+      slots: { default: () => h(DateInput, { type: 'time' }) },
+    })
+    const input = wrapper.getComponent(DateInput)
+    await input.get('input[id$="-hour"]').setValue('11')
+    await input.get('input[id$="-period"]').setValue('p')
+    await wrapper.setProps({ locale: 'zh-CN' })
+    expect(input.get('input[id$="-hour"]').attributes('aria-valuemax')).toBe('12')
+    expect(input.emitted('update:modelValue')).toBeUndefined()
+    await input.get('input[id$="-minute"]').setValue('30')
+    const committed = input.emitted('update:modelValue')?.[0]?.[0] as Date
+    expect(committed.getHours()).toBe(23)
+    expect(committed.getMinutes()).toBe(30)
+    expect(input.get<HTMLInputElement>('input[id$="-hour"]').element.value).toBe('23')
+    expect(input.find('input[id$="-period"]').exists()).toBe(false)
+  })
+  it('preserves Date input focus and roving tab stop when segment order changes', async () => {
+    const wrapper = mount(LocaleProvider, {
+      attachTo: document.body,
+      props: { locale: 'en-US' },
+      slots: { default: () => h(DateInput) },
+    })
+    const month = wrapper.get<HTMLInputElement>('input[id$="-month"]')
+    month.element.focus()
+    await wrapper.setProps({ locale: 'zh-CN' })
+    await wrapper.vm.$nextTick()
+    expect(document.activeElement).toBe(month.element)
+    expect(month.attributes('tabindex')).toBe('0')
+    expect(wrapper.get('input[id$="-year"]').attributes('tabindex')).toBe('-1')
+  })
+  it('resolves Date input bounded-date messages from the scoped catalog', () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'zh-CN', messages: { dateInput: { earlyDate: 'Too soon' } } },
+      slots: {
+        default: () =>
+          h(DateInput, { modelValue: new Date(2026, 9, 5), minDate: new Date(2026, 9, 6) }),
+      },
+    })
+    expect(wrapper.text()).toContain('Too soon')
+    expect(wrapper.getComponent(DateInput).emitted('update:modelValue')).toBeUndefined()
+  })
+  it('keeps Date input validation effective when a message override is empty', () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { messages: { dateInput: { unavailable: '' } } },
+      slots: {
+        default: () =>
+          h(DateInput, { modelValue: new Date(2026, 9, 5), isDateSelectable: () => false }),
+      },
+    })
+    expect(
+      (
+        wrapper.getComponent(DateInput).vm as unknown as { checkValidity: () => boolean }
+      ).checkValidity(),
+    ).toBe(false)
+    expect(wrapper.get('input[id$="-month"]').element).toHaveProperty('validity.customError', true)
   })
   it('supplies all migrated namespaces from one provider', async () => {
     const messages: LocaleOverrides = { form: { summary: '自定义摘要' } }

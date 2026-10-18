@@ -77,3 +77,34 @@ test('keeps Calendar navigation and selection and supports localized keyboard fo
   await calendar.getByRole('option', { name: '2026', exact: true }).click()
   await expect(calendar.getByRole('listbox', { name: '选择月份，2026年' })).toBeVisible()
 })
+
+test('keeps a Date input draft and focused segment while inherited language changes', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const input = page.getByTestId('locale-date-input')
+  const month = input.locator('input[id$="-month"]')
+  await month.fill('10')
+  await month.focus()
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(month).toBeFocused()
+  await expect(month).toHaveAttribute('tabindex', '0')
+  await expect(month).toHaveValue('10')
+  await expect(input.getByRole('group')).toHaveAccessibleName('日期')
+  await expect(input.getByRole('alert')).toContainText('请输入有效的日期或时间。')
+  await expect(input.locator('input[role="spinbutton"]').first()).toHaveAttribute('id', /-year$/)
+  await input.locator('input[id$="-day"]').fill('05')
+  await input.locator('input[id$="-year"]').fill('2026')
+  await expect(input.getByRole('group')).not.toHaveAttribute('aria-invalid', 'true')
+  await expect
+    .poll(() =>
+      input
+        .locator('input[role="spinbutton"]')
+        .evaluateAll((fields) =>
+          fields.every((field) => (field as HTMLInputElement).validity.valid),
+        ),
+    )
+    .toBe(true)
+})

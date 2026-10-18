@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
+import { DateInput } from '@registry/components/date-input'
 import { Calendar } from '@registry/components/calendar'
 import { NumberField } from '@registry/components/number-field'
 import { Pagination } from '@registry/components/pagination'
@@ -15,6 +16,7 @@ const { locale: demoLocale } = useDemoLocale()
 const locale = ref(demoLocale.value === 'zh' ? 'zh-CN' : 'en-US')
 const page = ref(2)
 const date = ref<string | null>('2026-10-05')
+const inputDate = ref<Date | null>(null)
 const quantity = ref<number | null>(2.5)
 </script>
 
@@ -37,6 +39,10 @@ const quantity = ref<number | null>(2.5)
           :max="10"
           :step="0.1"
           data-testid="locale-number"
+        />
+        <DateInput
+          v-model="inputDate"
+          data-testid="locale-date-input"
         />
         <Calendar
           v-model="date"

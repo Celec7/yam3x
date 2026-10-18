@@ -1,7 +1,29 @@
 import { computed, inject, type ComputedRef, type InjectionKey } from 'vue'
 import english from './locales/en-US'
 import chinese from './locales/zh-CN'
+import arabic from './locales/ar'
+import german from './locales/de'
+import spanish from './locales/es'
+import french from './locales/fr'
+import italian from './locales/it'
+import japanese from './locales/ja'
+import korean from './locales/ko'
+import portuguese from './locales/pt'
+import russian from './locales/ru'
 import type { LocaleMessages, LocaleOverrides } from './messages.types'
+
+const translations: Record<string, LocaleOverrides> = {
+  zh: chinese,
+  ar: arabic,
+  de: german,
+  es: spanish,
+  fr: french,
+  it: italian,
+  ja: japanese,
+  ko: korean,
+  pt: portuguese,
+  ru: russian,
+}
 
 export interface LocaleContext {
   locale: string
@@ -40,7 +62,7 @@ export function useComponentLocale<K extends keyof LocaleMessages>(
     const language = localeLanguage(locale.value)
     const defaults = mergeMessages<LocaleMessages[K]>(
       english[component],
-      language === 'zh' ? chinese[component] : undefined,
+      translations[language]?.[component],
     )
     const shared =
       inherited && localeLanguage(inherited.value.locale) === language

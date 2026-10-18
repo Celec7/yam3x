@@ -1,5 +1,21 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  dateInput: {
+    date: 'Date',
+    time: 'Time',
+    datetime: 'Date and time',
+    groupFallback: 'Date input',
+    required: 'This field is required.',
+    invalid: 'Enter a valid date or time.',
+    earlyDate: 'Date is too early.',
+    lateDate: 'Date is too late.',
+    earlyTime: 'Time is too early.',
+    lateTime: 'Time is too late.',
+    unavailable: 'Date or time is unavailable.',
+    periodPlaceholder: 'AM/PM',
+    am: 'AM',
+    pm: 'PM',
+  },
   calendar: {
     label: 'Calendar',
     previousMonth: 'Previous month',
@@ -120,3 +136,13 @@ export default {
     scroll: 'Scroll this region horizontally to inspect deep hierarchy and complete labels.',
   },
 } satisfies LocaleMessages
+
+export const dateInputSegmentFallbacks = {
+  month: 'Month',
+  day: 'Day',
+  year: 'Year',
+  hour: 'Hour',
+  minute: 'Minute',
+  second: 'Second',
+  period: 'Period',
+}

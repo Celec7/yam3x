@@ -1,3 +1,5 @@
+import { dateInputSegmentFallbacks as fallbackLabels } from '../localization/locales/en-US'
+
 export type DateInputType = 'date' | 'time' | 'datetime'
 export type DateInputTimeFormat = '12' | '24' | 'auto'
 export type DateInputSegment = 'month' | 'day' | 'year' | 'hour' | 'minute' | 'second' | 'period'
@@ -12,16 +14,6 @@ export type DateInputPart =
       maxLength: number
     }
   | { kind: 'literal'; value: string }
-
-const fallbackLabels: Record<DateInputSegment, string> = {
-  month: 'Month',
-  day: 'Day',
-  year: 'Year',
-  hour: 'Hour',
-  minute: 'Minute',
-  second: 'Second',
-  period: 'Period',
-}
 
 export function getDateInputSegmentLabel(locale: string, id: DateInputSegment): string {
   try {
