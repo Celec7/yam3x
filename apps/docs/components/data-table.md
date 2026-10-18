@@ -66,6 +66,8 @@ Query and selection props describe accepted state. Bind the models as above to a
 
 ## API
 
+Built-in UI text can inherit shared [LocaleProvider](/components/localization) configuration. Explicit `locale` and `messages` take precedence; without a provider, the locale defaults to `en-US`.
+
 | Prop               | Default                                | Use                                                                                            |
 | ------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `caption`          | Required                               | Visible Title Medium title associated with the table and scroll region.                        |
@@ -86,7 +88,7 @@ Query and selection props describe accepted state. Bind the models as above to a
 | `error`            | Empty                                  | Application-owned failure text with a retry action.                                            |
 | `emptyKind`        | `empty`                                | `empty` for an empty collection, `filtered` for no matches.                                    |
 | `disabled`         | `false`                                | Disables built-in query, selection, and recovery controls.                                     |
-| `locale`           | `en-US`                                | Built-in English/Chinese text and local text comparison.                                       |
+| `locale`           | Provider → `en-US`                     | Built-in English/Chinese text and local text comparison.                                       |
 | `messages`         | Built-in text                          | Partial `DataTableMessages` for state text, selection names, and instructions.                 |
 
 Columns have `id`, `label`, and optional `value(row)`, `format(value, row)`, `supporting(row)`, `sortable`, `compare(leftRow, rightRow)`, `numeric`, `rowHeader`, and CSS `width`. A value is text, a number, a boolean, a Date, null, or undefined. Formatters own domain-specific currency and date display; default text is `String(value)` with blank nullish values. `supporting` adds Body Small text. `numeric` end-aligns cells and uses tabular figures. `rowHeader` renders native row-header cells. Width is a layout hint rather than a truncation policy.

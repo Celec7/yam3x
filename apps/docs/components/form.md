@@ -72,11 +72,13 @@ async function save({ data, signal }: FormContext) {
 
 ## API
 
+Built-in UI text can inherit shared [LocaleProvider](/components/localization) configuration. Explicit `locale` and `messages` take precedence; without a provider, the locale defaults to `en-US`.
+
 | Form prop             | Default            | Use                                                                                                                |
 | --------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | `submit`              | Required           | `(context) => result` or a promise; invoked only after validation succeeds.                                        |
 | `validate`            | None               | Optional `(context) => validation` or a promise for application rules.                                             |
-| `locale`              | `en-US`            | English or Chinese built-in feedback; other locales use English unless overridden.                                 |
+| `locale`              | Provider → `en-US` | English or Chinese built-in feedback; other locales use English unless overridden.                                 |
 | `summaryHeadingLevel` | `2`                | Error-summary heading level, 1–6, chosen for the surrounding page.                                                 |
 | `messages`            | English or Chinese | Override `summary`, `validating`, `submitting`, `success`, `failure`, `validationFailure`, `changed`, and `field`. |
 

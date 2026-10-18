@@ -50,6 +50,8 @@ const selected = ref<TreeViewKey[]>([])
 
 ## API
 
+内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的共享配置。显式 `locale` 和 `messages` 优先；未配置 provider 时默认使用 `en-US`。
+
 | 属性或模型      | 默认值                        | 用途                                                                           |
 | --------------- | ----------------------------- | ------------------------------------------------------------------------------ |
 | `nodes`         | 必需                          | 无环的 `TreeViewNode` 森林，同一棵树内所有键唯一。                             |
@@ -62,7 +64,7 @@ const selected = ref<TreeViewKey[]>([])
 | `checkMode`     | `none`                        | `none`、`independent` 或 `cascade`；带加载器的树始终独立勾选。                 |
 | `loadChildren`  | 无                            | `(node, { signal }) => Promise<readonly TreeViewNode[]>`；未解析分支必须提供。 |
 | `disabled`      | `false`                       | 禁止展开、激活、选择、勾选、重试和新读取。已有读取可完成，焦点导航仍可用。     |
-| `locale`        | `en-US`                       | 随语言变化的前缀查找及内置中英文文案。                                         |
+| `locale`        | Provider → `en-US`            | 随语言变化的前缀查找及内置中英文文案。                                         |
 | `instructions`  | 内置可见键盘说明              | 自定义文字，或在其他位置提供同等说明后设为 false。                             |
 | `messages`      | 内置文案                      | 部分 `TreeViewMessages`，覆盖名称、说明、加载、失败和空状态。                  |
 

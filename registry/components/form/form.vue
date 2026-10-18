@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   nextTick,
@@ -40,7 +41,7 @@ const props = withDefaults(
     summaryHeadingLevel?: 1 | 2 | 3 | 4 | 5 | 6
     messages?: Partial<FormMessages>
   }>(),
-  { validate: undefined, locale: 'en-US', summaryHeadingLevel: 2, messages: undefined },
+  { validate: undefined, locale: undefined, summaryHeadingLevel: 2, messages: undefined },
 )
 const emit = defineEmits<{
   invalid: [detail: { issues: FormIssue[]; message: string }]
@@ -100,26 +101,11 @@ const status = computed<FormStatus>(() =>
         ? 'success'
         : 'idle',
 )
-const messages = computed<FormMessages>(() => {
-  const zh = /^zh/i.test(props.locale)
-  return {
-    summary: zh ? '请检查这份表单' : 'Review this form',
-    validating: zh ? '正在检查表单…' : 'Checking form…',
-    submitting: zh ? '正在提交…' : 'Submitting…',
-    success: zh ? '表单已提交。' : 'Form submitted.',
-    failure: zh
-      ? '无法确认提交结果。你的编辑仍然保留，请先核对结果再重试。'
-      : 'The submission could not be confirmed. Your edits are still here; check the result before trying again.',
-    validationFailure: zh
-      ? '无法检查表单。你的编辑仍然保留，请重试。'
-      : 'The form could not be checked. Your edits are still here; try again.',
-    changed: zh
-      ? '提交期间内容发生了变化。当前编辑尚未提交，请先确认之前请求的结果再重试。'
-      : 'Values changed during submission. The current edits have not been submitted; check the earlier request’s result before trying again.',
-    field: zh ? '字段' : 'Field',
-    ...props.messages,
-  }
-})
+const { messages } = useComponentLocale(
+  'form',
+  () => props.locale,
+  () => props.messages,
+)
 function invalidate() {
   revision++
   active.value?.controller.abort()

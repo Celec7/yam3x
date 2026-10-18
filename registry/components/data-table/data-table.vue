@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, ref, useId } from 'vue'
 import CheckboxBase from '../checkbox/checkbox-base.vue'
 import Pagination from '../pagination/pagination.vue'
@@ -58,7 +59,7 @@ const props = withDefaults(
     error: '',
     emptyKind: 'empty',
     disabled: false,
-    locale: 'en-US',
+    locale: undefined,
     messages: undefined,
   },
 )
@@ -84,39 +85,14 @@ const captionId = `${uid}-caption`
 const scrollId = `${uid}-scroll`
 const sortId = `${uid}-sort`
 const scroll = ref<HTMLElement>()
-const messages = computed<DataTableMessages>(() => {
-  const zh = /^zh/i.test(props.locale)
-  return {
-    sortInstructions: zh
-      ? '带按钮的列标题可排序，依次切换为升序、降序和原始顺序。'
-      : 'Column headers with buttons sort ascending, descending, then restore the supplied order.',
-    selectPage: zh ? '选择当前页所有可选记录' : 'Select all selectable records on this page',
-    selectRow: (label) => (zh ? `选择 ${label}` : `Select ${label}`),
-    selection: (count) =>
-      zh ? `已选择 ${count} 条记录（包括其他页）。` : `${count} selected across pages.`,
-    loading: zh ? '正在加载记录…' : 'Loading records…',
-    refreshing: zh ? '正在刷新，仍显示之前的记录…' : 'Refreshing; previous records remain visible…',
-    retry: zh ? '重试' : 'Retry',
-    unavailable: zh ? '无法加载此结果的记录。' : 'Records could not be loaded for this result.',
-    invalidPage: zh
-      ? '此页不可用，请返回第一页。'
-      : 'This page is unavailable. Return to the first page.',
-    firstPage: zh ? '转到第一页' : 'Go to first page',
-    emptyTitle: zh ? '暂无记录' : 'No records yet',
-    emptyDescription: zh
-      ? '添加记录后将在此处显示。'
-      : 'Records will appear here when they are added.',
-    filteredTitle: zh ? '没有匹配记录' : 'No matching records',
-    filteredDescription: zh ? '尝试更改或清除筛选条件。' : 'Try changing or clearing the filters.',
-    scroll: zh
-      ? '如果表格超出区域宽度，可聚焦此区域并使用方向键横向滚动。'
-      : 'If the table is wider than this region, focus the region and use arrow keys to scroll horizontally.',
-    ...props.messages,
-  }
-})
+const { locale, messages } = useComponentLocale(
+  'dataTable',
+  () => props.locale,
+  () => props.messages,
+)
 const sortedRows = computed(() =>
   props.mode === 'client'
-    ? sortTableRows(props.rows, props.columns, props.sort, props.locale)
+    ? sortTableRows(props.rows, props.columns, props.sort, locale.value)
     : props.rows,
 )
 const totalRows = computed(() => (props.mode === 'client' ? props.rows.length : props.total))

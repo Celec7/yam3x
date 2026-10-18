@@ -32,20 +32,5 @@ export interface DataTableCell<T> {
   value: DataTableValue
   rowIndex: number
 }
-export interface DataTableMessages {
-  sortInstructions: string
-  selectPage: string
-  selectRow: (label: string) => string
-  selection: (count: number) => string
-  loading: string
-  refreshing: string
-  retry: string
-  unavailable: string
-  invalidPage: string
-  firstPage: string
-  emptyTitle: string
-  emptyDescription: string
-  filteredTitle: string
-  filteredDescription: string
-  scroll: string
-}
+
+export type { DataTableMessages } from '../localization/messages.types'

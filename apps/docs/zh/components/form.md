@@ -71,13 +71,15 @@ async function save({ data, signal }: FormContext) {
 
 ## API
 
-| Form 属性             | 默认值     | 用途                                                                                                          |
-| --------------------- | ---------- | ------------------------------------------------------------------------------------------------------------- |
-| `submit`              | 必需       | `(context) => result` 或 Promise，仅在验证通过后调用。                                                        |
-| `validate`            | 无         | 可选的 `(context) => validation` 或 Promise，用于应用规则。                                                   |
-| `locale`              | `en-US`    | 内置英文或中文反馈；其他语言默认使用英文，可自行覆盖。                                                        |
-| `summaryHeadingLevel` | `2`        | 错误摘要标题层级，1–6，需符合所在页面的结构。                                                                 |
-| `messages`            | 英文或中文 | 覆盖 `summary`、`validating`、`submitting`、`success`、`failure`、`validationFailure`、`changed` 和 `field`。 |
+内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的共享配置。显式 `locale` 和 `messages` 优先；未配置 provider 时默认使用 `en-US`。
+
+| Form 属性             | 默认值             | 用途                                                                                                          |
+| --------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `submit`              | 必需               | `(context) => result` 或 Promise，仅在验证通过后调用。                                                        |
+| `validate`            | 无                 | 可选的 `(context) => validation` 或 Promise，用于应用规则。                                                   |
+| `locale`              | Provider → `en-US` | 内置英文或中文反馈；其他语言默认使用英文，可自行覆盖。                                                        |
+| `summaryHeadingLevel` | `2`                | 错误摘要标题层级，1–6，需符合所在页面的结构。                                                                 |
+| `messages`            | 英文或中文         | 覆盖 `summary`、`validating`、`submitting`、`success`、`failure`、`validationFailure`、`changed` 和 `field`。 |
 
 `FormContext` 包含 `form`、`data` FormData 快照、原生 `submitter`（或 null）以及 AbortSignal。使用 `data` 读取此次尝试的提交值，不要稍后重新读取实时控件。带名称的提交按钮值会包含在内。`id` 等原生属性应用于表单根元素；提交由协调器处理，不会按 `action` URL 跳转。
 

@@ -66,6 +66,8 @@ const selected = ref<DataTableKey[]>([])
 
 ## API
 
+内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的共享配置。显式 `locale` 和 `messages` 优先；未配置 provider 时默认使用 `en-US`。
+
 | 属性               | 默认值                        | 用途                                                                 |
 | ------------------ | ----------------------------- | -------------------------------------------------------------------- |
 | `caption`          | 必需                          | 可见的 Title Medium 标题，与表格和滚动区域关联。                     |
@@ -86,7 +88,7 @@ const selected = ref<DataTableKey[]>([])
 | `error`            | 空                            | 应用提供的失败文字及重试操作。                                       |
 | `emptyKind`        | `empty`                       | `empty` 表示空集合，`filtered` 表示无匹配结果。                      |
 | `disabled`         | `false`                       | 禁用内置查询、选择和恢复控件。                                       |
-| `locale`           | `en-US`                       | 内置中英文文案与本地文字比较。                                       |
+| `locale`           | Provider → `en-US`            | 内置中英文文案与本地文字比较。                                       |
 | `messages`         | 内置文案                      | 部分 `DataTableMessages`，覆盖状态、选择名称与说明。                 |
 
 列包含 `id`、`label`，以及可选的 `value(row)`、`format(value, row)`、`supporting(row)`、`sortable`、`compare(leftRow, rightRow)`、`numeric`、`rowHeader` 和 CSS `width`。值可以是文字、数值、布尔值、Date、null 或 undefined。格式化函数负责货币和日期等领域显示；默认使用 `String(value)`，空值显示为空。`supporting` 添加 Body Small 辅助文字。`numeric` 使用尾端对齐及等宽数字。`rowHeader` 呈现原生行标题单元格。宽度是布局提示，不是截断策略。

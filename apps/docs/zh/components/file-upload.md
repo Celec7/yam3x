@@ -47,21 +47,23 @@ const upload: FileUploadAdapter = async ({ file, signal }) => {
 
 ## API
 
-| 属性          | 默认值   | 用途                                                                    |
-| ------------- | -------- | ----------------------------------------------------------------------- |
-| `label`       | 必需     | 可见的 fieldset legend，使用 Title Medium。                             |
-| `description` | 空       | 常驻说明，与选择操作关联。                                              |
-| `accept`      | 空       | 逗号分隔的扩展名、MIME 类型或 MIME 通配符。                             |
-| `multiple`    | `true`   | 允许队列接受多个条目。                                                  |
-| `maxFiles`    | 无限制   | 非拒绝条目的最大数量，包括已完成和已取消的条目。                        |
-| `maxFileSize` | 无限制   | 单个文件的最大字节数。零只允许空文件。                                  |
-| `upload`      | 无       | `FileUploadAdapter`；只选择文件时可省略。                               |
-| `autoUpload`  | `false`  | 有适配器时自动安排已接受的条目。                                        |
-| `concurrency` | `3`      | 尚未结束的适配器尝试数量上限；有限值向下取整，最小为一。                |
-| `droppable`   | `true`   | 除原生选择器外提供拖放区域。                                            |
-| `disabled`    | `false`  | 禁用文件操作与调度；已开始的尝试继续执行。                              |
-| `locale`      | `en-US`  | 数字格式与内置中英文文案；其他语言默认使用英文，可自行覆盖。            |
-| `messages`    | 内置文案 | 部分 `FileUploadMessages`，包括操作名称、约束、拒绝原因和队列摘要函数。 |
+内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的共享配置。显式 `locale` 和 `messages` 优先；未配置 provider 时默认使用 `en-US`。
+
+| 属性          | 默认值             | 用途                                                                    |
+| ------------- | ------------------ | ----------------------------------------------------------------------- |
+| `label`       | 必需               | 可见的 fieldset legend，使用 Title Medium。                             |
+| `description` | 空                 | 常驻说明，与选择操作关联。                                              |
+| `accept`      | 空                 | 逗号分隔的扩展名、MIME 类型或 MIME 通配符。                             |
+| `multiple`    | `true`             | 允许队列接受多个条目。                                                  |
+| `maxFiles`    | 无限制             | 非拒绝条目的最大数量，包括已完成和已取消的条目。                        |
+| `maxFileSize` | 无限制             | 单个文件的最大字节数。零只允许空文件。                                  |
+| `upload`      | 无                 | `FileUploadAdapter`；只选择文件时可省略。                               |
+| `autoUpload`  | `false`            | 有适配器时自动安排已接受的条目。                                        |
+| `concurrency` | `3`                | 尚未结束的适配器尝试数量上限；有限值向下取整，最小为一。                |
+| `droppable`   | `true`             | 除原生选择器外提供拖放区域。                                            |
+| `disabled`    | `false`            | 禁用文件操作与调度；已开始的尝试继续执行。                              |
+| `locale`      | Provider → `en-US` | 数字格式与内置中英文文案；其他语言默认使用英文，可自行覆盖。            |
+| `messages`    | 内置文案           | 部分 `FileUploadMessages`，包括操作名称、约束、拒绝原因和队列摘要函数。 |
 
 添加条目时检查限制。有限的数量和大小上限向下取整，最小为零。设置 `:multiple="false"` 时最多接受一个条目；在移除现有条目前再次选择文件会报告拒绝。被拒绝条目不占用接受容量。重复选择相同文件会创建独立条目。选择器过滤与客户端检查仅为便利机制；接收服务仍须自行校验文件内容和限制。
 

@@ -17,16 +17,8 @@ export interface FormIssue {
   label: string
   message: string
 }
-export interface FormMessages {
-  summary: string
-  validating: string
-  submitting: string
-  success: string
-  failure: string
-  validationFailure: string
-  changed: string
-  field: string
-}
 export type FormFailure =
   | { kind: 'rejected'; result: FormValidation; context: FormContext }
   | { kind: 'exception'; error: unknown; phase: FormPhase | 'preparation'; context?: FormContext }
+
+export type { FormMessages } from '../localization/messages.types'

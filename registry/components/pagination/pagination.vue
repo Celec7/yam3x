@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import Button from '../button/button.vue'
 import IconButton from '../icon-button/icon-button.vue'
@@ -26,7 +27,7 @@ const props = withDefaults(
     page: 1,
     pageSize: 10,
     pageSizes: () => [],
-    locale: 'en-US',
+    locale: undefined,
     pending: false,
     disabled: false,
     href: undefined,
@@ -50,22 +51,12 @@ const navigation = ref<HTMLElement>()
 const currentSummary = ref<HTMLElement>()
 const compact = ref(true)
 let observer: ResizeObserver | undefined
-const format = computed(() => new Intl.NumberFormat(props.locale))
-const messages = computed<PaginationMessages>(() => {
-  const zh = /^zh/i.test(props.locale)
-  return {
-    label: zh ? '分页' : 'Pagination',
-    previous: zh ? '上一页' : 'Previous page',
-    next: zh ? '下一页' : 'Next page',
-    pageSize: zh ? '每页条数' : 'Results per page',
-    pending: zh ? '正在加载页面…' : 'Loading page…',
-    page: (page) => (zh ? `第 ${page} 页` : `Page ${page}`),
-    current: (page, count) => (zh ? `第 ${page} 页，共 ${count} 页` : `Page ${page} of ${count}`),
-    range: (start, end, total) =>
-      zh ? `第 ${start}–${end} 条，共 ${total} 条` : `${start}–${end} of ${total} results`,
-    ...props.messages,
-  }
-})
+const format = computed(() => new Intl.NumberFormat(locale.value))
+const { locale, messages } = useComponentLocale(
+  'pagination',
+  () => props.locale,
+  () => props.messages,
+)
 const validSize = computed(() => Number.isSafeInteger(props.pageSize) && props.pageSize > 0)
 const pageCount = computed(() =>
   validSize.value && Number.isSafeInteger(props.total) && props.total > 0

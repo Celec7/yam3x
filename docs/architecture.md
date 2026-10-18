@@ -18,4 +18,6 @@ The theme functions use Material Color Utilities. Switch and Dialog use Ark UI f
 
 The CLI copies files only when the destination is missing. Once installed, the app owns changes and upgrades require a manual merge. Run `pnpm registry:generate` after changing component imports or foundation mappings; `pnpm registry:check` detects stale generated output. The [contributing guide](../CONTRIBUTING.md) lists the checks for that work. External sources and their roles are recorded in [References](references.md).
 
+Shared UI language is scoped to Vue provider trees rather than process-wide mutable state. Locale dictionaries and message contracts live in `registry/components/localization`; components own their behavior and read resolved messages through that module. Application labels and server errors remain application-owned. See the [localization usage guide](../apps/docs/components/localization.md) for configuration and fallback behavior.
+
 For CSS and theme-token ownership, see [CSS and token conventions](css-and-tokens.md).

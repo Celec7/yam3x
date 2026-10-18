@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   nextTick,
@@ -51,7 +52,7 @@ const props = withDefaults(
     checkMode: 'none',
     loadChildren: undefined,
     disabled: false,
-    locale: 'en-US',
+    locale: undefined,
     instructions: undefined,
     messages: undefined,
   },
@@ -111,39 +112,11 @@ let disposed = false
 let observer: ResizeObserver | undefined
 let prefix = ''
 let lastType = 0
-const messages = computed<TreeViewMessages>(() => {
-  const zh = /^zh/i.test(props.locale)
-  return {
-    instructions: zh
-      ? '使用方向键移动焦点和展开分支。'
-      : 'Use arrow keys to move focus and expand branches.',
-    selectInstructions: zh ? '按 Enter 选择节点。' : 'Press Enter to select a node.',
-    multipleInstructions: zh
-      ? '按空格切换节点选择，无需按住修饰键。'
-      : 'Press Space to toggle selection without holding a modifier key.',
-    checkInstructions: zh
-      ? '按空格切换独立的勾选状态。'
-      : 'Press Space to toggle the separate check state.',
-    checkOnlyInstructions: zh
-      ? '按 Enter 或空格切换勾选。'
-      : 'Press Enter or Space to toggle checks.',
-    expand: (label) => (zh ? `展开 ${label}` : `Expand ${label}`),
-    collapse: (label) => (zh ? `折叠 ${label}` : `Collapse ${label}`),
-    check: (label) => (zh ? `勾选 ${label}` : `Check ${label}`),
-    loading: (label) => (zh ? `正在加载“${label}”的子项…` : `Loading children of ${label}…`),
-    failure: zh
-      ? '无法加载子项。使用展开方向键或重试按钮重试。'
-      : 'Children could not be loaded. Use the expand arrow key or Retry.',
-    retry: (label) => (zh ? `重试加载 ${label}` : `Retry loading ${label}`),
-    retryText: zh ? '重试' : 'Retry',
-    emptyBranch: zh ? '此节点没有子项。' : 'This node has no children.',
-    emptyTitle: zh ? '暂无条目' : 'No items yet',
-    scroll: zh
-      ? '此区域支持横向滚动，以查看较深层级的完整内容。'
-      : 'Scroll this region horizontally to inspect deep hierarchy and complete labels.',
-    ...props.messages,
-  }
-})
+const { locale, messages } = useComponentLocale(
+  'treeView',
+  () => props.locale,
+  () => props.messages,
+)
 const instructionText = computed(() =>
   props.instructions === false
     ? ''
@@ -439,7 +412,7 @@ function onKeydown(event: KeyboardEvent, node: TreeViewNode) {
     const needle = repeated ? event.key : prefix
     let collator: Intl.Collator
     try {
-      collator = new Intl.Collator(props.locale, { usage: 'search', sensitivity: 'base' })
+      collator = new Intl.Collator(locale.value, { usage: 'search', sensitivity: 'base' })
     } catch {
       collator = new Intl.Collator('en', { usage: 'search', sensitivity: 'base' })
     }

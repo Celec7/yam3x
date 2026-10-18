@@ -308,6 +308,19 @@ const materialComponents: CatalogSection[] = [
 
 const extensions: CatalogSection[] = [
   {
+    title: { en: 'Configuration', zh: '配置' },
+    items: [
+      {
+        path: 'localization',
+        title: 'Localization',
+        summary: {
+          en: 'Share UI language and message overrides across components.',
+          zh: '在组件间共享界面语言与文案覆盖。',
+        },
+      },
+    ],
+  },
+  {
     title: { en: 'Input and form helpers', zh: '输入与表单配套' },
     items: [
       {

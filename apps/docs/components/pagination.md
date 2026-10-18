@@ -45,13 +45,15 @@ For synchronous local results, `v-model:page` and `v-model:page-size` are also s
 
 ## API
 
+Built-in UI text can inherit shared [LocaleProvider](/components/localization) configuration. Explicit `locale` and `messages` take precedence; without a provider, the locale defaults to `en-US`.
+
 | Prop        | Default            | Use                                                                                                                              |
 | ----------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | `total`     | Required           | Known total record count, a nonnegative safe integer.                                                                            |
 | `page`      | `1`                | Accepted, one-based page. Keep it within the available range; use 1 for an empty result.                                         |
 | `pageSize`  | `10`               | Positive safe integer.                                                                                                           |
 | `pageSizes` | `[]`               | Offered sizes; a nonempty array enables the selector. The current size is included, with duplicates and invalid entries removed. |
-| `locale`    | `en-US`            | Number formatting locale; English or Chinese default messages.                                                                   |
+| `locale`    | Provider → `en-US` | Number formatting locale; English or Chinese default messages.                                                                   |
 | `pending`   | `false`            | Show loading status and block duplicate requests.                                                                                |
 | `disabled`  | `false`            | Disable navigation and page-size changes.                                                                                        |
 | `href`      | None               | `(page, pageSize) => string`; supplies native links for addressable pages.                                                       |

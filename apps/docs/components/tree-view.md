@@ -50,6 +50,8 @@ Models are optional: without bindings the tree owns their local state. Bind both
 
 ## API
 
+Built-in UI text can inherit shared [LocaleProvider](/components/localization) configuration. Explicit `locale` and `messages` take precedence; without a provider, the locale defaults to `en-US`.
+
 | Prop or model   | Default                            | Use                                                                                                                                       |
 | --------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `nodes`         | Required                           | Acyclic forest of `TreeViewNode` records with globally unique keys within this tree.                                                      |
@@ -62,7 +64,7 @@ Models are optional: without bindings the tree owns their local state. Bind both
 | `checkMode`     | `none`                             | `none`, `independent`, or `cascade`. Loader-backed trees always check independently.                                                      |
 | `loadChildren`  | None                               | `(node, { signal }) => Promise<readonly TreeViewNode[]>`; required for unresolved branches.                                               |
 | `disabled`      | `false`                            | Prevents expansion, activation, selection, checking, retry, and new reads. Existing reads can finish; focus navigation remains available. |
-| `locale`        | `en-US`                            | Locale-aware type-ahead and built-in English/Chinese text.                                                                                |
+| `locale`        | Provider → `en-US`                 | Locale-aware type-ahead and built-in English/Chinese text.                                                                                |
 | `instructions`  | Built-in visible keyboard guidance | Custom text, or false to hide it when equivalent guidance is provided elsewhere.                                                          |
 | `messages`      | Built-in text                      | Partial `TreeViewMessages` for labels, instructions, loading, failure, and empty states.                                                  |
 

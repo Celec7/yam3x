@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import Button from '../button/button.vue'
 import Icon from '../icon/icon.vue'
@@ -38,7 +39,7 @@ const props = withDefaults(
     concurrency: 3,
     droppable: true,
     disabled: false,
-    locale: 'en-US',
+    locale: undefined,
     messages: undefined,
   },
 )
@@ -56,62 +57,11 @@ const constraintsId = `${uid}-constraints`
 const dragging = ref(false)
 const removalNotice = ref('')
 let dragDepth = 0
-const messages = computed<FileUploadMessages>(() => {
-  const zh = /^zh/i.test(props.locale)
-  return {
-    select: zh ? '选择文件' : 'Choose files',
-    drop: zh ? '也可以将文件拖到这里。' : 'You can also drop files here.',
-    drag: zh ? '松开以添加文件。' : 'Drop to add these files.',
-    empty: zh ? '尚未选择文件。' : 'No files selected.',
-    queued: zh ? '待上传' : 'Ready to upload',
-    waiting: zh ? '等待上传空位…' : 'Waiting for an upload slot…',
-    uploading: zh ? '正在上传…' : 'Uploading…',
-    processing: zh ? '服务端正在处理…' : 'Processing on the server…',
-    completed: zh ? '已完成' : 'Completed',
-    canceling: zh ? '正在请求取消…' : 'Requesting cancellation…',
-    canceled: zh ? '已取消' : 'Canceled',
-    canceledRemote: zh
-      ? '已取消；服务端可能仍有副本，重试前请先核对。'
-      : 'Canceled; a server copy may remain. Check before retrying.',
-    unknownFailure: zh
-      ? '无法确认上传结果。重试前请先核对服务端状态。'
-      : 'The upload could not be confirmed. Check the server before retrying.',
-    removed: (name) =>
-      zh
-        ? `已从队列移除“${name}”。服务端可能仍有副本，重试前请核对已存储的附件。`
-        : `Removed “${name}” from the queue. A server copy may remain; check stored attachments before retrying.`,
-    cleared: zh
-      ? '队列已清空。服务端可能仍有副本，重试前请核对已存储的附件。'
-      : 'The queue was cleared. Server copies may remain; check stored attachments before retrying.',
-    upload: zh ? '上传' : 'Upload',
-    retry: zh ? '重试' : 'Retry',
-    cancel: zh ? '取消' : 'Cancel',
-    remove: zh ? '移除' : 'Remove',
-    uploadAll: zh ? '上传待处理文件' : 'Upload ready files',
-    action: (action, name) => `${action} ${name}`,
-    summary: (counts) =>
-      zh
-        ? `${counts.total} 个文件：${counts.completed} 个已完成，${counts.active} 个处理中，${counts.queued} 个待处理，${counts.failed} 个失败或被拒绝，${counts.canceled} 个已取消。`
-        : `${counts.total} ${counts.total === 1 ? 'file' : 'files'}: ${counts.completed} completed, ${counts.active} active, ${counts.queued} queued, ${counts.failed} failed or rejected, ${counts.canceled} canceled.`,
-    types: (accept) => (zh ? `允许的类型：${accept}` : `Allowed types: ${accept}`),
-    size: (size) => (zh ? `单个文件最大 ${size}` : `Maximum file size: ${size}`),
-    count: (count) =>
-      zh ? `最多 ${count} 个文件` : `Up to ${count} ${count === 1 ? 'file' : 'files'}`,
-    rejection: (reason) =>
-      zh
-        ? {
-            type: '不接受此文件类型。请选择允许的类型。',
-            size: '文件超过大小上限。请选择更小的文件。',
-            count: '队列已达到数量上限。请先移除文件。',
-          }[reason]
-        : {
-            type: 'This file type is not accepted. Choose an allowed type.',
-            size: 'This file exceeds the size limit. Choose a smaller file.',
-            count: 'The queue has reached its file limit. Remove a file first.',
-          }[reason],
-    ...props.messages,
-  }
-})
+const { locale, messages } = useComponentLocale(
+  'fileUpload',
+  () => props.locale,
+  () => props.messages,
+)
 const isDisabled = () => props.disabled || picker.value?.matches(':disabled') === true
 const queue = useFileUpload({
   prefix: uid,
@@ -131,7 +81,7 @@ const exposedItems = computed(() => queue.snapshot())
 const hasReady = computed(() => items.value.some((item) => item.status === 'queued'))
 const formatter = computed(() => {
   try {
-    return new Intl.NumberFormat(props.locale, { maximumFractionDigits: 1 })
+    return new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 })
   } catch {
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
   }

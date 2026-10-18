@@ -51,21 +51,23 @@ This Fetch example uses indeterminate progress because it does not measure uploa
 
 ## API
 
-| Prop          | Default       | Use                                                                                                          |
-| ------------- | ------------- | ------------------------------------------------------------------------------------------------------------ |
-| `label`       | Required      | Visible fieldset legend, using Title Medium.                                                                 |
-| `description` | Empty         | Persistent instructions associated with the selection action.                                                |
-| `accept`      | Empty         | Comma-separated extensions, MIME types, or MIME wildcards.                                                   |
-| `multiple`    | `true`        | Allows more than one accepted queue entry.                                                                   |
-| `maxFiles`    | Unlimited     | Maximum non-rejected entries, including completed and canceled entries.                                      |
-| `maxFileSize` | Unlimited     | Maximum bytes per file. Zero allows only empty files.                                                        |
-| `upload`      | None          | `FileUploadAdapter`; omit for selection-only usage.                                                          |
-| `autoUpload`  | `false`       | Schedule accepted entries automatically when an adapter is available.                                        |
-| `concurrency` | `3`           | Maximum unsettled adapter attempts; finite values are rounded down and bounded to at least one.              |
-| `droppable`   | `true`        | Offers a drop surface in addition to the native picker.                                                      |
-| `disabled`    | `false`       | Disables file actions and scheduling; active attempts continue.                                              |
-| `locale`      | `en-US`       | Number formatting and English/Chinese built-in text. Other languages use English text unless overridden.     |
-| `messages`    | Built-in text | Partial `FileUploadMessages`, including action labels, constraints, rejections, and queue summary functions. |
+Built-in UI text can inherit shared [LocaleProvider](/components/localization) configuration. Explicit `locale` and `messages` take precedence; without a provider, the locale defaults to `en-US`.
+
+| Prop          | Default            | Use                                                                                                          |
+| ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `label`       | Required           | Visible fieldset legend, using Title Medium.                                                                 |
+| `description` | Empty              | Persistent instructions associated with the selection action.                                                |
+| `accept`      | Empty              | Comma-separated extensions, MIME types, or MIME wildcards.                                                   |
+| `multiple`    | `true`             | Allows more than one accepted queue entry.                                                                   |
+| `maxFiles`    | Unlimited          | Maximum non-rejected entries, including completed and canceled entries.                                      |
+| `maxFileSize` | Unlimited          | Maximum bytes per file. Zero allows only empty files.                                                        |
+| `upload`      | None               | `FileUploadAdapter`; omit for selection-only usage.                                                          |
+| `autoUpload`  | `false`            | Schedule accepted entries automatically when an adapter is available.                                        |
+| `concurrency` | `3`                | Maximum unsettled adapter attempts; finite values are rounded down and bounded to at least one.              |
+| `droppable`   | `true`             | Offers a drop surface in addition to the native picker.                                                      |
+| `disabled`    | `false`            | Disables file actions and scheduling; active attempts continue.                                              |
+| `locale`      | Provider → `en-US` | Number formatting and English/Chinese built-in text. Other languages use English text unless overridden.     |
+| `messages`    | Built-in text      | Partial `FileUploadMessages`, including action labels, constraints, rejections, and queue summary functions. |
 
 Limits are checked when entries are added. Finite count and size limits are rounded down and bounded to zero. With `:multiple="false"`, the queue accepts at most one entry; choosing another file reports a rejection until the existing entry is removed. Rejected entries do not consume that capacity. Repeated selections of the same file create distinct entries. The picker filter and client checks are conveniences; the receiving service must validate file content and limits itself.
 
