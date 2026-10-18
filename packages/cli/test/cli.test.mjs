@@ -1105,6 +1105,56 @@ const query = ref<DataTableQuery>()
   assert.equal(build.status, 0, build.stderr || build.stdout)
 })
 
+test('Form field registration and scoped validation install and build without docs dependencies', async (t) => {
+  const directory = await fixture(t, { isolatedDependencies: true })
+  const add = runCli(['add', 'form'], directory)
+  assert.equal(add.status, 0, add.stderr || add.stdout)
+  await linkDeclaredPackages(directory)
+  await writeFile(
+    join(directory, 'src/Registered.vue'),
+    `<script setup lang="ts">
+import { useFormField } from './components/yam3x/form'
+const value = defineModel<string>({ required: true })
+useFormField({ path: ['profile', 'alias'], value: () => value.value, rules: [{ minLength: 3, message: 'Three characters needed' }] })
+</script>
+<template><input v-model="value" name="profile.alias" /></template>
+`,
+  )
+  await writeFile(
+    join(directory, 'src/App.vue'),
+    `<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { Form, formFieldName, formValidationFromIssues, type FormFieldDefinition, type FormValidationAdapter } from './components/yam3x/form'
+import Registered from './Registered.vue'
+const api = ref<InstanceType<typeof Form>>()
+const name = ref('Ada')
+const alias = ref('writer')
+const fields: FormFieldDefinition[] = [{ path: ['profile', 'name'], name: 'display-name', value: () => name.value, rules: [{ required: true, message: 'Name needed' }] }]
+const adapter: FormValidationAdapter = { validate: () => formValidationFromIssues([], fields), validateFields: (context, paths) => { void context.signal; void paths; return {} } }
+onMounted(async () => {
+  const release = api.value!.registerField({ path: 'extra', value: () => 'provided' })
+  const result = await api.value!.validateFields([['profile']])
+  void result.status
+  api.value!.focusField(['profile', 'name'])
+  release()
+  void formFieldName(['profile', 'name'])
+})
+</script>
+<template><Form ref="api" :fields="fields" :validate="adapter" :submit="() => {}"><input v-model="name" name="display-name" /><Registered v-model="alias" /></Form></template>
+`,
+  )
+  const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(typecheck.status, 0, typecheck.stderr || typecheck.stdout)
+  const build = spawnSync(join(directory, 'node_modules/.bin/vite'), ['build'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(build.status, 0, build.stderr || build.stdout)
+})
+
 test('all installable components typecheck and build in a disposable Vue/Vite consumer', async (t) => {
   const directory = await fixture(t)
   const componentKeys = Object.keys(registry.components)

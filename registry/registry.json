@@ -676,6 +676,8 @@
         "_shared/focus-trap.ts",
         "_shared/form-control.ts",
         "_shared/ripple.ts",
+        "form/form-fields.ts",
+        "form/form-registration.ts",
         "form/form-section.vue",
         "form/form.types.ts",
         "form/form.utils.ts",

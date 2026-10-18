@@ -179,3 +179,103 @@ test('inherited section disabling preserves the field presentation and restores 
   await expect(field).not.toHaveClass(/yam3x-form-field--disabled/)
   await expect(field.getByRole('spinbutton')).toBeEnabled()
 })
+
+test('form.validation.partial: checks a nested group without submitting or moving focus and adapts schema errors', async ({
+  page,
+}) => {
+  const example = page.getByTestId('form-registered')
+  const check = example.getByRole('button', { name: 'Check profile', exact: true })
+  await check.click()
+  await expect(check).toBeFocused()
+  await expect(example.getByTestId('registered-result')).toHaveText('invalid')
+  await expect(example.getByTestId('registered-saved')).toHaveText('0')
+  const summary = example.getByRole('group', { name: 'Review this form', exact: true })
+  await expect(summary).toContainText('Use at least three letters.')
+  await expect(summary).toContainText('Use at least four characters.')
+  await example.getByRole('textbox', { name: 'Display name', exact: true }).fill('Ada')
+  await example.getByRole('textbox', { name: 'Alias', exact: true }).fill('reserved')
+  await check.click()
+  await expect(summary).toContainText('Choose another alias.')
+  await summary.getByRole('link', { name: /^Alias:/ }).click()
+  await expect(example.getByRole('textbox', { name: 'Alias', exact: true })).toBeFocused()
+  await example.getByRole('textbox', { name: 'Alias', exact: true }).fill('writer')
+  await check.click()
+  await expect(example.getByTestId('registered-result')).toHaveText('valid')
+  await expect(summary).toHaveCount(0)
+  await example.getByRole('button', { name: 'Save profile', exact: true }).click()
+  await expect(example.getByTestId('registered-saved')).toHaveText('1')
+})
+
+test('form.fields.lifecycle: removes child rules while retaining its value and restores them when shown', async ({
+  page,
+}) => {
+  const example = page.getByTestId('form-registered')
+  await example.getByRole('textbox', { name: 'Display name', exact: true }).fill('Ada')
+  const show = example.getByRole('checkbox', { name: 'Register alias field', exact: true })
+  await show.uncheck()
+  await expect(example.getByRole('textbox', { name: 'Alias', exact: true })).toHaveCount(0)
+  await expect(example.getByTestId('registered-alias')).toHaveText('Retained alias: ab')
+  await example.getByRole('button', { name: 'Check profile', exact: true }).click()
+  await expect(example.getByTestId('registered-result')).toHaveText('valid')
+  await show.check()
+  await expect(example.getByRole('textbox', { name: 'Alias', exact: true })).toHaveValue('ab')
+  await example.getByRole('button', { name: 'Check profile', exact: true }).click()
+  await expect(example.getByTestId('registered-result')).toHaveText('invalid')
+  await expect(example.getByRole('group', { name: 'Review this form', exact: true })).toContainText(
+    'Use at least four characters.',
+  )
+})
+
+test('form.fields.lifecycle: cancels pending rule results after an edit and retains the operation lock until settlement', async ({
+  page,
+}) => {
+  const example = page.getByTestId('form-registered')
+  await example.getByRole('textbox', { name: 'Display name', exact: true }).fill('Ada')
+  await example.getByRole('textbox', { name: 'Alias', exact: true }).fill('writer')
+  await example.getByRole('checkbox', { name: 'Hold name validation', exact: true }).check()
+  await example.getByRole('button', { name: 'Check profile', exact: true }).click()
+  await expect(example.getByRole('button', { name: 'Save profile', exact: true })).toBeDisabled()
+  await example.getByRole('textbox', { name: 'Display name', exact: true }).fill('Grace')
+  await expect(example.getByText('Previous validation canceled.', { exact: true })).toBeVisible()
+  await expect(example.getByRole('button', { name: 'Check profile', exact: true })).toBeDisabled()
+  await example.getByRole('button', { name: 'Return validation error', exact: true }).click()
+  await expect(example.getByTestId('registered-result')).toHaveText('outdated')
+  await expect(example.getByText('This name is unavailable.', { exact: true })).toHaveCount(0)
+  await expect(example.getByRole('textbox', { name: 'Display name', exact: true })).toHaveValue(
+    'Grace',
+  )
+  await expect(example.getByTestId('registered-saved')).toHaveText('0')
+})
+
+test('shows application-localized registered rule feedback on the Chinese page', async ({
+  page,
+}) => {
+  await page.goto('/zh/components/form')
+  const example = page.getByTestId('form-registered')
+  await example.getByRole('button', { name: '校验个人资料', exact: true }).click()
+  const summary = example.getByRole('group', { name: '请检查这份表单', exact: true })
+  await expect(summary).toContainText('请至少输入三个字母。')
+  await expect(summary).toContainText('请至少输入四个字符。')
+  await example.screenshot({ path: '/tmp/yam3x-form-registered-zh.png' })
+})
+
+test('form.reset.session: registered parent and child values reset even before the first edit', async ({
+  page,
+}) => {
+  const example = page.getByTestId('form-registered')
+  const name = example.getByRole('textbox', { name: 'Display name', exact: true })
+  const alias = example.getByRole('textbox', { name: 'Alias', exact: true })
+  const reset = example.getByRole('button', { name: 'Reset profile', exact: true })
+  await reset.click()
+  await expect(name).toHaveValue('Al')
+  await expect(alias).toHaveValue('ab')
+  await name.fill('Grace')
+  await alias.fill('writer')
+  await example.getByRole('button', { name: 'Check profile', exact: true }).click()
+  await expect(example.getByTestId('registered-result')).toHaveText('valid')
+  await reset.click()
+  await expect(name).toHaveValue('Al')
+  await expect(alias).toHaveValue('ab')
+  await expect(example.getByTestId('registered-result')).toHaveText('—')
+  await expect(example.getByRole('group', { name: 'Review this form', exact: true })).toHaveCount(0)
+})

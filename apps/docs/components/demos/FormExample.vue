@@ -13,6 +13,7 @@ import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
+import FormRulesExample from './FormRulesExample.vue'
 import { useDemoLocale } from './use-demo-locale'
 
 const { locale, t } = useDemoLocale()
@@ -215,6 +216,7 @@ function onLoad() {
       {{ t('Obsolete replies ignored:', '已忽略过期响应：') }}
       <span data-testid="form-outdated">{{ outdated }}</span>
     </p>
+    <FormRulesExample />
   </div>
 </template>
 

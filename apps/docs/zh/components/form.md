@@ -14,6 +14,10 @@ import FormExample from '../../components/demos/FormExample.vue'
 
 <<< ../../components/demos/FormExample.vue{vue}
 
+<<< ../../components/demos/FormRulesExample.vue{vue}
+
+<<< ../../components/demos/RegisteredAliasField.vue{vue}
+
 :::
 
 ## 在项目中使用
@@ -76,12 +80,13 @@ async function save({ data, signal }: FormContext) {
 | Form 属性             | 默认值             | 用途                                                                                                          |
 | --------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `submit`              | 必需               | `(context) => result` 或 Promise，仅在验证通过后调用。                                                        |
-| `validate`            | 无                 | 可选的 `(context) => validation` 或 Promise，用于应用规则。                                                   |
+| `validate`            | 无                 | `FormValidator` 函数或 `FormValidationAdapter` 对象，在原生约束与已注册规则通过后执行。                       |
+| `fields`              | `[]`               | 可选只读 `FormFieldDefinition[]`，提供声明式规则与应用持有值的取值函数。                                      |
 | `locale`              | Provider → `en-US` | 内置英文或中文反馈；其他语言默认使用英文，可自行覆盖。                                                        |
 | `summaryHeadingLevel` | `2`                | 错误摘要标题层级，1–6，需符合所在页面的结构。                                                                 |
 | `messages`            | 英文或中文         | 覆盖 `summary`、`validating`、`submitting`、`success`、`failure`、`validationFailure`、`changed` 和 `field`。 |
 
-`FormContext` 包含 `form`、`data` FormData 快照、原生 `submitter`（或 null）以及 AbortSignal。使用 `data` 读取此次尝试的提交值，不要稍后重新读取实时控件。带名称的提交按钮值会包含在内。`id` 等原生属性应用于表单根元素；提交由协调器处理，不会按 `action` URL 跳转。
+`FormContext` 包含 `form`、`data` FormData 快照、原生 `submitter`（或 null）以及 AbortSignal。局部校验还会提供请求的 `paths`；完整提交不包含此属性。使用 `data` 读取此次尝试的提交值，不要稍后重新读取实时控件。带名称的提交按钮值会包含在内。`id` 等原生属性应用于表单根元素；提交由协调器处理，不会按 `action` URL 跳转。
 
 `validate` 在通过时不返回内容，或返回 `{ fieldErrors?: Record<string, string>, message?: string }`。键名对应原生字段名称。`submit` 成功时不返回内容或返回 `{ status: 'success', message? }`；预期拒绝返回 `{ status: 'error', message, fieldErrors? }`。适配器消息由应用本地化。异常会显示通用恢复反馈，原始异常保留在诊断事件中，不直接显示在页面上。
 
@@ -89,7 +94,27 @@ async function save({ data, signal }: FormContext) {
 
 默认插槽接收 `{ fieldErrors, pending, status }`。将适配器错误绑定到字段已有的错误展示，例如 `FormField.error` 或 `NumberField.error`。原生约束错误仍由各控件负责，文字使用浏览器语言；`messages` 只修改协调器文案。`#instructions` 位于摘要和字段之前；`#actions` 位于字段之后，接收 `{ pending, status }`。状态为 `idle`、`validating`、`submitting`、`error` 或 `success`。
 
-组件 ref 暴露 `element`、`requestSubmit(submitter?)`、`reset()`、`invalidate()` 和 `focusField(name)`。程序化提交使用 `requestSubmit()`，让输入组件先提交编辑草稿。`focusField` 返回是否找到了可见的焦点目标。程序化修改模型且不触发编辑事件时调用 `invalidate()`；最终 DOM 值检查也会拒绝已变化的快照。
+组件 ref 暴露 `element`、`requestSubmit(submitter?)`、`reset()`、`invalidate()`、`focusField(path)`、`registerField(definition)` 和 `validateFields(paths?)`。程序化提交使用 `requestSubmit()`，让输入组件先提交编辑草稿。`focusField` 返回是否找到了可见的焦点目标。已注册的响应式取值函数会自动使旧操作失效。对其他不触发编辑事件的程序化修改，调用 `invalidate()`；最终 DOM 值检查也会拒绝已变化的快照。
+
+### 字段注册与规则
+
+`FormFieldDefinition` 包含 `path`，以及可选的原生 `name`、摘要 `label`、`value: () => unknown` 和 `rules`。字符串是原生名称字面量；`['contacts', 0, 'email']` 等元组路径保留嵌套属性与索引身份。默认原生名称以点连接元组片段。可用 `name` 消除冲突或适配已有控件。注册路径与原生名称必须唯一。Form 不读写嵌套模型；使用应用值时请提供取值函数。未提供时，规则读取 FormData 的单值、重复值数组，或缺失时的 undefined；数值规则不会转换原生字符串。
+
+约束规则包含非空的应用本地化 `message`，以及任意 `required`、`minLength`、`maxLength`、`min`、`max` 或 `pattern: RegExp`。Required 检查空值、空字符串及空数组；空白字符、零与 false 均视为已提供的值。可选空值跳过其他约束。长度适用于字符串与数组；数值边界要求有限数值。规则按顺序执行，每个字段遇到首个失败后停止。自定义 `{ validate(value, context) }` 同步或异步返回非空错误字符串，或不返回内容。`FormRuleContext` 增加 `name`、`path` 和 `getValue(path)`，读取本次校验开始时捕获的注册值。值按引用捕获；响应式编辑会取消校验。请监听 `signal` 取消，并避免在校验中写入模型。
+
+通过 `fields` 传入定义，或在后代组件 setup 中调用 `useFormField(definitionOrGetter)`。hook 向最近的 Form 注册，并随 Vue 作用域清理。命令式 `registerField(definitionOrGetter)` 返回幂等的清理函数。取消注册会移除规则及过期反馈，应用值仍保留；它不会移除原生控件，也不暂停控件的原生约束。规则错误通过已有插槽 `fieldErrors` 提供，应绑定到控件已有的错误展示。注册的响应式值与规则变化会使待完成操作失效；非响应式外部变化仍需调用 `invalidate()`。
+
+`formFieldName(path)` 返回默认的点连接原生名称。`formValidationFromIssues(issues, fields?)` 适配 `{ path, message }` 形式的 schema 库问题，每字段保留首条消息，并应用注册的名称别名。空元组路径提供表单级消息。此函数不依赖 schema 库；schema 解析与翻译由应用负责。
+
+### 不提交的校验
+
+`validateFields()` 检查整个表单。`validateFields(['email'])` 检查原生名称字面量，也包括未注册的原生控件；`validateFields([['profile']])` 检查以该前缀开头的已注册元组路径。片段按原值比较，数值 `0` 与字符串 `'0'` 不相同。只替换所选名称的反馈，其他错误与表单级消息保留。忽略局部适配器返回的范围外错误及消息。校验不会提交、聚焦摘要或发出成功事件；需要导航时显式调用 `focusField(path)`。
+
+结果为 `{ status, issues, message }`，其中 `status: 'valid' | 'invalid' | 'busy' | 'outdated'`。有效性仅描述请求范围，即使其他字段仍有错误。Busy 表示其他校验或提交正占用表单；outdated 表示快照或注册已改变。异常发出 `failure` 并显示通用恢复反馈。所有校验共享提交锁及取消规则，不会暴露请求范围外未触碰字段的原生错误。
+
+`FormValidationAdapter` 提供 `validate(context)` 和可选 `validateFields(context, paths)`。局部校验优先使用后者；否则执行完整适配器，仅保留范围内错误。每次校验依次执行原生约束、注册规则及应用适配器；前一阶段失败时，不执行后续阶段。局部校验检查当前原生约束状态及已注册模型值，不强制输入草稿提交；提交前需要完成解析时，使用 `requestSubmit()`。
+
+### FormSection
 
 | FormSection 属性 | 默认值  | 用途                                          |
 | ---------------- | ------- | --------------------------------------------- |

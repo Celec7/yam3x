@@ -9,7 +9,17 @@ import {
   shallowRef,
   useAttrs,
   useId,
+  watch,
 } from 'vue'
+import {
+  formFieldScope,
+  formFieldName,
+  sameFormPath,
+  sameFormFields,
+  validateFormFields,
+  type ResolvedFormField,
+} from './form-fields'
+import { useFormRegistry } from './form-registration'
 import InlineMessage from '../inline-message/inline-message.vue'
 import Heading from '../heading/heading.vue'
 import {
@@ -23,25 +33,36 @@ import {
 } from './form.utils'
 import type {
   FormContext,
+  FormFieldDefinition,
+  FormFieldPath,
+  FormValidationAdapter,
+  FormValidationCheck,
+  FormValidator,
   FormFailure,
   FormIssue,
   FormMessages,
   FormPhase,
   FormStatus,
   FormSubmitResult,
-  FormValidation,
 } from './form.types'
 
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
     submit: (context: FormContext) => FormSubmitResult | void | Promise<FormSubmitResult | void>
-    validate?: (context: FormContext) => FormValidation | void | Promise<FormValidation | void>
+    fields?: readonly FormFieldDefinition[]
+    validate?: FormValidator | FormValidationAdapter
     locale?: string
     summaryHeadingLevel?: 1 | 2 | 3 | 4 | 5 | 6
     messages?: Partial<FormMessages>
   }>(),
-  { validate: undefined, locale: undefined, summaryHeadingLevel: 2, messages: undefined },
+  {
+    fields: () => [],
+    validate: undefined,
+    locale: undefined,
+    summaryHeadingLevel: 2,
+    messages: undefined,
+  },
 )
 const emit = defineEmits<{
   invalid: [detail: { issues: FormIssue[]; message: string }]
@@ -74,11 +95,13 @@ interface FormOperation {
   revision: number
   signature: string
   controller: AbortController
+  fields: readonly ResolvedFormField[]
 }
 const active = shallowRef<FormOperation | null>(null)
 let revision = 0
 let starting = false
 let attempted = false
+const validatedNames = new Set<string>()
 let disposed = false
 let generatedId = 0
 const pending = computed(() => active.value !== null)
@@ -106,10 +129,30 @@ const { messages } = useComponentLocale(
   () => props.locale,
   () => props.messages,
 )
+const registry = useFormRegistry(() => props.fields, invalidate)
+watch(
+  registry.fields,
+  (next, previous) => {
+    if (!sameFormFields(next, previous)) invalidate()
+  },
+  { flush: 'sync' },
+)
+function refreshNativeIssues() {
+  if (!form.value || (!attempted && !validatedNames.size)) return
+  const native = nativeIssues(form.value, messages.value.field).filter(
+    (issue) => attempted || validatedNames.has(issue.name),
+  )
+  issues.value = [...issues.value.filter((issue) => issue.source !== 'native'), ...native]
+}
+watch(() => registry.fields.value.map((field) => field.value?.()), refreshNativeIssues, {
+  deep: true,
+  flush: 'post',
+})
 function invalidate() {
   revision++
   active.value?.controller.abort()
-  issues.value = issues.value.filter((issue) => issue.source === 'native')
+  if (issues.value.some((issue) => issue.source !== 'native'))
+    issues.value = issues.value.filter((issue) => issue.source === 'native')
   message.value = ''
   successMessage.value = ''
 }
@@ -117,7 +160,10 @@ function onEdit(event: Event) {
   if (!form.value || !isFormEdit(form.value, event.target)) return
   invalidate()
   void nextTick(() => {
-    if (attempted && form.value) issues.value = nativeIssues(form.value, messages.value.field)
+    if (form.value && (attempted || validatedNames.size))
+      issues.value = nativeIssues(form.value, messages.value.field).filter(
+        (issue) => attempted || validatedNames.has(issue.name),
+      )
   })
 }
 function onInteraction(event: Event) {
@@ -138,6 +184,7 @@ function current(operation: FormOperation) {
     !disposed &&
     !operation.controller.signal.aborted &&
     operation.revision === revision &&
+    sameFormFields(operation.fields, registry.fields.value) &&
     formSignature(operation.context.form) === operation.signature
   )
 }
@@ -153,8 +200,13 @@ function linkFor(issue: InternalFormIssue) {
 function focusIssue(issue: InternalFormIssue) {
   targetFor(issue)?.focus()
 }
-function focusField(name: string) {
+function focusField(path: FormFieldPath) {
   if (!form.value) return false
+  const name =
+    typeof path === 'string'
+      ? path
+      : (registry.fields.value.find((field) => sameFormPath(field.path, path))?.name ??
+        formFieldName(path))
   const target = focusTarget(
     form.value,
     formControls(form.value).find((control) => control.name === name),
@@ -162,7 +214,7 @@ function focusField(name: string) {
   target?.focus()
   return Boolean(target)
 }
-async function showInvalid() {
+async function showInvalid(moveFocus = true) {
   emit('invalid', {
     issues: issues.value.map(({ name, label, message }) => ({ name, label, message })),
     message: message.value,
@@ -170,6 +222,7 @@ async function showInvalid() {
   await nextTick()
   const activeElement = form.value?.ownerDocument.activeElement
   if (
+    moveFocus &&
     form.value &&
     (!activeElement ||
       activeElement === form.value.ownerDocument.body ||
@@ -177,92 +230,157 @@ async function showInvalid() {
   )
     summary.value?.focus()
 }
-async function onSubmit(event: SubmitEvent) {
-  event.preventDefault()
-  if (starting || active.value || !form.value) return
+function replaceIssues(next: InternalFormIssue[], scope?: ReadonlySet<string>) {
+  issues.value = scope ? [...issues.value.filter((issue) => !scope.has(issue.name)), ...next] : next
+}
+function publicCheck(
+  status: FormValidationCheck['status'],
+  scope?: ReadonlySet<string>,
+  text = message.value,
+): FormValidationCheck {
+  return {
+    status,
+    issues: issues.value
+      .filter((issue) => !scope || scope.has(issue.name))
+      .map(({ name, label, message }) => ({ name, label, message })),
+    message: text,
+  }
+}
+async function runValidation(
+  paths?: readonly FormFieldPath[],
+  event?: SubmitEvent,
+): Promise<FormValidationCheck> {
+  if (starting || active.value || !form.value || disposed)
+    return { status: 'busy', issues: [], message: '' }
+  const scope = paths ? formFieldScope(registry.fields.value, paths) : undefined
+  if (scope?.size === 0) return { status: 'valid', issues: [], message: '' }
   starting = true
   const expectedRevision = revision
-  attempted = true
-  issues.value = []
-  message.value = ''
-  notice.value = ''
-  successMessage.value = ''
+  if (scope) for (const name of scope) validatedNames.add(name)
+  else attempted = true
+  if (!scope) {
+    issues.value = []
+    message.value = ''
+    notice.value = ''
+    successMessage.value = ''
+  }
   let operation: FormOperation | undefined
+  const outdated = () => ({ status: 'outdated' as const, issues: [], message: '' })
   try {
-    // Inputs commit their editing state in form capture listeners before this bubble handler.
+    // Submit capture listeners commit input drafts before this handler takes its snapshot.
     await nextTick()
-    if (disposed || revision !== expectedRevision || !form.value) return
+    if (disposed || revision !== expectedRevision || !form.value) return outdated()
     const element = form.value
-    element.checkValidity()
-    issues.value = nativeIssues(element, messages.value.field)
-    if (issues.value.length) {
-      await showInvalid()
-      return
+    if (scope) {
+      for (const control of formControls(element))
+        if (scope.has(control.name)) control.checkValidity()
+    } else element.checkValidity()
+    const native = nativeIssues(element, messages.value.field).filter(
+      (issue) => !scope || scope.has(issue.name),
+    )
+    if (native.length) {
+      replaceIssues(native, scope)
+      await showInvalid(Boolean(event))
+      return publicCheck('invalid', scope, scope ? '' : message.value)
     }
-    const submitter = event.submitter
+    const submitter = event?.submitter ?? null
     const data = submitter ? new FormData(element, submitter) : new FormData(element)
     const controller = new AbortController()
-    const context: FormContext = { form: element, data, submitter, signal: controller.signal }
+    const context: FormContext = {
+      form: element,
+      data,
+      submitter,
+      signal: controller.signal,
+      ...(paths
+        ? { paths: paths.map((path) => (typeof path === 'string' ? path : [...path])) }
+        : {}),
+    }
     operation = {
       context,
       controller,
       revision,
       signature: formSignature(element),
       phase: 'validation',
+      fields: registry.fields.value,
     }
     active.value = operation
-    const validation = await props.validate?.(context)
+    let validation = await validateFormFields(operation.fields, context, scope)
     if (!current(operation)) {
       reportOutdated(operation)
-      return
+      return outdated()
     }
-    issues.value = adapterIssues(element, validation?.fieldErrors, messages.value.field)
-    message.value = validation?.message ?? ''
-    if (hasErrors.value) {
-      await showInvalid()
-      return
+    if (!Object.keys(validation.fieldErrors ?? {}).length) {
+      const adapter = props.validate
+      const result =
+        typeof adapter === 'function'
+          ? await adapter(context)
+          : paths && adapter?.validateFields
+            ? await adapter.validateFields(context, context.paths!)
+            : await adapter?.validate(context)
+      validation = result ?? {}
     }
+    if (!current(operation)) {
+      reportOutdated(operation)
+      return outdated()
+    }
+    const nextIssues = adapterIssues(element, validation.fieldErrors, messages.value.field)
+      .filter((issue) => !scope || scope.has(issue.name))
+      .map((issue) => ({
+        ...issue,
+        label: operation!.fields.find((field) => field.name === issue.name)?.label ?? issue.label,
+      }))
+    replaceIssues(nextIssues, scope)
+    if (!scope) message.value = validation.message ?? ''
+    const invalid = nextIssues.length > 0 || (!scope && Boolean(message.value))
+    if (invalid) {
+      await showInvalid(Boolean(event))
+      return publicCheck('invalid', scope, scope ? '' : message.value)
+    }
+    if (!event) return publicCheck('valid', scope, scope ? '' : message.value)
     operation.phase = 'submission'
     active.value = { ...operation }
     const result = await props.submit(context)
     if (!current(operation)) {
       reportOutdated(operation)
-      return
+      return outdated()
     }
     if (result?.status === 'error') {
       issues.value = adapterIssues(element, result.fieldErrors, messages.value.field)
       message.value = result.message
       emit('failure', { kind: 'rejected', result, context })
       await showInvalid()
-    } else {
-      successMessage.value = result?.message ?? messages.value.success
-      emit('success', context)
+      return publicCheck('invalid')
     }
+    successMessage.value = result?.message ?? messages.value.success
+    emit('success', context)
+    return publicCheck('valid')
   } catch (error) {
-    if (!operation) {
-      if (disposed) return
-      message.value = messages.value.validationFailure
-      emit('failure', { kind: 'exception', error, phase: 'preparation' })
-      await showInvalid()
-      return
-    }
-    if (!current(operation)) {
+    if (operation && !current(operation)) {
       reportOutdated(operation, error)
-      return
+      return outdated()
     }
+    if (disposed) return outdated()
     message.value =
-      operation.phase === 'submission' ? messages.value.failure : messages.value.validationFailure
+      operation?.phase === 'submission' ? messages.value.failure : messages.value.validationFailure
     emit('failure', {
       kind: 'exception',
       error,
-      phase: operation.phase,
-      context: operation.context,
+      phase: operation?.phase ?? 'preparation',
+      ...(operation ? { context: operation.context } : {}),
     })
-    await showInvalid()
+    await showInvalid(Boolean(event))
+    return publicCheck('invalid', scope)
   } finally {
     starting = false
     active.value = null
   }
+}
+function onSubmit(event: SubmitEvent) {
+  event.preventDefault()
+  void runValidation(undefined, event)
+}
+function validateFields(paths?: readonly FormFieldPath[]) {
+  return runValidation(paths)
 }
 function reportOutdated(operation: FormOperation, error?: unknown) {
   if (disposed) return
@@ -275,6 +393,7 @@ function onReset(event: Event) {
     if (event.defaultPrevented || disposed) return
     invalidate()
     attempted = false
+    validatedNames.clear()
     issues.value = []
     notice.value = ''
   })
@@ -302,6 +421,8 @@ onBeforeUnmount(() => {
 defineExpose({
   element: form,
   invalidate,
+  registerField: registry.register,
+  validateFields,
   focusField,
   requestSubmit: (submitter?: HTMLButtonElement | HTMLInputElement) =>
     form.value?.requestSubmit(submitter),

@@ -2,6 +2,7 @@ import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, ref } from 'vue'
 import NumberField from '../../../../registry/components/number-field/number-field.vue'
+import { useFormField, formValidationFromIssues } from '../../../../registry/components/form'
 import M3Form from '../../../../registry/components/form/form.vue'
 import type {
   FormContext,
@@ -264,4 +265,358 @@ describe('Form coordination', () => {
     await flushPromises()
     expect(wrapper.emitted('success')).toBeUndefined()
   })
+})
+
+it('form.fields.rules: validates registered nested values before the application adapter or submission', async () => {
+  const profile = ref({ email: 'ab' })
+  const submit = vi.fn()
+  const validate = vi.fn()
+  const wrapper = mount(M3Form, {
+    props: {
+      submit,
+      validate,
+      fields: [
+        {
+          path: ['profile', 'email'],
+          value: () => profile.value.email,
+          rules: [{ minLength: 3, message: 'Use at least three characters.' }],
+        },
+      ],
+    },
+    slots: {
+      default: ({ fieldErrors }: { fieldErrors: Record<string, string> }) => [
+        h('label', ['Email', h('input', { name: 'profile.email', value: profile.value.email })]),
+        h('p', { 'data-testid': 'local-error' }, fieldErrors['profile.email']),
+      ],
+    },
+  })
+  await wrapper.trigger('submit')
+  await flushPromises()
+  expect(wrapper.get('[data-testid="local-error"]').text()).toBe('Use at least three characters.')
+  expect(submit).not.toHaveBeenCalled()
+  expect(validate).not.toHaveBeenCalled()
+  profile.value.email = 'valid'
+  await flushPromises()
+  expect(wrapper.get('[data-testid="local-error"]').text()).toBe('')
+  await wrapper.trigger('submit')
+  await flushPromises()
+  expect(validate).toHaveBeenCalledOnce()
+  expect(submit).toHaveBeenCalledOnce()
+})
+
+it('form.fields.lifecycle: unregisters a child without removing application-owned values', async () => {
+  const value = ref('kept')
+  const visible = ref(true)
+  const rule = vi.fn(() => 'Not ready')
+  const Field = defineComponent({
+    setup() {
+      useFormField({
+        path: ['contacts', 0, 'name'],
+        name: 'contact',
+        value: () => value.value,
+        rules: [{ validate: rule }],
+      })
+      return () => h('input', { name: 'contact', value: value.value })
+    },
+  })
+  const submit = vi.fn()
+  const wrapper = mount(M3Form, {
+    props: { submit },
+    slots: { default: () => (visible.value ? h(Field) : null) },
+  })
+  await wrapper.trigger('submit')
+  await flushPromises()
+  expect(rule).toHaveBeenCalledOnce()
+  expect(wrapper.get('[role="alert"]').text()).toContain('Not ready')
+  visible.value = false
+  await flushPromises()
+  expect(value.value).toBe('kept')
+  expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  await wrapper.trigger('submit')
+  await flushPromises()
+  expect(rule).toHaveBeenCalledOnce()
+  expect(submit).toHaveBeenCalledOnce()
+})
+it('form.fields.lifecycle: discards a pending rule after a registered model changes without a DOM event', async () => {
+  const value = ref('original')
+  const gate = deferred<string | void>()
+  let signal: AbortSignal | undefined
+  const submit = vi.fn()
+  const wrapper = mount(M3Form, {
+    props: {
+      submit,
+      fields: [
+        {
+          path: ['profile', 'name'],
+          value: () => value.value,
+          rules: [
+            {
+              validate: (_, context) => {
+                signal = context.signal
+                return gate.promise
+              },
+            },
+          ],
+        },
+      ],
+    },
+  })
+  await wrapper.trigger('submit')
+  await flushPromises()
+  value.value = 'current'
+  expect(signal?.aborted).toBe(true)
+  await wrapper.trigger('submit')
+  gate.resolve('Obsolete error')
+  await flushPromises()
+  expect(submit).not.toHaveBeenCalled()
+  expect(wrapper.text()).not.toContain('Obsolete error')
+  expect(wrapper.emitted('outdated')).toHaveLength(1)
+})
+it('maps schema issue tuples to native aliases, retaining first errors and ordinary prototype-like keys', () => {
+  const result = formValidationFromIssues(
+    [
+      { path: ['contacts', 0, 'email'], message: 'Invalid email' },
+      { path: ['contacts', 0, 'email'], message: 'Second error' },
+      { path: '__proto__', message: 'Ordinary field' },
+    ],
+    [{ path: ['contacts', 0, 'email'], name: 'contact-email' }],
+  )
+  expect(result.fieldErrors).toEqual(
+    Object.fromEntries([
+      ['contact-email', 'Invalid email'],
+      ['__proto__', 'Ordinary field'],
+    ]),
+  )
+})
+
+it('form.validation.partial: validates a nested group, preserves unrelated errors, and never submits or moves focus', async () => {
+  const submit = vi.fn()
+  const wrapper = mount(M3Form, {
+    attachTo: document.body,
+    props: {
+      submit,
+      fields: [
+        {
+          path: ['profile', 'first'],
+          name: 'first',
+          rules: [{ required: true, message: 'First is required' }],
+        },
+        {
+          path: ['profile', 'last'],
+          name: 'last',
+          rules: [{ required: true, message: 'Last is required' }],
+        },
+        {
+          path: ['billing', 'code'],
+          name: 'code',
+          rules: [{ required: true, message: 'Code is required' }],
+        },
+      ],
+    },
+    slots: {
+      default: () =>
+        ['first', 'last', 'code'].map((name) => h('input', { name, 'aria-label': name })),
+    },
+  })
+  const first = wrapper.get<HTMLInputElement>('[name="first"]')
+  first.element.focus()
+  expect((await wrapper.vm.validateFields([['billing']])).status).toBe('invalid')
+  expect(wrapper.text()).toContain('Code is required')
+  const result = await wrapper.vm.validateFields([['profile']])
+  expect(result.status).toBe('invalid')
+  expect(result.issues.map((issue) => issue.name)).toEqual(['first', 'last'])
+  expect(wrapper.text()).toContain('Code is required')
+  expect(document.activeElement).toBe(first.element)
+  expect(submit).not.toHaveBeenCalled()
+})
+
+it('form.validation.partial: adapts scoped checks and keeps unrelated native fields untouched on edit', async () => {
+  const validate = vi.fn((_context: FormContext) => ({
+    fieldErrors: { first: 'First error', other: 'Unrelated' },
+    message: 'Unscoped message',
+  }))
+  const validateFields = vi.fn((context: FormContext) => validate(context))
+  const wrapper = mount(M3Form, {
+    attachTo: document.body,
+    props: { submit: vi.fn(), validate: { validate, validateFields } },
+    slots: {
+      default: () => [h('input', { name: 'first' }), h('input', { name: 'other', required: true })],
+    },
+  })
+  const result = await wrapper.vm.validateFields(['first'])
+  expect(result.status).toBe('invalid')
+  expect(result.issues.map((issue) => issue.name)).toEqual(['first'])
+  expect(validateFields).toHaveBeenCalledOnce()
+  expect(validateFields.mock.calls[0]![0].paths).toEqual(['first'])
+  expect(wrapper.text()).not.toContain('Unscoped message')
+  await wrapper.get('[name="first"]').setValue('changed')
+  await flushPromises()
+  expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+})
+it('form.fields.lifecycle: refreshes native feedback after a registered value changes programmatically', async () => {
+  const value = ref('')
+  const wrapper = mount(M3Form, {
+    props: { submit: vi.fn(), fields: [{ path: 'name', value: () => value.value }] },
+    slots: { default: () => h('input', { name: 'name', value: value.value, required: true }) },
+  })
+  expect((await wrapper.vm.validateFields(['name'])).status).toBe('invalid')
+  value.value = 'corrected'
+  await flushPromises()
+  expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+})
+it('form.validation.partial: reports busy and outdated without accepting a stale partial result', async () => {
+  const gate = deferred<string | void>()
+  const value = ref('old')
+  const submit = vi.fn()
+  const wrapper = mount(M3Form, {
+    props: {
+      submit,
+      fields: [
+        { path: 'name', value: () => value.value, rules: [{ validate: () => gate.promise }] },
+      ],
+    },
+  })
+  const checking = wrapper.vm.validateFields(['name'])
+  await flushPromises()
+  expect((await wrapper.vm.validateFields(['name'])).status).toBe('busy')
+  value.value = 'new'
+  gate.resolve('Stale feedback')
+  expect((await checking).status).toBe('outdated')
+  expect(wrapper.text()).not.toContain('Stale feedback')
+  expect(submit).not.toHaveBeenCalled()
+})
+
+it.each([
+  { value: '', rule: { required: true, message: 'Required' }, valid: false },
+  { value: false, rule: { required: true, message: 'Required' }, valid: true },
+  { value: 0, rule: { min: 0, max: 0, message: 'Range' }, valid: true },
+  { value: '5', rule: { min: 0, message: 'Number needed' }, valid: false },
+  { value: Number.NaN, rule: { max: 10, message: 'Finite number needed' }, valid: false },
+  { value: '', rule: { minLength: 3, message: 'Too short' }, valid: true },
+  { value: ['one'], rule: { minLength: 2, message: 'Two needed' }, valid: false },
+  { value: 'abc', rule: { pattern: /^abc$/g, message: 'Pattern' }, valid: true },
+])(
+  'form.fields.rules: checks a typed value $value without coercing or mutating rule state',
+  async ({ value, rule, valid }) => {
+    const wrapper = mount(M3Form, {
+      props: { submit: vi.fn(), fields: [{ path: 'value', value: () => value, rules: [rule] }] },
+    })
+    expect((await wrapper.vm.validateFields()).status).toBe(valid ? 'valid' : 'invalid')
+    expect((await wrapper.vm.validateFields()).status).toBe(valid ? 'valid' : 'invalid')
+  },
+)
+it('adapts root schema issues separately from native field feedback', () => {
+  expect(
+    formValidationFromIssues([
+      { path: [], message: 'Check this combination' },
+      { path: ['name'], message: 'Name error' },
+    ]),
+  ).toEqual({ message: 'Check this combination', fieldErrors: { name: 'Name error' } })
+})
+
+it('form.validation.partial: distinguishes literal dotted segments and numeric indices in nested scopes', async () => {
+  const wrapper = mount(M3Form, {
+    props: {
+      submit: vi.fn(),
+      fields: [
+        {
+          path: ['contacts', 0, 'email'],
+          name: 'numeric',
+          rules: [{ required: true, message: 'Numeric index' }],
+        },
+        {
+          path: ['contacts', '0', 'email'],
+          name: 'text',
+          rules: [{ required: true, message: 'Text key' }],
+        },
+        {
+          path: ['contacts.email'],
+          name: 'literal',
+          rules: [{ required: true, message: 'Literal key' }],
+        },
+      ],
+    },
+  })
+  expect(
+    (await wrapper.vm.validateFields([['contacts', 0]])).issues.map((issue) => issue.name),
+  ).toEqual(['numeric'])
+  expect(
+    (await wrapper.vm.validateFields([['contacts', '0']])).issues.map((issue) => issue.name),
+  ).toEqual(['text'])
+  expect(
+    (await wrapper.vm.validateFields([['contacts.email']])).issues.map((issue) => issue.name),
+  ).toEqual(['literal'])
+})
+it('form.fields.rules: gives scoped cross-field rules captured values without running unrelated rules', async () => {
+  const untouched = vi.fn()
+  const wrapper = mount(M3Form, {
+    props: {
+      submit: vi.fn(),
+      fields: [
+        {
+          path: ['profile', 'password'],
+          name: 'password',
+          value: () => 'secret',
+          rules: [{ validate: untouched }],
+        },
+        {
+          path: ['profile', 'confirmation'],
+          name: 'confirmation',
+          value: () => 'different',
+          rules: [
+            {
+              validate: (value, context) =>
+                value === context.getValue(['profile', 'password'])
+                  ? undefined
+                  : 'Passwords must match',
+            },
+          ],
+        },
+      ],
+    },
+  })
+  const result = await wrapper.vm.validateFields([['profile', 'confirmation']])
+  expect(result.status).toBe('invalid')
+  expect(result.issues).toEqual([
+    { name: 'confirmation', label: 'confirmation', message: 'Passwords must match' },
+  ])
+  expect(untouched).not.toHaveBeenCalled()
+})
+it('form.fields.lifecycle: cancels a pending rule when its registered rule configuration changes', async () => {
+  const gate = deferred<string | void>()
+  let signal: AbortSignal | undefined
+  const wrapper = mount(M3Form, {
+    props: {
+      submit: vi.fn(),
+      fields: [
+        {
+          path: 'name',
+          value: () => 'Ada',
+          rules: [
+            {
+              validate: (_, context) => {
+                signal = context.signal
+                return gate.promise
+              },
+            },
+          ],
+        },
+      ],
+    },
+  })
+  const checking = wrapper.vm.validateFields()
+  await flushPromises()
+  await wrapper.setProps({
+    fields: [
+      {
+        path: 'name',
+        value: () => 'Ada',
+        rules: [{ minLength: 4, message: 'Longer name needed' }],
+      },
+    ],
+  })
+  expect(signal?.aborted).toBe(true)
+  gate.resolve('Previous rule error')
+  expect((await checking).status).toBe('outdated')
+  expect(wrapper.text()).not.toContain('Previous rule error')
 })
