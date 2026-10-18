@@ -94,7 +94,7 @@ const topics = [
 
 ### Input
 
-`InputChip` requires `label` and has `v-model:selected` (`false` by default), `value`, `variant`, `disabled`, `removable`, and `removeLabel`. The default slot can replace the visible label; `#avatar`, `#icon`, and `#remove-icon` add content. It emits `click(MouseEvent)` and `remove(value)`.
+`InputChip` requires `label` and has `v-model:selected` (`false` by default), `value`, `variant`, `disabled`, `removable`, and `removeLabel`. The default slot can replace the visible label; `#avatar`, `#icon`, and `#remove-icon` add content. It emits `click(MouseEvent)` and `remove(value, MouseEvent | KeyboardEvent)`.
 
 `InputChipSet` requires `label` and has a `string[]` `v-model` (default `[]`). It accepts `placeholder`, `disabled`, `maxChips`, `vertical`, `reorderable`, `name`, and `form`. `#avatar({ value })` and `#icon({ value })` customize each chip. Its `change` event reports `add`, `remove`, `edit`, or `reorder`, with indices for reordering.
 

@@ -23,7 +23,10 @@ const props = withDefaults(
 )
 
 const selected = defineModel<boolean>('selected', { default: false })
-const emit = defineEmits<{ click: [event: MouseEvent]; remove: [value: string] }>()
+const emit = defineEmits<{
+  click: [event: MouseEvent]
+  remove: [value: string, event: MouseEvent | KeyboardEvent]
+}>()
 defineSlots<{
   default?(): unknown
   avatar?(): unknown
@@ -42,13 +45,13 @@ function onMainClick(event: MouseEvent): void {
   if (!props.disabled && !event.defaultPrevented) selected.value = !selected.value
 }
 
-function remove(): void {
-  if (!props.disabled && props.removable) emit('remove', props.value ?? props.label)
+function remove(event: MouseEvent | KeyboardEvent): void {
+  if (!props.disabled && props.removable) emit('remove', props.value ?? props.label, event)
 }
 function onKeydown(event: KeyboardEvent): void {
   if ((event.key === 'Backspace' || event.key === 'Delete') && props.removable) {
     event.preventDefault()
-    remove()
+    remove(event)
   }
 }
 </script>

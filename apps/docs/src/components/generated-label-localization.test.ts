@@ -23,7 +23,9 @@ describe('generated shared labels', () => {
     expect(document.activeElement).toBe(remove.element)
     expect(wrapper.getComponent(InputChip).emitted('update:selected')).toBeUndefined()
     await remove.trigger('click')
-    expect(wrapper.getComponent(InputChip).emitted('remove')).toEqual([['Apple']])
+    expect(wrapper.getComponent(InputChip).emitted('remove')).toEqual([
+      ['Apple', expect.any(MouseEvent)],
+    ])
   })
   it('keeps Range slider values and focused endpoint while updating spoken names', async () => {
     const wrapper = mount(LocaleProvider, {

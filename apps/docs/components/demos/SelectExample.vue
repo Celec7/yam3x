@@ -173,6 +173,7 @@ function record(event: string) {
             v-model="dataChoices"
             :options="dataOptions"
             name="presets"
+            selection-display="chips"
             multiple
         /></FormField>
         <Button

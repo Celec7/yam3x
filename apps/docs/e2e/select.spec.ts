@@ -485,3 +485,74 @@ test('select.options.catalog: data rows share keyboard selection and keep native
   await example.getByRole('button', { name: 'Reset presets', exact: true }).click()
   await expect(single).toHaveAttribute('value', 'forest')
 })
+
+test('select.selection.chips: removals retain native values, restore focus, and reset accepted chips', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-data')
+  const trigger = example.getByRole('button', { name: 'Preset collection', exact: true })
+  await example.getByRole('button', { name: 'Remove remote', exact: true }).click()
+  await expect(example.getByRole('button', { name: 'Violet', exact: true })).toBeFocused()
+  await expect(trigger).toHaveAttribute('aria-description', 'Violet')
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).getAll('presets')),
+  ).toEqual(['violet'])
+  await page.keyboard.press('Delete')
+  await expect(trigger).toBeFocused()
+  await expect(example.locator('.yam3x-input-chip')).toHaveCount(0)
+  await example.getByRole('button', { name: 'Reset presets', exact: true }).click()
+  await expect(example.getByRole('button', { name: 'Remove remote', exact: true })).toBeVisible()
+  await expect(trigger).toHaveAttribute('aria-description', 'Violet, remote')
+  const field = example.locator('.yam3x-select--chips')
+  const geometry = await field.evaluate((element) => {
+    const bounds = element.getBoundingClientRect()
+    const trigger = element.querySelector('.yam3x-select__trigger')!.getBoundingClientRect()
+    return {
+      right: bounds.right,
+      triggerRight: trigger.right,
+      width: bounds.width,
+      scrollWidth: element.scrollWidth,
+    }
+  })
+  expect(Math.abs(geometry.right - geometry.triggerRight)).toBeLessThanOrEqual(1)
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.width + 1)
+  const labels = await field
+    .locator('.yam3x-chip__label')
+    .evaluateAll((elements) =>
+      elements.map((element) => ({ visible: element.clientWidth, content: element.scrollWidth })),
+    )
+  for (const label of labels) expect(label.content).toBeLessThanOrEqual(label.visible + 1)
+  await field.evaluate((element) => element.setAttribute('dir', 'rtl'))
+  const rtl = await field.evaluate((element) => ({
+    left: element.getBoundingClientRect().left,
+    triggerLeft: element.querySelector('.yam3x-select__trigger')!.getBoundingClientRect().left,
+  }))
+  expect(Math.abs(rtl.left - rtl.triggerLeft)).toBeLessThanOrEqual(1)
+  await example.getByRole('button', { name: 'Violet', exact: true }).click()
+  await expect(page.getByRole('option', { name: 'Violet', exact: true })).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(trigger).toBeFocused()
+  await expect(example.locator('button button')).toHaveCount(0)
+})
+
+test('select.selection.chips: native cancellation leaves the focused remove action and accepted value intact', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-data')
+  const trigger = example.getByRole('button', { name: 'Preset collection', exact: true })
+  await trigger.evaluate((element) =>
+    element.addEventListener('beforeinput', (event) => event.preventDefault(), { once: true }),
+  )
+  const remove = example.getByRole('button', { name: 'Remove Violet', exact: true })
+  await remove.focus()
+  await page.keyboard.press('Enter')
+  await expect(remove).toBeFocused()
+  await expect(trigger).toHaveAttribute('aria-description', 'Violet, remote')
+  await page.keyboard.press('Enter')
+  await expect(example.getByRole('button', { name: 'remote', exact: true })).toBeFocused()
+  await expect(trigger).toHaveAttribute('aria-description', 'remote')
+})

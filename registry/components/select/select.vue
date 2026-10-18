@@ -22,6 +22,7 @@ import type { SelectOption } from './select.types'
 import Option from '../option/option.vue'
 import OptionPanel from '../option/option-panel.vue'
 import Icon from '../icon/icon.vue'
+import InputChip from '../chips/input-chip.vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -35,6 +36,7 @@ const props = withDefaults(
     required?: boolean
     disabled?: boolean
     multiple?: boolean
+    selectionDisplay?: 'text' | 'chips'
     hideSelectionIndicator?: boolean
     panelClass?: string
     fitAnchorWidth?: boolean
@@ -49,6 +51,7 @@ const props = withDefaults(
     required: false,
     disabled: false,
     multiple: false,
+    selectionDisplay: 'text',
     hideSelectionIndicator: false,
     panelClass: '',
     fitAnchorWidth: true,
@@ -92,7 +95,10 @@ const attrs = useAttrs()
 const uid = useId().replace(/:/g, '')
 const controlId = computed(() => props.id || `yam3x-select-${uid}`)
 const listboxId = `yam3x-select-listbox-${uid}`
+const root = ref<HTMLElement | null>(null)
 const trigger = ref<HTMLButtonElement | null>(null)
+const chipDisplay = computed(() => props.multiple && props.selectionDisplay === 'chips')
+const chipContainer = ref<HTMLElement | null>(null)
 const nativeSelect = ref<HTMLSelectElement | null>(null)
 const panel = ref<{
   show: () => void
@@ -289,10 +295,15 @@ function selectValue(value: string, source: OptionSelectionSource = 'pointer') {
     if (!props.multiple) requestOpen(false, 'programmatic')
     return
   }
+  if (!commitSelection(next, value, source)) return
+  if (!props.multiple) requestOpen(false, 'programmatic')
+  else if (source === 'pointer' && open.value) option.element?.focus({ preventScroll: true })
+}
+function commitSelection(next: readonly string[], value: string, source: OptionSelectionSource) {
   const before = new Event('beforeinput', { bubbles: true, cancelable: true })
   emit('beforeinput', before)
   trigger.value?.dispatchEvent(before)
-  if (before.defaultPrevented) return
+  if (before.defaultPrevented) return false
   modelValue.value = selectedValuesForMode(next)
   invalid.value = false
   trigger.value?.removeAttribute('aria-invalid')
@@ -301,9 +312,40 @@ function selectValue(value: string, source: OptionSelectionSource = 'pointer') {
   emit('change', detail)
   dispatchNativeInput('input')
   dispatchNativeInput('change')
-  if (!props.multiple) requestOpen(false, 'programmatic')
-  else if (source === 'pointer' && open.value) option.element?.focus({ preventScroll: true })
+  return true
 }
+function openFromChip(value: string, event: MouseEvent) {
+  event.preventDefault()
+  if (props.disabled) return
+  requestOpen(true, 'trigger')
+  if (open.value) {
+    const option = options.value.find((option) => option.value === value)
+    if (option && !option.disabled) setActive(value)
+    scheduleFocusUpdate()
+  }
+}
+async function removeChip(value: string, event: MouseEvent | KeyboardEvent) {
+  if (props.disabled || !props.multiple || !values.value.includes(value)) return
+  if (options.value.find((option) => option.value === value)?.disabled) return
+  const index = values.value.indexOf(value)
+  const next = values.value.filter((item) => item !== value)
+  const source = event instanceof KeyboardEvent || event.detail === 0 ? 'keyboard' : 'pointer'
+  if (!commitSelection(next, value, source)) return
+  await nextTick()
+  if (values.value.includes(value)) return
+  const chips = Array.from(chipContainer.value?.querySelectorAll<HTMLElement>('[data-value]') ?? [])
+  const candidates = [...values.value.slice(index), ...values.value.slice(0, index).reverse()]
+  const action = candidates
+    .map((candidate) =>
+      chips
+        .find((element) => element.dataset.value === candidate)
+        ?.querySelector<HTMLButtonElement>('button:not(:disabled)'),
+    )
+    .find(Boolean)
+  const focusTarget = action ?? trigger.value
+  focusTarget?.focus({ preventScroll: true })
+}
+
 function updateActiveBy(delta: number) {
   const enabled = options.value.filter((option) => !option.disabled)
   if (!enabled.length) return
@@ -501,9 +543,30 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
 
 <template>
   <div
+    ref="root"
     class="yam3x-select"
-    :class="{ 'yam3x-select--open': open, 'yam3x-select--disabled': disabled }"
+    :class="{
+      'yam3x-select--chips': chipDisplay,
+      'yam3x-select--open': open,
+      'yam3x-select--disabled': disabled,
+    }"
   >
+    <div
+      v-if="chipDisplay && values.length"
+      ref="chipContainer"
+      class="yam3x-select__chips"
+    >
+      <InputChip
+        v-for="value in values"
+        :key="value"
+        :value="value"
+        :label="options.find((option) => option.value === value)?.label ?? value"
+        :locale="props.locale"
+        :disabled="disabled || options.find((option) => option.value === value)?.disabled"
+        @click="openFromChip(value, $event)"
+        @remove="removeChip"
+      />
+    </div>
     <button
       :id="controlId"
       ref="trigger"
@@ -532,7 +595,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
           name="value"
           :value="modelValue"
           :options="selectedOptions"
-          >{{ displayValue }}</slot
+          >{{ chipDisplay ? '' : displayValue }}</slot
         >
       </span>
       <span
@@ -575,7 +638,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       :id="listboxId"
       ref="panel"
       v-model:open="open"
-      :anchor="trigger"
+      :anchor="chipDisplay ? root : trigger"
       :locale="props.locale"
       :label="typeof attrs['aria-label'] === 'string' ? attrs['aria-label'] : undefined"
       :labelledby="labelledby || undefined"
@@ -646,6 +709,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
     --yam3x-select-container-shape,
     var(--md-sys-shape-corner-extra-small, 4px)
   );
+  --_yam3x-select-chip-gap: max(8px, calc(8px * var(--_yam3x-select-spacing-scale)));
   --_yam3x-select-trigger-gap: calc(12px * var(--_yam3x-select-spacing-scale));
   --_yam3x-select-focus-color: var(--md-sys-color-primary);
   --_yam3x-select-icon-size: var(--yam3x-select-icon-size, 24px);
@@ -683,6 +747,28 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   font: inherit;
   text-align: start;
   cursor: pointer;
+}
+.yam3x-select--chips {
+  align-items: center;
+  gap: var(--_yam3x-select-chip-gap);
+  padding-block: var(--_yam3x-select-chip-gap);
+}
+.yam3x-select__chips {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  min-inline-size: 0;
+  gap: var(--_yam3x-select-chip-gap);
+}
+.yam3x-select--chips .yam3x-select__chips > .yam3x-input-chip {
+  margin-block: var(--_yam3x-select-chip-gap);
+}
+.yam3x-select.yam3x-select--chips .yam3x-select__trigger {
+  flex: 0 0 auto;
+  inline-size: auto;
+  min-inline-size: 48px;
+  min-block-size: 48px;
+  margin-inline-start: auto;
 }
 .yam3x-select__trigger:disabled {
   cursor: default;

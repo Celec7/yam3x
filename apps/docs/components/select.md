@@ -60,22 +60,23 @@ Use an array model for multiple selection; the popup stays open as options are t
 
 Built-in empty text can inherit [LocaleProvider](/components/localization)'s `select` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; the `#no-data` slot takes precedence. Language updates preserve popup state and single or multiple selection values.
 
-| Prop                     | Type                         | Default   | Description                                                                      |
-| ------------------------ | ---------------------------- | --------- | -------------------------------------------------------------------------------- |
-| `options`                | `readonly SelectOption[]`    | Undefined | Data-driven catalog; when supplied, renders options instead of the default slot. |
-| `id`                     | `string`                     | Generated | Trigger ID.                                                                      |
-| `modelValue` / `v-model` | `string \| string[] \| null` | `null`    | Selected value, or selected values with `multiple`.                              |
-| `open` / `v-model:open`  | `boolean`                    | `false`   | Controlled popup visibility.                                                     |
-| `name`                   | `string`                     | —         | Native form field name.                                                          |
-| `form`                   | `string`                     | —         | Associate with a form by id when outside the form subtree.                       |
-| `required`               | `boolean`                    | `false`   | Require a selection during native form validation.                               |
-| `disabled`               | `boolean`                    | `false`   | Disable the trigger and selection.                                               |
-| `multiple`               | `boolean`                    | `false`   | Allow several selected values.                                                   |
-| `hideSelectionIndicator` | `boolean`                    | `false`   | Hide option selection indicators.                                                |
-| `panelClass`             | `string`                     | `''`      | Class applied to the floating option panel.                                      |
-| `fitAnchorWidth`         | `boolean`                    | `true`    | Match the option panel to the trigger width.                                     |
-| `anchorOffset`           | `number`                     | `4`       | Gap between trigger and panel in CSS pixels.                                     |
-| `closeOnTab`             | `boolean`                    | `true`    | Close the panel when Tab leaves the trigger.                                     |
+| Prop                     | Type                         | Default   | Description                                                                                                 |
+| ------------------------ | ---------------------------- | --------- | ----------------------------------------------------------------------------------------------------------- |
+| `options`                | `readonly SelectOption[]`    | Undefined | Data-driven catalog; when supplied, renders options instead of the default slot.                            |
+| `id`                     | `string`                     | Generated | Trigger ID.                                                                                                 |
+| `modelValue` / `v-model` | `string \| string[] \| null` | `null`    | Selected value, or selected values with `multiple`.                                                         |
+| `open` / `v-model:open`  | `boolean`                    | `false`   | Controlled popup visibility.                                                                                |
+| `name`                   | `string`                     | —         | Native form field name.                                                                                     |
+| `form`                   | `string`                     | —         | Associate with a form by id when outside the form subtree.                                                  |
+| `required`               | `boolean`                    | `false`   | Require a selection during native form validation.                                                          |
+| `disabled`               | `boolean`                    | `false`   | Disable the trigger and selection.                                                                          |
+| `multiple`               | `boolean`                    | `false`   | Allow several selected values.                                                                              |
+| `selectionDisplay`       | `'text' \| 'chips'`          | `'text'`  | Display accepted multiple values as text or removable input chips. Single selection keeps its text display. |
+| `hideSelectionIndicator` | `boolean`                    | `false`   | Hide option selection indicators.                                                                           |
+| `panelClass`             | `string`                     | `''`      | Class applied to the floating option panel.                                                                 |
+| `fitAnchorWidth`         | `boolean`                    | `true`    | Match the option panel to the trigger width.                                                                |
+| `anchorOffset`           | `number`                     | `4`       | Gap between trigger and panel in CSS pixels.                                                                |
+| `closeOnTab`             | `boolean`                    | `true`    | Close the panel when Tab leaves the trigger.                                                                |
 
 Use the default slot for `Option` or `OptionGroup`. `#value` receives `{ value, options }`; `#arrow` replaces the dropdown icon, and `#no-data` supplies the empty-list message. Slotted options need unique string values and labels.
 
@@ -86,6 +87,12 @@ A cancellable DOM `beforeinput` event fires before the value changes; cancelling
 Pass `:options="[{ value: 'daily', label: 'Daily digest' }, { value: 'weekly', label: 'Weekly digest', disabled: true }]"` to use a flat data catalog. `SelectOption` has a unique nonempty string `value`, a `label`, optional `disabled`, and optional initial `selected`. Import its type from the Select module; this mode does not require importing Option in the application. Use the existing default slot for grouped/custom Option compositions instead.
 
 `#option="{ option, selected, active }"` customizes the content of a data-driven row; its accessible name remains `option.label`. Keep content noninteractive. `#value` continues to customize the trigger. If metadata temporarily omits an accepted value, the trigger uses its raw value and native submission retains it. When its metadata arrives, the label updates without emitting a selection change. Clear the model explicitly when your application removes a choice permanently.
+
+### Multiple-selection display
+
+Set `multiple selection-display="chips"` to display accepted values as [Input chips](/components/chips). Chip labels use the catalog or fall back to the raw value. Activating a chip body opens the menu at that choice (or the first available choice if its metadata is missing); its trailing remove action, Backspace, or Delete removes it through the same cancellable `beforeinput` path as a menu choice. Disabled choices and a disabled Select cannot be removed. A value absent from the catalog can still be removed.
+
+The chips sit beside the named menu trigger, with separate focus targets. After removal, focus moves to the next enabled chip, the previous enabled chip, or the trigger when none remain; each chip body and remove action remains keyboard reachable. The trigger retains its selected-values accessible description and `#value` customization. Native form values and reset use the accepted model in either display mode.
 
 ## Behavior and accessibility
 
@@ -106,5 +113,7 @@ Set these project-defined custom properties on the Select root. The trigger shap
 The popup uses the [Option styling](/components/option#styling) for its surface, rows, and status content.
 
 ## Material references
+
+- [Chips guidelines](https://m3.material.io/components/chips/guidelines)
 
 [Text fields overview](https://m3.material.io/components/text-fields/overview) · [Menus overview](https://m3.material.io/components/menus/overview)

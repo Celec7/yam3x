@@ -94,7 +94,7 @@ const topics = [
 
 ### 输入
 
-`InputChip` 必须提供 `label`，并提供 `v-model:selected`（默认 `false`）、`value`、`variant`、`disabled`、`removable` 和 `removeLabel`。默认插槽可替换可见标签；`#avatar`、`#icon` 和 `#remove-icon` 添加内容。组件发出 `click(MouseEvent)` 和 `remove(value)`。
+`InputChip` 必须提供 `label`，并提供 `v-model:selected`（默认 `false`）、`value`、`variant`、`disabled`、`removable` 和 `removeLabel`。默认插槽可替换可见标签；`#avatar`、`#icon` 和 `#remove-icon` 添加内容。组件发出 `click(MouseEvent)` 和 `remove(value, MouseEvent | KeyboardEvent)`。
 
 `InputChipSet` 必须提供 `label`，其 `string[]` 类型 `v-model` 默认为 `[]`。组件接受 `placeholder`、`disabled`、`maxChips`、`vertical`、`reorderable`、`name` 和 `form`。`#avatar({ value })` 和 `#icon({ value })` 可自定义各个 chip。`change` 事件报告添加、移除、编辑或重排；重排时包含索引。
 
