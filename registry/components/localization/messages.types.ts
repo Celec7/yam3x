@@ -96,7 +96,18 @@ export interface TreeViewMessages {
   scroll: string
 }
 
+export interface NumberFieldLocaleMessages {
+  valueMissing: string
+  badInput: string
+  rangeUnderflow: (minimum: string) => string
+  rangeOverflow: (maximum: string) => string
+  customError: string
+  increment: (label: string) => string
+  decrement: (label: string) => string
+}
+
 export interface LocaleMessages {
+  numberField: NumberFieldLocaleMessages
   pagination: PaginationMessages
   form: FormMessages
   fileUpload: FileUploadMessages

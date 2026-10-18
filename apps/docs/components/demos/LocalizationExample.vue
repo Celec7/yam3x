@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
+import { NumberField } from '@registry/components/number-field'
 import { Pagination } from '@registry/components/pagination'
 import { TreeView } from '@registry/components/tree-view'
 import { FileUpload } from '@registry/components/file-upload'
@@ -12,6 +13,7 @@ import { Button } from '@registry/components/button'
 const { locale: demoLocale } = useDemoLocale()
 const locale = ref(demoLocale.value === 'zh' ? 'zh-CN' : 'en-US')
 const page = ref(2)
+const quantity = ref<number | null>(2.5)
 </script>
 
 <template>
@@ -25,6 +27,14 @@ const page = ref(2)
         <Pagination
           v-model:page="page"
           :total="200"
+        />
+        <NumberField
+          v-model="quantity"
+          label="Quantity / 数量"
+          :min="0"
+          :max="10"
+          :step="0.1"
+          data-testid="locale-number"
         />
         <TreeView
           label="Records / 记录"

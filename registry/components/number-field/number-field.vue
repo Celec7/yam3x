@@ -11,6 +11,7 @@ import {
   watch,
   type StyleValue,
 } from 'vue'
+import { mergeMessages, useComponentLocale } from '../localization/context'
 import FormField from '../form-field/form-field.vue'
 import IconButton from '../icon-button/icon-button.vue'
 import Icon from '../icon/icon.vue'
@@ -43,7 +44,7 @@ const props = withDefaults(
     id: undefined,
     name: undefined,
     form: undefined,
-    locale: 'en-US',
+    locale: undefined,
     min: undefined,
     max: undefined,
     step: 1,
@@ -81,27 +82,30 @@ const prefixId = `yam3x-number-prefix-${uid}`
 const suffixId = `yam3x-number-suffix-${uid}`
 const input = ref<HTMLInputElement>()
 const formValue = ref<HTMLInputElement>()
-const codec = computed(() => createNumberCodec(props.locale))
+const { locale, messages: localizedMessages } = useComponentLocale(
+  'numberField',
+  () => props.locale,
+  () => undefined,
+)
+const codec = computed(() => createNumberCodec(locale.value))
 const draft = ref(codec.value.format(modelValue.value))
 const showErrors = ref(false)
 const initialValue = modelValue.value
 let associatedForm: HTMLFormElement | null = null
 const messages = computed<NumberFieldMessages>(() => {
-  const chinese = /^zh/i.test(props.locale)
-  return {
-    valueMissing: chinese ? '此项为必填项。' : 'This field is required.',
-    badInput: chinese ? '请输入有效数字。' : 'Enter a valid number.',
-    rangeUnderflow: chinese
-      ? `请输入不小于 ${codec.value.format(props.min ?? null)} 的数字。`
-      : `Enter a number of at least ${codec.value.format(props.min ?? null)}.`,
-    rangeOverflow: chinese
-      ? `请输入不大于 ${codec.value.format(props.max ?? null)} 的数字。`
-      : `Enter a number no greater than ${codec.value.format(props.max ?? null)}.`,
-    customError: chinese ? '请检查此项。' : 'Check this field.',
-    increment: chinese ? `增加${props.label}` : `Increase ${props.label}`,
-    decrement: chinese ? `减少${props.label}` : `Decrease ${props.label}`,
-    ...props.messages,
-  }
+  const text = localizedMessages.value
+  return mergeMessages(
+    {
+      valueMissing: text.valueMissing,
+      badInput: text.badInput,
+      rangeUnderflow: text.rangeUnderflow(codec.value.format(props.min ?? null)),
+      rangeOverflow: text.rangeOverflow(codec.value.format(props.max ?? null)),
+      customError: text.customError,
+      increment: text.increment(props.label),
+      decrement: text.decrement(props.label),
+    },
+    props.messages,
+  )
 })
 const parsed = computed(() => codec.value.parse(draft.value))
 const problem = computed<NumberFieldInvalidDetail | null>(() => {

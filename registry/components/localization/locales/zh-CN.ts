@@ -1,5 +1,14 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  numberField: {
+    valueMissing: '此项为必填项。',
+    badInput: '请输入有效数字。',
+    rangeUnderflow: (minimum) => `请输入不小于 ${minimum} 的数字。`,
+    rangeOverflow: (maximum) => `请输入不大于 ${maximum} 的数字。`,
+    customError: '请检查此项。',
+    increment: (label) => `增加${label}`,
+    decrement: (label) => `减少${label}`,
+  },
   pagination: {
     label: '分页',
     previous: '上一页',

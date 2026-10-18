@@ -5,6 +5,7 @@ import { renderToString } from 'vue/server-renderer'
 import { LocaleProvider } from '../../../../registry/components/localization'
 import { useComponentLocale } from '../../../../registry/components/localization/context'
 import type { LocaleOverrides } from '../../../../registry/components/localization'
+import NumberField from '../../../../registry/components/number-field/number-field.vue'
 import Pagination from '../../../../registry/components/pagination/pagination.vue'
 import TreeView from '../../../../registry/components/tree-view/tree-view.vue'
 import FileUpload from '../../../../registry/components/file-upload/file-upload.vue'
@@ -153,6 +154,75 @@ describe('shared localization', () => {
     ])
     expect(wrapper.get('tr[data-row-key="å"] input').element).toHaveProperty('checked', true)
     expect(wrapper.getComponent(DataTable).emitted('update:selectedKeys')).toBeUndefined()
+  })
+  it('reformats a pending numeric edit through inherited locale changes without committing it', async () => {
+    const locale = ref('en-US')
+    const wrapper = mount(
+      defineComponent({
+        setup: () => () =>
+          h(
+            LocaleProvider,
+            { locale: locale.value },
+            {
+              default: () => h(NumberField, { label: 'Amount', modelValue: 1234.5 }),
+            },
+          ),
+      }),
+    )
+    const number = wrapper.getComponent(NumberField)
+    const input = number.get<HTMLInputElement>('input[role="spinbutton"]')
+    await input.setValue('1250.75')
+    locale.value = 'de-DE'
+    await wrapper.vm.$nextTick()
+    expect(input.element.value).toBe('1.250,75')
+    expect(input.attributes('lang')).toBe('de-DE')
+    expect(number.emitted('update:modelValue')).toBeUndefined()
+    await input.trigger('blur')
+    expect(number.emitted('update:modelValue')).toEqual([[1250.75]])
+  })
+  it('formats numeric bounds for shared message functions and preserves local string overrides', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: {
+        locale: 'de-DE',
+        messages: {
+          numberField: {
+            rangeUnderflow: (minimum) => `Minimum: ${minimum}`,
+            increment: (label) => `Add ${label}`,
+          },
+        },
+      },
+      slots: {
+        default: () =>
+          h(NumberField, { label: 'Amount', min: 1000.5, messages: { increment: 'More' } }),
+      },
+    })
+    const input = wrapper.get('input[role="spinbutton"]')
+    await input.setValue('3')
+    await input.trigger('blur')
+    expect(wrapper.text()).toContain('Minimum: 1.000,5')
+    expect(wrapper.find('[aria-label="More"]').exists()).toBe(true)
+    expect(wrapper.find('[aria-label="Add Amount"]').exists()).toBe(false)
+  })
+  it('preserves invalid numeric edits and an explicit field locale across provider updates', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'en-US' },
+      slots: {
+        default: () =>
+          h(NumberField, {
+            label: 'Amount',
+            locale: 'fr-FR',
+            messages: { badInput: 'Invalid amount' },
+          }),
+      },
+    })
+    const input = wrapper.get<HTMLInputElement>('input[role="spinbutton"]')
+    await input.setValue('-')
+    await input.trigger('blur')
+    await wrapper.setProps({ locale: 'zh-CN' })
+    expect(input.element.value).toBe('-')
+    expect(input.attributes('lang')).toBe('fr-FR')
+    expect(wrapper.text()).toContain('Invalid amount')
+    expect(wrapper.getComponent(NumberField).emitted('update:modelValue')).toBeUndefined()
   })
   it('supplies all migrated namespaces from one provider', async () => {
     const messages: LocaleOverrides = { form: { summary: '自定义摘要' } }

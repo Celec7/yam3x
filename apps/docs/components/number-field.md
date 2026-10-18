@@ -42,11 +42,13 @@ const weight = ref<number | null>(0.1)
 
 ## API
 
+Built-in messages, number formatting, and parsing can inherit [LocaleProvider](/components/localization). Explicit `locale` and the component’s string-valued `messages` take precedence; without a provider, the locale is `en-US`.
+
 | Prop                               | Default            | Use                                                                                                                                                                        |
 | ---------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `label`                            | Required           | Visible field label.                                                                                                                                                       |
 | `id`, `name`, `form`               | —                  | Editor ID, submitted field name, and optional external form ID.                                                                                                            |
-| `locale`                           | `en-US`            | Locale for digits, grouping, decimal separators, and formatting.                                                                                                           |
+| `locale`                           | Provider → `en-US` | Locale for digits, grouping, decimal separators, and formatting.                                                                                                           |
 | `min`, `max`                       | Unbounded          | Inclusive finite limits.                                                                                                                                                   |
 | `step`                             | `1`                | Positive finite increment; does not restrict directly typed values to a step grid.                                                                                         |
 | `required`, `disabled`, `readonly` | `false`            | Native field states; disabled and read-only fields cannot step.                                                                                                            |

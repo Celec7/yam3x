@@ -50,14 +50,16 @@ Keep application translations in your own files and pass a reactive message obje
 
 ## API
 
-| Prop       | Default                       | Use                                                                                                                                                           |
-| ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                    |
-| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
+| Prop       | Default                       | Use                                                                                                                                                                          |
+| ---------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                   |
+| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
 
 The default slot renders children without an extra DOM element. The provider has no models, events, or exposed methods. `LocaleMessages` describes the complete namespace contracts; existing component-specific message type exports remain available.
 
-Provider support currently applies to [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
+Provider support currently applies to [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
+
+`numberField` entries `rangeUnderflow(minimum)`, `rangeOverflow(maximum)`, `increment(label)`, and `decrement(label)` are functions receiving formatted bounds or the field label. The Number field component keeps its existing string-valued `messages`, which take precedence over provider text.
 
 ## Behavior and accessibility
 

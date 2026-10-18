@@ -42,20 +42,22 @@ const weight = ref<number | null>(0.1)
 
 ## API
 
-| 属性                               | 默认值       | 用途                                                                                                                                                |
-| ---------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`                            | 必填         | 可见的字段标签。                                                                                                                                    |
-| `id`、`name`、`form`               | —            | 编辑器 ID、提交字段名称，以及可选的外部表单 ID。                                                                                                    |
-| `locale`                           | `en-US`      | 数字、分组符、小数分隔符和显示格式的语言区域。                                                                                                      |
-| `min`、`max`                       | 无边界       | 包含边界的有限数值范围。                                                                                                                            |
-| `step`                             | `1`          | 正有限步长，不要求直接输入的值落在步进网格上。                                                                                                      |
-| `required`、`disabled`、`readonly` | `false`      | 原生字段状态；禁用和只读字段不可步进。                                                                                                              |
-| `controls`                         | `true`       | 显示指针步进控件，隐藏后仍可使用键盘步进。                                                                                                          |
-| `variant`                          | `outlined`   | `outlined` 或 `filled`。                                                                                                                            |
-| `hint`、`error`                    | 空 / `false` | 说明文字或外部错误。非空错误字符串作为提示，`true` 使用本地化的通用提示。                                                                           |
-| `width`                            | `270px`      | 首选宽度，受父容器限制。                                                                                                                            |
-| `hideRequiredMarker`               | `false`      | 隐藏可见星号；使用必填标记时，应在表单中说明其含义。                                                                                                |
-| `messages`                         | 英文或中文   | 覆盖 `valueMissing`、`badInput`、`rangeUnderflow`、`rangeOverflow`、`customError`、`increment` 和 `decrement`。其他语言区域在未覆盖时使用英文提示。 |
+内置文案、数字格式化与解析可继承 [LocaleProvider](/zh/components/localization)。显式 `locale` 和组件字符串 `messages` 优先；未配置 provider 时使用 `en-US`。
+
+| 属性                               | 默认值             | 用途                                                                                                                                                |
+| ---------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`                            | 必填               | 可见的字段标签。                                                                                                                                    |
+| `id`、`name`、`form`               | —                  | 编辑器 ID、提交字段名称，以及可选的外部表单 ID。                                                                                                    |
+| `locale`                           | Provider → `en-US` | 数字、分组符、小数分隔符和显示格式的语言区域。                                                                                                      |
+| `min`、`max`                       | 无边界             | 包含边界的有限数值范围。                                                                                                                            |
+| `step`                             | `1`                | 正有限步长，不要求直接输入的值落在步进网格上。                                                                                                      |
+| `required`、`disabled`、`readonly` | `false`            | 原生字段状态；禁用和只读字段不可步进。                                                                                                              |
+| `controls`                         | `true`             | 显示指针步进控件，隐藏后仍可使用键盘步进。                                                                                                          |
+| `variant`                          | `outlined`         | `outlined` 或 `filled`。                                                                                                                            |
+| `hint`、`error`                    | 空 / `false`       | 说明文字或外部错误。非空错误字符串作为提示，`true` 使用本地化的通用提示。                                                                           |
+| `width`                            | `270px`            | 首选宽度，受父容器限制。                                                                                                                            |
+| `hideRequiredMarker`               | `false`            | 隐藏可见星号；使用必填标记时，应在表单中说明其含义。                                                                                                |
+| `messages`                         | 英文或中文         | 覆盖 `valueMissing`、`badInput`、`rangeUnderflow`、`rangeOverflow`、`customError`、`increment` 和 `decrement`。其他语言区域在未覆盖时使用英文提示。 |
 
 `v-model` 为有限 `number` 或 `null`。`input(text)` 报告编辑文本；`change(value)` 报告确认时提出的新值；`invalid({ reason, message })` 报告确认失败或原生校验失败。`reason` 为上表中前五个提示键之一。组件同时导出 `NumberFieldMessages`、`NumberFieldInvalidReason` 和 `NumberFieldInvalidDetail` 类型。
 

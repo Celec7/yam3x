@@ -1,5 +1,14 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  numberField: {
+    valueMissing: 'This field is required.',
+    badInput: 'Enter a valid number.',
+    rangeUnderflow: (minimum) => `Enter a number of at least ${minimum}.`,
+    rangeOverflow: (maximum) => `Enter a number no greater than ${maximum}.`,
+    customError: 'Check this field.',
+    increment: (label) => `Increase ${label}`,
+    decrement: (label) => `Decrease ${label}`,
+  },
   pagination: {
     label: 'Pagination',
     previous: 'Previous page',

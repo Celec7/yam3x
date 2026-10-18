@@ -19,6 +19,11 @@ test('switches inherited UI language without resetting page, files, or form edit
   await expect(inherited).toContainText('暂无记录')
   await expect(inherited.getByRole('button', { name: '选择文件', exact: true })).toBeVisible()
   await expect(inherited).toContainText('notes.txt')
+  await expect(inherited.getByTestId('locale-number')).toHaveValue('2.5')
+  await expect(
+    inherited.getByRole('button', { name: '增加Quantity / 数量', exact: true }),
+  ).toBeVisible()
+  await expect(inherited.getByTestId('locale-number')).toHaveAttribute('lang', 'zh-CN')
   await expect(inherited.locator('input[name="title"]')).toHaveValue('Pending edits')
   await inherited.locator('input[name="title"]').clear()
   await inherited.getByRole('button', { name: 'Submit / 提交', exact: true }).click()
