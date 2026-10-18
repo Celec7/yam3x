@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
+import english from '../localization/locales/en-US'
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
@@ -15,6 +17,7 @@ const props = withDefaults(
   defineProps<{
     options: AutocompleteOption[]
     label: string
+    locale?: string
     id?: string
     placeholder?: string
     disabled?: boolean
@@ -50,8 +53,8 @@ const props = withDefaults(
     autoActivate: false,
     openOnFocus: true,
     loading: false,
-    loadingText: 'Loading…',
-    noDataText: 'No options',
+    loadingText: undefined,
+    noDataText: undefined,
     panelClass: '',
     variant: 'standard',
     hideSelectionIndicator: false,
@@ -96,7 +99,18 @@ const slots = defineSlots<{
   'no-data'?(): unknown
   trailing?(): unknown
 }>()
-
+const { messages } = useComponentLocale(
+  'autocomplete',
+  () => props.locale,
+  () => {
+    const results = props.resultsLabel
+    return {
+      loading: props.loadingText,
+      noData: props.noDataText,
+      results: typeof results === 'string' ? () => results : results,
+    }
+  },
+)
 const host = ref<HTMLElement | null>(null)
 const input = ref<HTMLInputElement | null>(null)
 const anchor = ref<HTMLElement | null>(null)
@@ -206,18 +220,18 @@ const popupAvailable = computed(
     !props.disabled &&
     !props.readonly &&
     (props.loading
-      ? !props.hideLoading && props.loadingText.length > 0
-      : filteredOptions.value.length > 0 || (!props.hideNoData && props.noDataText.length > 0)),
+      ? !props.hideLoading && messages.value.loading.length > 0
+      : filteredOptions.value.length > 0 ||
+        (!props.hideNoData && messages.value.noData.length > 0)),
 )
 const liveMessage = computed(() =>
   props.loading
-    ? props.loadingText
+    ? messages.value.loading
     : filteredOptions.value.length === 0
-      ? props.noDataText
-      : typeof props.resultsLabel === 'function'
-        ? props.resultsLabel(filteredOptions.value.length)
-        : (props.resultsLabel ?? `${filteredOptions.value.length} options`),
+      ? messages.value.noData
+      : messages.value.results(filteredOptions.value.length),
 )
+
 let stopPositioning: (() => void) | undefined
 let blurTimer = 0
 let initialQuery = ''
@@ -284,7 +298,7 @@ function setCustomValidity() {
   if (!input.value) return
   input.value.setCustomValidity(
     props.selectionRequired && query.value && selectedOption.value?.label !== query.value
-      ? 'Select an option from the list.'
+      ? messages.value.selectionRequired || english.autocomplete.selectionRequired
       : '',
   )
 }
@@ -516,7 +530,7 @@ function onFormReset() {
     setCustomValidity()
   })
 }
-watch([query, selected], setCustomValidity)
+watch([query, selected, () => messages.value.selectionRequired], setCustomValidity)
 watch(selected, (value) => {
   if (value === null) return
   const option = props.options.find((candidate) => candidate.value === value)
@@ -623,7 +637,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
         type="button"
         :tabindex="-1"
         :disabled="disabled || readonly"
-        :aria-label="`Show ${label} suggestions`"
+        :aria-label="messages.showSuggestions(label)"
         aria-haspopup="listbox"
         :aria-expanded="open"
         :aria-controls="listboxId"
@@ -654,7 +668,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
       :class="panelClass"
       :style="floatingStyle"
       role="listbox"
-      :aria-label="`${label} suggestions`"
+      :aria-label="messages.suggestions(label)"
       :aria-busy="loading ? 'true' : undefined"
       :hidden="!open"
     >
@@ -663,14 +677,14 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
         class="yam3x-autocomplete__status"
         role="presentation"
       >
-        <slot name="loading">{{ loadingText }}</slot>
+        <slot name="loading">{{ messages.loading }}</slot>
       </div>
       <div
         v-else-if="filteredOptions.length === 0 && !hideNoData"
         class="yam3x-autocomplete__status"
         role="presentation"
       >
-        <slot name="no-data">{{ noDataText }}</slot>
+        <slot name="no-data">{{ messages.noData }}</slot>
       </div>
       <TransitionGroup name="yam3x-autocomplete-option">
         <div

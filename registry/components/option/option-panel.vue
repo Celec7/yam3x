@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import type { OptionToggleDetail } from './option.types'
@@ -7,6 +8,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     id?: string
     anchor?: HTMLElement | null
     label?: string
@@ -34,8 +36,8 @@ const props = withDefaults(
     loading: false,
     empty: false,
     teleport: false,
-    loadingText: 'Loading…',
-    noDataText: 'No options',
+    loadingText: undefined,
+    noDataText: undefined,
     panelClass: '',
   },
 )
@@ -51,7 +53,11 @@ defineSlots<{
   loading?(): unknown
   'no-data'?(): unknown
 }>()
-
+const { messages } = useComponentLocale(
+  'optionPanel',
+  () => props.locale,
+  () => ({ loading: props.loadingText, noData: props.noDataText }),
+)
 const panel = ref<HTMLElement | null>(null)
 const generatedId = useId()
 const panelId = computed(() => props.id || `yam3x-option-panel-${generatedId}`)
@@ -254,14 +260,14 @@ defineExpose({
         class="yam3x-option-panel__status"
         role="status"
       >
-        <slot name="loading">{{ loadingText }}</slot>
+        <slot name="loading">{{ messages.loading }}</slot>
       </div>
       <div
         v-else-if="empty"
         class="yam3x-option-panel__status"
         role="status"
       >
-        <slot name="no-data">{{ noDataText }}</slot>
+        <slot name="no-data">{{ messages.noData }}</slot>
       </div>
       <slot v-else />
     </div>

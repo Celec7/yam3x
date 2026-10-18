@@ -205,3 +205,40 @@ test('parses Date range endpoints independently when their editing languages dif
   await expect(dialog).toBeHidden()
   await expect(page.getByTestId('locale-picker-range-value')).toHaveText('2026-10-05 / 2026-10-07')
 })
+
+test('keeps Autocomplete focus, query, and active suggestion while translating announcements', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const autocomplete = page.getByTestId('locale-autocomplete')
+  const input = autocomplete.getByRole('combobox')
+  await input.focus()
+  await input.press('ArrowDown')
+  const active = await input.getAttribute('aria-activedescendant')
+  expect(active).toBeTruthy()
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(input).toBeFocused()
+  await expect(input).toHaveValue('Ap')
+  await expect(input).toHaveAttribute('aria-activedescendant', active!)
+  await expect(autocomplete.locator('[aria-live="polite"]')).toHaveText('2 个选项')
+  await expect(autocomplete.getByRole('listbox')).toHaveAccessibleName('Fruit / 水果的建议')
+  await expect(page.getByTestId('locale-fruit-value')).toBeEmpty()
+  await input.press('Enter')
+  await expect(page.getByTestId('locale-fruit-value')).toHaveText('apple')
+})
+
+test('updates an open Select empty status without closing or moving focus', async ({ page }) => {
+  await page.goto('/components/localization')
+  const select = page.getByTestId('locale-empty-select').getByRole('combobox')
+  await select.click()
+  const listbox = page.locator(`#${await select.getAttribute('aria-controls')}`)
+  await expect(listbox.getByRole('status')).toHaveText('No options')
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(select).toBeFocused()
+  await expect(select).toHaveAttribute('aria-expanded', 'true')
+  await expect(listbox.getByRole('status')).toHaveText('暂无选项')
+})

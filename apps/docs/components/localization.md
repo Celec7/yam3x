@@ -50,14 +50,14 @@ Keep application translations in your own files and pass a reactive message obje
 
 ## API
 
-| Prop       | Default                       | Use                                                                                                                                                                                                                               |
-| ---------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                                                        |
-| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `datePicker`, `timePicker`, `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
+| Prop       | Default                       | Use                                                                                                                                                                                                                                                                        |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                                                                                                 |
+| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `select`, `autocomplete`, `optionPanel`, `datePicker`, `timePicker`, `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
 
 The default slot renders children without an extra DOM element. The provider has no models, events, or exposed methods. `LocaleMessages` describes the complete namespace contracts; existing component-specific message type exports remain available.
 
-Provider support currently applies to [Date pickers](/components/date-picker), [Time pickers](/components/time-picker), [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
+Provider support currently applies to [Select](/components/select), [Autocomplete](/components/autocomplete), [OptionPanel](/components/option), [Date pickers](/components/date-picker), [Time pickers](/components/time-picker), [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
 
 `numberField` entries `rangeUnderflow(minimum)`, `rangeOverflow(maximum)`, `increment(label)`, and `decrement(label)` are functions receiving formatted bounds or the field label. The Number field component keeps its existing string-valued `messages`, which take precedence over provider text.
 
@@ -68,6 +68,8 @@ Provider support currently applies to [Date pickers](/components/date-picker), [
 `timePicker` supports field, mode, action, and dialog labels, plus `dialValue({ value, unit, max })`, `invalidPart(unit)`, and `outsideRange` messages. `period` overrides the AM/PM group name; default group and option names come from `Intl`.
 
 `datePicker` supports field, range endpoint, navigation, mode-switch, action, and validation messages. `chooseMonth(month?)` and `chooseYear(year?)` receive formatted labels; omitted arguments produce listbox names. Existing individual label props take precedence over provider text.
+
+`select.noData` supplies empty-list text; `optionPanel` supplies `loading` and `noData`; `autocomplete` adds `results(count)`, `showSuggestions(label)`, `suggestions(label)`, and `selectionRequired`. Suggestion formatters receive the application's field label; result formatters receive a numeric count. An empty validation message retains a native fallback for required selection.
 
 ## Behavior and accessibility
 

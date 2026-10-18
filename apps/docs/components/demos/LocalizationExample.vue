@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
+import { Autocomplete } from '@registry/components/autocomplete'
+import { Select } from '@registry/components/select'
 import { DatePicker, DateRangePicker, type DateRangeValue } from '@registry/components/date-picker'
 import { TimePickerDialog, type TimeValue } from '@registry/components/time-picker'
 import { DateInput } from '@registry/components/date-input'
@@ -18,6 +20,8 @@ const { locale: demoLocale } = useDemoLocale()
 const locale = ref(demoLocale.value === 'zh' ? 'zh-CN' : 'en-US')
 const page = ref(2)
 const date = ref<string | null>('2026-10-05')
+const fruitQuery = ref('Ap')
+const fruit = ref<string | null>(null)
 const pickerDate = ref<string | null>('2026-10-04')
 const pickerRange = ref<DateRangeValue>({ start: null, end: null })
 const pickerTime = ref<TimeValue>({ hour: 13, minute: 7 })
@@ -45,6 +49,20 @@ const quantity = ref<number | null>(2.5)
           :step="0.1"
           data-testid="locale-number"
         />
+        <Autocomplete
+          v-model="fruitQuery"
+          v-model:selected="fruit"
+          label="Fruit / 水果"
+          :options="[
+            { value: 'apple', label: 'Apple' },
+            { value: 'apricot', label: 'Apricot' },
+          ]"
+          data-testid="locale-autocomplete"
+        />
+        <output data-testid="locale-fruit-value">{{ fruit }}</output>
+        <div data-testid="locale-empty-select">
+          <Select aria-label="Empty choice / 空选项" />
+        </div>
         <DatePicker
           v-model="pickerDate"
           mode="modal"

@@ -51,6 +51,8 @@ const order = ref('recent')
 
 ## API
 
+`OptionPanel` 的内置加载和空状态文案可继承 [LocaleProvider](/zh/components/localization) 的 `optionPanel` 配置。可用 `locale` 覆盖语言；`loadingText`、`noDataText` 与相应插槽优先。未配置 provider 时使用 `en-US`。
+
 `Option` 需要 `value` 和可访问名称 `label`；`selected` 和 `disabled` 是受控属性。启用选项的 `select` 事件报告 `{ value, source }`。`term`、`highlightMode` 和 `disableHighlight` 控制匹配高亮。可用 `#leading`、`#selected-indicator`、`#trailing` 放置自定义内容；`hideSelectionIndicator` 隐藏内置标记。
 
 `OptionGroup` 使用 `label`、`labelledby` 或 `#label` 插槽为相关选项分组；`hidden` 会移除分组。`OptionPanel` 使用 `anchor` 锚定到 `HTMLElement`。它支持 `v-model:open`、`loading`、`empty`、`#loading` 和 `#no-data`。`fitAnchorWidth`、`anchorOffset`、`scrollStrategy`、`teleport`、`panelClass` 可配置面板；`label` 或 `labelledby` 为面板命名。它会发出 `beforetoggle`、`toggle`、`open` 和 `close`。

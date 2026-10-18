@@ -58,6 +58,8 @@ Use an array model for multiple selection; the popup stays open as options are t
 
 ## API
 
+Built-in empty text can inherit [LocaleProvider](/components/localization)'s `select` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; the `#no-data` slot takes precedence. Language updates preserve popup state and single or multiple selection values.
+
 | Prop                     | Type                         | Default   | Description                                                |
 | ------------------------ | ---------------------------- | --------- | ---------------------------------------------------------- |
 | `id`                     | `string`                     | Generated | Trigger ID.                                                |

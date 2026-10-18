@@ -51,6 +51,8 @@ const order = ref('recent')
 
 ## API
 
+`OptionPanel` can inherit built-in loading and empty text from [LocaleProvider](/components/localization)'s `optionPanel` namespace. Its optional `locale` overrides the language; `loadingText`, `noDataText`, and their slots take precedence. Without a provider, the locale is `en-US`.
+
 `Option` requires `value` and accessible `label`; `selected` and `disabled` are controlled props. Its `select` event reports `{ value, source }` for enabled options. `term`, `highlightMode`, and `disableHighlight` control match highlighting. Use `#leading`, `#selected-indicator`, and `#trailing` for custom content; `hideSelectionIndicator` removes the built-in mark.
 
 `OptionGroup` wraps related options with `label`, `labelledby`, or a `#label` slot; `hidden` removes the group. `OptionPanel` anchors to an `HTMLElement` with `anchor`. It supports `v-model:open`, `loading`, `empty`, `#loading`, and `#no-data`. Use `fitAnchorWidth`, `anchorOffset`, `scrollStrategy`, `teleport`, or `panelClass` to configure the surface; `label` or `labelledby` names it. It emits `beforetoggle`, `toggle`, `open`, and `close`.

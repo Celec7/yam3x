@@ -1,5 +1,15 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  optionPanel: { loading: '正在加载…', noData: '暂无选项' },
+  select: { noData: '暂无选项' },
+  autocomplete: {
+    loading: '正在加载…',
+    noData: '暂无选项',
+    results: (count) => `${count} 个选项`,
+    showSuggestions: (label) => `显示${label}的建议`,
+    suggestions: (label) => `${label}的建议`,
+    selectionRequired: '请从列表中选择一个选项。',
+  },
   datePicker: {
     label: '选择日期',
     startDate: '开始日期',

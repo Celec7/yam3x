@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   nextTick,
@@ -23,6 +24,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     id?: string
     name?: string
     form?: string
@@ -75,6 +77,11 @@ defineSlots<{
   arrow?(): unknown
   'no-data'?(): unknown
 }>()
+const { messages } = useComponentLocale(
+  'select',
+  () => props.locale,
+  () => undefined,
+)
 const attrs = useAttrs()
 const uid = useId().replace(/:/g, '')
 const controlId = computed(() => props.id || `yam3x-select-${uid}`)
@@ -546,6 +553,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       ref="panel"
       v-model:open="open"
       :anchor="trigger"
+      :locale="props.locale"
       :labelledby="labelledby || undefined"
       :multiple="multiple"
       teleport
@@ -574,7 +582,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
           class="yam3x-option-panel__status"
           role="status"
         >
-          <slot name="no-data">No options</slot>
+          <slot name="no-data">{{ messages.noData }}</slot>
         </div>
       </div>
     </OptionPanel>

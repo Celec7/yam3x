@@ -184,7 +184,22 @@ export interface DatePickerMessages {
   chooseYear: (year?: string) => string
 }
 
+export interface OptionPanelMessages {
+  loading: string
+  noData: string
+}
+
+export interface AutocompleteMessages extends OptionPanelMessages {
+  results: (count: number) => string
+  showSuggestions: (label: string) => string
+  suggestions: (label: string) => string
+  selectionRequired: string
+}
+
 export interface LocaleMessages {
+  optionPanel: OptionPanelMessages
+  autocomplete: AutocompleteMessages
+  select: { noData: string }
   datePicker: DatePickerMessages
   timePicker: TimePickerMessages
   dateInput: DateInputMessages

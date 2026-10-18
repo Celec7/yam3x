@@ -58,6 +58,8 @@ const frequency = ref('daily')
 
 ## API
 
+内置空状态文案可继承 [LocaleProvider](/zh/components/localization) 的 `select` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；`#no-data` 插槽优先。语言更新保留弹出层状态和单选或多选值。
+
 | 属性                     | 类型                         | 默认值   | 说明                                         |
 | ------------------------ | ---------------------------- | -------- | -------------------------------------------- |
 | `id`                     | `string`                     | 自动生成 | 触发器 ID。                                  |

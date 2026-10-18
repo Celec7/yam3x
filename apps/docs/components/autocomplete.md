@@ -43,6 +43,8 @@ const options: AutocompleteOption[] = [
 
 ## API
 
+Built-in status, result announcements, suggestion names, and required-selection validation text can inherit [LocaleProvider](/components/localization)'s `autocomplete` namespace. Optional `locale` takes precedence, defaulting to the provider then `en-US`; `loadingText`, `noDataText`, `resultsLabel`, and their slots retain priority. The application owns query text, option labels, and selected values.
+
 | Prop                                                                | Type                                                                         | Default                  | Description                                                                                                        |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | `options`                                                           | `{ value, label, disabled? }[]`                                              | Required                 | Suggestions; `value` must be unique in the list.                                                                   |

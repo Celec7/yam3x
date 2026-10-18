@@ -1,5 +1,15 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  optionPanel: { loading: 'Loading…', noData: 'No options' },
+  select: { noData: 'No options' },
+  autocomplete: {
+    loading: 'Loading…',
+    noData: 'No options',
+    results: (count) => `${count} options`,
+    showSuggestions: (label) => `Show ${label} suggestions`,
+    suggestions: (label) => `${label} suggestions`,
+    selectionRequired: 'Select an option from the list.',
+  },
   datePicker: {
     label: 'Select date',
     startDate: 'Start date',
