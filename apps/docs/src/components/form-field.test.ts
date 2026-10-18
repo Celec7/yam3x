@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import FormField from '../../../../registry/components/form-field/form-field.vue'
 
@@ -19,4 +19,21 @@ describe('FormField external descriptions', () => {
       setAttribute.mockRestore()
     }
   })
+})
+
+it('derives the required label from aria-required without requiring query text natively', async () => {
+  const wrapper = mount(FormField, {
+    props: { label: 'Language' },
+    slots: { default: '<input role="combobox" aria-required="true" />' },
+  })
+  try {
+    await flushPromises()
+    expect(wrapper.text()).toContain('*')
+    expect(wrapper.get<HTMLInputElement>('input').element.required).toBe(false)
+    wrapper.get('input').element.setAttribute('aria-required', 'false')
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('*')
+  } finally {
+    wrapper.unmount()
+  }
 })

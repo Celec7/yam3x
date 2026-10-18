@@ -219,7 +219,9 @@ function syncControl() {
     (element as HTMLInputElement).readOnly === true ||
     element.getAttribute('aria-readonly') === 'true'
   controlRequiredState.value =
-    element.hasAttribute('required') || (element as HTMLInputElement).required === true
+    element.hasAttribute('required') ||
+    (element as HTMLInputElement).required === true ||
+    element.getAttribute('aria-required') === 'true'
   const form = (element as HTMLInputElement).form || null
   if (observedForm !== form) {
     observedForm?.removeEventListener('reset', onReset)
@@ -305,6 +307,7 @@ onMounted(() => {
         'disabled',
         'readonly',
         'required',
+        'aria-required',
         'value',
         'maxlength',
         'aria-describedby',
