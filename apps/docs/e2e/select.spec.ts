@@ -460,3 +460,28 @@ test('Select multi-selection toggles from focused list options without closing',
   await expect(beta).toBeFocused()
   await expect(trigger).toHaveAttribute('aria-description', 'Stable, Beta')
 })
+
+test('select.options.catalog: data rows share keyboard selection and keep native values across catalog changes', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-data')
+  const single = example.getByRole('combobox', { name: 'Preset *', exact: true })
+  await single.focus()
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Home')
+  await page.keyboard.press('Enter')
+  await expect(single).toHaveAttribute('value', 'Violet')
+  const multi = example.getByRole('button', { name: 'Preset collection', exact: true })
+  await expect(multi).toHaveAttribute('aria-description', 'Violet, remote')
+  await example.getByRole('checkbox', { name: 'Use another catalog', exact: true }).check()
+  await expect(single).toHaveAttribute('value', 'violet')
+  await expect(multi).toHaveAttribute('aria-description', 'violet, Remote preset')
+  const data = await example.locator('form').evaluate((form: HTMLFormElement) => {
+    const data = new FormData(form)
+    return { single: data.get('preset'), multiple: data.getAll('presets').sort() }
+  })
+  expect(data).toEqual({ single: 'violet', multiple: ['remote', 'violet'] })
+  await example.getByRole('button', { name: 'Reset presets', exact: true }).click()
+  await expect(single).toHaveAttribute('value', 'forest')
+})

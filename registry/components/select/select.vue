@@ -7,6 +7,7 @@ import {
   onMounted,
   provide,
   ref,
+  shallowRef,
   useAttrs,
   useId,
   watch,
@@ -17,6 +18,8 @@ import type {
   OptionSelectionSource,
   OptionToggleDetail,
 } from '../option/option.types'
+import type { SelectOption } from './select.types'
+import Option from '../option/option.vue'
 import OptionPanel from '../option/option-panel.vue'
 import Icon from '../icon/icon.vue'
 
@@ -24,6 +27,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    options?: readonly SelectOption[]
     locale?: string
     id?: string
     name?: string
@@ -38,6 +42,7 @@ const props = withDefaults(
     closeOnTab?: boolean
   }>(),
   {
+    options: undefined,
     id: undefined,
     name: undefined,
     form: undefined,
@@ -74,6 +79,7 @@ defineSlots<{
     value: string | string[] | null
     options: readonly SelectOptionRecord[]
   }): unknown
+  option?(scope: { option: SelectOption; selected: boolean; active: boolean }): unknown
   arrow?(): unknown
   'no-data'?(): unknown
 }>()
@@ -94,7 +100,18 @@ const panel = ref<{
   toggle: () => void
   panel: HTMLElement | null
 } | null>(null)
-const options = ref<SelectOptionRecord[]>([])
+const mountedOptions = shallowRef<SelectOptionRecord[]>([])
+const options = computed<SelectOptionRecord[]>(() => {
+  if (props.options === undefined) return mountedOptions.value
+  const mounted = new Map(mountedOptions.value.map((option) => [option.value, option]))
+  return props.options.map((option, index) => ({
+    ...option,
+    disabled: option.disabled ?? false,
+    selected: option.selected ?? false,
+    id: `${listboxId}-option-${index}`,
+    element: mounted.get(option.value)?.element ?? null,
+  }))
+})
 const activeValue = ref<string | null>(null)
 const invalid = ref(false)
 const values = computed<readonly string[]>(() => {
@@ -107,11 +124,17 @@ const selectedOptions = computed(() =>
     .map((value) => options.value.find((option) => option.value === value))
     .filter((option): option is SelectOptionRecord => Boolean(option)),
 )
-const displayValue = computed(() => {
-  const selected = selectedOptions.value
-  if (selected.length) return selected.map((option) => option.label).join(', ')
-  return values.value.join(', ')
-})
+const displayValue = computed(() =>
+  values.value
+    .map((value) => options.value.find((option) => option.value === value)?.label ?? value)
+    .join(', '),
+)
+const nativeOptions = computed(() => [
+  ...options.value,
+  ...values.value
+    .filter((value) => !options.value.some((option) => option.value === value))
+    .map((value) => ({ value, label: value, disabled: false })),
+])
 const activeOption = computed(() =>
   options.value.find((option) => option.value === activeValue.value && !option.disabled),
 )
@@ -141,8 +164,8 @@ function sortOptions(records: SelectOptionRecord[]) {
   })
 }
 function register(option: SelectOptionRecord) {
-  options.value = sortOptions([
-    ...options.value.filter((item) => item.value !== option.value),
+  mountedOptions.value = sortOptions([
+    ...mountedOptions.value.filter((item) => item.value !== option.value),
     option,
   ])
   if (option.selected && !values.value.length) {
@@ -151,7 +174,7 @@ function register(option: SelectOptionRecord) {
     modelValue.value = selectedValuesForMode([...values.value, option.value])
   }
   return () => {
-    options.value = options.value.filter((item) => item.value !== option.value)
+    mountedOptions.value = mountedOptions.value.filter((item) => item !== option)
   }
 }
 function setActive(value: string | null, scrollIntoView = true) {
@@ -539,7 +562,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
         :selected="values.length === 0"
       ></option>
       <option
-        v-for="option in options"
+        v-for="option in nativeOptions"
         :key="option.value"
         :value="option.value"
         :disabled="option.disabled"
@@ -554,6 +577,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       v-model:open="open"
       :anchor="trigger"
       :locale="props.locale"
+      :label="typeof attrs['aria-label'] === 'string' ? attrs['aria-label'] : undefined"
       :labelledby="labelledby || undefined"
       :multiple="multiple"
       teleport
@@ -572,7 +596,33 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
         @pointermove="onPointerMove"
         @keydown="onMultiListKeydown"
       >
+        <template v-if="props.options !== undefined">
+          <Option
+            v-for="(option, index) in props.options"
+            :id="`${listboxId}-option-${index}`"
+            :key="option.value"
+            :value="option.value"
+            :label="option.label"
+            :disabled="option.disabled"
+            :selected="option.selected"
+            :tabindex="multiple && activeValue === option.value ? 0 : -1"
+            :hide-selection-indicator="hideSelectionIndicator"
+          >
+            <template
+              v-if="$slots.option"
+              #default
+            >
+              <slot
+                name="option"
+                :option="option"
+                :selected="selected(option.value)"
+                :active="activeValue === option.value"
+              />
+            </template>
+          </Option>
+        </template>
         <slot
+          v-else
           :values="values"
           :selected="selected"
           :select="selectValue"

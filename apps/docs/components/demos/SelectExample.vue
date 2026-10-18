@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { FormField } from '@registry/components/form-field'
 import { Option, OptionGroup } from '@registry/components/option'
-import { Select } from '@registry/components/select'
+import { Button } from '@registry/components/button'
+import { Checkbox } from '@registry/components/checkbox'
+import { Select, type SelectOption } from '@registry/components/select'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
@@ -11,6 +13,18 @@ const language = ref('typescript')
 const filters = ref<string[]>(['stable'])
 const requiredValue = ref<string | null>(null)
 const selectionEvents = ref<string[]>([])
+const dataChoice = ref('forest')
+const dataChoices = ref(['violet', 'remote'])
+const remoteCatalog = ref(false)
+const dataOptions = computed<readonly SelectOption[]>(() =>
+  remoteCatalog.value
+    ? [{ value: 'remote', label: t('Remote preset', '远程预设') }]
+    : [
+        { value: 'violet', label: t('Violet', '紫罗兰') },
+        { value: 'disabled-preset', label: t('Unavailable preset', '不可用预设'), disabled: true },
+        { value: 'forest', label: t('Forest', '森林') },
+      ],
+)
 function record(event: string) {
   selectionEvents.value = [...selectionEvents.value.slice(-5), event]
 }
@@ -142,6 +156,36 @@ function record(event: string) {
       </Select>
     </FormField>
     <form id="external-select-form"></form>
+    <section
+      data-testid="select-data"
+      class="select-demo__data"
+    >
+      <form id="select-data-form">
+        <FormField :label="t('Preset', '预设')"
+          ><Select
+            v-model="dataChoice"
+            :options="dataOptions"
+            name="preset"
+            required
+        /></FormField>
+        <FormField :label="t('Preset collection', '预设集合')"
+          ><Select
+            v-model="dataChoices"
+            :options="dataOptions"
+            name="presets"
+            multiple
+        /></FormField>
+        <Button
+          type="reset"
+          variant="text"
+          >{{ t('Reset presets', '重置预设') }}</Button
+        >
+      </form>
+      <Checkbox
+        v-model="remoteCatalog"
+        :label="t('Use another catalog', '使用另一组选项')"
+      />
+    </section>
   </section>
 </template>
 
@@ -152,7 +196,8 @@ function record(event: string) {
   align-items: flex-start;
   gap: 24px;
 }
-.select-demo form {
+.select-demo form,
+.select-demo__data {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;

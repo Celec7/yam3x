@@ -401,6 +401,7 @@
         "pagination/pagination.vue",
         "progress-indicator/linear-progress-indicator.vue",
         "progress-indicator/progress-utils.ts",
+        "select/select.types.ts",
         "select/select.vue",
         "tooltip/tooltip-controller.ts",
         "tooltip/tooltip.types.ts",
@@ -1046,6 +1047,7 @@
         "pagination/pagination.types.ts",
         "pagination/pagination.utils.ts",
         "pagination/pagination.vue",
+        "select/select.types.ts",
         "select/select.vue",
         "tooltip/tooltip-controller.ts",
         "tooltip/tooltip.types.ts",
@@ -1120,6 +1122,7 @@
     },
     "select": {
       "files": [
+        "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",
@@ -1139,7 +1142,9 @@
         "localization/messages.types.ts",
         "option/option-panel.vue",
         "option/option.types.ts",
+        "option/option.vue",
         "select/index.ts",
+        "select/select.types.ts",
         "select/select.vue"
       ],
       "dependencies": { "@floating-ui/dom": "^1.8.0" },

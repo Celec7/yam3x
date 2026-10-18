@@ -1155,6 +1155,34 @@ onMounted(async () => {
   assert.equal(build.status, 0, build.stderr || build.stdout)
 })
 
+test('Select data options install their row implementation and build independently', async (t) => {
+  const directory = await fixture(t, { isolatedDependencies: true })
+  const add = runCli(['add', 'select'], directory)
+  assert.equal(add.status, 0, add.stderr || add.stdout)
+  await linkDeclaredPackages(directory)
+  await writeFile(
+    join(directory, 'src/App.vue'),
+    `<script setup lang="ts">
+import { ref } from 'vue'
+import { Select, type SelectOption } from './components/yam3x/select'
+const options: readonly SelectOption[] = [{ value: 'ts', label: 'TypeScript' }, { value: 'rust', label: 'Rust', disabled: true }]
+const value = ref<string | string[] | null>('ts')
+</script>
+<template><Select v-model="value" :options="options" aria-label="Language" name="language"><template #option="{ option, selected }">{{ option.label }} {{ selected ? 'chosen' : '' }}</template></Select></template>
+`,
+  )
+  const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(typecheck.status, 0, typecheck.stderr || typecheck.stdout)
+  const build = spawnSync(join(directory, 'node_modules/.bin/vite'), ['build'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(build.status, 0, build.stderr || build.stdout)
+})
+
 test('all installable components typecheck and build in a disposable Vue/Vite consumer', async (t) => {
   const directory = await fixture(t)
   const componentKeys = Object.keys(registry.components)
