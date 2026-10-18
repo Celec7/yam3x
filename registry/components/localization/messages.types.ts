@@ -106,7 +106,25 @@ export interface NumberFieldLocaleMessages {
   decrement: (label: string) => string
 }
 
+export interface CalendarMessages {
+  label: string
+  previousMonth: string
+  nextMonth: string
+  previousYear: string
+  nextYear: string
+  previousMultiYear: string
+  nextMultiYear: string
+  specialDate: string
+  rangeStart: string
+  rangeEnd: string
+  inRange: string
+  choosePeriod: (period: string) => string
+  chooseMonth: (year: string) => string
+  chooseYear: (period: string) => string
+}
+
 export interface LocaleMessages {
+  calendar: CalendarMessages
   numberField: NumberFieldLocaleMessages
   pagination: PaginationMessages
   form: FormMessages

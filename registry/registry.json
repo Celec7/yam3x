@@ -190,7 +190,11 @@
         "date-picker/date-utils.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",
-        "icon/icon.vue"
+        "icon/icon.vue",
+        "localization/context.ts",
+        "localization/locales/en-US.ts",
+        "localization/locales/zh-CN.ts",
+        "localization/messages.types.ts"
       ],
       "dependencies": {},
       "foundations": ["core"]

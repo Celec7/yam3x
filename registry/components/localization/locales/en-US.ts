@@ -1,5 +1,21 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  calendar: {
+    label: 'Calendar',
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
+    previousYear: 'Previous year',
+    nextYear: 'Next year',
+    previousMultiYear: 'Previous 18 years',
+    nextMultiYear: 'Next 18 years',
+    specialDate: 'Special date',
+    rangeStart: 'Range starts',
+    rangeEnd: 'Range ends',
+    inRange: 'Within selected range',
+    choosePeriod: (period) => `Choose date period, ${period}`,
+    chooseMonth: (year) => `Choose month, ${year}`,
+    chooseYear: (period) => `Choose year, ${period}`,
+  },
   numberField: {
     valueMissing: 'This field is required.',
     badInput: 'Enter a valid number.',

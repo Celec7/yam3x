@@ -1,5 +1,21 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  calendar: {
+    label: '日历',
+    previousMonth: '上个月',
+    nextMonth: '下个月',
+    previousYear: '上一年',
+    nextYear: '下一年',
+    previousMultiYear: '前 18 年',
+    nextMultiYear: '后 18 年',
+    specialDate: '特殊日期',
+    rangeStart: '范围开始',
+    rangeEnd: '范围结束',
+    inRange: '已选范围内',
+    choosePeriod: (period) => `选择日期周期，${period}`,
+    chooseMonth: (year) => `选择月份，${year}`,
+    chooseYear: (period) => `选择年份，${period}`,
+  },
   numberField: {
     valueMissing: '此项为必填项。',
     badInput: '请输入有效数字。',

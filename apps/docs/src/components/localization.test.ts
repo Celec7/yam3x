@@ -1,10 +1,11 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { defineComponent, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { LocaleProvider } from '../../../../registry/components/localization'
 import { useComponentLocale } from '../../../../registry/components/localization/context'
 import type { LocaleOverrides } from '../../../../registry/components/localization'
+import Calendar from '../../../../registry/components/calendar/calendar.vue'
 import NumberField from '../../../../registry/components/number-field/number-field.vue'
 import Pagination from '../../../../registry/components/pagination/pagination.vue'
 import TreeView from '../../../../registry/components/tree-view/tree-view.vue'
@@ -223,6 +224,133 @@ describe('shared localization', () => {
     expect(input.attributes('lang')).toBe('fr-FR')
     expect(wrapper.text()).toContain('Invalid amount')
     expect(wrapper.getComponent(NumberField).emitted('update:modelValue')).toBeUndefined()
+  })
+  it('inherits Calendar text and formatting without resetting its displayed period or selection', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'en-US' },
+      slots: { default: () => h(Calendar, { modelValue: '2026-10-05' }) },
+    })
+    const calendar = wrapper.getComponent(Calendar)
+    await calendar.get('[aria-label="Next month"]').trigger('click')
+    await wrapper.setProps({ locale: 'zh-CN' })
+    expect(calendar.get('[role="grid"]').attributes('aria-label')).toBe('2026年11月')
+    expect(calendar.attributes('aria-label')).toBe('日历')
+    expect(calendar.find('[aria-label="下个月"]').exists()).toBe(true)
+    expect(calendar.emitted('update:modelValue')).toBeUndefined()
+    expect(calendar.emitted('change')).toBeUndefined()
+  })
+  it('gives Calendar label props priority over scoped messages, including empty overrides', () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'zh-CN', messages: { calendar: { nextMonth: '继续', label: '共享日历' } } },
+      slots: {
+        default: () =>
+          h(Calendar, { label: 'Dates', nextMonthLabel: '', previousMonthLabel: 'Back' }),
+      },
+    })
+    const calendar = wrapper.getComponent(Calendar)
+    expect(calendar.attributes('aria-label')).toBe('Dates')
+    expect(calendar.get('.yam3x-calendar__nav').attributes('aria-label')).toBe('Back')
+    expect(calendar.findAll('.yam3x-calendar__nav')[1]!.attributes('aria-label')).toBe('')
+  })
+  it('localizes Calendar range and special-date descriptions with explicit descriptions taking priority', () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'zh-CN' },
+      slots: {
+        default: () =>
+          h(Calendar, {
+            startAt: '2026-10-05',
+            selection: 'range',
+            rangeStart: '2026-10-05',
+            rangeEnd: '2026-10-08',
+            isSpecialDate: (date: string) => date === '2026-10-09',
+            specialDateLabel: 'Holiday',
+          }),
+      },
+    })
+    expect(wrapper.get('[data-date="2026-10-05"]').attributes('aria-description')).toBe('范围开始')
+    expect(wrapper.get('[data-date="2026-10-06"]').attributes('aria-description')).toBe(
+      '已选范围内',
+    )
+    expect(wrapper.get('[data-date="2026-10-08"]').attributes('aria-description')).toBe('范围结束')
+    expect(wrapper.get('[data-date="2026-10-09"]').attributes('aria-description')).toBe('Holiday')
+  })
+  it('retains Calendar browser-locale fallback while a provider takes priority', () => {
+    const language = vi.spyOn(navigator, 'language', 'get').mockReturnValue('de-DE')
+    try {
+      const standalone = mount(Calendar, { props: { startAt: '2026-10-05' } })
+      expect(standalone.get('[role="grid"]').attributes('aria-label')).toBe('Oktober 2026')
+      const scoped = mount(LocaleProvider, {
+        props: { locale: 'en-US' },
+        slots: { default: () => h(Calendar, { startAt: '2026-10-05' }) },
+      })
+      expect(scoped.get('[role="grid"]').attributes('aria-label')).toBe('October 2026')
+    } finally {
+      language.mockRestore()
+    }
+  })
+  it('keeps an explicit Calendar language independent of a differently translated provider', () => {
+    const wrapper = mount(LocaleProvider, {
+      props: { locale: 'zh-CN', messages: { calendar: { nextMonth: '继续' } } },
+      slots: { default: () => h(Calendar, { locale: 'en-US' }) },
+    })
+    expect(wrapper.find('[aria-label="Next month"]').exists()).toBe(true)
+    expect(wrapper.find('[aria-label="继续"]').exists()).toBe(false)
+  })
+  it('uses scoped Calendar message functions for period, month, and year choices', async () => {
+    const wrapper = mount(LocaleProvider, {
+      props: {
+        locale: 'en-US',
+        messages: {
+          calendar: {
+            choosePeriod: (period) => `Period: ${period}`,
+            chooseMonth: (year) => `Months: ${year}`,
+            chooseYear: (period) => `Years: ${period}`,
+          },
+        },
+      },
+      slots: { default: () => h(Calendar, { startAt: '2026-10-05' }) },
+    })
+    const calendar = wrapper.getComponent(Calendar)
+    expect(calendar.get('.yam3x-calendar__period').attributes('aria-label')).toBe(
+      'Period: October 2026',
+    )
+    await calendar.get('.yam3x-calendar__period').trigger('click')
+    expect(calendar.get('[role="listbox"]').attributes('aria-label')).toMatch(/^Years: /)
+    await calendar.get('[role="option"][aria-selected="true"]').trigger('click')
+    expect(calendar.get('[role="listbox"]').attributes('aria-label')).toBe('Months: 2026')
+  })
+  it('keeps the focused Calendar date when locale changes reorder the week rows', async () => {
+    const wrapper = mount(LocaleProvider, {
+      attachTo: document.body,
+      props: { locale: 'en-US' },
+      slots: { default: () => h(Calendar, { modelValue: '2026-10-04' }) },
+    })
+    const day = wrapper.get<HTMLButtonElement>('[data-date="2026-10-04"]')
+    day.element.focus()
+    await wrapper.setProps({ locale: 'de-DE' })
+    await wrapper.vm.$nextTick()
+    expect(document.activeElement).toBe(wrapper.get('[data-date="2026-10-04"]').element)
+    expect(wrapper.getComponent(Calendar).emitted('change')).toBeUndefined()
+  })
+  it('renders Calendar with isolated per-request provider language and messages', async () => {
+    const render = (locale: string, nextMonth: string) =>
+      renderToString(
+        h(
+          LocaleProvider,
+          { locale, messages: { calendar: { nextMonth } } },
+          { default: () => h(Calendar, { startAt: '2026-10-05' }) },
+        ),
+      )
+    const [english, chinese] = await Promise.all([
+      render('en-US', 'Forward'),
+      render('zh-CN', '继续'),
+    ])
+    expect(english).toContain('aria-label="Forward"')
+    expect(english).toContain('October 2026')
+    expect(english).not.toContain('继续')
+    expect(chinese).toContain('aria-label="继续"')
+    expect(chinese).toContain('2026年10月')
+    expect(chinese).not.toContain('Forward')
   })
   it('supplies all migrated namespaces from one provider', async () => {
     const messages: LocaleOverrides = { form: { summary: '自定义摘要' } }

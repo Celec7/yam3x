@@ -13,6 +13,7 @@ import {
   toIsoDate,
 } from '../date-picker/date-utils'
 import Icon from '../icon/icon.vue'
+import { useComponentLocale } from '../localization/context'
 
 type CalendarView = 'month' | 'year' | 'multi-year'
 
@@ -51,13 +52,13 @@ const props = withDefaults(
     minDate: null,
     maxDate: null,
     locale: undefined,
-    label: 'Calendar',
-    previousMonthLabel: 'Previous month',
-    nextMonthLabel: 'Next month',
-    previousYearLabel: 'Previous year',
-    nextYearLabel: 'Next year',
-    previousMultiYearLabel: 'Previous 18 years',
-    nextMultiYearLabel: 'Next 18 years',
+    label: undefined,
+    previousMonthLabel: undefined,
+    nextMonthLabel: undefined,
+    previousYearLabel: undefined,
+    nextYearLabel: undefined,
+    previousMultiYearLabel: undefined,
+    nextMultiYearLabel: undefined,
   },
 )
 
@@ -68,8 +69,23 @@ const emit = defineEmits<{
   change: [value: { date: string | null; rangeStart: string | null; rangeEnd: string | null }]
 }>()
 
-const locale = computed(
-  () => props.locale || (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
+const { locale, messages } = useComponentLocale(
+  'calendar',
+  () => props.locale,
+  () => ({
+    label: props.label,
+    previousMonth: props.previousMonthLabel,
+    nextMonth: props.nextMonthLabel,
+    previousYear: props.previousYearLabel,
+    nextYear: props.nextYearLabel,
+    previousMultiYear: props.previousMultiYearLabel,
+    nextMultiYear: props.nextMultiYearLabel,
+    specialDate: props.specialDateLabel,
+    rangeStart: props.rangeStartLabel,
+    rangeEnd: props.rangeEndLabel,
+    inRange: props.inRangeLabel,
+  }),
+  () => (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
 )
 const availability = computed(() => ({
   minDate: props.minDate,
@@ -94,6 +110,17 @@ const root = ref<HTMLElement>()
 const focusYear = ref<number | null>(null)
 const focusMonth = ref<number | null>(null)
 const direction = ref<'previous' | 'next'>('next')
+
+watch(locale, async () => {
+  const calendar = root.value
+  const document = calendar?.ownerDocument
+  const focused = document?.activeElement
+  const date = focused && calendar?.contains(focused) ? focused.getAttribute('data-date') : null
+  if (!date || !document) return
+  await nextTick()
+  if (document.activeElement === document.body || calendar?.contains(document.activeElement))
+    calendar?.querySelector<HTMLButtonElement>(`[data-date="${date}"]:not(:disabled)`)?.focus()
+})
 
 watch(
   () => props.startView,
@@ -472,19 +499,13 @@ function fullDateLabel(date: Date): string {
     day: 'numeric',
   })
 }
-function stateLabel(value: string | undefined, english: string, chinese: string): string {
-  if (value) return value
-  return locale.value.toLowerCase().startsWith('zh') ? chinese : english
-}
 function dateDescription(date: Date): string | undefined {
   const value = toIsoDate(date)
-  if (props.isSpecialDate?.(value))
-    return stateLabel(props.specialDateLabel, 'Special date', '特殊日期')
-  if (value === props.rangeStart)
-    return stateLabel(props.rangeStartLabel, 'Range starts', '范围开始')
-  if (value === props.rangeEnd) return stateLabel(props.rangeEndLabel, 'Range ends', '范围结束')
+  if (props.isSpecialDate?.(value)) return messages.value.specialDate
+  if (value === props.rangeStart) return messages.value.rangeStart
+  if (value === props.rangeEnd) return messages.value.rangeEnd
   if (props.rangeStart && props.rangeEnd && value > props.rangeStart && value < props.rangeEnd)
-    return stateLabel(props.inRangeLabel, 'Within selected range', '已选范围内')
+    return messages.value.inRange
   return undefined
 }
 function rangeState(value: string): string {
@@ -513,7 +534,7 @@ defineExpose({
     ref="root"
     class="yam3x-calendar"
     :class="{ 'has-complete-range': selection === 'range' && rangeStart && rangeEnd }"
-    :aria-label="label"
+    :aria-label="messages.label"
     :data-view="view"
   >
     <slot
@@ -531,7 +552,7 @@ defineExpose({
           class="yam3x-calendar__period"
           type="button"
           aria-haspopup="listbox"
-          :aria-label="`Choose date period, ${periodLabel}`"
+          :aria-label="messages.choosePeriod(periodLabel)"
           @click="changeView"
         >
           {{ periodLabel
@@ -546,10 +567,10 @@ defineExpose({
           type="button"
           :aria-label="
             view === 'month'
-              ? previousMonthLabel
+              ? messages.previousMonth
               : view === 'year'
-                ? previousYearLabel
-                : previousMultiYearLabel
+                ? messages.previousYear
+                : messages.previousMultiYear
           "
           :disabled="!canPrevious"
           @click="movePreviousPeriod"
@@ -560,7 +581,11 @@ defineExpose({
           class="yam3x-calendar__nav"
           type="button"
           :aria-label="
-            view === 'month' ? nextMonthLabel : view === 'year' ? nextYearLabel : nextMultiYearLabel
+            view === 'month'
+              ? messages.nextMonth
+              : view === 'year'
+                ? messages.nextYear
+                : messages.nextMultiYear
           "
           :disabled="!canNext"
           @click="moveNextPeriod"
@@ -577,7 +602,7 @@ defineExpose({
     >
       <div
         v-if="view === 'month'"
-        :key="periodLabel"
+        :key="toIsoDate(visibleMonth)"
         class="yam3x-calendar__month-view"
       >
         <div
@@ -656,7 +681,7 @@ defineExpose({
         :key="'months-' + visibleMonth.getUTCFullYear()"
         class="yam3x-calendar__options"
         role="listbox"
-        :aria-label="`Choose month, ${visibleMonth.getUTCFullYear()}`"
+        :aria-label="messages.chooseMonth(formatDate(visibleMonth, locale, { year: 'numeric' }))"
       >
         <button
           v-for="month in months"
@@ -679,7 +704,7 @@ defineExpose({
         :key="'years-' + yearPage[0]"
         class="yam3x-calendar__options yam3x-calendar__years"
         role="listbox"
-        :aria-label="`Choose year, ${periodLabel}`"
+        :aria-label="messages.chooseYear(periodLabel)"
       >
         <button
           v-for="(year, index) in years"

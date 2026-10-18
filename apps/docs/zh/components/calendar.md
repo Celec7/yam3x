@@ -36,20 +36,22 @@ const selected = ref<string | null>(null)
 
 ## API
 
-| 属性                                                                                                                         | 类型                                | 默认值           | 说明                                    |
-| ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------- | --------------------------------------- |
-| `modelValue`                                                                                                                 | `string \| null`                    | `null`           | 单选 ISO 日期（`YYYY-MM-DD`）           |
-| `selection`                                                                                                                  | `'single' \| 'range'`               | `'single'`       | 单日期或范围选择                        |
-| `rangeStart`, `rangeEnd`                                                                                                     | `string \| null`                    | `null`           | 通过 `selection="range"` 使用的范围端点 |
-| `startAt`                                                                                                                    | `string \| null`                    | 已选日期或今天   | 初始显示月份，不会自动选择日期          |
-| `startView`                                                                                                                  | `'month' \| 'year' \| 'multi-year'` | `'month'`        | 初始日期视图                            |
-| `minDate`, `maxDate`                                                                                                         | `string \| null`                    | 无               | 包含边界的可选日期范围                  |
-| `isDateSelectable`                                                                                                           | `(date: string) => boolean`         | 全部允许         | 返回 `false` 时禁用日期                 |
-| `isSpecialDate`                                                                                                              | `(date: string) => boolean`         | 无               | 以特殊日期样式显示日期，不改变其可选性  |
-| `locale`                                                                                                                     | `string`                            | 浏览器语言       | 日期格式、星期名称和周起始日            |
-| `label`                                                                                                                      | `string`                            | `'Calendar'`     | 日历区域的无障碍名称                    |
-| `specialDateLabel`, `rangeStartLabel`, `rangeEndLabel`, `inRangeLabel`                                                       | `string`                            | Locale-localized | 为特殊日期和范围状态补充屏幕阅读器描述  |
-| `previousMonthLabel`, `nextMonthLabel`, `previousYearLabel`, `nextYearLabel`, `previousMultiYearLabel`, `nextMultiYearLabel` | `string`                            | 英文默认值       | 周期导航按钮的无障碍名称。              |
+内置文案及日期格式可继承 [LocaleProvider](/zh/components/localization)；显式 `locale` 和各标签属性优先。未配置 provider 时，客户端保留浏览器语言默认值，服务端使用 `en-US`。使用 SSR 时显式提供相同语言，以保持两端一致。
+
+| 属性                                                                                                                         | 类型                                | 默认值                | 说明                                    |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | --------------------- | --------------------------------------- |
+| `modelValue`                                                                                                                 | `string \| null`                    | `null`                | 单选 ISO 日期（`YYYY-MM-DD`）           |
+| `selection`                                                                                                                  | `'single' \| 'range'`               | `'single'`            | 单日期或范围选择                        |
+| `rangeStart`, `rangeEnd`                                                                                                     | `string \| null`                    | `null`                | 通过 `selection="range"` 使用的范围端点 |
+| `startAt`                                                                                                                    | `string \| null`                    | 已选日期或今天        | 初始显示月份，不会自动选择日期          |
+| `startView`                                                                                                                  | `'month' \| 'year' \| 'multi-year'` | `'month'`             | 初始日期视图                            |
+| `minDate`, `maxDate`                                                                                                         | `string \| null`                    | 无                    | 包含边界的可选日期范围                  |
+| `isDateSelectable`                                                                                                           | `(date: string) => boolean`         | 全部允许              | 返回 `false` 时禁用日期                 |
+| `isSpecialDate`                                                                                                              | `(date: string) => boolean`         | 无                    | 以特殊日期样式显示日期，不改变其可选性  |
+| `locale`                                                                                                                     | `string`                            | Provider → 浏览器语言 | 日期格式、星期名称和周起始日            |
+| `label`                                                                                                                      | `string`                            | 按语言区域本地化      | 日历区域的无障碍名称                    |
+| `specialDateLabel`, `rangeStartLabel`, `rangeEndLabel`, `inRangeLabel`                                                       | `string`                            | 按语言区域本地化      | 为特殊日期和范围状态补充屏幕阅读器描述  |
+| `previousMonthLabel`, `nextMonthLabel`, `previousYearLabel`, `nextYearLabel`, `previousMultiYearLabel`, `nextMultiYearLabel` | `string`                            | 按语言区域本地化      | 周期导航按钮的无障碍名称。              |
 
 ## 行为与无障碍
 

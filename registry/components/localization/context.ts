@@ -30,9 +30,12 @@ export function useComponentLocale<K extends keyof LocaleMessages>(
   component: K,
   explicitLocale: () => string | undefined,
   explicitMessages: () => Partial<LocaleMessages[K]> | undefined,
+  fallbackLocale: () => string | undefined = () => undefined,
 ) {
   const inherited = inject(localeKey, undefined)
-  const locale = computed(() => normalizeLocale(explicitLocale() ?? inherited?.value.locale))
+  const locale = computed(() =>
+    normalizeLocale(explicitLocale() ?? inherited?.value.locale ?? fallbackLocale()),
+  )
   const messages = computed(() => {
     const language = localeLanguage(locale.value)
     const defaults = mergeMessages<LocaleMessages[K]>(

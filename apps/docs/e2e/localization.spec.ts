@@ -49,3 +49,31 @@ test('starts the Chinese documentation example with Chinese inherited UI text', 
     page.getByTestId('locale-inherited').getByRole('button', { name: '下一页', exact: true }),
   ).toBeVisible()
 })
+
+test('keeps Calendar navigation and selection and supports localized keyboard focus when the shared language changes', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const calendar = page.getByTestId('locale-calendar')
+  await calendar.getByRole('button', { name: 'Next month', exact: true }).click()
+  await expect(calendar.getByRole('grid', { name: 'November 2026' })).toBeVisible()
+  const focusedDate = calendar.locator('[data-date="2026-11-01"]')
+  await focusedDate.focus()
+  // A programmatic language update retains the user's current focus inside the grid.
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(focusedDate).toBeFocused()
+  await expect(calendar).toHaveAccessibleName('日历')
+  await expect(calendar.getByRole('grid', { name: '2026年11月' })).toBeVisible()
+  await calendar.getByRole('button', { name: '上个月', exact: true }).click()
+  const selected = calendar.locator('[data-date="2026-10-05"]')
+  await expect(selected).toHaveAttribute('aria-pressed', 'true')
+  await selected.focus()
+  await selected.press('ArrowRight')
+  await expect(calendar.locator('[data-date="2026-10-06"]')).toBeFocused()
+  await calendar.getByRole('button', { name: /选择日期周期/ }).click()
+  await expect(calendar.getByRole('listbox', { name: /选择年份/ })).toBeVisible()
+  await calendar.getByRole('option', { name: '2026', exact: true }).click()
+  await expect(calendar.getByRole('listbox', { name: '选择月份，2026年' })).toBeVisible()
+})

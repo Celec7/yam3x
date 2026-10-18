@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
+import { Calendar } from '@registry/components/calendar'
 import { NumberField } from '@registry/components/number-field'
 import { Pagination } from '@registry/components/pagination'
 import { TreeView } from '@registry/components/tree-view'
@@ -13,6 +14,7 @@ import { Button } from '@registry/components/button'
 const { locale: demoLocale } = useDemoLocale()
 const locale = ref(demoLocale.value === 'zh' ? 'zh-CN' : 'en-US')
 const page = ref(2)
+const date = ref<string | null>('2026-10-05')
 const quantity = ref<number | null>(2.5)
 </script>
 
@@ -35,6 +37,10 @@ const quantity = ref<number | null>(2.5)
           :max="10"
           :step="0.1"
           data-testid="locale-number"
+        />
+        <Calendar
+          v-model="date"
+          data-testid="locale-calendar"
         />
         <TreeView
           label="Records / 记录"
