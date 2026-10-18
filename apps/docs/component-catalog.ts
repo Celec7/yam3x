@@ -462,6 +462,14 @@ const extensions: CatalogSection[] = [
         },
       },
       {
+        path: 'descriptions',
+        title: 'Descriptions',
+        summary: {
+          en: 'Present labelled attributes with responsive layouts and native semantics.',
+          zh: '使用响应式布局和原生语义展示带标签的属性。',
+        },
+      },
+      {
         path: 'empty-state',
         title: 'Empty state',
         summary: {

@@ -1,5 +1,6 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  descriptions: { empty: '暂无详情', missingValue: '未提供' },
   actions: {
     newNotification: '新通知',
     breadcrumb: '面包屑导航',

@@ -1,5 +1,6 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  descriptions: { empty: 'No details yet', missingValue: 'Not provided' },
   actions: {
     newNotification: 'New notification',
     breadcrumb: 'Breadcrumb',

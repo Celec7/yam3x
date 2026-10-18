@@ -236,6 +236,7 @@ export interface ActionMessages {
 }
 
 export interface LocaleMessages {
+  descriptions: { empty: string; missingValue: string }
   actions: ActionMessages
   optionPanel: OptionPanelMessages
   autocomplete: AutocompleteMessages
