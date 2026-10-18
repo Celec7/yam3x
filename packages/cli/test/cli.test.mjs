@@ -1074,6 +1074,37 @@ test('adding a checkbox copies its native form control without Ark UI', async (t
   assertRegistryDependencies(project, ['checkbox'])
 })
 
+test('Data table filters install and build with their Menu and IconButton dependencies', async (t) => {
+  const directory = await fixture(t, { isolatedDependencies: true })
+  const add = runCli(['add', 'data-table'], directory)
+  assert.equal(add.status, 0, add.stderr || add.stdout)
+  await linkDeclaredPackages(directory)
+  await writeFile(
+    join(directory, 'src/App.vue'),
+    `<script setup lang="ts">
+import { ref } from 'vue'
+import { DataTable, type DataTableColumn, type DataTableFilters, type DataTableQuery } from './components/yam3x/data-table'
+interface Row { id: number; status: string }
+const rows: Row[] = [{ id: 1, status: 'active' }]
+const columns: DataTableColumn<Row>[] = [{ id: 'status', label: 'Status', value: row => row.status, filter: { options: [{ value: 'active', label: 'Active' }] } }]
+const filters = ref<DataTableFilters>({})
+const query = ref<DataTableQuery>()
+</script>
+<template><DataTable v-model:filters="filters" caption="Projects" :rows="rows" :columns="columns" :row-key="row => row.id" @change="query = $event" /></template>
+`,
+  )
+  const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(typecheck.status, 0, typecheck.stderr || typecheck.stdout)
+  const build = spawnSync(join(directory, 'node_modules/.bin/vite'), ['build'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(build.status, 0, build.stderr || build.stdout)
+})
+
 test('all installable components typecheck and build in a disposable Vue/Vite consumer', async (t) => {
   const directory = await fixture(t)
   const componentKeys = Object.keys(registry.components)

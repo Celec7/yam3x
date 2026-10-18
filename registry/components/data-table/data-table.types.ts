@@ -4,7 +4,18 @@ export interface DataTableSort {
   column: string
   direction: 'ascending' | 'descending'
 }
+export type DataTableFilters = Readonly<Record<string, readonly DataTableKey[]>>
+export interface DataTableFilterOption {
+  value: DataTableKey
+  label: string
+  disabled?: boolean
+}
+export interface DataTableColumnFilter<T> {
+  options: readonly DataTableFilterOption[]
+  matches?: (row: T, value: DataTableKey) => boolean
+}
 export interface DataTableQuery {
+  filters?: DataTableFilters
   sort: DataTableSort | null
   page: number
   pageSize: number
@@ -19,6 +30,7 @@ export interface DataTableColumn<T> {
   compare?: (left: T, right: T) => number
   numeric?: boolean
   rowHeader?: boolean
+  filter?: DataTableColumnFilter<T>
   width?: string
 }
 export interface DataTableSelection {

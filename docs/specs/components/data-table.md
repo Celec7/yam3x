@@ -2,13 +2,14 @@
 
 ## Scope
 
-This project extension presents comparable records in rows and columns, with sorting, row selection, and optional pagination. It adopts a semantic data table rather than a spreadsheet-style editing grid. Material 3 Expressive does not define a standalone Data table specification in its [current component catalog](https://m3.material.io/components). Apply the [shared foundations](../foundations.md); the mappings below are project decisions.
+This project extension presents comparable records in rows and columns, with column filtering, sorting, row selection, and optional pagination. It adopts a semantic data table rather than a spreadsheet-style editing grid. Material 3 Expressive does not define a standalone Data table specification in its [current component catalog](https://m3.material.io/components). Apply the [shared foundations](../foundations.md); the mappings below are project decisions.
 
 ## Design target
 
 - Establish hierarchy with short titles and readable body content, and use tabular figures for comparable numbers. See [Applying type: roles and tabular numbers](https://m3.material.io/styles/typography/applying-type).
 - Preserve alignment so repeated information is easy to scan. Material's [Lists guidelines: usage and alignment figures](https://m3.material.io/components/lists/guidelines) inform this principle, not table-row geometry or table semantics.
 - Use the adopted [Checkbox](checkbox.md), [Menus](menu.md), [Toolbars](toolbar.md), and [Progress indicators](progress-indicator.md) designs when composing those controls. Their specifications do not define the table's own anatomy.
+- Use a multi-select menu when a filter accepts several values. Selections remain available for further editing until dismissal, with checkmarks and selected-item highlights. See [Expressive Menus guidelines: single- and multi-select menus](https://m3.material.io/components/menus/guidelines), including the selection figures.
 - Allow the composition to resize or change presentation as available space changes. See [Adaptive design: adapting components](https://m3.material.io/foundations/layout/layout-overview/adaptive-design).
 
 ## Project decisions
@@ -41,3 +42,9 @@ The following role assignments are project-defined. The table has a caption or a
 - `data-table.query.accepted` (project-defined): A server query request does not advance the displayed page or sort marker until its result is accepted. Preserve the accepted record snapshot on failure; applications own asynchronous query cancellation and reconciliation.
 - `data-table.content.states` (project-defined): Keep existing records visible during refresh when usable. Distinguish initial loading, an empty collection, no filter matches, and a failed request. Preserve column context and provide recovery for failures; use the [Empty state](empty-state.md) design only for an actual absence of content.
 - `data-table.focus.recovery` (project-defined): If a built-in recovery action disappears while focused, return focus to the persistent table region. Preserve focus that has moved to unrelated content.
+
+### Column filtering
+
+- `data-table.filter.pipeline` (project-defined): Combine selected values within one column with OR and active columns with AND. Filter the complete client collection before sorting and pagination so totals and page selection describe the same result set. Do not mutate supplied records or silently clear retained selection keys.
+- `data-table.filter.draft` (project-defined): Give each filterable header a separately named menu trigger. Edit multiple choices as a temporary draft; Apply submits them together, Clear requests no constraint for that column, and dismissal discards unapplied edits. This explicit commit point supports both local and asynchronous query ownership. Keep menu choices as single-action rows rather than nesting controls inside them.
+- `data-table.filter.accepted` (project-defined): Filter requests return to the first page and include the other accepted query conditions. Only accepted filters change the trigger's active marker and displayed results. A failed request preserves the accepted filters and records. Keep the draft usable through a language change and return focus to its trigger after Apply or Clear.

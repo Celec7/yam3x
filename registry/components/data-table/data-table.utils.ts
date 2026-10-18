@@ -1,6 +1,7 @@
 import type {
   DataTableColumn,
   DataTableKey,
+  DataTableFilters,
   DataTableSort,
   DataTableValue,
 } from './data-table.types'
@@ -70,4 +71,24 @@ export function selectTablePage(
     else next.delete(key)
   }
   return Array.from(next)
+}
+
+export function filterTableRows<T>(
+  rows: readonly T[],
+  columns: ReadonlyArray<DataTableColumn<T>>,
+  filters: DataTableFilters,
+): readonly T[] {
+  const active = columns.filter(
+    (column) => column.filter && Object.hasOwn(filters, column.id) && filters[column.id]?.length,
+  )
+  if (!active.length) return rows
+  return rows.filter((row) =>
+    active.every((column) =>
+      filters[column.id]!.some((value) =>
+        column.filter!.matches
+          ? column.filter!.matches(row, value)
+          : Object.is(column.value?.(row), value),
+      ),
+    ),
+  )
 }

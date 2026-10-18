@@ -4,6 +4,7 @@ import {
   DataTable,
   type DataTableColumn,
   type DataTableKey,
+  type DataTableFilters,
   type DataTableQuery,
   type DataTableSort,
 } from '@registry/components/data-table'
@@ -64,12 +65,20 @@ const columns = computed<Array<DataTableColumn<Project>>>(() => [
     id: 'status',
     label: t('Status', '状态'),
     value: (row) => (row.locked ? t('Archived', '已归档') : t('Active', '进行中')),
+    filter: {
+      options: [
+        { value: 'active', label: t('Active', '进行中') },
+        { value: 'archived', label: t('Archived', '已归档') },
+      ],
+      matches: (row, value) => value === (row.locked ? 'archived' : 'active'),
+    },
   },
   { id: 'actions', label: t('Actions', '操作') },
 ])
 const page = ref(1)
 const pageSize = ref(3)
 const sort = ref<DataTableSort | null>(null)
+const filters = ref<DataTableFilters>({})
 const selected = ref<DataTableKey[]>([])
 const keepSelection = ref(false)
 const emptyCollection = ref(false)
@@ -77,6 +86,7 @@ const filter = ref('')
 const filterInput = ref<HTMLInputElement>()
 function onClearFilters() {
   filter.value = ''
+  filters.value = {}
   filterInput.value?.focus()
 }
 const inspected = ref('')
@@ -97,6 +107,7 @@ const accepted = ref<DataTableQuery>({ sort: null, page: 1, pageSize: 2 })
 const pending = ref<DataTableQuery | null>({ ...accepted.value })
 let latest: DataTableQuery = { ...accepted.value }
 const serverRows = shallowRef<Project[]>([])
+const serverTotal = ref(0)
 const error = ref('')
 function request(query: DataTableQuery) {
   latest = query
@@ -106,7 +117,11 @@ function request(query: DataTableQuery) {
 function accept() {
   if (!pending.value) return
   const query = pending.value
-  const data = [...projects.value]
+  const status = query.filters?.status
+  const data = projects.value.filter(
+    (row) => !status?.length || status.includes(row.locked ? 'archived' : 'active'),
+  )
+  serverTotal.value = data.length
   if (query.sort) {
     const direction = query.sort.direction === 'ascending' ? 1 : -1
     const column = query.sort.column
@@ -160,6 +175,7 @@ function fail() {
       </div>
       <DataTable
         v-model:sort="sort"
+        v-model:filters="filters"
         v-model:page="page"
         v-model:page-size="pageSize"
         :selected-keys="selected"
@@ -229,9 +245,10 @@ function fail() {
         :row-key="(row) => row.id"
         mode="server"
         :sort="accepted.sort"
+        :filters="accepted.filters"
         :page="accepted.page"
         :page-size="accepted.pageSize"
-        :total="projects.length"
+        :total="serverTotal"
         paginated
         :loading="Boolean(pending)"
         :error="error"

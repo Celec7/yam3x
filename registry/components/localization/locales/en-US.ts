@@ -179,8 +179,11 @@ export default {
       })[reason],
   },
   dataTable: {
-    sortInstructions:
-      'Column headers with buttons sort ascending, descending, then restore the supplied order.',
+    filterColumn: (label) => `Filter ${label}`,
+    filterActive: (label, count) => `Filter ${label}, ${count} selected`,
+    applyFilter: 'Apply filter',
+    clearFilter: 'Clear filter',
+    sortInstructions: 'Sort buttons cycle ascending, descending, then restore the supplied order.',
     selectPage: 'Select all selectable records on this page',
     selectRow: (label) => `Select ${label}`,
     selection: (count) => `${count} selected across pages.`,

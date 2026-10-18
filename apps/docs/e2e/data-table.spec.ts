@@ -254,3 +254,64 @@ test('localizes table and selection feedback on the Chinese page', async ({ page
   await local.getByRole('searchbox', { name: '筛选项目', exact: true }).fill('不存在')
   await expect(local.getByText('没有匹配记录', { exact: true })).toBeVisible()
 })
+
+test('data-table.filter.draft: edits multiple choices, discards dismissal, and applies before local paging', async ({
+  page,
+}) => {
+  const local = page.getByTestId('table-local')
+  const trigger = local.getByRole('button', { name: 'Filter Status', exact: true })
+  await trigger.click()
+  const menu = page.getByRole('menu', { name: 'Filter Status', exact: true })
+  await menu.getByRole('menuitemcheckbox', { name: 'Archived', exact: true }).click()
+  await expect(menu).toBeVisible()
+  expect(await keys(local)).toEqual(['atlas', 'beacon', 'cedar'])
+  await page.keyboard.press('Escape')
+  await expect(trigger).toBeFocused()
+  await trigger.click()
+  await expect(
+    menu.getByRole('menuitemcheckbox', { name: 'Archived', exact: true }),
+  ).toHaveAttribute('aria-checked', 'false')
+  await menu.getByRole('menuitemcheckbox', { name: 'Archived', exact: true }).click()
+  await menu.getByRole('menuitem', { name: 'Apply filter', exact: true }).click()
+  const active = local.getByRole('button', { name: 'Filter Status, 1 selected', exact: true })
+  await expect(active).toBeFocused()
+  expect(await keys(local)).toEqual(['cedar'])
+  await expect(local.getByRole('table')).toHaveAttribute('aria-rowcount', '2')
+  await active.click()
+  await menu.getByRole('menuitemcheckbox', { name: 'Active', exact: true }).click()
+  await menu.getByRole('menuitem', { name: 'Apply filter', exact: true }).click()
+  await expect(
+    local.getByRole('button', { name: 'Filter Status, 2 selected', exact: true }),
+  ).toBeFocused()
+  expect(await keys(local)).toEqual(['atlas', 'beacon', 'cedar'])
+  await local.getByRole('button', { name: 'Filter Status, 2 selected', exact: true }).click()
+  await menu.getByRole('menuitem', { name: 'Clear filter', exact: true }).click()
+  await expect(trigger).toBeFocused()
+  await expect(local.getByRole('table')).toHaveAttribute('aria-rowcount', '8')
+})
+
+test('data-table.filter.accepted: failed server filtering retains records and markers until accepted', async ({
+  page,
+}) => {
+  const server = page.getByTestId('table-server')
+  await server.getByRole('button', { name: 'Accept response', exact: true }).click()
+  const trigger = server.getByRole('button', { name: 'Filter Status', exact: true })
+  await trigger.click()
+  const menu = page.getByRole('menu', { name: 'Filter Status', exact: true })
+  await menu.getByRole('menuitemcheckbox', { name: 'Archived', exact: true }).click()
+  await menu.getByRole('menuitem', { name: 'Apply filter', exact: true }).click()
+  await expect(trigger).toHaveAttribute('aria-disabled', 'true')
+  expect(await keys(server)).toEqual(['atlas', 'beacon'])
+  await trigger.focus()
+  await page.keyboard.press('Enter')
+  await expect(menu).toBeHidden()
+  await server.getByRole('button', { name: 'Fail response', exact: true }).click()
+  await expect(trigger).not.toHaveAttribute('data-filter-active')
+  expect(await keys(server)).toEqual(['atlas', 'beacon'])
+  await server.getByRole('button', { name: 'Retry', exact: true }).click()
+  await server.getByRole('button', { name: 'Accept response', exact: true }).click()
+  await expect(
+    server.getByRole('button', { name: 'Filter Status, 1 selected', exact: true }),
+  ).toBeVisible()
+  expect(await keys(server)).toEqual(['cedar'])
+})

@@ -1,8 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, h, ref } from 'vue'
+import Menu from '../../../../registry/components/menu/menu.vue'
+import DataTableFilter from '../../../../registry/components/data-table/data-table-filter.vue'
+import enUS from '../../../../registry/components/localization/locales/en-US'
+import zhCN from '../../../../registry/components/localization/locales/zh-CN'
 import DataTable from '../../../../registry/components/data-table/data-table.vue'
 import {
+  filterTableRows,
   nextTableSort,
   selectTablePage,
   sortTableRows,
@@ -251,4 +256,106 @@ describe('Data table sorting and page selection', () => {
     expect(wrapper.emitted('update:page')?.[0]).toEqual([1])
     expect(retry).not.toHaveBeenCalled()
   })
+})
+
+describe('Data table column filters', () => {
+  const filterColumns: Array<DataTableColumn<Row>> = [
+    {
+      ...columns[0]!,
+      filter: {
+        options: [{ value: 'a', label: 'First' }],
+        matches: (row, value) => row.id === value,
+      },
+    },
+    {
+      ...columns[1]!,
+      filter: {
+        options: [
+          { value: 2, label: 'Two' },
+          { value: '2', label: 'Text two' },
+        ],
+      },
+    },
+  ]
+  it('data-table.filter.pipeline: combines columns with AND and values with OR without mutating rows', () => {
+    expect(ids(filterTableRows(rows, filterColumns, { amount: [2] }))).toEqual(['b', 'c'])
+    expect(ids(filterTableRows(rows, filterColumns, { amount: ['2'] }))).toEqual([])
+    expect(ids(filterTableRows(rows, filterColumns, { name: ['a', 'b'], amount: [2] }))).toEqual([
+      'b',
+    ])
+    expect(filterTableRows(rows, filterColumns, {})).toBe(rows)
+    expect(filterTableRows(rows, filterColumns, { amount: [], unknown: ['a'] })).toBe(rows)
+    expect(ids(rows)).toEqual(['a', 'b', 'c', 'd'])
+  })
+  it('data-table.filter.pipeline: filters before sorting and paging and reports the filtered count', () => {
+    const wrapper = mount(DataTable<Row>, {
+      props: {
+        ...base,
+        columns: filterColumns,
+        filters: { amount: [2] },
+        sort: { column: 'name', direction: 'ascending' },
+        paginated: true,
+        pageSize: 1,
+      },
+    })
+    expect(wrapper.get('tbody tr').attributes('data-row-key')).toBe('c')
+    expect(wrapper.get('table').attributes('aria-rowcount')).toBe('3')
+  })
+  it('data-table.filter.accepted: keeps server rows and accepted filter state until the query is accepted', async () => {
+    const wrapper = mount(DataTable<Row>, {
+      props: { ...base, columns: filterColumns, mode: 'server', filters: { amount: [2] }, page: 2 },
+    })
+    wrapper.getComponent({ name: 'DataTableFilter' }).vm.$emit('apply', ['a'])
+    await flushPromises()
+    expect(wrapper.emitted('change')?.[0]?.[0]).toEqual({
+      sort: null,
+      page: 1,
+      pageSize: 10,
+      filters: { amount: [2], name: ['a'] },
+    })
+    expect(wrapper.emitted('update:filters')?.[0]?.[0]).toEqual({ amount: [2], name: ['a'] })
+    expect(wrapper.props('filters')).toEqual({ amount: [2] })
+    expect(wrapper.findAll('tbody tr')).toHaveLength(4)
+    await wrapper.get('thead button').trigger('click')
+    expect(wrapper.emitted('change')?.[1]?.[0]).toMatchObject({ filters: { amount: [2] } })
+  })
+})
+
+it('treats prototype-like column IDs as ordinary filter map keys', async () => {
+  const special = [
+    { ...columns[1]!, id: 'constructor', filter: { options: [{ value: 2, label: 'Two' }] } },
+  ]
+  expect(filterTableRows(rows, special, {})).toBe(rows)
+  const wrapper = mount(DataTable<Row>, { props: { ...base, columns: special } })
+  const filter = wrapper.getComponent(DataTableFilter)
+  expect(filter.props('value')).toEqual([])
+  filter.vm.$emit('apply', [2])
+  await flushPromises()
+  expect(wrapper.emitted('update:filters')?.[0]?.[0]).toEqual({ constructor: [2] })
+})
+it('data-table.filter.draft: retains unpublished multi-value drafts and typed keys through translation', async () => {
+  const wrapper = mount(DataTableFilter, {
+    props: {
+      label: 'Amount',
+      options: [
+        { value: 2, label: 'Two' },
+        { value: '2', label: 'Text two' },
+      ],
+      value: ['retained'],
+      disabled: false,
+      pending: false,
+      locale: 'en-US',
+      messages: enUS.dataTable,
+    },
+  })
+  const menu = wrapper.getComponent(Menu)
+  menu.vm.$emit('update:open', true)
+  await flushPromises()
+  menu.vm.$emit('update:checked', ['option-0', 'option-1'])
+  await flushPromises()
+  await wrapper.setProps({ locale: 'zh-CN', messages: { ...enUS.dataTable, ...zhCN.dataTable! } })
+  expect(wrapper.emitted('apply')).toBeUndefined()
+  expect(menu.props('checked')).toEqual(['option-0', 'option-1'])
+  menu.vm.$emit('select', { value: 'apply', label: '应用筛选' })
+  expect(wrapper.emitted('apply')?.[0]?.[0]).toEqual(['retained', 2, '2'])
 })

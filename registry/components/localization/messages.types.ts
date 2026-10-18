@@ -61,6 +61,10 @@ export interface FileUploadMessages {
 }
 
 export interface DataTableMessages {
+  filterColumn: (label: string) => string
+  filterActive: (label: string, count: number) => string
+  applyFilter: string
+  clearFilter: string
   sortInstructions: string
   selectPage: string
   selectRow: (label: string) => string

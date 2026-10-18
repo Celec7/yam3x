@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T">
 import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, ref, useId } from 'vue'
+import DataTableFilter from './data-table-filter.vue'
 import CheckboxBase from '../checkbox/checkbox-base.vue'
 import Pagination from '../pagination/pagination.vue'
 import EmptyState from '../empty-state/empty-state.vue'
@@ -8,11 +9,12 @@ import InlineMessage from '../inline-message/inline-message.vue'
 import Button from '../button/button.vue'
 import LinearProgressIndicator from '../progress-indicator/linear-progress-indicator.vue'
 import { vRipple } from '../_shared/ripple'
-import { nextTableSort, selectTablePage, sortTableRows } from './data-table.utils'
+import { filterTableRows, nextTableSort, selectTablePage, sortTableRows } from './data-table.utils'
 import type {
   DataTableCell,
   DataTableColumn,
   DataTableKey,
+  DataTableFilters,
   DataTableMessages,
   DataTableQuery,
   DataTableSelection,
@@ -28,6 +30,7 @@ const props = withDefaults(
     rowLabel?: (row: T) => string
     mode?: 'client' | 'server'
     sort?: DataTableSort | null
+    filters?: DataTableFilters
     selectedKeys?: readonly DataTableKey[]
     selectable?: boolean
     isRowSelectable?: (row: T) => boolean
@@ -64,6 +67,7 @@ const props = withDefaults(
   },
 )
 const emit = defineEmits<{
+  'update:filters': [filters: DataTableFilters]
   'update:sort': [sort: DataTableSort | null]
   'update:page': [page: number]
   'update:pageSize': [pageSize: number]
@@ -90,12 +94,25 @@ const { locale, messages } = useComponentLocale(
   () => props.locale,
   () => props.messages,
 )
-const sortedRows = computed(() =>
+const filteredRows = computed(() =>
   props.mode === 'client'
-    ? sortTableRows(props.rows, props.columns, props.sort, locale.value)
+    ? filterTableRows(props.rows, props.columns, props.filters ?? {})
     : props.rows,
 )
-const totalRows = computed(() => (props.mode === 'client' ? props.rows.length : props.total))
+const resolvedEmptyKind = computed(() =>
+  props.emptyKind === 'filtered' ||
+  (props.mode === 'client' && props.rows.length > 0 && filteredRows.value.length === 0)
+    ? 'filtered'
+    : 'empty',
+)
+const sortedRows = computed(() =>
+  props.mode === 'client'
+    ? sortTableRows(filteredRows.value, props.columns, props.sort, locale.value)
+    : props.rows,
+)
+const totalRows = computed(() =>
+  props.mode === 'client' ? filteredRows.value.length : props.total,
+)
 const validTotal = computed(
   () =>
     totalRows.value !== undefined && Number.isSafeInteger(totalRows.value) && totalRows.value >= 0,
@@ -164,10 +181,25 @@ function request(query: DataTableQuery) {
     emit('update:sort', query.sort)
   if (query.page !== props.page) emit('update:page', query.page)
   if (query.pageSize !== props.pageSize) emit('update:pageSize', query.pageSize)
-  emit('change', query)
+  emit(
+    'change',
+    props.filters === undefined && query.filters === undefined
+      ? query
+      : { ...query, filters: query.filters ?? props.filters },
+  )
 }
 function onSort(column: DataTableColumn<T>) {
   request({ sort: nextTableSort(props.sort, column.id), page: 1, pageSize: props.pageSize })
+}
+function filterValues(column: string): readonly DataTableKey[] {
+  return props.filters && Object.hasOwn(props.filters, column) ? props.filters[column]! : []
+}
+function onFilter(column: string, values: DataTableKey[]) {
+  if (props.disabled || props.loading) return
+  const filters = { ...props.filters, [column]: values }
+  if (!values.length) delete filters[column]
+  emit('update:filters', filters)
+  request({ sort: props.sort, page: 1, pageSize: props.pageSize, filters })
 }
 function onPage(query: { page: number; pageSize: number }) {
   request({ ...query, sort: props.sort })
@@ -295,42 +327,56 @@ function onRecover(event: MouseEvent, action: () => void) {
               :class="{
                 'yam3x-data-table__numeric': column.numeric,
                 'yam3x-data-table__header--sortable': column.sortable,
+                'yam3x-data-table__header--filterable': column.filter,
               }"
               :style="{ inlineSize: column.width }"
               :aria-sort="
                 sort?.column === column.id && column.sortable ? sort.direction : undefined
               "
             >
-              <button
-                v-if="column.sortable"
-                v-ripple
-                type="button"
-                class="yam3x-data-table__sort yam3x-state-layer"
-                :disabled="disabled"
-                :aria-disabled="loading ? 'true' : undefined"
-                @click="onSort(column)"
-              >
-                <span>{{ column.label }}</span
-                ><svg
-                  viewBox="0 0 24 24"
-                  class="yam3x-data-table__sort-icon"
-                  aria-hidden="true"
-                  focusable="false"
+              <div class="yam3x-data-table__heading">
+                <button
+                  v-if="column.sortable"
+                  v-ripple
+                  type="button"
+                  class="yam3x-data-table__sort yam3x-state-layer"
+                  :disabled="disabled"
+                  :aria-disabled="loading ? 'true' : undefined"
+                  @click="onSort(column)"
                 >
-                  <path
-                    v-if="sort?.column === column.id && sort.direction === 'ascending'"
-                    d="m7 11 5-5 5 5M12 6v12"
-                  />
-                  <path
-                    v-else-if="sort?.column === column.id && sort.direction === 'descending'"
-                    d="m7 13 5 5 5-5M12 18V6"
-                  />
-                  <path
-                    v-else
-                    d="m8 9 4-4 4 4m-8 6 4 4 4-4"
-                  />
-                </svg></button
-              ><span v-else>{{ column.label }}</span>
+                  <span>{{ column.label }}</span
+                  ><svg
+                    viewBox="0 0 24 24"
+                    class="yam3x-data-table__sort-icon"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      v-if="sort?.column === column.id && sort.direction === 'ascending'"
+                      d="m7 11 5-5 5 5M12 6v12"
+                    />
+                    <path
+                      v-else-if="sort?.column === column.id && sort.direction === 'descending'"
+                      d="m7 13 5 5 5-5M12 18V6"
+                    />
+                    <path
+                      v-else
+                      d="m8 9 4-4 4 4m-8 6 4 4 4-4"
+                    />
+                  </svg></button
+                ><span v-else>{{ column.label }}</span>
+                <DataTableFilter
+                  v-if="column.filter"
+                  :label="column.label"
+                  :options="column.filter.options"
+                  :value="filterValues(column.id)"
+                  :disabled="disabled"
+                  :pending="loading"
+                  :locale="locale"
+                  :messages="messages"
+                  @apply="onFilter(column.id, $event)"
+                />
+              </div>
             </th>
           </tr>
         </thead>
@@ -403,11 +449,13 @@ function onRecover(event: MouseEvent, action: () => void) {
       <slot
         v-else
         name="empty"
-        :kind="emptyKind"
+        :kind="resolvedEmptyKind"
         ><EmptyState
-          :title="emptyKind === 'filtered' ? messages.filteredTitle : messages.emptyTitle"
+          :title="resolvedEmptyKind === 'filtered' ? messages.filteredTitle : messages.emptyTitle"
           :description="
-            emptyKind === 'filtered' ? messages.filteredDescription : messages.emptyDescription
+            resolvedEmptyKind === 'filtered'
+              ? messages.filteredDescription
+              : messages.emptyDescription
           "
         >
           <template
@@ -415,7 +463,7 @@ function onRecover(event: MouseEvent, action: () => void) {
             #actions
             ><slot
               name="empty-actions"
-              :kind="emptyKind"
+              :kind="resolvedEmptyKind"
           /></template> </EmptyState
       ></slot>
     </div>
@@ -546,10 +594,23 @@ function onRecover(event: MouseEvent, action: () => void) {
 .yam3x-data-table__table tbody .yam3x-data-table__selection-cell {
   background: transparent;
 }
+.yam3x-data-table__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.yam3x-data-table__heading > span {
+  flex: 1;
+}
+.yam3x-data-table__header--filterable {
+  padding-inline-end: 8px;
+}
 .yam3x-data-table__header--sortable {
   padding: 0;
 }
 .yam3x-data-table__sort {
+  min-inline-size: 0;
   display: flex;
   align-items: center;
   gap: 8px;

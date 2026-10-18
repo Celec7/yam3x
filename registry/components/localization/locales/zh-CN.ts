@@ -178,7 +178,11 @@ export default {
       })[reason],
   },
   dataTable: {
-    sortInstructions: '带按钮的列标题可排序，依次切换为升序、降序和原始顺序。',
+    filterColumn: (label) => `筛选${label}`,
+    filterActive: (label, count) => `筛选${label}，已选 ${count} 项`,
+    applyFilter: '应用筛选',
+    clearFilter: '清除筛选',
+    sortInstructions: '排序按钮依次切换升序、降序和原始顺序。',
     selectPage: '选择当前页所有可选记录',
     selectRow: (label) => `选择 ${label}`,
     selection: (count) => `已选择 ${count} 条记录（包括其他页）。`,
