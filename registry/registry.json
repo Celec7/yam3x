@@ -118,6 +118,7 @@
     "autocomplete": {
       "files": [
         "_shared/ripple.ts",
+        "_shared/use-virtual-list.ts",
         "autocomplete/autocomplete.types.ts",
         "autocomplete/autocomplete.vue",
         "autocomplete/index.ts",

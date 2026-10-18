@@ -3,6 +3,7 @@ import { useComponentLocale } from '../localization/context'
 import english from '../localization/locales/en-US'
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+import { useVirtualList, type VirtualListOptions } from '../_shared/use-virtual-list'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
 import type {
@@ -15,6 +16,7 @@ import type {
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
+    virtual?: boolean | VirtualListOptions
     options: AutocompleteOption[]
     label: string
     locale?: string
@@ -42,6 +44,7 @@ const props = withDefaults(
     hideNoData?: boolean
   }>(),
   {
+    virtual: false,
     placeholder: '',
     disabled: false,
     readonly: false,
@@ -133,6 +136,30 @@ const filteredOptions = computed(() =>
     return label.includes(needle)
   }),
 )
+const virtualEnabled = computed(() => props.virtual !== false)
+const windowed = useVirtualList({
+  keys: () => (props.loading ? [] : filteredOptions.value.map((option) => option.value)),
+  scroller: () => popup.value,
+  enabled: () => virtualEnabled.value,
+  options: () => (typeof props.virtual === 'object' ? props.virtual : undefined),
+  keepMounted: () => activeValue.value,
+})
+const renderedOptions = computed(() => {
+  if (props.loading) return []
+  return virtualEnabled.value
+    ? windowed.items.value.map((item) => ({ ...item, option: filteredOptions.value[item.index]! }))
+    : filteredOptions.value.map((option, index) => ({
+        key: option.value,
+        option,
+        index,
+        offset: 0,
+      }))
+})
+watch(filteredOptions, () => {
+  if (!virtualEnabled.value) return
+  const target = activeOption.value ?? filteredOptions.value[0]
+  if (target) windowed.scrollToKey(target.value)
+})
 let optionMovementGeneration = 0
 const optionMovementCleanups = new WeakMap<HTMLElement, () => void>()
 function captureOptionPositions(): Map<string, number> {
@@ -240,7 +267,7 @@ let resetForm: HTMLFormElement | null = null
 
 function findEnabled(from: number, direction: 1 | -1): AutocompleteOption | null {
   const options = filteredOptions.value
-  if (!options.length) return null
+  if (props.loading || !options.length) return null
   for (let offset = 0; offset < options.length; offset++) {
     const index = (from + offset * direction + options.length) % options.length
     const option = options[index]!
@@ -249,6 +276,7 @@ function findEnabled(from: number, direction: 1 | -1): AutocompleteOption | null
   return null
 }
 function initialActiveOption() {
+  if (props.loading) return null
   const current = filteredOptions.value.find(
     (option) => option.value === selected.value && !option.disabled,
   )
@@ -261,9 +289,11 @@ function setActive(
   activeValue.value = option?.value ?? null
   activeSource.value = option ? source : null
   if (option && source !== 'pointer') {
-    void nextTick(() =>
-      document.getElementById(optionId(option))?.scrollIntoView({ block: 'nearest' }),
-    )
+    if (virtualEnabled.value) windowed.scrollToKey(option.value)
+    else
+      void nextTick(() =>
+        document.getElementById(optionId(option))?.scrollIntoView({ block: 'nearest' }),
+      )
   }
 }
 function optionId(option: AutocompleteOption) {
@@ -454,7 +484,7 @@ const inputProps = computed(() => ({
   'aria-expanded': open.value,
   'aria-controls': listboxId.value,
   'aria-activedescendant':
-    open.value && activeOption.value ? optionId(activeOption.value) : undefined,
+    open.value && !props.loading && activeOption.value ? optionId(activeOption.value) : undefined,
   'aria-required': props.selectionRequired || undefined,
   onInput,
   onFocus,
@@ -686,12 +716,35 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
       >
         <slot name="no-data">{{ messages.noData }}</slot>
       </div>
-      <TransitionGroup name="yam3x-autocomplete-option">
+      <TransitionGroup
+        name="yam3x-autocomplete-option"
+        tag="div"
+        class="yam3x-autocomplete__options"
+        :class="{ 'yam3x-autocomplete__options--virtual': virtualEnabled }"
+        :css="!virtualEnabled"
+        :style="
+          virtualEnabled && !loading && filteredOptions.length
+            ? { blockSize: `${windowed.totalSize.value}px` }
+            : undefined
+        "
+      >
         <div
-          v-for="option in loading ? [] : filteredOptions"
+          v-for="{ option, index: resultIndex, offset: rowOffset } in renderedOptions"
           :id="optionId(option)"
+          :ref="
+            (element) =>
+              windowed.measure(
+                option.value,
+                virtualEnabled ? (element as HTMLElement | null) : null,
+              )
+          "
           :key="option.value"
           v-ripple
+          :style="
+            virtualEnabled
+              ? { position: 'absolute', insetInline: 0, top: `${rowOffset}px` }
+              : undefined
+          "
           class="yam3x-autocomplete__option yam3x-state-layer"
           :class="{
             'yam3x-autocomplete__option--active': option.value === activeValue,
@@ -706,6 +759,8 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
               option.value === filteredOptions[filteredOptions.length - 1]?.value,
           }"
           role="option"
+          :aria-posinset="virtualEnabled ? resultIndex + 1 : undefined"
+          :aria-setsize="virtualEnabled ? filteredOptions.length : undefined"
           :aria-label="option.label"
           :aria-selected="option.value === activeValue"
           :aria-disabled="option.disabled ? 'true' : undefined"
@@ -979,6 +1034,16 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
 }
 .yam3x-autocomplete__popup[hidden] {
   display: none;
+}
+.yam3x-autocomplete__options {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 0;
+}
+.yam3x-autocomplete__options--virtual {
+  position: relative;
+  overflow-anchor: none;
 }
 .yam3x-autocomplete-option-move {
   transition: none;

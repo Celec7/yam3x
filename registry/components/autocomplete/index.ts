@@ -6,3 +6,4 @@ export type {
   AutocompleteSelectionSource,
   AutocompleteVariant,
 } from './autocomplete.types'
+export type { VirtualListOptions } from '../_shared/use-virtual-list'

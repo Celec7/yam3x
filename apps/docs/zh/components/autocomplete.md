@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AutocompleteExample from '../../components/demos/AutocompleteExample.vue'
+import AutocompleteVirtualExample from '../../components/demos/AutocompleteVirtualExample.vue'
 </script>
 
 # Autocomplete
@@ -13,6 +14,18 @@ Autocomplete 是项目定义的组件，会根据输入筛选建议，并允许�
 ::: details 查看演示源码
 
 <<< ../../components/demos/AutocompleteExample.vue{vue}
+
+:::
+
+### 大型建议目录
+
+使用 `virtual` 为大型建议目录渲染按实际行高测量的窗口；筛选和键盘导航仍基于完整数据。
+
+<div class="vp-raw yam3x-doc-demo-theme"><AutocompleteVirtualExample /></div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/AutocompleteVirtualExample.vue{vue}
 
 :::
 
@@ -48,6 +61,7 @@ const options: AutocompleteOption[] = [
 | 属性                                                                | 类型                                                                         | 默认值                   | 说明                                                                               |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------- |
 | `options`                                                           | `{ value, label, disabled? }[]`                                              | 必填                     | 建议项，`value` 在列表中唯一。                                                     |
+| `virtual`                                                           | `boolean \| VirtualListOptions`                                              | `false`                  | 按测量行高渲染建议窗口；可选 `estimateSize`（48px）和 `overscan`（4 行）。         |
 | `modelValue`, `v-model`                                             | `string`                                                                     | `''`                     | 当前可编辑文本。                                                                   |
 | `selected`, `v-model:selected`                                      | `string \| null`                                                             | `null`                   | 已提交建议项的值。                                                                 |
 | `label`                                                             | `string`                                                                     | 必填                     | 可见字段标签和可访问名称。                                                         |
@@ -66,6 +80,12 @@ const options: AutocompleteOption[] = [
 使用键盘浏览建议项时，焦点会留在输入框中。方向键移动活动项，Enter 提交选择，Escape 关闭列表但保留输入文本，Tab 按页面顺序离开。
 
 Standard 变体使用 `surface-container-low` 弹出面板，选中项使用 `tertiary-container` / `on-tertiary-container`。Vibrant 使用 [Expressive Menu 规格](https://m3.material.io/components/menus/specs)中的 tertiary 颜色映射。Material 定义的是 Menu 样式；将 `variant` 属性用于此过滤交互属于项目拓展。
+
+### 虚拟化
+
+`virtual` 默认关闭。设为 `true` 时，初始行高估计为 48px，并在视口两侧各额外渲染四行；也可以传入对象覆盖这些值。可从 Autocomplete 入口导入 `VirtualListOptions`。估计值不会固定行高：自定义选项内容会被测量，行高变化时会保持当前视口的位置。
+
+筛选、禁用项处理、已确认值和结果数量播报均基于完整目录。滚动时活动建议会保持挂载，`aria-posinset` 和 `aria-setsize` 描述其在筛选结果中的位置，焦点始终保留在可编辑输入框中。窗口回收会立即完成；筛选时仍可对保留的建议使用位置过渡。原生表单提交和重置行为不变。每项建议都需要唯一且稳定的 `value`。
 
 ## 样式
 

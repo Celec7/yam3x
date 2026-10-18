@@ -46,7 +46,10 @@ test('Autocomplete preserves uncommitted input on Escape and offers a no-results
   await page.goto('/components/autocomplete')
   const input = page.getByRole('combobox', { name: 'Fruit' })
   await input.fill('not a fruit')
-  await expect(page.getByRole('status')).toContainText('No options')
+  const autocomplete = page.locator('.yam3x-autocomplete').filter({
+    has: page.getByRole('combobox', { name: 'Fruit', exact: true }),
+  })
+  await expect(autocomplete.getByRole('status')).toContainText('No options')
   await input.press('Escape')
   await expect(input).toHaveValue('not a fruit')
   await expect(input).toHaveAttribute('aria-expanded', 'false')

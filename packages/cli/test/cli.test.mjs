@@ -417,13 +417,14 @@ test('Autocomplete installs and builds as a standalone registry component', asyn
     join(directory, 'src/App.vue'),
     `<script setup lang="ts">
 import { ref } from 'vue'
-import { Autocomplete, type AutocompleteOption, type AutocompleteVariant } from './components/yam3x/autocomplete'
+import { Autocomplete, type AutocompleteOption, type AutocompleteVariant, type VirtualListOptions } from './components/yam3x/autocomplete'
 const query = ref('')
 const selected = ref<string | null>(null)
 const variant: AutocompleteVariant = 'vibrant'
+const virtual: VirtualListOptions = { estimateSize: 56, overscan: 3 }
 const options: AutocompleteOption[] = [{ value: 'apple', label: 'Apple' }]
 </script>
-<template><Autocomplete v-model="query" v-model:selected="selected" :options="options" label="Fruit" :variant="variant" /></template>
+<template><Autocomplete v-model="query" v-model:selected="selected" :options="options" label="Fruit" :variant="variant" :virtual="virtual" /></template>
 `,
   )
   await writeFile(

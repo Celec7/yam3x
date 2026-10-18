@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AutocompleteExample from './demos/AutocompleteExample.vue'
+import AutocompleteVirtualExample from './demos/AutocompleteVirtualExample.vue'
 </script>
 
 # Autocomplete
@@ -13,6 +14,18 @@ Autocomplete is a project-defined component that filters suggestions as a person
 ::: details View demo source
 
 <<< ./demos/AutocompleteExample.vue{vue}
+
+:::
+
+### Large suggestion catalogs
+
+Use `virtual` to render a measured window over a large suggestion catalog. Filtering and keyboard navigation still use the complete data.
+
+<div class="vp-raw yam3x-doc-demo-theme"><AutocompleteVirtualExample /></div>
+
+::: details View demo source
+
+<<< ./demos/AutocompleteVirtualExample.vue{vue}
 
 :::
 
@@ -48,6 +61,7 @@ Built-in status, result announcements, suggestion names, and required-selection 
 | Prop                                                                | Type                                                                         | Default                  | Description                                                                                                        |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | `options`                                                           | `{ value, label, disabled? }[]`                                              | Required                 | Suggestions; `value` must be unique in the list.                                                                   |
+| `virtual`                                                           | `boolean \| VirtualListOptions`                                              | `false`                  | Renders a measured window of suggestions; optional `estimateSize` (48px) and `overscan` (4 rows).                  |
 | `modelValue`, `v-model`                                             | `string`                                                                     | `''`                     | Current editable text.                                                                                             |
 | `selected`, `v-model:selected`                                      | `string \| null`                                                             | `null`                   | Value of the committed suggestion.                                                                                 |
 | `label`                                                             | `string`                                                                     | Required                 | Visible field label and accessible name.                                                                           |
@@ -66,6 +80,12 @@ The `#input` slot receives `{ inputProps, query, selected }`; bind `inputProps` 
 Focus stays in the input while the user browses suggestions with the keyboard. Arrow keys move the active option, Enter commits it, Escape closes the list while preserving the input text, and Tab leaves in page order.
 
 The Standard variant uses a `surface-container-low` popup and `tertiary-container` / `on-tertiary-container` selected rows. Vibrant uses the tertiary color mapping from the [Expressive Menu specifications](https://m3.material.io/components/menus/specs). Material defines these Menu styles, while the `variant` prop is a project extension for this filtering pattern.
+
+### Virtualization
+
+`virtual` is opt-in. `true` uses a 48px initial row estimate and four extra rows on each side of the viewport; an object can override these values. Import `VirtualListOptions` from the Autocomplete entry. The estimate does not fix row heights: custom option content is measured, and scrolling keeps the current viewport anchored when heights change.
+
+Filtering, disabled-option handling, accepted values, and result announcements use the full catalog. The active suggestion remains mounted while scrolling, with `aria-posinset` and `aria-setsize` describing its position in the filtered results. Focus stays in the editable input. Virtual window recycling is immediate; filtering can still ease retained suggestions into their new positions. Native form submission and reset retain their usual behavior. Each option needs a unique, stable `value`.
 
 ## Styling
 
