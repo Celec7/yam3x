@@ -51,17 +51,19 @@ const items = [
 
 ## API
 
-| Prop                                  | Default                | Purpose                                                                                                                    |
-| ------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `items`                               | Required               | `value`, `label`, and optional `ariaLabel`, `disabled`, and `badge`.                                                       |
-| `v-model`                             | First enabled item     | `value` of the current tab.                                                                                                |
-| `variant`                             | `secondary`            | `primary` or `secondary`.                                                                                                  |
-| `layout`                              | `auto`                 | `fixed`, `scrollable`, or `auto`; automatic layout scrolls when there are more than four items.                            |
-| `headerPosition`                      | `before`               | Places the tab row above or below the content; `after` is a project extension because Material places Tabs before content. |
-| `stretch`                             | `false`                | Makes tabs fill the available width.                                                                                       |
-| `disablePagination`                   | `false`                | Hides pagination buttons; `auto` hides them on coarse-pointer devices.                                                     |
-| `disableSwipe`                        | `false`                | Prevents horizontal swipe-to-switch in fixed layout; scrollable tabs use horizontal gestures to scroll the tab row.        |
-| `previousPageLabel` / `nextPageLabel` | English default labels | Accessible names of pagination buttons.                                                                                    |
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
+| Prop                                  | Default            | Purpose                                                                                                                    |
+| ------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `items`                               | Required           | `value`, `label`, and optional `ariaLabel`, `disabled`, and `badge`.                                                       |
+| `v-model`                             | First enabled item | `value` of the current tab.                                                                                                |
+| `variant`                             | `secondary`        | `primary` or `secondary`.                                                                                                  |
+| `layout`                              | `auto`             | `fixed`, `scrollable`, or `auto`; automatic layout scrolls when there are more than four items.                            |
+| `headerPosition`                      | `before`           | Places the tab row above or below the content; `after` is a project extension because Material places Tabs before content. |
+| `stretch`                             | `false`            | Makes tabs fill the available width.                                                                                       |
+| `disablePagination`                   | `false`            | Hides pagination buttons; `auto` hides them on coarse-pointer devices.                                                     |
+| `disableSwipe`                        | `false`            | Prevents horizontal swipe-to-switch in fixed layout; scrollable tabs use horizontal gestures to scroll the tab row.        |
+| `previousPageLabel` / `nextPageLabel` | Localized default  | Accessible names of pagination buttons.                                                                                    |
 
 ## Behavior and accessibility
 

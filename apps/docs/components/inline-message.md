@@ -36,6 +36,8 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 | Prop           | Default            | Use                                                                               |
 | -------------- | ------------------ | --------------------------------------------------------------------------------- |
 | `title`        | Empty              | Optional short title, using Title Small.                                          |
@@ -43,7 +45,7 @@ import { InlineMessage } from './components/yam3x/inline-message'
 | `announcement` | `off`              | `off` has no live role; `polite` uses `status`; `assertive` uses `alert`.         |
 | `icon`         | Tone icon          | Material Symbol name, or `false` to omit it.                                      |
 | `dismissible`  | `false`            | Show a separate dismiss action.                                                   |
-| `dismissLabel` | `Dismiss message`  | Accessible name of the dismiss action; localize it.                               |
+| `dismissLabel` | Localized default  | Accessible name of the dismiss action; localize it.                               |
 | `dismissFocus` | Containing element | Function returning a nearby focus destination after focused content is dismissed. |
 
 `v-model:open` controls visibility and defaults to `true`. Without a binding, the component owns visibility. `dismiss()` is emitted after the dismiss action requests closure. Closing a message does not mark the underlying condition resolved.

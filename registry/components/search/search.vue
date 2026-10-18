@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   nextTick,
@@ -20,6 +21,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     label?: string
     layout?: SearchLayout
     variant?: SearchVariant
@@ -30,14 +32,14 @@ const props = withDefaults(
     clearLabel?: string
   }>(),
   {
-    label: 'Search',
+    label: undefined,
     layout: 'auto',
     variant: 'contained',
     disabled: false,
     hideSearchIcon: false,
     clearable: true,
-    closeLabel: 'Back',
-    clearLabel: 'Clear',
+    closeLabel: undefined,
+    clearLabel: undefined,
   },
 )
 
@@ -56,6 +58,12 @@ defineSlots<{
   trailing?(): unknown
   back?(): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ search: props.label, back: props.closeLabel, clear: props.clearLabel }),
+)
+
 const attrs = useAttrs()
 const slots = useSlots()
 const root = ref<HTMLElement | null>(null)
@@ -248,8 +256,8 @@ const inputProps = computed<Record<string, unknown>>(() => ({
   class: 'yam3x-search__input',
   type: 'search',
   inputmode: 'search',
-  placeholder: props.label,
-  'aria-label': props.label,
+  placeholder: actionMessages.value.search,
+  'aria-label': actionMessages.value.search,
   'aria-expanded': open.value,
   'aria-haspopup': 'dialog',
   'aria-controls': resultsId,
@@ -484,7 +492,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
     class="yam3x-search"
     :class="rootClasses"
     :role="open ? 'dialog' : undefined"
-    :aria-label="open ? label : undefined"
+    :aria-label="open ? actionMessages.search : undefined"
     :aria-modal="open ? 'true' : undefined"
     :data-layout="open ? resolvedLayout : undefined"
     :data-open="open ? 'true' : undefined"
@@ -512,7 +520,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
             v-ripple
             type="button"
             class="yam3x-search__icon-button yam3x-state-layer"
-            :aria-label="closeLabel"
+            :aria-label="actionMessages.back"
             @click="close"
           >
             <slot name="back">
@@ -550,7 +558,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
             v-ripple
             type="button"
             class="yam3x-search__icon-button yam3x-state-layer"
-            :aria-label="clearLabel"
+            :aria-label="actionMessages.clear"
             @click.stop="clear"
           >
             <Icon name="close" />
@@ -589,7 +597,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
         viewClosing ? 'yam3x-search__view--closing' : '',
         viewReopening ? 'yam3x-search__view--reopening' : '',
       ]"
-      :aria-label="`${label} suggestions and results`"
+      :aria-label="actionMessages.searchResults(actionMessages.search)"
       aria-live="polite"
       aria-relevant="additions text"
       tabindex="-1"

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ActionLocalizationExample from './ActionLocalizationExample.vue'
+import { SnackbarProvider } from '@registry/components/snackbar'
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
@@ -37,6 +39,7 @@ const quantity = ref<number | null>(2.5)
     </div>
     <LocaleProvider :locale="locale">
       <section data-testid="locale-inherited">
+        <SnackbarProvider><ActionLocalizationExample /></SnackbarProvider>
         <Pagination
           v-model:page="page"
           :total="200"

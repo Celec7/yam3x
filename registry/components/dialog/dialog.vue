@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { nextTick, watch } from 'vue'
 import { Dialog } from '@ark-ui/vue/dialog'
 import Icon from '../icon/icon.vue'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    locale?: string
     title: string
     description?: string
     showCloseButton?: boolean
@@ -17,7 +19,7 @@ withDefaults(
     showCloseButton: false,
     dismissOnEscape: true,
     dismissOnClickOutside: true,
-    closeLabel: 'Close',
+    closeLabel: undefined,
   },
 )
 const open = defineModel<boolean>('open', { default: false })
@@ -30,6 +32,12 @@ const emit = defineEmits<{
   closing: [event: Event]
   closed: [event: Event]
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ close: props.closeLabel }),
+)
+
 let expectedTransition: boolean | undefined
 let escapePending = false
 
@@ -140,7 +148,7 @@ defineExpose({ close: closeWithValue, returnValue })
             v-if="showCloseButton"
             class="yam3x-dialog__close"
             type="button"
-            :aria-label="closeLabel"
+            :aria-label="actionMessages.close"
             @click="close"
           >
             <slot name="close-icon">

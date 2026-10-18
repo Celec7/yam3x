@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue'
 import DrawerContainer from '../drawer-container/drawer-container.vue'
 import IconButton from '../icon-button/icon-button.vue'
@@ -8,6 +9,7 @@ import './side-sheet.css'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     mode?: SideSheetMode
     label: string
     closeLabel?: string
@@ -18,8 +20,8 @@ const props = withDefaults(
   }>(),
   {
     mode: 'adaptive',
-    closeLabel: 'Close',
-    backLabel: 'Back',
+    closeLabel: undefined,
+    backLabel: undefined,
     width: '400px',
     maxWidth: '400px',
     adaptiveBreakpoint: 600,
@@ -38,6 +40,11 @@ defineSlots<{
   back?: () => unknown
   toggle?: (props: SideSheetToggleSlotProps) => unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ close: props.closeLabel, back: props.backLabel }),
+)
 
 const id = `yam3x-side-sheet-${useId()}`
 const root = ref<HTMLElement | null>(null)
@@ -78,6 +85,7 @@ onBeforeUnmount(() => observer?.disconnect())
 <template>
   <DrawerContainer
     v-model:end-open="open"
+    :locale="props.locale"
     class="yam3x-side-sheet-layout"
     :end-mode="drawerMode"
     :width="width"
@@ -112,13 +120,13 @@ onBeforeUnmount(() => observer?.disconnect())
           <slot
             v-if="$slots.back"
             name="back"
-            :back-label="backLabel"
+            :back-label="actionMessages.back"
           >
             <IconButton
               class="yam3x-side-sheet__back"
               variant="standard"
               size="small"
-              :aria-label="backLabel"
+              :aria-label="actionMessages.back"
               @click="dismiss"
             >
               <Icon name="arrow_back" />
@@ -134,7 +142,7 @@ onBeforeUnmount(() => observer?.disconnect())
             class="yam3x-side-sheet__close"
             variant="standard"
             size="small"
-            :aria-label="closeLabel"
+            :aria-label="actionMessages.close"
             @click="dismiss"
           >
             <Icon name="close" />

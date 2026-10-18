@@ -75,18 +75,20 @@ function select(item: { id: string; title: string }): void {
 
 ## API
 
-| Prop               | Default     | Description                                                                                                                                                                        |
-| ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`            | `Search`    | Used as both the input hint and accessible name; describe what can be searched.                                                                                                    |
-| `layout`           | `auto`      | `auto` adapts to the current content pane width: full-screen below the project-defined 600px breakpoint and docked at 600px or wider. Can also be set to `fullscreen` or `docked`. |
-| `variant`          | `contained` | Visual style. `contained` is the M3 Expressive recommended style; `divided` remains available as a project option for the baseline style.                                          |
-| `disabled`         | `false`     | Disables input and expansion.                                                                                                                                                      |
-| `hide-search-icon` | `false`     | Hides the default decorative search icon; provide another visible search entry point in the interface.                                                                             |
-| `clearable`        | `true`      | Shows the clear button when the query is not empty.                                                                                                                                |
-| `close-label`      | `Back`      | Accessible name for the back button when expanded.                                                                                                                                 |
-| `clear-label`      | `Clear`     | Accessible name for the clear button.                                                                                                                                              |
-| `v-model:query`    | `''`        | Query text; can be controlled or managed internally.                                                                                                                               |
-| `v-model:open`     | `false`     | Expanded state; can be controlled or managed internally.                                                                                                                           |
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
+| Prop               | Default           | Description                                                                                                                                                                        |
+| ------------------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`            | Localized default | Used as both the input hint and accessible name; describe what can be searched.                                                                                                    |
+| `layout`           | `auto`            | `auto` adapts to the current content pane width: full-screen below the project-defined 600px breakpoint and docked at 600px or wider. Can also be set to `fullscreen` or `docked`. |
+| `variant`          | `contained`       | Visual style. `contained` is the M3 Expressive recommended style; `divided` remains available as a project option for the baseline style.                                          |
+| `disabled`         | `false`           | Disables input and expansion.                                                                                                                                                      |
+| `hide-search-icon` | `false`           | Hides the default decorative search icon; provide another visible search entry point in the interface.                                                                             |
+| `clearable`        | `true`            | Shows the clear button when the query is not empty.                                                                                                                                |
+| `close-label`      | `Back`            | Accessible name for the back button when expanded.                                                                                                                                 |
+| `clear-label`      | `Clear`           | Accessible name for the clear button.                                                                                                                                              |
+| `v-model:query`    | `''`              | Query text; can be controlled or managed internally.                                                                                                                               |
+| `v-model:open`     | `false`           | Expanded state; can be controlled or managed internally.                                                                                                                           |
 
 ## Behavior and accessibility
 

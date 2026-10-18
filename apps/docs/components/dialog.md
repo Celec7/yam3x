@@ -62,16 +62,18 @@ const open = ref(false)
 
 ## API
 
-| Prop                    | Type                           | Default  | Description                                                                                                                                        |
-| ----------------------- | ------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `open`                  | `v-model:open: boolean`        | `false`  | Controls visibility.                                                                                                                               |
-| `returnValue`           | `v-model:return-value: string` | `''`     | Records the result of a complete, cancel, or close action. You can also call `close(value)` through the component ref to close and set the result. |
-| `title`                 | `string`                       | Required | Dialog title and accessible name.                                                                                                                  |
-| `description`           | `string`                       | —        | Optional description associated with the dialog.                                                                                                   |
-| `showCloseButton`       | `boolean`                      | `false`  | Shows the project close button. It is independent of Escape and outside-click dismissal.                                                           |
-| `dismissOnEscape`       | `boolean`                      | `true`   | Allows Escape to close the dialog.                                                                                                                 |
-| `dismissOnClickOutside` | `boolean`                      | `true`   | Allows a click outside the dialog to close it.                                                                                                     |
-| `closeLabel`            | `string`                       | `Close`  | Accessible name of the close button.                                                                                                               |
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
+| Prop                    | Type                           | Default           | Description                                                                                                                                        |
+| ----------------------- | ------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `open`                  | `v-model:open: boolean`        | `false`           | Controls visibility.                                                                                                                               |
+| `returnValue`           | `v-model:return-value: string` | `''`              | Records the result of a complete, cancel, or close action. You can also call `close(value)` through the component ref to close and set the result. |
+| `title`                 | `string`                       | Required          | Dialog title and accessible name.                                                                                                                  |
+| `description`           | `string`                       | —                 | Optional description associated with the dialog.                                                                                                   |
+| `showCloseButton`       | `boolean`                      | `false`           | Shows the project close button. It is independent of Escape and outside-click dismissal.                                                           |
+| `dismissOnEscape`       | `boolean`                      | `true`            | Allows Escape to close the dialog.                                                                                                                 |
+| `dismissOnClickOutside` | `boolean`                      | `true`            | Allows a click outside the dialog to close it.                                                                                                     |
+| `closeLabel`            | `string`                       | Localized default | Accessible name of the close button.                                                                                                               |
 
 ## Behavior and accessibility
 

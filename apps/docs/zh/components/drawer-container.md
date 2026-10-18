@@ -52,16 +52,18 @@ const open = ref(false)
 
 ## API
 
-| 属性或 model                              | 可选值                            | 默认值                     | 说明                                   |
-| ----------------------------------------- | --------------------------------- | -------------------------- | -------------------------------------- |
-| `startMode`、`endMode`                    | `overlay \| push \| side \| auto` | `side`                     | 各逻辑侧面板的呈现模式。               |
-| `autoCompactBreakpoint`、`autoBreakpoint` | `number`                          | `600`、`840`               | `auto` 模式的容器宽度断点。            |
-| `width`、`maxWidth`                       | CSS 长度                          | `360px`                    | 面板宽度和最大宽度。                   |
-| `v-model:open`、`v-model:endOpen`         | `boolean`                         | `false`                    | 可关闭的起始侧和末尾侧面板的打开状态。 |
-| `startLabel`、`endLabel`                  | `string`                          | `Start panel`、`End panel` | 面板的无障碍名称。                     |
-| `startRole`、`endRole`                    | `dialog \| complementary`         | —                          | 非模态面板的可选角色。                 |
-| `closeLabel`                              | `string`                          | `Close panel`              | 遮罩操作的名称。                       |
-| `startDivider`、`endDivider`              | `boolean`                         | `false`                    | 在布局内面板和内容之间添加分隔线。     |
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
+| 属性或 model                              | 可选值                            | 默认值       | 说明                                   |
+| ----------------------------------------- | --------------------------------- | ------------ | -------------------------------------- |
+| `startMode`、`endMode`                    | `overlay \| push \| side \| auto` | `side`       | 各逻辑侧面板的呈现模式。               |
+| `autoCompactBreakpoint`、`autoBreakpoint` | `number`                          | `600`、`840` | `auto` 模式的容器宽度断点。            |
+| `width`、`maxWidth`                       | CSS 长度                          | `360px`      | 面板宽度和最大宽度。                   |
+| `v-model:open`、`v-model:endOpen`         | `boolean`                         | `false`      | 可关闭的起始侧和末尾侧面板的打开状态。 |
+| `startLabel`、`endLabel`                  | `string`                          | 本地化默认值 | 面板的无障碍名称。                     |
+| `startRole`、`endRole`                    | `dialog \| complementary`         | —            | 非模态面板的可选角色。                 |
+| `closeLabel`                              | `string`                          | 本地化默认值 | 遮罩操作的名称。                       |
+| `startDivider`、`endDivider`              | `boolean`                         | `false`      | 在布局内面板和内容之间添加分隔线。     |
 
 `#start` 和 `#end` 承载侧面板；默认插槽承载主要内容。`#start-toggle` 和 `#end-toggle` 在 `overlay` 与 `push` 模式下收到 `{ expanded, controls, toggle }`。将 `expanded` 和 `controls` 绑定到切换控件的 ARIA 属性。用户切换或关闭面板时，`change` 事件报告 `(edge, open, reason)`。
 

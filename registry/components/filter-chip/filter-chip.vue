@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { useAttrs } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
@@ -6,6 +7,7 @@ import Icon from '../icon/icon.vue'
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
+    locale?: string
     disabled?: boolean
     variant?: 'outlined' | 'elevated'
     selectionIndicator?: boolean
@@ -15,11 +17,16 @@ const props = withDefaults(
     disabled: false,
     variant: 'outlined',
     selectionIndicator: true,
-    trailingActionLabel: 'More actions',
+    trailingActionLabel: undefined,
   },
 )
 const selected = defineModel<boolean>('selected', { default: false })
 const emit = defineEmits<{ action: [event: MouseEvent] }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ moreActions: props.trailingActionLabel }),
+)
 
 const attrs = useAttrs()
 </script>
@@ -71,7 +78,7 @@ const attrs = useAttrs()
       v-ripple
       type="button"
       class="yam3x-filter-chip__action yam3x-state-layer yam3x-touch-target"
-      :aria-label="props.trailingActionLabel"
+      :aria-label="actionMessages.moreActions"
       :disabled="disabled"
       @click.stop="emit('action', $event)"
     >

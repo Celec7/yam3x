@@ -67,6 +67,8 @@ import { ActionList, ListAction } from './components/yam3x/list'
 
 ## API
 
+`ExpandableListItem` can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 `List` and `ActionList` accept `variant="standard" | "segmented"`. `ListItem` is static; `ListAction` renders a native button, or a link when `href` is set. `ActionList` exposes an `actions` slot for separate trailing controls. These components, plus `SelectionList`, `ListOption`, and `ExpandableListItem`, are exported from `./components/yam3x/list`.
 
 Items use `lines="auto"` by default. Set `lines="one" | "two" | "three"` when a fixed baseline layout is needed. `SelectionList` requires an accessible `label`; `mode` defaults to `single`, and `multiple` enables independent selection. Its `v-model` is a string, `null`, or a string array. Give each `ListOption` a stable, unique `value`. Set `name` to submit selected values, `form` to associate an external form, and `required` for native validation; validation does not require `name`.

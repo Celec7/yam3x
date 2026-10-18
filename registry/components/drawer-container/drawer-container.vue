@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, useSlots, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { trapTabKey } from '../_shared/focus-trap'
@@ -7,6 +8,7 @@ import './drawer-container.css'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     startMode?: DrawerMode
     endMode?: DrawerMode
     autoCompactBreakpoint?: number
@@ -28,9 +30,9 @@ const props = withDefaults(
     autoBreakpoint: 840,
     width: '360px',
     maxWidth: '360px',
-    startLabel: 'Start panel',
-    endLabel: 'End panel',
-    closeLabel: 'Close panel',
+    startLabel: undefined,
+    endLabel: undefined,
+    closeLabel: undefined,
     startDivider: false,
     endDivider: false,
   },
@@ -47,6 +49,12 @@ defineSlots<{
   'start-toggle'?: (props: DrawerToggleSlotProps) => unknown
   'end-toggle'?: (props: DrawerToggleSlotProps) => unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ startPanel: props.startLabel, endPanel: props.endLabel, closePanel: props.closeLabel }),
+)
+
 const slots = useSlots()
 const id = `yam3x-drawer-${useId()}`
 const frame = ref<HTMLElement | null>(null)
@@ -318,7 +326,7 @@ onBeforeUnmount(() => {
       ]"
       :role="startModal ? 'dialog' : startRole"
       :aria-modal="startModal && showStart ? 'true' : undefined"
-      :aria-label="startLabel"
+      :aria-label="actionMessages.startPanel"
       :aria-hidden="!showStart"
       :inert="!showStart"
       :data-divider="startDivider || undefined"
@@ -367,7 +375,7 @@ onBeforeUnmount(() => {
       ]"
       :role="endModal ? 'dialog' : endRole"
       :aria-modal="endModal && showEnd ? 'true' : undefined"
-      :aria-label="endLabel"
+      :aria-label="actionMessages.endPanel"
       :aria-hidden="!showEnd"
       :inert="!showEnd"
       :data-divider="endDivider || undefined"
@@ -382,7 +390,7 @@ onBeforeUnmount(() => {
       class="yam3x-drawer__scrim"
       :class="{ 'yam3x-drawer__scrim--active': hasModal }"
       type="button"
-      :aria-label="closeLabel"
+      :aria-label="actionMessages.closePanel"
       :aria-hidden="!hasModal"
       :inert="!hasModal"
       @click="onScrimClick"

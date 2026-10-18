@@ -67,6 +67,8 @@ import { ActionList, ListAction } from './components/yam3x/list'
 
 ## API
 
+`ExpandableListItem` 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
 `List` 和 `ActionList` 接受 `variant="standard" | "segmented"`。`ListItem` 是静态条目；`ListAction` 渲染原生按钮，设置 `href` 后渲染链接。`ActionList` 提供用于独立尾随控件的 `actions` 插槽。这些组件以及 `SelectionList`、`ListOption`、`ExpandableListItem` 均由 `./components/yam3x/list` 导出。
 
 条目默认使用 `lines="auto"`；需要固定基准布局时可设为 `one`、`two` 或 `three`。`SelectionList` 必须设置无障碍名称 `label`；`mode` 默认为 `single`，`multiple` 启用独立多选。其 `v-model` 是字符串、`null` 或字符串数组。每个 `ListOption` 都需要稳定且唯一的 `value`。设置 `name` 可提交选中值，`form` 可关联外部表单，`required` 可启用原生校验；校验不依赖 `name`。

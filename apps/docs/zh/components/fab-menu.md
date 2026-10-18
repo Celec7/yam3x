@@ -85,6 +85,8 @@ const expanded = ref(false)
 
 ## API
 
+`FabMenu` 和 `FloatingActionButtonMenu` 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
 `FloatingActionButtonMenu` 使用 `v-model:expanded` 控制展开状态，接受 `label`、`variant`（`primary`、`secondary`、`tertiary`）、`presentation`（`pill-stack`、`web-menu`）、`horizontal-alignment`（`start`、`center`、`end`）和 `disabled`。`#trigger` 插槽接收 `expanded`、`toggle`、`setExpanded` 和 `triggerProps`；将 `triggerProps` 绑定到触发器上，以提供菜单语义和键盘行为。`triggerProps` 不包含点击处理：`ToggleFloatingActionButton` 可通过 `v-model:checked` 与菜单共用状态，其他触发器需要在激活时调用 `toggle`。触发器的颜色 variant 应与菜单的 `variant` 匹配。`FloatingActionButtonMenuItem` 接受 `value`、`label`、`disabled`、`selected` 和原生链接属性，提供默认插槽和 `#icon` 插槽。作为项目扩展，`selected` 由调用者控制，仅在 `web-menu` 中显示 baseline Menu 选中外观；它不会改变激活或关闭行为。项目会发出 `click`；启用的项目激活后，菜单会发出 `select` 并关闭。FAB menu 的 `disabled` 操作是项目扩展：它们保持可见、无法激活、会被键盘导航跳过，并在两种 API 中使用相同的弱化容器与内容样式。Material 的 FAB menu API 未定义禁用操作。胶囊堆叠样式默认在触发器上方展开；只有上方不足以容纳 2 项操作且下方仍有空间时才改为向下展开，正好容纳 2 项时仍向上，并会随页面滚动重新判断位置。
 
 `ToggleFloatingActionButton` 接受 `v-model:checked`、`size`（`small`、`default`、`medium`、`large`）、`variant`（`primary`、`secondary`、`tertiary`）和 `disabled`。默认尺寸为 56px，medium 和 large 分别为 80px 和 96px。small 仍可使用，但 Material 3 Expressive 不推荐使用。它的 `#icon` 插槽接收 `checked` 和动画 `progress`。

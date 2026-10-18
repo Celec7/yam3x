@@ -59,6 +59,8 @@ const open = ref(false)
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 `mode` accepts `modal`, `standard`, or `adaptive`. Modal mode overlays the primary content with a scrim, contains focus, and exposes `aria-modal="true"`. Standard mode reflows the main content while leaving it interactive, and is intended for a container wide enough to preserve usable space for both regions. Adaptive mode switches between those presentations at `adaptiveBreakpoint` (600px by default), measured against the component container. Use adaptive mode for responsive placement; explicitly forcing standard mode below the breakpoint can leave too little room for the sheet. The sheet is anchored to the logical inline end, so it moves to the left in RTL.
 
 ## Behavior and accessibility

@@ -38,6 +38,8 @@ const items: MenuItem[] = [
 
 ## API
 
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
 `items` 是必填的 `MenuItem[]`；每项需有唯一的 `value`。`label` 为菜单命名，默认 `'Options'`；`triggerLabel` 为内置触发器命名，默认 `'Open menu'`。`variant` 默认为 `'standard'`，也可设为 `'vibrant'`；`dense` 默认为 `false`。`positionX` 默认为 `'after'`，也可设为 `'before'`；`positionY` 默认为 `'below'`，也可设为 `'above'`。
 
 使用 `#trigger` 接收 `{ open, toggle, triggerProps }` 并自定义触发器；`#icon` 与 `#trailing-icon` 接收菜单项数据。`variant="vibrant"` 使用 tertiary 色系；`position-x` 可设为 `before` 或 `after`，`position-y` 可设为 `above` 或 `below`，浮层会在窗口边缘自动翻转和移动，进入与退出过渡会从靠近触发控件的一侧展开或收起。`show(anchor)`、`hide()`、`toggle(anchor)` 可用于上下文菜单或 split-button。

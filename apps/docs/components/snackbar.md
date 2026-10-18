@@ -55,6 +55,10 @@ function save(): void {
 
 ## API
 
+`SnackbarProvider` can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; notification-specific label options take precedence.
+
+When a notification omits `dismissLabel`, its active dismiss button follows the current language. Explicit `dismissLabel`, message, and action text retain their caller-provided values; changing language does not reset timers, queues, or pending actions.
+
 `SnackbarProvider` gives its descendants a single host. Messages appear in request order; a message with the same `key` updates the existing notification. The full message wraps without clipping; keep it concise enough to fit the recommended two lines on compact layouts. A one-line snackbar is 48px high; a two-line snackbar is 64px high at compact widths and 68px at wider widths. If an action would leave less than 120px for the message, it moves below the message. `show()` returns a Promise that resolves to `action` when an action completes or `dismissed` when the notification is closed. Notifications do not steal focus. Press **Alt+G** to focus the current notification’s action or close button, and Escape to close a focused notification.
 
 ## Behavior and accessibility

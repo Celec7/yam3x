@@ -196,7 +196,36 @@ export interface AutocompleteMessages extends OptionPanelMessages {
   selectionRequired: string
 }
 
+export interface ActionMessages {
+  close: string
+  back: string
+  clear: string
+  search: string
+  moreActions: string
+  options: string
+  actions: string
+  openMenu: string
+  closeNavigation: string
+  expandNavigation: string
+  collapseNavigation: string
+  startPanel: string
+  endPanel: string
+  closePanel: string
+  dismissMessage: string
+  resizeSheet: string
+  closeSheet: string
+  collapseSheet: string
+  bottomSheet: string
+  previousPage: string
+  nextPage: string
+  characterCount: string
+  dismissNotification: string
+  searchResults: (label: string) => string
+  carouselItem: (position: number, total: number, label: string) => string
+}
+
 export interface LocaleMessages {
+  actions: ActionMessages
   optionPanel: OptionPanelMessages
   autocomplete: AutocompleteMessages
   select: { noData: string }

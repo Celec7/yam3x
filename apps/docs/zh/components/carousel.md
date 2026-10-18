@@ -56,6 +56,10 @@ const layout: CarouselLayout = 'uncontained'
 
 ## API
 
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`。应用提供区域名称和项目标签。
+
+`actions.carouselItem(position, total, label)` 格式化每项的无障碍名称，位置从 1 开始；项目标签由应用提供。
+
 `items` 中的每项需要稳定 `key` 和可读 `label`，可选 `href`、`actionable`、`disabled`、`image` 与 `aspectRatio`。默认 slot 收到 `{ item, index, sizeRole }`，由调用方渲染内容。
 
 | 属性 / 事件          | 类型                   | 默认值               | 说明                                                                                                                                                 |

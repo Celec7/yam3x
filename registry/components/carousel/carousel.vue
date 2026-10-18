@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import type {
@@ -10,6 +11,7 @@ import type {
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     items: CarouselItem[]
     label: string
     layout?: CarouselLayout
@@ -34,6 +36,11 @@ const emit = defineEmits<{
 defineSlots<{
   default(props: CarouselItemSlotProps): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
+)
 
 const root = ref<HTMLElement | null>(null)
 const track = ref<HTMLElement | null>(null)
@@ -528,7 +535,7 @@ onBeforeUnmount(() => {
         :disabled="!item.href && item.actionable ? item.disabled : undefined"
         :aria-disabled="item.href && item.disabled ? 'true' : undefined"
         :aria-roledescription="'slide'"
-        :aria-label="`${index + 1} of ${items.length}: ${item.label}`"
+        :aria-label="actionMessages.carouselItem(index + 1, items.length, item.label)"
         :role="!item.href && !item.actionable ? 'group' : undefined"
         :tabindex="item.disabled ? -1 : 0"
         :data-carousel-index="index"

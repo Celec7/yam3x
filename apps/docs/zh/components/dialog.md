@@ -62,16 +62,18 @@ const open = ref(false)
 
 ## API
 
-| 属性                    | 类型                           | 默认值  | 说明                                                                                |
-| ----------------------- | ------------------------------ | ------- | ----------------------------------------------------------------------------------- |
-| `open`                  | `v-model:open: boolean`        | `false` | 控制显示状态。                                                                      |
-| `returnValue`           | `v-model:return-value: string` | `''`    | 记录完成、取消或关闭操作的结果；也可通过组件 ref 的 `close(value)` 关闭并写入结果。 |
-| `title`                 | `string`                       | 必填    | 对话框标题和可访问名称。                                                            |
-| `description`           | `string`                       | —       | 可选说明，并与对话框关联。                                                          |
-| `showCloseButton`       | `boolean`                      | `false` | 显示项目提供的关闭按钮；与 Escape 和点击外部关闭互相独立。                          |
-| `dismissOnEscape`       | `boolean`                      | `true`  | 是否允许按 Escape 关闭对话框。                                                      |
-| `dismissOnClickOutside` | `boolean`                      | `true`  | 是否允许点击对话框外部关闭。                                                        |
-| `closeLabel`            | `string`                       | `Close` | 关闭按钮的可访问名称。                                                              |
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
+| 属性                    | 类型                           | 默认值       | 说明                                                                                |
+| ----------------------- | ------------------------------ | ------------ | ----------------------------------------------------------------------------------- |
+| `open`                  | `v-model:open: boolean`        | `false`      | 控制显示状态。                                                                      |
+| `returnValue`           | `v-model:return-value: string` | `''`         | 记录完成、取消或关闭操作的结果；也可通过组件 ref 的 `close(value)` 关闭并写入结果。 |
+| `title`                 | `string`                       | 必填         | 对话框标题和可访问名称。                                                            |
+| `description`           | `string`                       | —            | 可选说明，并与对话框关联。                                                          |
+| `showCloseButton`       | `boolean`                      | `false`      | 显示项目提供的关闭按钮；与 Escape 和点击外部关闭互相独立。                          |
+| `dismissOnEscape`       | `boolean`                      | `true`       | 是否允许按 Escape 关闭对话框。                                                      |
+| `dismissOnClickOutside` | `boolean`                      | `true`       | 是否允许点击对话框外部关闭。                                                        |
+| `closeLabel`            | `string`                       | 本地化默认值 | 关闭按钮的可访问名称。                                                              |
 
 ## 行为与无障碍
 

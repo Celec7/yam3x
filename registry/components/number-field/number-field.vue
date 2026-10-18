@@ -306,6 +306,7 @@ defineExpose({
 <template>
   <FormField
     :id="controlId"
+    :locale="locale"
     :label="label"
     :variant="variant"
     :hint="hint"

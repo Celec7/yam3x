@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, onBeforeUnmount, onMounted, onUpdated, provide, ref, useId, useSlots } from 'vue'
 import DrawerContainer from '../drawer-container/drawer-container.vue'
 import { navigationDrawerContextKey } from './navigation-drawer.context'
@@ -12,6 +13,7 @@ import './navigation-drawer.css'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     mode?: NavigationDrawerMode
     standardBreakpoint?: number
     label: string
@@ -23,7 +25,7 @@ const props = withDefaults(
   {
     mode: 'auto',
     standardBreakpoint: 840,
-    closeLabel: 'Close navigation',
+    closeLabel: undefined,
     width: '360px',
     maxWidth: '360px',
   },
@@ -41,6 +43,11 @@ defineSlots<{
   close?(props: NavigationDrawerCloseSlotProps): unknown
   toggle?(props: NavigationDrawerToggleSlotProps): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ closeNavigation: props.closeLabel }),
+)
 
 const slots = useSlots()
 const root = ref<HTMLElement | null>(null)
@@ -217,12 +224,13 @@ defineExpose({ expand, collapse, id })
     :style="style"
   >
     <DrawerContainer
+      :locale="props.locale"
       :start-mode="drawerMode"
       :open="resolvedOpen"
       :width="props.width"
       :max-width="props.maxWidth"
       :start-label="props.label"
-      :close-label="props.closeLabel"
+      :close-label="actionMessages.closeNavigation"
       @update:open="onOpenUpdate"
       @change="onContainerChange"
     >
@@ -236,7 +244,7 @@ defineExpose({ expand, collapse, id })
             v-if="resolvedMode === 'modal'"
             name="close"
             :close="close"
-            :close-label="props.closeLabel"
+            :close-label="actionMessages.closeNavigation"
           />
         </header>
         <nav

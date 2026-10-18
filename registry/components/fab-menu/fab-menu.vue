@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
@@ -21,6 +22,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     items: FabMenuItem[]
     label?: string
     triggerLabel?: string
@@ -31,8 +33,8 @@ const props = withDefaults(
     disabled?: boolean
   }>(),
   {
-    label: 'Actions',
-    triggerLabel: 'More actions',
+    label: undefined,
+    triggerLabel: undefined,
     variant: 'primary',
     presentation: 'pill-stack',
     horizontalAlignment: 'end',
@@ -68,6 +70,12 @@ const slots = defineSlots<{
     itemProps: Record<string, unknown>
   }): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ actions: props.label, moreActions: props.triggerLabel }),
+)
+
 const triggerExpanded = computed({
   get: () => expanded.value,
   set: (value: boolean) => requestExpanded(value),
@@ -443,7 +451,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
       :variant="variant"
       :disabled="disabled"
       data-fab-menu-trigger
-      :aria-label="triggerLabel"
+      :aria-label="actionMessages.moreActions"
       aria-haspopup="menu"
       :aria-expanded="expanded"
       :aria-controls="menuId"
@@ -468,7 +476,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
       :trigger-props="{
         ref: setTriggerElement,
         type: 'button',
-        'aria-label': triggerLabel,
+        'aria-label': actionMessages.moreActions,
         'aria-haspopup': 'menu',
         'aria-expanded': expanded,
         'aria-controls': menuId,
@@ -492,7 +500,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
         ]"
         :style="[positionStyle, rootStyle]"
         role="menu"
-        :aria-label="label"
+        :aria-label="actionMessages.actions"
         :aria-hidden="!expanded"
         :inert="!expanded || undefined"
         @keydown="onMenuKeydown"

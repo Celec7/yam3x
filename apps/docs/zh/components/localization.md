@@ -14,6 +14,8 @@ import LocalizationExample from '../../components/demos/LocalizationExample.vue'
 
 <<< ../../components/demos/LocalizationExample.vue{vue}
 
+<<< ../../components/demos/ActionLocalizationExample.vue{vue}
+
 :::
 
 ## 在项目中使用
@@ -50,10 +52,10 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 
 ## API
 
-| 属性       | 默认值                        | 用途                                                                                                                                                                                                                                          |
-| ---------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | 父 provider，再回退到 `en-US` | BCP 47 语言标记，用于选择内置文案及组件已有的语言敏感操作。                                                                                                                                                                                   |
-| `messages` | 继承的覆盖项                  | `LocaleOverrides`，以 `select`、`autocomplete`、`optionPanel`、`datePicker`、`timePicker`、`dateInput`、`calendar`、`numberField`、`pagination`、`form`、`fileUpload`、`dataTable` 和 `treeView` 为键的部分对象；各命名空间接受部分文案覆盖。 |
+| 属性       | 默认值                        | 用途                                                                                                                                                                                                                                                     |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `locale`   | 父 provider，再回退到 `en-US` | BCP 47 语言标记，用于选择内置文案及组件已有的语言敏感操作。                                                                                                                                                                                              |
+| `messages` | 继承的覆盖项                  | `LocaleOverrides`，以 `actions`、`select`、`autocomplete`、`optionPanel`、`datePicker`、`timePicker`、`dateInput`、`calendar`、`numberField`、`pagination`、`form`、`fileUpload`、`dataTable` 和 `treeView` 为键的部分对象；各命名空间接受部分文案覆盖。 |
 
 默认插槽直接渲染子内容，不增加 DOM 元素。provider 没有模型、事件或公开方法。`LocaleMessages` 描述完整的命名空间契约；原有的组件文案类型导出继续可用。
 
@@ -70,6 +72,8 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 `datePicker` 支持字段、范围端点、导航、模式切换、操作和验证文案。`chooseMonth(month?)`、`chooseYear(year?)` 接收格式化标签；省略参数时生成列表框名称。原有独立标签属性优先于 provider 文案。
 
 `select.noData` 提供空列表文案；`optionPanel` 提供 `loading`、`noData`；`autocomplete` 另外提供 `results(count)`、`showSuggestions(label)`、`suggestions(label)` 和 `selectionRequired`。建议格式函数接收应用的字段标签，结果函数接收数值数量。空验证文案仍保留原生必选校验的回退消息。
+
+`actions` 共享通用操作及角色名称：Dialog、Side sheet、Bottom sheet、Drawer container、Navigation drawer、Navigation rail、Inline message、Search、App bar、Tabs、Menu、Fab menu、FilterChip、ExpandableListItem、Form field 和 SnackbarProvider 支持此配置。Carousel 的项目名称也由此配置生成。各组件接受可选 `locale`，已有的标签属性优先于共享文案。`searchResults(label)` 接收搜索字段标签；`carouselItem(position, total, label)` 接收从 1 开始的位置、总数与项目标签。使用 `LocaleMessages['actions']` 查看完整键契约。
 
 ## 行为与无障碍
 

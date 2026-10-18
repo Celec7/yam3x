@@ -40,6 +40,8 @@ import { FormField } from './components/yam3x/form-field'
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 | Prop                 | Default           | Use                                                                    |
 | -------------------- | ----------------- | ---------------------------------------------------------------------- |
 | `label`              | Required          | Visible field label; the `#label` slot can replace its content.        |
@@ -50,7 +52,7 @@ import { FormField } from './components/yam3x/form-field'
 | `hideSubscript`      | `never`           | `never`, `auto`, or `always` for supporting text visibility.           |
 | `floatLabel`         | `auto`            | `auto` or `always` label position.                                     |
 | `width`              | `270px`           | Preferred width, limited by the parent.                                |
-| `counterLabel`       | `Character count` | Accessible name for the character counter.                             |
+| `counterLabel`       | Localized default | Accessible name for the character counter.                             |
 
 The default slot contains the control. `#prefix`, `#prefix-text`, `#suffix`, and `#suffix-text` add content around it. `#counter` receives `{ count, max }`.
 

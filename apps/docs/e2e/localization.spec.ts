@@ -242,3 +242,41 @@ test('updates an open Select empty status without closing or moving focus', asyn
   await expect(select).toHaveAttribute('aria-expanded', 'true')
   await expect(listbox.getByRole('status')).toHaveText('暂无选项')
 })
+
+test('keeps an open Dialog edit and close-button focus while translating shared actions', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const trigger = page.getByRole('button', { name: 'Edit note / 编辑笔记', exact: true })
+  await trigger.click()
+  const dialog = page.getByRole('alertdialog', { name: 'Edit note / 编辑笔记', exact: true })
+  await dialog.getByRole('textbox', { name: 'Note / 笔记', exact: true }).fill('Pending edit')
+  const close = dialog.getByRole('button', { name: 'Close', exact: true })
+  await close.focus()
+  await page
+    .getByRole('button', { name: '简体中文', exact: true, includeHidden: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(dialog.getByRole('textbox')).toHaveValue('Pending edit')
+  const localized = dialog.getByRole('button', { name: '关闭', exact: true })
+  await expect(localized).toBeFocused()
+  await localized.click()
+  await expect(dialog).toBeHidden()
+  await expect(trigger).toBeFocused()
+})
+
+test('translates an active Snackbar without restarting its timeout', async ({ page }) => {
+  await page.clock.install()
+  await page.goto('/components/localization')
+  await page.getByRole('button', { name: 'Show notification / 显示通知', exact: true }).click()
+  const snackbar = page.locator('.yam3x-snackbar')
+  await expect(snackbar).toContainText('Saved record / 已保存记录')
+  await page.mouse.move(2, 2)
+  await page.clock.fastForward(2500)
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(snackbar.getByRole('button', { name: '关闭通知', exact: true })).toBeVisible()
+  await page.clock.fastForward(1700)
+  await expect(page.getByTestId('locale-notification-result')).toHaveText('dismissed')
+  await expect(snackbar).toBeHidden()
+})

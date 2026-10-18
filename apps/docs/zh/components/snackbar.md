@@ -55,6 +55,10 @@ function save(): void {
 
 ## API
 
+`SnackbarProvider` 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`。单条通知的标签选项优先。
+
+未提供单条通知的 `dismissLabel` 时，活动通知使用当前语言的默认关闭标签。显式 `dismissLabel`、消息和操作文案保留调用方提供的值；语言切换不重置计时、队列或正在执行的操作。
+
 `SnackbarProvider` 为其后代提供单一 host。不同消息按请求顺序显示；`key` 相同的消息会更新已有通知。消息会完整显示并自然换行，不会截断；请保持文案简洁，以符合紧凑布局最多两行的建议。单行通知高度为 48px；双行通知在紧凑宽度下为 64px，在更宽的视口下为 68px。如果操作按钮会使消息可用宽度少于 120px，操作按钮会移到消息下方。`show()` 返回 Promise，操作完成解析为 `action`，关闭通知解析为 `dismissed`。通知不会夺取焦点；按 **Alt+G** 可聚焦当前通知的操作或关闭按钮，按 Escape 可关闭已聚焦的通知。
 
 ## 行为与无障碍

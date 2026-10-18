@@ -56,6 +56,10 @@ const layout: CarouselLayout = 'uncontained'
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`. The application supplies the region name and item labels.
+
+`actions.carouselItem(position, total, label)` formats each item’s accessible name with a one-based position; item labels come from the application.
+
 Each `items` entry needs a stable `key` and readable `label`; `href`, `actionable`, `disabled`, `image`, and `aspectRatio` are optional. The default slot receives `{ item, index, sizeRole }` so callers can render the content.
 
 | Prop / event         | Type                   | Default                    | Description                                                                                                                                                                                |

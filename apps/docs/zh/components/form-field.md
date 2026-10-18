@@ -40,17 +40,19 @@ import { FormField } from './components/yam3x/form-field'
 
 ## API
 
-| 属性                 | 默认值            | 用途                                              |
-| -------------------- | ----------------- | ------------------------------------------------- |
-| `label`              | 必填              | 可见字段标签；可由 `#label` 插槽替换。            |
-| `id`                 | 自动生成          | 控件没有 ID 时为其设置 ID。                       |
-| `variant`            | `outlined`        | `outlined` 或 `filled` 字段容器。                 |
-| `hint`、`error`      | —                 | 辅助或错误文本；也可使用 `#hint`、`#error` 插槽。 |
-| `hideRequiredMarker` | `false`           | 隐藏可见的必填星号。                              |
-| `hideSubscript`      | `never`           | `never`、`auto` 或 `always`，控制辅助文本可见性。 |
-| `floatLabel`         | `auto`            | `auto` 或 `always` 标签位置。                     |
-| `width`              | `270px`           | 首选宽度，受父容器限制。                          |
-| `counterLabel`       | `Character count` | 字符计数的无障碍名称。                            |
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
+| 属性                 | 默认值       | 用途                                              |
+| -------------------- | ------------ | ------------------------------------------------- |
+| `label`              | 必填         | 可见字段标签；可由 `#label` 插槽替换。            |
+| `id`                 | 自动生成     | 控件没有 ID 时为其设置 ID。                       |
+| `variant`            | `outlined`   | `outlined` 或 `filled` 字段容器。                 |
+| `hint`、`error`      | —            | 辅助或错误文本；也可使用 `#hint`、`#error` 插槽。 |
+| `hideRequiredMarker` | `false`      | 隐藏可见的必填星号。                              |
+| `hideSubscript`      | `never`      | `never`、`auto` 或 `always`，控制辅助文本可见性。 |
+| `floatLabel`         | `auto`       | `auto` 或 `always` 标签位置。                     |
+| `width`              | `270px`      | 首选宽度，受父容器限制。                          |
+| `counterLabel`       | 本地化默认值 | 字符计数的无障碍名称。                            |
 
 默认插槽放置控件。`#prefix`、`#prefix-text`、`#suffix` 和 `#suffix-text` 在控件周围添加内容。`#counter` 接收 `{ count, max }`。
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
@@ -6,6 +7,7 @@ import type { NavigationRailItem, NavigationRailMode } from './navigation-rail.t
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     items: NavigationRailItem[]
     label: string
     mode?: NavigationRailMode
@@ -24,8 +26,8 @@ const props = withDefaults(
     alignment: 'top',
     divider: false,
     showMenu: true,
-    menuLabel: 'Expand navigation',
-    closeLabel: 'Collapse navigation',
+    menuLabel: undefined,
+    closeLabel: undefined,
   },
 )
 const model = defineModel<string>({ default: '' })
@@ -44,6 +46,12 @@ const slots = defineSlots<{
   'menu-icon'?(): unknown
   'close-icon'?(): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ expandNavigation: props.menuLabel, collapseNavigation: props.closeLabel }),
+)
+
 const root = ref<HTMLElement | null>(null)
 const surface = ref<HTMLElement | null>(null)
 const menuButton = ref<HTMLButtonElement | null>(null)
@@ -271,7 +279,9 @@ watch(
           class="yam3x-navigation-rail__menu"
           :aria-expanded="resolvedExpanded"
           :aria-controls="`${id}-destinations`"
-          :aria-label="resolvedExpanded ? closeLabel : menuLabel"
+          :aria-label="
+            resolvedExpanded ? actionMessages.collapseNavigation : actionMessages.expandNavigation
+          "
           @click="toggle"
         >
           <slot

@@ -92,6 +92,8 @@ const current = ref('inbox')
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 `NavigationDrawer` owns the navigation landmark, destination selection, hierarchy, and drawer presentation. `mode` accepts `modal`, `standard`, or `auto`; auto mode uses the container width and switches at `standardBreakpoint` (840px by default). This project-selected threshold follows the compact/medium versus expanded layout boundary. `v-model:open` controls visibility; when it is unbound, modal mode starts closed and standard mode starts open. `v-model:selected` is required and should follow the application's current route.
 
 The `close` slot is optional and can provide a visible in-panel close control. Without it, modal drawers can still close through the scrim, Escape, an edge swipe, or destination selection. The `toggle` slot receives `{ expanded, controls, toggle }`; place its control in the surrounding app bar or layout. `label` names the modal panel and defaults the navigation landmark name; use `navigationLabel` to give the navigation landmark a different name. The `content` slot contains the page area.

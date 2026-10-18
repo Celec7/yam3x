@@ -36,15 +36,17 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 ## API
 
-| 属性           | 默认值            | 用途                                                                         |
-| -------------- | ----------------- | ---------------------------------------------------------------------------- |
-| `title`        | 空                | 可选的简短标题，使用 Title Small。                                           |
-| `tone`         | `info`            | `info`、`success`、`warning` 或 `error`。                                    |
-| `announcement` | `off`             | `off` 不使用实时区域角色；`polite` 使用 `status`；`assertive` 使用 `alert`。 |
-| `icon`         | 对应语气的图标    | Material Symbol 名称；`false` 表示隐藏。                                     |
-| `dismissible`  | `false`           | 显示独立的关闭操作。                                                         |
-| `dismissLabel` | `Dismiss message` | 关闭操作的无障碍名称，需按语言设置。                                         |
-| `dismissFocus` | 父容器            | 函数，返回关闭含焦点内容后应聚焦的附近元素。                                 |
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
+| 属性           | 默认值         | 用途                                                                         |
+| -------------- | -------------- | ---------------------------------------------------------------------------- |
+| `title`        | 空             | 可选的简短标题，使用 Title Small。                                           |
+| `tone`         | `info`         | `info`、`success`、`warning` 或 `error`。                                    |
+| `announcement` | `off`          | `off` 不使用实时区域角色；`polite` 使用 `status`；`assertive` 使用 `alert`。 |
+| `icon`         | 对应语气的图标 | Material Symbol 名称；`false` 表示隐藏。                                     |
+| `dismissible`  | `false`        | 显示独立的关闭操作。                                                         |
+| `dismissLabel` | 本地化默认值   | 关闭操作的无障碍名称，需按语言设置。                                         |
+| `dismissFocus` | 父容器         | 函数，返回关闭含焦点内容后应聚焦的附近元素。                                 |
 
 `v-model:open` 控制可见性，默认 `true`。未绑定时由组件管理。关闭操作请求隐藏后触发 `dismiss()`。关闭提示不表示其背后的问题已解决。
 

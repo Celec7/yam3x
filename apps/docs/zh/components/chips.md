@@ -78,6 +78,8 @@ const topics = [
 
 ## API
 
+`FilterChip` 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
 ### 操作与建议
 
 `AssistChip` 和 `SuggestionChip` 接受 `variant`（默认 `outlined`，也可设为 `elevated`）、`href`、`disabled`，以及原生链接或按钮属性（`target`、`rel`、`download`、`type`、`name`、`value`、`form`）。两者发出 `click(MouseEvent)`，提供默认标签插槽和 `#icon`。

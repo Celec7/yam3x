@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   onBeforeUnmount,
@@ -22,6 +23,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     variant?: AppBarVariant
     alignment?: AppBarAlignment
     scrollBehavior?: AppBarScrollBehavior
@@ -32,11 +34,17 @@ const props = withDefaults(
     variant: 'small',
     alignment: 'leading',
     scrollTarget: null,
-    searchLabel: 'Search',
+    searchLabel: undefined,
   },
 )
 
 const emit = defineEmits<{ search: [] }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ search: props.searchLabel }),
+)
+
 const attrs = useAttrs()
 const slots = useSlots()
 const scrolled = ref(false)
@@ -174,7 +182,7 @@ defineExpose({
             v-ripple
             type="button"
             class="yam3x-app-bar__search-trigger yam3x-state-layer"
-            :aria-label="searchLabel"
+            :aria-label="actionMessages.search"
             aria-haspopup="dialog"
             @click="emit('search')"
           >
@@ -184,7 +192,7 @@ defineExpose({
                 name="search"
               />
             </slot>
-            <span class="yam3x-app-bar__search-label">{{ searchLabel }}</span>
+            <span class="yam3x-app-bar__search-label">{{ actionMessages.search }}</span>
           </button>
           <div class="yam3x-app-bar__search-trailing"><slot name="search-trailing" /></div>
         </div>

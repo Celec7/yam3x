@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { getFormValidationControl } from '../_shared/form-control'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 
@@ -8,6 +9,7 @@ type FloatLabel = 'always' | 'auto'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     label: string
     id?: string
     variant?: FieldVariant
@@ -24,7 +26,7 @@ const props = withDefaults(
     hideRequiredMarker: false,
     hideSubscript: 'never',
     floatLabel: 'auto',
-    counterLabel: 'Character count',
+    counterLabel: undefined,
   },
 )
 
@@ -39,6 +41,11 @@ const slots = defineSlots<{
   error?(): unknown
   counter?(props: { count: number; max: number | null }): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ characterCount: props.counterLabel }),
+)
 
 const generatedId = useId().replace(/:/g, '')
 const controlId = computed(() => props.id || `yam3x-form-field-${generatedId}`)
@@ -408,7 +415,7 @@ onBeforeUnmount(() => {
             ></span
           >
           <span class="yam3x-form-field__sr-only"
-            >{{ counterLabel }}: {{ characterCount }}/{{ characterLimit }}</span
+            >{{ actionMessages.characterCount }}: {{ characterCount }}/{{ characterLimit }}</span
           >
         </template>
         <slot

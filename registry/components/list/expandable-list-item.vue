@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   inject,
@@ -19,6 +20,7 @@ import './list.css'
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
+    locale?: string
     disabled?: boolean
     dragged?: boolean
     current?: boolean
@@ -35,7 +37,7 @@ const props = withDefaults(
     leadingType: 'custom',
     lines: 'auto',
     presentation: 'inline',
-    closeLabel: 'Back',
+    closeLabel: undefined,
     fullScreenTitle: '',
   },
 )
@@ -47,6 +49,12 @@ const emit = defineEmits<{
   closing: [event: Event]
   closed: [event: Event]
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ back: props.closeLabel }),
+)
+
 const attrs = useAttrs()
 const id = useId()
 const generatedContentId = `yam3x-expandable-list-${id}`
@@ -257,10 +265,10 @@ onBeforeUnmount(() => {
         <button
           type="button"
           class="yam3x-expandable-list-item__back"
-          :aria-label="closeLabel"
+          :aria-label="actionMessages.back"
           @click="setOpen(false)"
         >
-          <Icon name="arrow_back" /><span>{{ closeLabel }}</span>
+          <Icon name="arrow_back" /><span>{{ actionMessages.back }}</span>
         </button>
         <span
           :id="`${headerId}-dialog-title`"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import Heading from '../heading/heading.vue'
 import Icon from '../icon/icon.vue'
@@ -7,6 +8,7 @@ import Tooltip from '../tooltip/tooltip.vue'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     title?: string
     tone?: 'info' | 'success' | 'warning' | 'error'
     announcement?: 'off' | 'polite' | 'assertive'
@@ -21,13 +23,19 @@ const props = withDefaults(
     announcement: 'off',
     icon: undefined,
     dismissible: false,
-    dismissLabel: 'Dismiss message',
+    dismissLabel: undefined,
     dismissFocus: undefined,
   },
 )
 const open = defineModel<boolean>('open', { default: true })
 const emit = defineEmits<{ dismiss: [] }>()
 defineSlots<{ default(): unknown; icon?(): unknown; actions?(): unknown }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ dismissMessage: props.dismissLabel }),
+)
+
 const dismissId = `yam3x-inline-message-dismiss-${useId().replace(/:/g, '')}`
 const root = ref<HTMLElement>()
 const resolvedIcon = computed(
@@ -110,11 +118,11 @@ function onDismiss() {
         :id="dismissId"
         variant="standard"
         class="yam3x-inline-message__dismiss"
-        :aria-label="dismissLabel"
+        :aria-label="actionMessages.dismissMessage"
         @click="onDismiss"
         ><Icon name="close"
       /></IconButton>
-      <Tooltip :for="dismissId">{{ dismissLabel }}</Tooltip>
+      <Tooltip :for="dismissId">{{ actionMessages.dismissMessage }}</Tooltip>
     </div>
   </div>
 </template>

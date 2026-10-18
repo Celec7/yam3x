@@ -14,6 +14,8 @@ import LocalizationExample from './demos/LocalizationExample.vue'
 
 <<< ./demos/LocalizationExample.vue{vue}
 
+<<< ./demos/ActionLocalizationExample.vue{vue}
+
 :::
 
 ## Use in your app
@@ -50,10 +52,10 @@ Keep application translations in your own files and pass a reactive message obje
 
 ## API
 
-| Prop       | Default                       | Use                                                                                                                                                                                                                                                                        |
-| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                                                                                                 |
-| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `select`, `autocomplete`, `optionPanel`, `datePicker`, `timePicker`, `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
+| Prop       | Default                       | Use                                                                                                                                                                                                                                                                                   |
+| ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                                                                                                            |
+| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `actions`, `select`, `autocomplete`, `optionPanel`, `datePicker`, `timePicker`, `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
 
 The default slot renders children without an extra DOM element. The provider has no models, events, or exposed methods. `LocaleMessages` describes the complete namespace contracts; existing component-specific message type exports remain available.
 
@@ -70,6 +72,8 @@ Provider support currently applies to [Select](/components/select), [Autocomplet
 `datePicker` supports field, range endpoint, navigation, mode-switch, action, and validation messages. `chooseMonth(month?)` and `chooseYear(year?)` receive formatted labels; omitted arguments produce listbox names. Existing individual label props take precedence over provider text.
 
 `select.noData` supplies empty-list text; `optionPanel` supplies `loading` and `noData`; `autocomplete` adds `results(count)`, `showSuggestions(label)`, `suggestions(label)`, and `selectionRequired`. Suggestion formatters receive the application's field label; result formatters receive a numeric count. An empty validation message retains a native fallback for required selection.
+
+`actions` shares common action and role names across Dialog, Side sheet, Bottom sheet, Drawer container, Navigation drawer, Navigation rail, Inline message, Search, App bar, Tabs, Menu, Fab menu, FilterChip, ExpandableListItem, Form field, and SnackbarProvider. Carousel item names also use this namespace. Each component accepts optional `locale`; existing label props override shared text. `searchResults(label)` receives the search field label; `carouselItem(position, total, label)` receives a one-based position, total count, and item label. See `LocaleMessages['actions']` for the complete key contract.
 
 ## Behavior and accessibility
 

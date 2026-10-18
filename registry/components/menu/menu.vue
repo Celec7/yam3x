@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import MenuPanel from './menu-panel.vue'
 import type { MenuItem, MenuPositionX, MenuPositionY, MenuVariant } from './menu.types'
@@ -6,6 +7,7 @@ import type { MenuItem, MenuPositionX, MenuPositionY, MenuVariant } from './menu
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
+    locale?: string
     items: MenuItem[]
     label?: string
     variant?: MenuVariant
@@ -15,12 +17,12 @@ const props = withDefaults(
     triggerLabel?: string
   }>(),
   {
-    label: 'Options',
+    label: undefined,
     variant: 'standard',
     positionX: 'after',
     positionY: 'below',
     dense: false,
-    triggerLabel: 'Open menu',
+    triggerLabel: undefined,
   },
 )
 const open = defineModel<boolean>('open', { default: false })
@@ -41,6 +43,12 @@ const slots = defineSlots<{
   icon?(props: { item: MenuItem }): unknown
   'trailing-icon'?(props: { item: MenuItem }): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ options: props.label, openMenu: props.triggerLabel }),
+)
+
 const activePanelId = ref<string | null>(null)
 const panelRendered = ref(false)
 const panelClosing = ref(false)
@@ -56,7 +64,7 @@ const triggerProps = computed(() => ({
   'aria-haspopup': 'menu' as const,
   'aria-expanded': open.value,
   'aria-controls': `${id}-panel`,
-  'aria-label': props.triggerLabel,
+  'aria-label': actionMessages.value.openMenu,
   onClick: (event: MouseEvent) => toggle(event),
   onKeydown: (event: KeyboardEvent) => onTriggerKeydown(event),
 }))
@@ -275,7 +283,7 @@ defineExpose({ show, hide, toggle, root: host })
           v-bind="triggerProps"
           class="yam3x-menu__trigger"
         >
-          {{ triggerLabel }}
+          {{ actionMessages.openMenu }}
         </button>
       </slot>
     </div>
@@ -291,7 +299,7 @@ defineExpose({ show, hide, toggle, root: host })
       :checked="checked"
       :selected="selected"
       :dense="dense"
-      :label="label"
+      :label="actionMessages.options"
       :active-panel-id="activePanelId"
       :closing="panelClosing"
       :has-icon-slot="Boolean(slots.icon)"

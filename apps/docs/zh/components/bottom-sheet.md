@@ -47,6 +47,8 @@ const open = ref(false)
 
 ## API
 
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
 | 属性            | 类型                                | 默认值                                                                | 说明                                                                                                                      |
 | --------------- | ----------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `variant`       | `'standard' \| 'modal'`             | `'standard'`                                                          | 标准 sheet 与页面并存；模态 sheet 管理焦点并遮罩背景。Material 指引将模态 sheet 用于移动应用。                            |
@@ -56,8 +58,8 @@ const open = ref(false)
 | `hideable`      | `boolean`                           | `false`                                                               | 是否允许标准 sheet 通过向下手势或手柄操作隐藏；模态 sheet 仍可通过向下滑动关闭。                                          |
 | `handle`        | `boolean`                           | `false`                                                               | 显示可拖动且可通过键盘激活的调整手柄。                                                                                    |
 | `label`         | `string`                            | —                                                                     | sheet 的可访问名称；未提供时使用 `header` 标题。                                                                          |
-| `closeLabel`    | `string`                            | `Close sheet`                                                         | 关闭按钮的可访问名称；标准 sheet 在各高度都提供明确的关闭按钮。                                                           |
-| `collapseLabel` | `string`                            | `Collapse sheet`                                                      | 标准 sheet 展开时回到较低停靠点的操作名称。                                                                               |
+| `closeLabel`    | `string`                            | 本地化默认值                                                          | 关闭按钮的可访问名称；标准 sheet 在各高度都提供明确的关闭按钮。                                                           |
+| `collapseLabel` | `string`                            | 本地化默认值                                                          | 标准 sheet 展开时回到较低停靠点的操作名称。                                                                               |
 | `maxWidth`      | `string`                            | `640px`                                                               | 自定义最大宽度。                                                                                                          |
 
 默认 slot 放正文，`trigger` slot 接收 `triggerProps` 和 `activate`，`header` slot 放标题，`handle` slot 替换手柄图形。多停靠点且没有拖动手柄时，默认 Resize 按钮提供单指替代操作；`resize-control` slot 可替换该按钮。有拖动手柄时，手柄本身支持拖动和单指切换停靠点。标准 sheet 始终提供标注明确的关闭按钮；展开时另有独立的收起操作。`BottomSheetAction` 是激活后请求关闭的原生按钮。

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import {
   computed,
   nextTick,
@@ -26,6 +27,7 @@ type DragSession = {
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     variant?: BottomSheetVariant
     label?: string
     maxWidth?: string
@@ -43,9 +45,9 @@ const props = withDefaults(
     detents: undefined,
     hideable: false,
     handle: false,
-    handleLabel: 'Resize sheet',
-    closeLabel: 'Close sheet',
-    collapseLabel: 'Collapse sheet',
+    handleLabel: undefined,
+    closeLabel: undefined,
+    collapseLabel: undefined,
   },
 )
 const open = defineModel<boolean>('open', { default: false })
@@ -57,11 +59,23 @@ const emit = defineEmits<{
   closed: [event: Event]
   cancel: [event: Event]
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({
+    resizeSheet: props.handleLabel,
+    closeSheet: props.closeLabel,
+    collapseSheet: props.collapseLabel,
+  }),
+)
+
 const slots = useSlots()
 
 const id = `yam3x-bottom-sheet-${useId()}`
 const headerId = `${id}-heading`
-const accessibleLabel = computed(() => props.label || (!slots.header ? 'Bottom sheet' : undefined))
+const accessibleLabel = computed(
+  () => props.label || (!slots.header ? actionMessages.value.bottomSheet : undefined),
+)
 const panel = ref<HTMLElement | null>(null)
 const returnFocus = ref<HTMLElement | null>(null)
 const dragStart = ref<DragSession | null>(null)
@@ -554,7 +568,7 @@ defineExpose({ close, requestOpen, requestDetent })
               v-if="handle"
               class="yam3x-bottom-sheet__handle-button"
               type="button"
-              :aria-label="handleLabel"
+              :aria-label="actionMessages.resizeSheet"
               @click="onHandleClick"
             >
               <slot name="handle"><span class="yam3x-bottom-sheet__handle" /></slot>
@@ -567,7 +581,7 @@ defineExpose({ close, requestOpen, requestDetent })
               <button
                 class="yam3x-bottom-sheet__resize"
                 type="button"
-                :aria-label="handleLabel"
+                :aria-label="actionMessages.resizeSheet"
                 @click="cycleDetent"
               >
                 Resize
@@ -589,7 +603,7 @@ defineExpose({ close, requestOpen, requestDetent })
               v-if="isFullHeight"
               class="yam3x-bottom-sheet__close"
               type="button"
-              :aria-label="closeLabel"
+              :aria-label="actionMessages.closeSheet"
               @click="close"
             >
               <Icon name="close" />
@@ -634,7 +648,7 @@ defineExpose({ close, requestOpen, requestDetent })
           v-if="handle"
           class="yam3x-bottom-sheet__handle-button"
           type="button"
-          :aria-label="handleLabel"
+          :aria-label="actionMessages.resizeSheet"
           @click="onHandleClick"
         >
           <slot name="handle"><span class="yam3x-bottom-sheet__handle" /></slot>
@@ -647,7 +661,7 @@ defineExpose({ close, requestOpen, requestDetent })
           <button
             class="yam3x-bottom-sheet__resize"
             type="button"
-            :aria-label="handleLabel"
+            :aria-label="actionMessages.resizeSheet"
             @click="cycleDetent"
           >
             Resize
@@ -669,7 +683,7 @@ defineExpose({ close, requestOpen, requestDetent })
           v-if="variant === 'standard'"
           class="yam3x-bottom-sheet__close"
           type="button"
-          :aria-label="closeLabel"
+          :aria-label="actionMessages.closeSheet"
           @click="close"
         >
           <Icon name="close" />
@@ -685,7 +699,7 @@ defineExpose({ close, requestOpen, requestDetent })
             <button
               class="yam3x-bottom-sheet__close"
               type="button"
-              :aria-label="collapseLabel"
+              :aria-label="actionMessages.collapseSheet"
               @click="requestDetent(resolvedDetents[0])"
             >
               <Icon name="expand_more" />

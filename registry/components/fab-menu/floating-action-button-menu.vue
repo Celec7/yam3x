@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { autoUpdate, computePosition, offset, shift, size } from '@floating-ui/dom'
 import {
   computed,
@@ -26,6 +27,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     label?: string
     variant?: FabMenuVariant
     presentation?: FabMenuPresentation
@@ -33,7 +35,7 @@ const props = withDefaults(
     disabled?: boolean
   }>(),
   {
-    label: 'Actions',
+    label: undefined,
     variant: 'primary',
     presentation: 'pill-stack',
     horizontalAlignment: 'end',
@@ -57,6 +59,11 @@ defineSlots<{
     triggerProps: Record<string, unknown>
   }): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ actions: props.label }),
+)
 
 const host = ref<HTMLElement | null>(null)
 const trigger = ref<HTMLElement | null>(null)
@@ -337,7 +344,7 @@ const triggerProps = computed(() => ({
   ref: setTriggerElement,
   type: 'button' as const,
   disabled: props.disabled,
-  'aria-label': props.label,
+  'aria-label': actionMessages.value.actions,
   'aria-haspopup': 'menu' as const,
   'aria-expanded': expanded.value,
   'aria-controls': menuId,
@@ -376,7 +383,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
         ]"
         :style="[positionStyle, componentTokens]"
         role="menu"
-        :aria-label="label"
+        :aria-label="actionMessages.actions"
         :aria-hidden="!expanded"
         :inert="!expanded || undefined"
         @keydown="onPanelKeydown"

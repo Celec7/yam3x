@@ -38,6 +38,8 @@ const items: MenuItem[] = [
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 `items` is a required `MenuItem[]`; give each item a unique `value`. `label` names the menu (`'Options'` by default), and `triggerLabel` names the built-in trigger (`'Open menu'`). `variant` defaults to `'standard'` and also accepts `'vibrant'`; `dense` defaults to `false`. `positionX` defaults to `'after'` and accepts `'before'`; `positionY` defaults to `'below'` and accepts `'above'`.
 
 Customize the trigger with `#trigger`, which receives `{ open, toggle, triggerProps }`. `#icon` and `#trailing-icon` receive item data. `variant="vibrant"` uses tertiary colors. Set preferred expansion directions with `position-x="before|after"` and `position-y="above|below"`; the popup automatically flips or shifts near viewport edges, and its enter and exit transitions expand or collapse at the trigger-facing edge. Use `show(anchor)`, `hide()`, and `toggle(anchor)` for context menus or split buttons.

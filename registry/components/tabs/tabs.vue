@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useId, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
@@ -7,6 +8,7 @@ import type { TabItem, TabsLayout, TabsVariant } from './tabs.types'
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
+    locale?: string
     items: TabItem[]
     label?: string
     variant?: TabsVariant
@@ -26,8 +28,8 @@ const props = withDefaults(
     stretch: false,
     disablePagination: false,
     disableSwipe: false,
-    previousPageLabel: 'Previous page',
-    nextPageLabel: 'Next page',
+    previousPageLabel: undefined,
+    nextPageLabel: undefined,
   },
 )
 const model = defineModel<string>()
@@ -42,6 +44,12 @@ const slots = defineSlots<{
   'previous-icon'?(): unknown
   'next-icon'?(): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => ({ previousPage: props.previousPageLabel, nextPage: props.nextPageLabel }),
+)
+
 const attrs = useAttrs()
 const host = ref<HTMLElement | null>(null)
 const scrollport = ref<HTMLElement | null>(null)
@@ -313,7 +321,7 @@ watch(
         v-if="showPagination"
         type="button"
         class="yam3x-tabs__page yam3x-tabs__page--previous"
-        :aria-label="previousPageLabel"
+        :aria-label="actionMessages.previousPage"
         :disabled="!canPrevious"
         @click="page(-1)"
       >
@@ -395,7 +403,7 @@ watch(
         v-if="showPagination"
         type="button"
         class="yam3x-tabs__page yam3x-tabs__page--next"
-        :aria-label="nextPageLabel"
+        :aria-label="actionMessages.nextPage"
         :disabled="!canNext"
         @click="page(1)"
       >

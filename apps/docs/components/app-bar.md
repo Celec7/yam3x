@@ -52,6 +52,8 @@ import { AppBar } from './components/yam3x/app-bar'
 
 ## API
 
+This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 | Prop              | Default (automatic)                                      | Description                                                                                                                                                                                             |
 | ----------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `variant`         | `small`                                                  | `search`, `small`, `medium-flexible`, or `large-flexible`.                                                                                                                                              |

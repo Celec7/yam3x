@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { autoUpdate } from '@floating-ui/dom'
 import {
   computed,
@@ -21,7 +22,7 @@ interface SnackbarEntry {
   actionLabel?: string
   onAction?: () => void | Promise<void>
   dismissible: boolean
-  dismissLabel: string
+  dismissLabel?: string
   timeoutMs?: number
   key?: string
   resolve: (result: SnackbarResult) => void
@@ -31,12 +32,18 @@ interface SnackbarEntry {
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     alignment?: 'center' | 'start'
     anchor?: HTMLElement | null
     bottomOffset?: number
     shortcut?: string | null
   }>(),
   { alignment: 'center', bottomOffset: 0, shortcut: 'Alt+G' },
+)
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
 )
 
 const current = shallowRef<SnackbarEntry | null>(null)
@@ -250,7 +257,7 @@ function makeEntry(options: SnackbarOptions): Omit<SnackbarEntry, 'resolve' | 'r
     message: options.message,
     ...(hasAction ? { actionLabel: options.actionLabel!.trim(), onAction: options.onAction } : {}),
     dismissible: options.dismissible ?? (hasAction || timeoutMs === undefined),
-    dismissLabel: options.dismissLabel?.trim() || 'Dismiss notification',
+    dismissLabel: options.dismissLabel?.trim() || undefined,
     ...(hasAction ? {} : timeoutMs === undefined ? {} : { timeoutMs }),
     ...(options.key === undefined ? {} : { key: options.key }),
     actionStarted: false,
@@ -456,7 +463,7 @@ onBeforeUnmount(() => {
             class="yam3x-snackbar__close"
             type="button"
             data-snackbar-close
-            :aria-label="current.dismissLabel"
+            :aria-label="current.dismissLabel ?? actionMessages.dismissNotification"
             @click="finishCurrent('dismissed')"
           >
             <Icon name="close" />

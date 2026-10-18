@@ -75,18 +75,20 @@ function select(item: { id: string; title: string }): void {
 
 ## API
 
-| 属性               | 默认值      | 说明                                                                                                                    |
-| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `label`            | `Search`    | 同时作为输入框提示和无障碍名称；建议说明可搜索的内容。                                                                  |
-| `layout`           | `auto`      | `auto` 按当前内容窗格宽度适配：低于项目定义的 600px 断点时全屏，600px 及以上停靠。也可固定为 `fullscreen` 或 `docked`。 |
-| `variant`          | `contained` | 设置视觉样式。`contained` 是 M3 Expressive 推荐样式；项目也保留基线样式 `divided` 作为可选项。                          |
-| `disabled`         | `false`     | 禁用输入和展开。                                                                                                        |
-| `hide-search-icon` | `false`     | 隐藏默认装饰性搜索图标；所在界面应提供其他可见搜索入口。                                                                |
-| `clearable`        | `true`      | 查询非空时显示清除按钮。                                                                                                |
-| `close-label`      | `Back`      | 展开状态下返回按钮的无障碍名称。                                                                                        |
-| `clear-label`      | `Clear`     | 清除按钮的无障碍名称。                                                                                                  |
-| `v-model:query`    | `''`        | 查询文本，可受控或由组件内部管理。                                                                                      |
-| `v-model:open`     | `false`     | 展开状态，可受控或由组件内部管理。                                                                                      |
+该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+
+| 属性               | 默认值       | 说明                                                                                                                    |
+| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `label`            | 本地化默认值 | 同时作为输入框提示和无障碍名称；建议说明可搜索的内容。                                                                  |
+| `layout`           | `auto`       | `auto` 按当前内容窗格宽度适配：低于项目定义的 600px 断点时全屏，600px 及以上停靠。也可固定为 `fullscreen` 或 `docked`。 |
+| `variant`          | `contained`  | 设置视觉样式。`contained` 是 M3 Expressive 推荐样式；项目也保留基线样式 `divided` 作为可选项。                          |
+| `disabled`         | `false`      | 禁用输入和展开。                                                                                                        |
+| `hide-search-icon` | `false`      | 隐藏默认装饰性搜索图标；所在界面应提供其他可见搜索入口。                                                                |
+| `clearable`        | `true`       | 查询非空时显示清除按钮。                                                                                                |
+| `close-label`      | `Back`       | 展开状态下返回按钮的无障碍名称。                                                                                        |
+| `clear-label`      | `Clear`      | 清除按钮的无障碍名称。                                                                                                  |
+| `v-model:query`    | `''`         | 查询文本，可受控或由组件内部管理。                                                                                      |
+| `v-model:open`     | `false`      | 展开状态，可受控或由组件内部管理。                                                                                      |
 
 ## 行为与无障碍
 

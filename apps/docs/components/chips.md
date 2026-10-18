@@ -78,6 +78,8 @@ const topics = [
 
 ## API
 
+`FilterChip` can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+
 ### Actions and suggestions
 
 `AssistChip` and `SuggestionChip` accept `variant` (`outlined` by default, or `elevated`), `href`, `disabled`, and native link or button props (`target`, `rel`, `download`, `type`, `name`, `value`, `form`). Both emit `click(MouseEvent)` and provide a label slot and `#icon`.
