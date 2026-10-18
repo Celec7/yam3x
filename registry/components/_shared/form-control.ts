@@ -11,10 +11,11 @@ export function getFormFocusProxy(control: HTMLElement): HTMLElement {
   )
 }
 
-/** Reads native constraint state behind a button-based field control. */
+/** Reads native constraint state behind a composite field control. */
 export function getFormValidationControl(control: HTMLElement): HTMLElement {
-  if (control.matches('input, select, textarea')) return control
-  const key = control.getAttribute('data-form-field-control') || control.id
+  const key =
+    control.getAttribute('data-form-field-control') ||
+    (control.matches('input, select, textarea') ? '' : control.id)
   if (!key) return control
   return (
     Array.from(

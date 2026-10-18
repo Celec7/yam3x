@@ -122,8 +122,10 @@ function findControl() {
   )
 }
 function getValue(element: HTMLElement) {
-  const value = (element as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value
-  return typeof value === 'string' ? value.length > 0 : Boolean(value)
+  return [element, getFormValidationControl(element)].some((control) => {
+    const value = (control as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value
+    return typeof value === 'string' ? value.length > 0 : Boolean(value)
+  })
 }
 function isControlValid(element: HTMLElement) {
   const candidate = getFormValidationControl(element) as HTMLElement & {
