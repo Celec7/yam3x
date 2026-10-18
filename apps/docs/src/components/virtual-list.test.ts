@@ -25,13 +25,13 @@ it('virtual.window.measurement: preserves the viewport anchor when measured heig
     }
     notify(elements: Element[], blockSize?: number) {
       this.callback(
-        elements.map(
-          (target) =>
-            ({
-              target,
-              ...(blockSize === undefined ? {} : { borderBoxSize: [{ blockSize }] }),
-            }) as ResizeObserverEntry,
-        ),
+        elements.map((target) => ({
+          target,
+          contentRect: target.getBoundingClientRect(),
+          contentBoxSize: [],
+          devicePixelContentBoxSize: [],
+          borderBoxSize: blockSize === undefined ? [] : [{ blockSize, inlineSize: 0 }],
+        })),
         this as unknown as ResizeObserver,
       )
     }
