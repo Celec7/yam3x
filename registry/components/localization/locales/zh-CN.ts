@@ -1,6 +1,13 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
   actions: {
+    newNotification: '新通知',
+    breadcrumb: '面包屑导航',
+    removeItem: (label) => `移除${label}`,
+    splitOptions: (label) => `${label || '相关'}选项`,
+    splitMoreOptions: (label) => `更多${label || '操作'}选项`,
+    rangeMinimum: (label) => `${label ?? '范围'}最小值`,
+    rangeMaximum: (label) => `${label ?? '范围'}最大值`,
     close: '关闭',
     back: '返回',
     clear: '清除',

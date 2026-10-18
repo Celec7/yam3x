@@ -6,6 +6,7 @@ export type InternalSliderVariant = SliderVariant | 'range'
 export type SliderSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
 
 export interface SliderCommonProps {
+  locale?: string
   orientation?: 'horizontal' | 'vertical'
   size?: SliderSize
   min?: number

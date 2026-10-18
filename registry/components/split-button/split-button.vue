@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, onMounted, ref, useAttrs, useId, watch } from 'vue'
 import Menu from '../menu/menu.vue'
 import type { MenuItem, MenuPositionX, MenuPositionY } from '../menu/menu.types'
@@ -12,6 +13,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     label?: string
     variant?: SplitButtonVariant
     size?: ButtonSize
@@ -64,6 +66,12 @@ const slots = defineSlots<{
     popupId: string
   }): unknown
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
+)
+
 type PopupRole = 'menu' | 'dialog' | 'listbox' | 'tree' | 'grid' | 'true'
 
 const menuOpen = ref(false)
@@ -80,11 +88,15 @@ const hasMenu = computed(() => Boolean(props.items?.length))
 const canOpenPopup = computed(() => hasMenu.value || Boolean(slots.popup))
 const isPrimaryDisabled = computed(() => props.disabled || props.primaryDisabled)
 const isMenuDisabled = computed(() => props.disabled || props.menuDisabled || !canOpenPopup.value)
-const resolvedMenuLabel = computed(() => props.menuLabel || `${props.label || 'Related'} options`)
+const resolvedMenuLabel = computed(
+  () => props.menuLabel || actionMessages.value.splitOptions(props.label),
+)
 const trailingLabel = computed(
   () =>
     props.menuButtonLabel ||
-    `More ${props.label || String(attrs['aria-label'] || 'action')} options`,
+    actionMessages.value.splitMoreOptions(
+      props.label || String(attrs['aria-label'] || '') || undefined,
+    ),
 )
 const forwardedPrimaryAttrs = computed(() => {
   const result = { ...attrs }
@@ -247,6 +259,7 @@ defineExpose({
         v-if="hasMenu"
         ref="menuApi"
         v-model:open="menuOpen"
+        :locale="props.locale"
         :items="items!"
         :label="resolvedMenuLabel"
         :trigger-label="trailingLabel"

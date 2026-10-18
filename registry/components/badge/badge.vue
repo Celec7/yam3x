@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { autoUpdate, computePosition, platform, type Placement } from '@floating-ui/dom'
 import { offsetParent } from 'composed-offset-position'
 import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, watch } from 'vue'
@@ -16,6 +17,7 @@ type Direction = 'ltr' | 'rtl'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     position?: BadgePosition
     for?: string
     dir?: Direction
@@ -29,6 +31,12 @@ const props = withDefaults(
     ariaLabel: undefined,
     hidden: false,
   },
+)
+
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
 )
 
 const validPositions: BadgePosition[] = [
@@ -46,7 +54,9 @@ const position = computed<BadgePosition>(() =>
 )
 const badgeSize = ref<'small' | 'large'>('small')
 const accessibleName = computed(
-  () => props.ariaLabel || (badgeSize.value === 'small' ? 'New notification' : undefined),
+  () =>
+    props.ariaLabel ||
+    (badgeSize.value === 'small' ? actionMessages.value.newNotification : undefined),
 )
 const badgeElement = ref<HTMLSpanElement>()
 const longLabel = ref(false)

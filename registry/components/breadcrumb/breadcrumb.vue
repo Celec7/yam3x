@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
@@ -8,6 +9,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     items?: BreadcrumbItemData[]
     currentIndex?: number
     ariaLabel?: string
@@ -17,10 +19,16 @@ const props = withDefaults(
   {
     items: () => [],
     currentIndex: undefined,
-    ariaLabel: 'Breadcrumb',
+    ariaLabel: undefined,
     ariaLabelledby: undefined,
     wrap: false,
   },
+)
+
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
 )
 
 const resolvedCurrentIndex = computed(() => {
@@ -28,7 +36,7 @@ const resolvedCurrentIndex = computed(() => {
   return Number.isInteger(index) && index >= 0 && index < props.items.length ? index : -1
 })
 const navigationLabel = computed(() =>
-  props.ariaLabelledby ? undefined : props.ariaLabel || 'Breadcrumb',
+  props.ariaLabelledby ? undefined : props.ariaLabel || actionMessages.value.breadcrumb,
 )
 </script>
 

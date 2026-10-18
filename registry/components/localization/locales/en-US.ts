@@ -1,6 +1,13 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
   actions: {
+    newNotification: 'New notification',
+    breadcrumb: 'Breadcrumb',
+    removeItem: (label) => `Remove ${label}`,
+    splitOptions: (label) => `${label || 'Related'} options`,
+    splitMoreOptions: (label) => `More ${label || 'action'} options`,
+    rangeMinimum: (label) => `${label ?? 'Range'} minimum`,
+    rangeMaximum: (label) => `${label ?? 'Range'} maximum`,
     close: 'Close',
     back: 'Back',
     clear: 'Clear',

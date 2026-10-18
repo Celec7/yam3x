@@ -36,6 +36,8 @@ const items = [
 
 ## API
 
+Breadcrumb navigation can inherit [LocaleProvider](/components/localization)'s `actions` messages. Optional `locale` overrides the language, defaulting to the provider then `en-US`. Existing label overrides take precedence.
+
 | Prop             | Type                                                                 | Default      | Description                                                                                                  |
 | ---------------- | -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
 | `items`          | `{ label, href?, target?, rel?, download?, disabled?, iconOnly? }[]` | `[]`         | Breadcrumb items in hierarchy order.                                                                         |

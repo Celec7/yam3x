@@ -197,6 +197,13 @@ export interface AutocompleteMessages extends OptionPanelMessages {
 }
 
 export interface ActionMessages {
+  newNotification: string
+  breadcrumb: string
+  removeItem: (label: string) => string
+  splitOptions: (label?: string) => string
+  splitMoreOptions: (label?: string) => string
+  rangeMinimum: (label?: string) => string
+  rangeMaximum: (label?: string) => string
   close: string
   back: string
   clear: string

@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     label: string
     value?: string
     variant?: 'outlined' | 'elevated'
@@ -28,6 +30,12 @@ defineSlots<{
   icon?(): unknown
   'remove-icon'?(): unknown
 }>()
+
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
+)
 
 function onMainClick(event: MouseEvent): void {
   emit('click', event)
@@ -91,7 +99,7 @@ function onKeydown(event: KeyboardEvent): void {
       type="button"
       class="yam3x-input-chip__remove yam3x-state-layer"
       :disabled="disabled"
-      :aria-label="removeLabel ?? `Remove ${label}`"
+      :aria-label="removeLabel ?? actionMessages.removeItem(label)"
       @click="remove"
     >
       <slot name="remove-icon">

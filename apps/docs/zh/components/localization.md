@@ -59,7 +59,7 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 
 默认插槽直接渲染子内容，不增加 DOM 元素。provider 没有模型、事件或公开方法。`LocaleMessages` 描述完整的命名空间契约；原有的组件文案类型导出继续可用。
 
-目前支持 provider 的组件包括 [Select](/zh/components/select)、[Autocomplete](/zh/components/autocomplete)、[OptionPanel](/zh/components/option)、[Date pickers](/zh/components/date-picker)、[Time pickers](/zh/components/time-picker)、[Date input](/zh/components/date-input)、[Calendar](/zh/components/calendar)、[Number field](/zh/components/number-field)、[Pagination](/zh/components/pagination)、[Form](/zh/components/form)、[File upload](/zh/components/file-upload)、[Data table](/zh/components/data-table) 和 [Tree view](/zh/components/tree-view)。其他组件保留各自的语言和标签 API。
+使用独立 provider 命名空间的组件包括 [Select](/zh/components/select)、[Autocomplete](/zh/components/autocomplete)、[OptionPanel](/zh/components/option)、[Date pickers](/zh/components/date-picker)、[Time pickers](/zh/components/time-picker)、[Date input](/zh/components/date-input)、[Calendar](/zh/components/calendar)、[Number field](/zh/components/number-field)、[Pagination](/zh/components/pagination)、[Form](/zh/components/form)、[File upload](/zh/components/file-upload)、[Data table](/zh/components/data-table) 和 [Tree view](/zh/components/tree-view)。通用操作和生成名称的支持见下文。
 
 `numberField` 的 `rangeUnderflow(minimum)`、`rangeOverflow(maximum)`、`increment(label)` 和 `decrement(label)` 是函数，接收已格式化边界值或字段标签。Number field 自身的 `messages` 继续接受原有字符串，并优先于 provider 文案。
 
@@ -74,6 +74,8 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 `select.noData` 提供空列表文案；`optionPanel` 提供 `loading`、`noData`；`autocomplete` 另外提供 `results(count)`、`showSuggestions(label)`、`suggestions(label)` 和 `selectionRequired`。建议格式函数接收应用的字段标签，结果函数接收数值数量。空验证文案仍保留原生必选校验的回退消息。
 
 `actions` 共享通用操作及角色名称：Dialog、Side sheet、Bottom sheet、Drawer container、Navigation drawer、Navigation rail、Inline message、Search、App bar、Tabs、Menu、Fab menu、FilterChip、ExpandableListItem、Form field 和 SnackbarProvider 支持此配置。Carousel 的项目名称也由此配置生成。各组件接受可选 `locale`，已有的标签属性优先于共享文案。`searchResults(label)` 接收搜索字段标签；`carouselItem(position, total, label)` 接收从 1 开始的位置、总数与项目标签。使用 `LocaleMessages['actions']` 查看完整键契约。
+
+`actions` 还为 InputChip、Badge、Breadcrumb、Split button 和 Range slider 提供生成名称。`removeItem(label)` 接收项目标签；`splitOptions(label?)`、`splitMoreOptions(label?)` 接收主操作标签；`rangeMinimum(label?)`、`rangeMaximum(label?)` 接收范围名称。`newNotification` 和 `breadcrumb` 提供默认名称；原有组件标签覆盖属性继续优先。
 
 ## 行为与无障碍
 

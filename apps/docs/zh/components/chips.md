@@ -78,6 +78,8 @@ const topics = [
 
 ## API
 
+`InputChip` 可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 文案。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`。已有标签覆盖属性优先；应用标签、数值与选择状态保留原值。
+
 `FilterChip` 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
 ### 操作与建议

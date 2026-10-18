@@ -44,6 +44,10 @@ const price = ref<[number, number]>([25, 75])
 
 ## API
 
+Range endpoint names can inherit [LocaleProvider](/components/localization)'s `actions` messages. Optional `locale` overrides the language, defaulting to the provider then `en-US`. Existing label overrides take precedence.
+
+`RangeSlider` props `lowerLabel` and `upperLabel` take precedence over generated names; `formatValue` remains application-owned number formatting.
+
 | Prop                                    | Default                | Description                                                                                                                                                                                                                                      |
 | --------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `Slider v-model`                        | `0`                    | A single numeric value. Use `RangeSlider` for a `[lower, upper]` value pair.                                                                                                                                                                     |

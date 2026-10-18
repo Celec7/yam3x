@@ -59,7 +59,7 @@ Keep application translations in your own files and pass a reactive message obje
 
 The default slot renders children without an extra DOM element. The provider has no models, events, or exposed methods. `LocaleMessages` describes the complete namespace contracts; existing component-specific message type exports remain available.
 
-Provider support currently applies to [Select](/components/select), [Autocomplete](/components/autocomplete), [OptionPanel](/components/option), [Date pickers](/components/date-picker), [Time pickers](/components/time-picker), [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
+Component-specific provider namespaces support [Select](/components/select), [Autocomplete](/components/autocomplete), [OptionPanel](/components/option), [Date pickers](/components/date-picker), [Time pickers](/components/time-picker), [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Shared action and generated-name support is described below.
 
 `numberField` entries `rangeUnderflow(minimum)`, `rangeOverflow(maximum)`, `increment(label)`, and `decrement(label)` are functions receiving formatted bounds or the field label. The Number field component keeps its existing string-valued `messages`, which take precedence over provider text.
 
@@ -74,6 +74,8 @@ Provider support currently applies to [Select](/components/select), [Autocomplet
 `select.noData` supplies empty-list text; `optionPanel` supplies `loading` and `noData`; `autocomplete` adds `results(count)`, `showSuggestions(label)`, `suggestions(label)`, and `selectionRequired`. Suggestion formatters receive the application's field label; result formatters receive a numeric count. An empty validation message retains a native fallback for required selection.
 
 `actions` shares common action and role names across Dialog, Side sheet, Bottom sheet, Drawer container, Navigation drawer, Navigation rail, Inline message, Search, App bar, Tabs, Menu, Fab menu, FilterChip, ExpandableListItem, Form field, and SnackbarProvider. Carousel item names also use this namespace. Each component accepts optional `locale`; existing label props override shared text. `searchResults(label)` receives the search field label; `carouselItem(position, total, label)` receives a one-based position, total count, and item label. See `LocaleMessages['actions']` for the complete key contract.
+
+`actions` also supplies generated names for InputChip, Badge, Breadcrumb, Split button, and Range slider. `removeItem(label)` receives the item label; `splitOptions(label?)` and `splitMoreOptions(label?)` receive the primary action label; `rangeMinimum(label?)` and `rangeMaximum(label?)` receive the range name. `newNotification` and `breadcrumb` supply default names; existing component label overrides retain priority.
 
 ## Behavior and accessibility
 

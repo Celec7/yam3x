@@ -280,3 +280,29 @@ test('translates an active Snackbar without restarting its timeout', async ({ pa
   await expect(page.getByTestId('locale-notification-result')).toHaveText('dismissed')
   await expect(snackbar).toBeHidden()
 })
+
+test('translates generated labels while retaining native range focus and chip selection', async ({
+  page,
+}) => {
+  await page.goto('/components/localization')
+  const group = page.getByTestId('locale-generated-labels')
+  const lower = group.getByRole('slider', { name: 'Price minimum', exact: true })
+  await lower.focus()
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  const translatedLower = group.getByRole('slider', { name: 'Price最小值', exact: true })
+  await expect(translatedLower).toBeFocused()
+  await expect(translatedLower).toHaveValue('20')
+  await expect(group.getByRole('slider', { name: 'Price最大值', exact: true })).toHaveValue('80')
+  await expect(group.getByRole('button', { name: 'Apple', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(group.getByRole('button', { name: '移除Apple', exact: true })).toBeVisible()
+  await expect(group.locator('[aria-label="新通知"]')).toBeVisible()
+  await expect(group.getByRole('navigation', { name: '面包屑导航' })).toContainText('Files')
+  await group.getByRole('button', { name: '更多Save选项', exact: true }).click()
+  await expect(page.getByRole('menu', { name: 'Save选项', exact: true })).toBeVisible()
+  await expect(page.getByRole('menuitem', { name: 'Save copy', exact: true })).toBeVisible()
+})

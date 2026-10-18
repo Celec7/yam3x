@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch } from 'vue'
 import {
   sliderBounds,
@@ -15,6 +16,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    locale?: string
     variant?: InternalSliderVariant
     orientation?: 'horizontal' | 'vertical'
     size?: SliderSize
@@ -58,6 +60,12 @@ const emit = defineEmits<{
   input: [event: Event]
   change: [event: Event]
 }>()
+const { messages: actionMessages } = useComponentLocale(
+  'actions',
+  () => props.locale,
+  () => undefined,
+)
+
 const attrs = useAttrs()
 const slots = useSlots()
 const host = ref<HTMLElement | null>(null)
@@ -420,8 +428,8 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
         :aria-label="
           variant === 'range'
             ? index === 0
-              ? (lowerLabel ?? `${accessibleName ?? 'Range'} minimum`)
-              : (upperLabel ?? `${accessibleName ?? 'Range'} maximum`)
+              ? (lowerLabel ?? actionMessages.rangeMinimum(accessibleName))
+              : (upperLabel ?? actionMessages.rangeMaximum(accessibleName))
             : accessibleName
         "
         :aria-labelledby="variant !== 'range' ? (attrs['aria-labelledby'] as string) : undefined"

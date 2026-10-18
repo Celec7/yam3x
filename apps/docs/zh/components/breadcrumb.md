@@ -36,6 +36,8 @@ const items = [
 
 ## API
 
+Breadcrumb 导航可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 文案。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`。已有标签覆盖属性优先。
+
 | 属性             | 类型                                                                 | 默认值       | 说明                                                 |
 | ---------------- | -------------------------------------------------------------------- | ------------ | ---------------------------------------------------- |
 | `items`          | `{ label, href?, target?, rel?, download?, disabled?, iconOnly? }[]` | `[]`         | 按层级顺序排列的面包屑项目。                         |

@@ -118,6 +118,8 @@ function save(): void {
 
 ## API
 
+Generated menu names can inherit [LocaleProvider](/components/localization)'s `actions` messages. Optional `locale` overrides the language, defaulting to the provider then `en-US`. Existing label overrides take precedence.
+
 Provide concise primary-action text with `label` or the default slot, and use `#icon` for an icon. The primary action forwards native button attributes, form attributes, or `href`. `@click` responds only to the primary action. If the default slot contains text and you want a related name for the expand button, also set `menu-button-label`. Give an icon-only primary button an `aria-label`.
 
 Pass `items` to use the existing Menu keyboard, focus, positioning, and dismissal behavior. Control its state with `v-model:open`; `@beforetoggle`, `@toggle`, `@beforeselect`, and `@select` forward Menu events. `menu-label` names the menu, while `menu-button-label` overrides the expand button’s accessible name. Use `#menu-icon` to customize leading icons. Where the viewport allows, the menu aligns with the expand button’s inline-start edge and maintains a 4px gap.

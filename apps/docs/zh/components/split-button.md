@@ -118,6 +118,8 @@ function save(): void {
 
 ## API
 
+生成的菜单名称可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 文案。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`。已有标签覆盖属性优先。
+
 `label` 或默认插槽提供简短的主要操作文字；图标使用 `#icon`。主操作可透传原生按钮属性、表单属性或 `href`。`@click` 只响应主操作。仅用默认插槽提供文字时，若要生成与操作相关的展开按钮名称，请同时设置 `menu-button-label`；图标按钮主操作可用 `aria-label`。
 
 菜单通过 `items` 使用现有 Menu 的键盘、焦点、定位和关闭行为。`v-model:open` 控制菜单状态；`@beforetoggle`、`@toggle`、`@beforeselect` 与 `@select` 会转发 Menu 事件。`menu-label` 为菜单命名，`menu-button-label` 可覆盖展开按钮的无障碍名称。`#menu-icon` 可自定义各菜单项的前置图标。菜单在视口允许时与展开按钮的 inline-start 对齐，并保留 4px 间距。

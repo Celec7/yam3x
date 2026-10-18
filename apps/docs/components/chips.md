@@ -78,6 +78,8 @@ const topics = [
 
 ## API
 
+`InputChip` can inherit [LocaleProvider](/components/localization)'s `actions` messages. Optional `locale` overrides the language, defaulting to the provider then `en-US`. Existing label overrides take precedence; application labels, values, and selection remain unchanged.
+
 `FilterChip` can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
 
 ### Actions and suggestions

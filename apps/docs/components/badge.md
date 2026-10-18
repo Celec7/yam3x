@@ -44,6 +44,8 @@ import Badge from './components/yam3x/badge/badge.vue'
 
 ## API
 
+Small badges can inherit [LocaleProvider](/components/localization)'s `actions` messages. Optional `locale` overrides the language, defaulting to the provider then `en-US`. Existing label overrides take precedence.
+
 | Prop         | Type                                                                                              | Default                           | Description                                                                                             |
 | ------------ | ------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `position`   | `above-after \| above-before \| below-before \| below-after \| before \| after \| above \| below` | `above-after`                     | Logical position relative to the anchor; RTL mirrors before/after.                                      |

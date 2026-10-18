@@ -44,6 +44,8 @@ import Badge from './components/yam3x/badge/badge.vue'
 
 ## API
 
+小型 Badge 可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 文案。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`。已有标签覆盖属性优先。
+
 | 属性         | 类型                                                                                              | 默认值                       | 说明                                                           |
 | ------------ | ------------------------------------------------------------------------------------------------- | ---------------------------- | -------------------------------------------------------------- |
 | `position`   | `above-after \| above-before \| below-before \| below-after \| before \| after \| above \| below` | `above-after`                | 相对锚点的逻辑位置，RTL 会镜像 before/after。                  |
