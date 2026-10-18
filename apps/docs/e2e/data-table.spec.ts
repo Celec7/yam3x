@@ -431,3 +431,48 @@ test('data-table.fixed.adaptation: releases oversized fixed groups and restores 
   await expect(group.getByRole('checkbox', { name: 'Select Delta', exact: true })).toBeEnabled()
   await region.screenshot({ path: '/tmp/yam3x-data-table-fixed-forced-colors.png' })
 })
+
+test('data-table.sort.affordance: uses a compact rounded text action with separate hover and focus states', async ({
+  page,
+}) => {
+  const local = page.getByTestId('table-local')
+  const sort = local.getByRole('button', { name: 'Project', exact: true })
+  const header = local.getByRole('columnheader', { name: 'Project', exact: true })
+  const buttonBox = await sort.boundingBox()
+  const headerBox = await header.boundingBox()
+  expect(buttonBox!.width).toBeLessThan(headerBox!.width - 32)
+  await sort.hover()
+  const feedback = await sort.evaluate((button) => {
+    const style = getComputedStyle(button)
+    const layer = getComputedStyle(button, '::after')
+    const target = getComputedStyle(button, '::before')
+    return {
+      radius: parseFloat(style.borderTopLeftRadius),
+      height: button.getBoundingClientRect().height,
+      layerRadius: parseFloat(layer.borderTopLeftRadius),
+      opacity: Number(layer.opacity),
+      targetHeight: parseFloat(target.height),
+    }
+  })
+  expect(feedback.radius).toBeGreaterThanOrEqual(feedback.height / 2 - 1)
+  expect(feedback.layerRadius).toBe(feedback.radius)
+  expect(feedback.targetHeight).toBeGreaterThanOrEqual(48)
+  await expect
+    .poll(() => sort.evaluate((button) => Number(getComputedStyle(button, '::after').opacity)))
+    .toBeCloseTo(0.08, 2)
+  await page.getByRole('switch', { name: 'Switch to dark theme', exact: true }).click()
+  await sort.hover()
+  await sort.focus()
+  await page.keyboard.press('Enter')
+  await expect(header).toHaveAttribute('aria-sort', 'ascending')
+  await expect(sort).toBeFocused()
+  await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' })
+  await expect(sort).toHaveCSS('border-radius', `${feedback.radius}px`)
+  await page.emulateMedia({ forcedColors: 'none', reducedMotion: 'reduce' })
+  await page.goto('/zh/components/data-table')
+  const chinese = page.getByTestId('table-local')
+  await chinese.getByRole('button', { name: '项目', exact: true }).hover()
+  await chinese
+    .getByRole('region', { name: '项目预算', exact: true })
+    .screenshot({ path: '/tmp/yam3x-data-table-sort-hover-dark.png' })
+})

@@ -145,16 +145,16 @@ const selected = ref<DataTableKey[]>([])
 
 当前页全选仅修改可选择的可见记录，保留其他页及不可选择的键，不表示已选择所有服务端结果。跨页策略、清除已删除记录和批量操作由应用负责。若新筛选条件应建立不同的选择范围，请显式清除键。刷新期间，仍可选择已接受的记录。单元格和行不会获得网格焦点，也不会成为整行点击操作。选择控件不带名称，不提交表单值；原生表单重置保留已接受的键集合。需要时，由应用重置 `selectedKeys`。
 
-加载、失败和空内容期间保留列标题。首次加载不属于空结果；刷新保留已有记录，并使用一个不定进度条表示分组进度。请求失败使用 Inline message 提供恢复。空集合与无匹配结果使用不同文案。已排序标题暴露 `aria-sort`；排序控件使用原生按钮、完整标签及形状有别的方向图示。分页记录暴露自身位置与已知总量，其中包括标题行。
+加载、失败和空内容期间保留列标题。首次加载不属于空结果；刷新保留已有记录，并使用一个不定进度条表示分组进度。请求失败使用 Inline message 提供恢复。空集合与无匹配结果使用不同文案。已排序标题暴露 `aria-sort`；排序使用紧凑的文本 Button，提供圆形悬浮反馈、独立焦点环及形状有别的方向图示；状态层跟随操作本身，不铺满标题单元格。分页记录暴露自身位置与已知总量，其中包括标题行。
 
 带标题的滚动区域可通过键盘聚焦，并容纳横向溢出。关键列及完整单元格值始终可访问，不依赖仅悬停可用的详情。内置恢复操作消失时，若焦点仍属于它，则将焦点返回该区域。排序控件在请求等待期间保留焦点，后台变化不会从无关内容处抢回焦点。
 
 ## 样式
 
-项目样式采用 Surface 表体、Surface Container Low 表头、Outline Variant 分隔线，以及 Secondary Container/On Secondary Container 所选行。标题使用 Title Medium，列标题使用 Title Small，单元格使用 Body Medium，辅助文字使用 Body Small。单元格水平内边距为 16 px、垂直为 12 px；行最小高度为 56 px，可随控件和换行内容增长。选择、悬停和焦点保持独立展示。
+项目样式采用 Surface 表体、Surface Container Low 表头、Outline Variant 分隔线，以及 Secondary Container/On Secondary Container 所选行。标题使用 Title Medium，静态列标题使用 Title Small，排序操作采用文本 Button 的角色，单元格使用 Body Medium，辅助文字使用 Body Small。单元格水平内边距为 16 px、垂直为 12 px；行最小高度为 56 px，可随控件和换行内容增长。选择、悬停和焦点保持独立展示。
 
 公开的 `--yam3x-data-table-min-width` 覆盖项默认为 `40rem`，可按列内容调整，例如紧凑的两列表格使用 `100%`。标题及周围操作按区域宽度换行，不随表格列横向滚动。
 
 ## Material 参考
 
-[Menus guidelines](https://m3.material.io/components/menus/guidelines) · [Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)
+[Buttons specs](https://m3.material.io/components/buttons/specs) · [Menus guidelines](https://m3.material.io/components/menus/guidelines) · [Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)

@@ -9,7 +9,6 @@ import EmptyState from '../empty-state/empty-state.vue'
 import InlineMessage from '../inline-message/inline-message.vue'
 import Button from '../button/button.vue'
 import LinearProgressIndicator from '../progress-indicator/linear-progress-indicator.vue'
-import { vRipple } from '../_shared/ripple'
 import { filterTableRows, nextTableSort, selectTablePage, sortTableRows } from './data-table.utils'
 import type {
   DataTableCell,
@@ -365,35 +364,36 @@ function onRecover(event: MouseEvent, action: () => void) {
               "
             >
               <div class="yam3x-data-table__heading">
-                <button
+                <Button
                   v-if="column.sortable"
-                  v-ripple
                   type="button"
-                  class="yam3x-data-table__sort yam3x-state-layer"
+                  variant="text"
+                  class="yam3x-data-table__sort"
                   :disabled="disabled"
-                  :aria-disabled="loading ? 'true' : undefined"
+                  :disabled-interactive="loading && !disabled"
                   @click="onSort(column)"
                 >
-                  <span>{{ column.label }}</span
-                  ><svg
-                    viewBox="0 0 24 24"
-                    class="yam3x-data-table__sort-icon"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path
-                      v-if="sort?.column === column.id && sort.direction === 'ascending'"
-                      d="m7 11 5-5 5 5M12 6v12"
-                    />
-                    <path
-                      v-else-if="sort?.column === column.id && sort.direction === 'descending'"
-                      d="m7 13 5 5 5-5M12 18V6"
-                    />
-                    <path
-                      v-else
-                      d="m8 9 4-4 4 4m-8 6 4 4 4-4"
-                    />
-                  </svg></button
+                  {{ column.label }}
+                  <template #trailing-icon
+                    ><svg
+                      viewBox="0 0 24 24"
+                      class="yam3x-data-table__sort-icon"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        v-if="sort?.column === column.id && sort.direction === 'ascending'"
+                        d="m7 11 5-5 5 5M12 6v12"
+                      />
+                      <path
+                        v-else-if="sort?.column === column.id && sort.direction === 'descending'"
+                        d="m7 13 5 5 5-5M12 18V6"
+                      />
+                      <path
+                        v-else
+                        d="m8 9 4-4 4 4m-8 6 4 4 4-4"
+                      /></svg
+                  ></template> </Button
                 ><span v-else>{{ column.label }}</span>
                 <DataTableFilter
                   v-if="column.filter"
@@ -668,27 +668,8 @@ function onRecover(event: MouseEvent, action: () => void) {
   padding: 0;
 }
 .yam3x-data-table__sort {
-  min-inline-size: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  inline-size: 100%;
-  min-block-size: max(48px, var(--_yam3x-data-table-height));
-  border: 0;
-  background: transparent;
-  color: inherit;
-  padding: var(--_yam3x-data-table-block-padding) var(--_yam3x-data-table-inline-padding);
-  font: inherit;
-  letter-spacing: inherit;
-  text-align: inherit;
-  cursor: pointer;
-}
-.yam3x-data-table__sort:focus-visible {
-  outline-offset: -3px;
-}
-.yam3x-data-table__sort:disabled,
-.yam3x-data-table__sort[aria-disabled='true'] {
-  cursor: default;
+  flex: 0 0 auto;
+  max-inline-size: 100%;
 }
 .yam3x-data-table__sort-icon {
   flex: 0 0 20px;
@@ -742,7 +723,7 @@ function onRecover(event: MouseEvent, action: () => void) {
   text-align: end;
   font-variant-numeric: tabular-nums;
 }
-.yam3x-data-table__numeric .yam3x-data-table__sort {
+.yam3x-data-table__numeric .yam3x-data-table__heading {
   justify-content: end;
 }
 .yam3x-data-table__state {

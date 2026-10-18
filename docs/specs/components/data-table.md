@@ -8,7 +8,7 @@ This project extension presents comparable records in rows and columns, with col
 
 - Establish hierarchy with short titles and readable body content, and use tabular figures for comparable numbers. See [Applying type: roles and tabular numbers](https://m3.material.io/styles/typography/applying-type).
 - Preserve alignment so repeated information is easy to scan. Material's [Lists guidelines: usage and alignment figures](https://m3.material.io/components/lists/guidelines) inform this principle, not table-row geometry or table semantics.
-- Use the adopted [Checkbox](checkbox.md), [Menus](menu.md), [Toolbars](toolbar.md), and [Progress indicators](progress-indicator.md) designs when composing those controls. Their specifications do not define the table's own anatomy.
+- Use the adopted [Buttons](button.md), [Checkbox](checkbox.md), [Menus](menu.md), [Toolbars](toolbar.md), and [Progress indicators](progress-indicator.md) designs when composing those controls. Their specifications do not define the table's own anatomy.
 - Use a multi-select menu when a filter accepts several values. Selections remain available for further editing until dismissal, with checkmarks and selected-item highlights. See [Expressive Menus guidelines: single- and multi-select menus](https://m3.material.io/components/menus/guidelines), including the selection figures.
 - Allow the composition to resize or change presentation as available space changes. See [Adaptive design: adapting components](https://m3.material.io/foundations/layout/layout-overview/adaptive-design).
 
@@ -18,12 +18,13 @@ This project extension presents comparable records in rows and columns, with col
 
 The following role assignments are project-defined. The table has a caption or associated title, column headers, and data rows. A separate action area may precede it; [Pagination](pagination.md) may follow it.
 
-| Element                                   | Adopted type role | Resting text treatment                         |
-| ----------------------------------------- | ----------------- | ---------------------------------------------- |
-| Visible table title                       | Title Medium      | On surface                                     |
-| Column heading                            | Title Small       | On surface; sorting has a separate indicator   |
-| Cell content                              | Body Medium       | On surface; numbers align to the trailing edge |
-| Supporting cell content and range summary | Body Small        | On surface variant; wrap when needed           |
+| Element                                   | Adopted type role | Resting text treatment                                  |
+| ----------------------------------------- | ----------------- | ------------------------------------------------------- |
+| Visible table title                       | Title Medium      | On surface                                              |
+| Static column heading                     | Title Small       | On surface                                              |
+| Sorting action label                      | Label Large       | Adopted text Button color; separate direction indicator |
+| Cell content                              | Body Medium       | On surface; numbers align to the trailing edge          |
+| Supporting cell content and range summary | Body Small        | On surface variant; wrap when needed                    |
 
 - Project-defined: Use 16 px inline and 12 px block cell padding, with a 56 px minimum header and row height. Rows grow for wrapped content, language height, and enlarged text. These spacing-scale choices leave room for text and independent controls without adopting List row dimensions.
 - Project-defined: Start-align text and keep numeric alignment consistent within each column. A truncated value must remain available through a keyboard- and touch-accessible detail path; a hover-only tooltip is insufficient.
@@ -37,6 +38,7 @@ The following role assignments are project-defined. The table has a caption or a
 
 ### Interaction and content states
 
+- `data-table.sort.affordance` (project-defined): Present sorting as a compact, low-emphasis text Button around the column name and direction indicator. Keep its resting container transparent and use the adopted Button's rounded hover state layer, focus ring, pressed shape, and touch target. Do not extend the sorting state layer across unused header space. This applies the [Expressive text button state and shape figures](https://m3.material.io/components/buttons/specs) to the table's independent sorting action.
 - `data-table.sort.pipeline` (project-defined): Use native HTML table structure, named sorting controls, and the sorted header's accessible sort state. Local sorting precedes pagination, preserves ties, and restores the supplied order when cleared. Row checkboxes select records; cells do not acquire grid-navigation behavior. Follow the [WAI table pattern](https://www.w3.org/WAI/ARIA/apg/patterns/table/).
 - `data-table.selection.page` (project-defined): Select-all affects selectable rows on the current page and communicates that scope. Selecting all matching server results requires a separately named application action. The application owns cross-page selection policy and data queries; stable record identity survives sorting and paging. Selection requests do not silently replace an application's accepted key set.
 - `data-table.query.accepted` (project-defined): A server query request does not advance the displayed page or sort marker until its result is accepted. Preserve the accepted record snapshot on failure; applications own asynchronous query cancellation and reconciliation.
