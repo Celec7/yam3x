@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { useTimePickerLocale } from './time-picker.locale'
+import { ref } from 'vue'
 import TimePickerControl from './time-picker-control.vue'
 import type { TimePickerProps, TimeValue } from './time-picker.types'
 
@@ -9,9 +10,7 @@ const emit = defineEmits<{
   change: [value: TimeValue]
 }>()
 const dragging = ref(false)
-const locale = computed(
-  () => props.locale || (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
-)
+const { locale } = useTimePickerLocale(props)
 </script>
 
 <template>

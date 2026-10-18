@@ -45,3 +45,4 @@ The official Input token selector names its component tokens under `md.comp.time
 - Project-defined: Automatic layout uses a 684px minimum width and 480px minimum height for the horizontal dial, and a 596px minimum height for the vertical dial. These cutoffs keep the 256px dial, surrounding content, and 24px container padding visible without scrolling.
 - Project-defined: Use a fade-and-scale transition between hour, minute, and second dial faces; Material does not specify this transition.
 - Project-defined: Keep CSS implementation aliases private. The Vue props and slots are the supported customization surface; incidental CSS properties are not consumer overrides.
+- Project-defined (**time-picker.behavior.locale-draft**): Changing language preserves the active mode and provisional time. Keep invalid automatic-hour-cycle input in its editing cycle until correction or dismissal so a language change cannot reinterpret the draft or enable confirmation.

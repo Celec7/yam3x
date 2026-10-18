@@ -53,6 +53,8 @@ const time = ref<TimeValue>({ hour: 18, minute: 0 })
 
 ## API
 
+All three components can inherit [LocaleProvider](/components/localization) language and `timePicker` messages. Explicit `locale`, individual label props, and `dialValueLabel` take precedence. Without a provider, the client retains its browser-locale default and the server uses `en-US`; configure the same explicit locale for SSR.
+
 | Component          | Role                                                                                    |
 | ------------------ | --------------------------------------------------------------------------------------- |
 | `TimePicker`       | Standalone dial control. Updates `v-model` as the user selects a value.                 |
@@ -64,6 +66,8 @@ const time = ref<TimeValue>({ hour: 18, minute: 0 })
 `TimePickerDialog` supports `open` (`v-model:open`), `presentation` (`'modal' | 'docked'`), `mode` (`'dial' | 'input'`), `orientation` (`'auto' | 'vertical' | 'horizontal'`), `format` (`'12' | '24' | 'auto'`), `variant` (`'standard' | 'vibrant'`), `showSeconds`, time bounds, `isTimeSelectable`, `locale`, `label`, `triggerLabel`, `disabled`, and accessible labels (`hourLabel`, `minuteLabel`, `secondLabel`, `periodLabel`, `dialLabel`, `inputLabel`, `modeToggleLabel`, `useDialLabel`, `cancelLabel`, `confirmLabel`). `dialValueLabel` formats each dial target's spoken name from `{ value, unit, max }`; `hideModeToggle` removes the dial/input switch. Docked presentation, automatic compact layout, seconds, and `variant="vibrant"` are project extensions. Standalone `TimePicker` also accepts `layoutType` (`'vertical' | 'horizontal'`).
 
 ## Behavior and accessibility
+
+Project decision: changing language preserves the current mode, provisional dialog value, and invalid input without confirming the dialog or publishing a new value. In automatic hour-cycle mode, invalid input keeps its editing cycle until corrected or discarded to prevent reinterpretation; text still follows the current language. Empty validation messages do not enable confirmation.
 
 Standalone controls emit `update:modelValue` and `change` immediately. `TimePickerDialog` emits `update:modelValue` and `change` once on confirmation, `update:open` when its dialog state changes, and `update:mode` when the user switches between dial and input. Cancel, Escape, and scrim dismissal discard its draft and restore focus to the trigger. Its `trigger` slot receives `value` and `open` and can customize the trigger content. Use `TimePicker` and `TimeInput` together with the same `v-model` when composing your own layout.
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTimePickerLocale } from './time-picker.locale'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { trapTabKey } from '../_shared/focus-trap'
@@ -17,17 +18,17 @@ const props = withDefaults(defineProps<TimePickerDialogProps>(), {
   variant: 'standard',
   format: 'auto',
   showSeconds: false,
-  label: 'Select time',
-  hourLabel: 'Hour',
-  minuteLabel: 'Minute',
-  secondLabel: 'Second',
-  modeToggleLabel: 'Enter time manually',
-  useDialLabel: 'Use clock dial',
-  dialLabel: 'Select time',
-  inputLabel: 'Edit time',
+  label: undefined,
+  hourLabel: undefined,
+  minuteLabel: undefined,
+  secondLabel: undefined,
+  modeToggleLabel: undefined,
+  useDialLabel: undefined,
+  dialLabel: undefined,
+  inputLabel: undefined,
   hideModeToggle: false,
-  cancelLabel: 'Cancel',
-  confirmLabel: 'OK',
+  cancelLabel: undefined,
+  confirmLabel: undefined,
   disabled: false,
 })
 
@@ -41,9 +42,7 @@ const emit = defineEmits<{
 const MIN_VERTICAL_DIAL_HEIGHT = 596
 const MIN_HORIZONTAL_DIAL_WIDTH = 684
 const MIN_HORIZONTAL_DIAL_HEIGHT = 480
-const locale = computed(
-  () => props.locale || (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
-)
+const { locale, messages } = useTimePickerLocale(props)
 const format = computed(() => resolveTimePickerFormat(props.format, locale.value))
 const value = computed(() => props.modelValue ?? null)
 const displayedValue = computed(() =>
@@ -317,14 +316,14 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
       aria-haspopup="dialog"
       :aria-expanded="opened"
       :aria-controls="opened ? dialogId : undefined"
-      :aria-label="`${triggerLabel || label}${displayedValue ? `, ${displayedValue}` : ''}`"
+      :aria-label="`${triggerLabel ?? messages.label}${displayedValue ? `, ${displayedValue}` : ''}`"
       @click="opened ? cancel() : openPicker()"
     >
       <slot
         name="trigger"
         :value="displayedValue"
         :open="openPicker"
-        ><span>{{ displayedValue || label }}</span
+        ><span>{{ displayedValue || messages.label }}</span
         ><Icon
           class="yam3x-time-picker__trigger-icon"
           name="schedule"
@@ -351,7 +350,7 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
           }"
           role="dialog"
           aria-modal="true"
-          :aria-label="label"
+          :aria-label="messages.label"
           @keydown="onKeydown"
         >
           <TimePickerControl
@@ -403,7 +402,7 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
       }"
       :style="floatingStyle"
       role="dialog"
-      :aria-label="label"
+      :aria-label="messages.label"
       @keydown="onKeydown"
     >
       <TimePickerControl

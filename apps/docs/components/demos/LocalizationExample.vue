@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
+import { TimePickerDialog, type TimeValue } from '@registry/components/time-picker'
 import { DateInput } from '@registry/components/date-input'
 import { Calendar } from '@registry/components/calendar'
 import { NumberField } from '@registry/components/number-field'
@@ -16,6 +17,7 @@ const { locale: demoLocale } = useDemoLocale()
 const locale = ref(demoLocale.value === 'zh' ? 'zh-CN' : 'en-US')
 const page = ref(2)
 const date = ref<string | null>('2026-10-05')
+const pickerTime = ref<TimeValue>({ hour: 13, minute: 7 })
 const inputDate = ref<Date | null>(null)
 const quantity = ref<number | null>(2.5)
 </script>
@@ -40,6 +42,14 @@ const quantity = ref<number | null>(2.5)
           :step="0.1"
           data-testid="locale-number"
         />
+        <TimePickerDialog
+          v-model="pickerTime"
+          mode="input"
+          data-testid="locale-time-picker"
+        />
+        <output data-testid="locale-time-value"
+          >{{ pickerTime.hour }}:{{ pickerTime.minute }}</output
+        >
         <DateInput
           v-model="inputDate"
           data-testid="locale-date-input"

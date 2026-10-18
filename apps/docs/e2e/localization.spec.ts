@@ -108,3 +108,53 @@ test('keeps a Date input draft and focused segment while inherited language chan
     )
     .toBe(true)
 })
+
+test('retains an open Time picker draft and commits only after localized confirmation', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/components/localization')
+  const trigger = page.getByTestId('locale-time-picker').getByRole('button')
+  await trigger.click()
+  const dialog = page.getByRole('dialog')
+  const hour = dialog.getByRole('textbox', { name: 'Hour', exact: true })
+  await hour.fill('99')
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(dialog).toHaveAccessibleName('选择时间')
+  const localizedHour = dialog.getByRole('textbox', { name: '小时', exact: true })
+  await expect(localizedHour).toHaveValue('99')
+  await expect(localizedHour).toBeFocused()
+  await expect(dialog.getByRole('alert')).toContainText('请输入有效的小时。')
+  await expect(dialog.getByRole('button', { name: '确定', exact: true })).toBeDisabled()
+  await expect(page.getByTestId('locale-time-value')).toHaveText('13:7')
+  await localizedHour.fill('11')
+  await expect(localizedHour).toHaveValue('23')
+  await expect(page.getByTestId('locale-time-value')).toHaveText('13:7')
+  await dialog.getByRole('button', { name: '确定', exact: true }).click()
+  await expect(dialog).toBeHidden()
+  await expect(page.getByTestId('locale-time-value')).toHaveText('23:7')
+  await expect(trigger).toBeFocused()
+})
+
+test('moves Time picker focus to hours when inherited hour cycle removes the active period', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/components/localization')
+  const trigger = page.getByTestId('locale-time-picker').getByRole('button')
+  await trigger.click()
+  const dialog = page.getByRole('dialog')
+  await dialog.getByRole('radio', { name: 'PM', exact: true }).focus()
+  await page
+    .getByRole('button', { name: '简体中文', exact: true })
+    .evaluate((button: HTMLButtonElement) => button.click())
+  await expect(dialog.getByRole('textbox', { name: '小时', exact: true })).toBeFocused()
+  await expect(dialog.getByRole('radiogroup')).toHaveCount(0)
+  await expect(page.getByTestId('locale-time-value')).toHaveText('13:7')
+  await dialog.getByRole('button', { name: '取消', exact: true }).click()
+  await expect(dialog).toBeHidden()
+  await expect(trigger).toBeFocused()
+  await expect(page.getByTestId('locale-time-value')).toHaveText('13:7')
+})

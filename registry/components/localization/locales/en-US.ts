@@ -1,5 +1,21 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  timePicker: {
+    label: 'Select time',
+    hour: 'Hour',
+    minute: 'Minute',
+    second: 'Second',
+    modeToggle: 'Enter time manually',
+    useDial: 'Use clock dial',
+    dial: 'Select time',
+    input: 'Edit time',
+    cancel: 'Cancel',
+    confirm: 'OK',
+    dialValue: ({ value, unit, max }) =>
+      `${value} ${unit === 'hour' ? 'hours' : unit === 'minute' ? 'minutes' : 'seconds'} of ${max}`,
+    invalidPart: (part) => `Enter a valid ${part}.`,
+    outsideRange: 'This time is outside the allowed range.',
+  },
   dateInput: {
     date: 'Date',
     time: 'Time',
@@ -146,3 +162,5 @@ export const dateInputSegmentFallbacks = {
   second: 'Second',
   period: 'Period',
 }
+
+export const timePickerPeriodFallbacks = { am: 'AM', pm: 'PM' }

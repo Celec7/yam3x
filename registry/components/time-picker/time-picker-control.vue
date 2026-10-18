@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTimePickerLocale } from './time-picker.locale'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, useId } from 'vue'
 import TimePickerPanel from './time-picker-panel.vue'
 import {
@@ -25,16 +26,16 @@ const props = withDefaults(defineProps<TimePickerControlProps>(), {
   format: 'auto',
   showSeconds: false,
   locale: undefined,
-  hourLabel: 'Hour',
-  minuteLabel: 'Minute',
-  secondLabel: 'Second',
-  modeToggleLabel: 'Enter time manually',
-  useDialLabel: 'Use clock dial',
-  dialLabel: 'Select time',
-  inputLabel: 'Edit time',
+  hourLabel: undefined,
+  minuteLabel: undefined,
+  secondLabel: undefined,
+  modeToggleLabel: undefined,
+  useDialLabel: undefined,
+  dialLabel: undefined,
+  inputLabel: undefined,
   hideModeToggle: false,
-  cancelLabel: 'Cancel',
-  confirmLabel: 'OK',
+  cancelLabel: undefined,
+  confirmLabel: undefined,
 })
 
 const emit = defineEmits<{
@@ -46,10 +47,17 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-const locale = computed(
-  () => props.locale || (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
+const { locale, messages } = useTimePickerLocale(props)
+const validationIssue = ref<'hour' | 'minute' | 'second' | 'range' | null>(null)
+const pendingFormat = ref<'12' | '24'>()
+const format = computed(() =>
+  props.format === 'auto' &&
+  currentMode.value === 'input' &&
+  validationIssue.value !== null &&
+  pendingFormat.value
+    ? pendingFormat.value
+    : resolveTimePickerFormat(props.format, locale.value),
 )
-const format = computed(() => resolveTimePickerFormat(props.format, locale.value))
 const minimumTime = computed(() => parseTimeParts(props.minTime))
 const maximumTime = computed(() => parseTimeParts(props.maxTime))
 const periodLabels = computed(() => getTimePeriodLabels(locale.value))
@@ -58,7 +66,13 @@ const activeView = ref<TimePickerView>('hour')
 const initial = props.modelValue ?? { hour: new Date().getHours(), minute: 0 }
 const draft = ref<TimeParts>({ ...initial, second: initial.second ?? 0 })
 const inputText = ref({ hour: '', minute: '', second: '' })
-const validationMessage = ref('')
+const validationMessage = computed(() =>
+  validationIssue.value === null
+    ? ''
+    : validationIssue.value === 'range'
+      ? messages.value.outsideRange
+      : messages.value.invalidPart(validationIssue.value),
+)
 const errorId = `yam3x-time-picker-control-${useId()}-error`
 const root = ref<HTMLElement>()
 const dialGeometry = ref({ size: 256, numeralSize: 40, inset: 4, dialInset: 4 })
@@ -110,7 +124,7 @@ const tickAvailability = computed(() => {
   for (const item of ticks.value) availability.set(item.value, isTickAllowed(item.value))
   return availability
 })
-const canConfirm = computed(() => allowedValue.value && !validationMessage.value)
+const canConfirm = computed(() => allowedValue.value && validationIssue.value === null)
 const outerNumeralRadius = computed(() =>
   Math.max(
     0,
@@ -163,23 +177,23 @@ const panelProps = computed(() => ({
   hourText: hourText.value,
   minuteText: minuteText.value,
   secondText: secondText.value,
-  hourLabel: props.hourLabel,
-  minuteLabel: props.minuteLabel,
-  secondLabel: props.secondLabel,
-  periodLabel: props.periodLabel || periodLabels.value.group,
+  hourLabel: messages.value.hour,
+  minuteLabel: messages.value.minute,
+  secondLabel: messages.value.second,
+  periodLabel: messages.value.period ?? periodLabels.value.group,
   periodOptions: [
     { value: 'AM' as const, label: periodLabels.value.am },
     { value: 'PM' as const, label: periodLabels.value.pm },
   ],
-  modeToggleLabel: props.modeToggleLabel,
-  useDialLabel: props.useDialLabel,
-  cancelLabel: props.cancelLabel ?? 'Cancel',
-  confirmLabel: props.confirmLabel ?? 'OK',
-  dialValueLabel: props.dialValueLabel,
-  dialLabel: props.dialLabel,
-  inputLabel: props.inputLabel,
+  modeToggleLabel: messages.value.modeToggle,
+  useDialLabel: messages.value.useDial,
+  cancelLabel: messages.value.cancel,
+  confirmLabel: messages.value.confirm,
+  dialValueLabel: messages.value.dialValue,
+  dialLabel: messages.value.dial,
+  inputLabel: messages.value.input,
   hideModeToggle: props.hideModeToggle,
-  invalid: !allowedValue.value || Boolean(validationMessage.value),
+  invalid: !allowedValue.value || validationIssue.value !== null,
   error: validationMessage.value,
   errorId,
   canConfirm: canConfirm.value,
@@ -437,6 +451,7 @@ function selectorKeydown(event: KeyboardEvent, kind: TimePickerView): void {
 }
 
 function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
+  pendingFormat.value = format.value
   inputText.value[part] = raw
   const number = Number(raw)
   const valid =
@@ -445,7 +460,7 @@ function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
     number >= (part === 'hour' && format.value === '12' ? 1 : 0) &&
     number <= (part === 'hour' ? (format.value === '12' ? 12 : 23) : 59)
   if (!valid) {
-    validationMessage.value = `Enter a valid ${part}.`
+    validationIssue.value = part
     return
   }
   const values = { ...inputText.value }
@@ -465,14 +480,14 @@ function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
     const missingPart = (['hour', 'minute', 'second'] as const).find(
       (field) => (field === 'second' && !props.showSeconds) || !/^\d{1,2}$/.test(values[field]),
     )
-    validationMessage.value = missingPart ? `Enter a valid ${missingPart}.` : ''
+    validationIssue.value = missingPart ?? null
     return
   }
   if (!isTimeValueAllowed(next)) {
-    validationMessage.value = 'This time is outside the allowed range.'
+    validationIssue.value = 'range'
     return
   }
-  validationMessage.value = ''
+  validationIssue.value = null
   draft.value = next
   syncInputText()
   publish()
@@ -526,7 +541,13 @@ watch(
 watch(
   () => props.modelValue,
   (value) => {
-    if (value) draft.value = { ...value, second: value.second ?? 0 }
+    if (
+      value &&
+      (value.hour !== draft.value.hour ||
+        value.minute !== draft.value.minute ||
+        (value.second ?? 0) !== (draft.value.second ?? 0))
+    )
+      draft.value = { ...value, second: value.second ?? 0 }
   },
   { deep: true },
 )
@@ -535,11 +556,26 @@ watch(
   () => syncInputText(),
   { immediate: true },
 )
+watch(format, async () => {
+  const document = root.value?.ownerDocument
+  const focused = document?.activeElement
+  if (!focused || !root.value?.contains(focused)) return
+  await nextTick()
+  if (document?.activeElement === document?.body)
+    root.value
+      ?.querySelector<HTMLElement>(
+        currentMode.value === 'input'
+          ? '.yam3x-time-picker__input-slot input'
+          : '.yam3x-time-picker__selector[aria-pressed="true"]',
+      )
+      ?.focus()
+})
+
 watch(dragging, (value) => emit('update:dragging', value))
 watch(
   [draft, showPeriod],
   () => {
-    validationMessage.value = ''
+    validationIssue.value = null
   },
   { deep: true },
 )

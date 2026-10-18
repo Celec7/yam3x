@@ -1,3 +1,4 @@
+import { timePickerPeriodFallbacks } from '../localization/locales/en-US'
 import type { TimePickerFormat, TimeValue } from './time-picker.types'
 
 export type { TimePickerFormat, TimePickerView, TimeValue } from './time-picker.types'
@@ -45,8 +46,8 @@ export function getTimePeriodLabels(locale: string): { am: string; pm: string; g
   const label = (hour: number) =>
     formatter.formatToParts(new Date(2026, 0, 1, hour)).find((part) => part.type === 'dayPeriod')
       ?.value
-  const am = label(9) || 'AM'
-  const pm = label(21) || 'PM'
+  const am = label(9) || timePickerPeriodFallbacks.am
+  const pm = label(21) || timePickerPeriodFallbacks.pm
   return { am, pm, group: new Intl.ListFormat(locale, { type: 'disjunction' }).format([am, pm]) }
 }
 

@@ -29,7 +29,7 @@ const props = defineProps<{
   confirmLabel: string
   modeToggleLabel: string
   useDialLabel: string
-  dialValueLabel?: (context: {
+  dialValueLabel: (context: {
     value: number
     unit: 'hour' | 'minute' | 'second'
     max: number
@@ -155,10 +155,7 @@ function isInner(item: TimePickerDialItem): boolean {
 function dialItemLabel(value: number): string {
   const unit = props.activeView
   const max = unit === 'hour' ? (props.format === '24' ? 24 : 12) : 60
-  return (
-    props.dialValueLabel?.({ value, unit, max }) ??
-    `${value} ${unit === 'hour' ? 'hours' : unit === 'minute' ? 'minutes' : 'seconds'} of ${max}`
-  )
+  return props.dialValueLabel({ value, unit, max })
 }
 </script>
 

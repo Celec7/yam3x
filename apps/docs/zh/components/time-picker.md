@@ -53,6 +53,8 @@ const time = ref<TimeValue>({ hour: 18, minute: 0 })
 
 ## API
 
+三个组件均可继承 [LocaleProvider](/zh/components/localization) 的语言和 `timePicker` 文案。显式 `locale`、独立标签属性与 `dialValueLabel` 优先。未配置 provider 时，客户端仍使用浏览器语言，服务端使用 `en-US`；SSR 应显式配置相同语言。
+
 | 组件               | 职责                                                     |
 | ------------------ | -------------------------------------------------------- |
 | `TimePicker`       | 独立表盘控件，用户选择时立即更新 `v-model`。             |
@@ -64,6 +66,8 @@ const time = ref<TimeValue>({ hour: 18, minute: 0 })
 `TimePickerDialog` 支持 `open`（`v-model:open`）、`presentation`（`'modal' | 'docked'`）、`mode`（`'dial' | 'input'`）、`orientation`（`'auto' | 'vertical' | 'horizontal'`）、`format`（`'12' | '24' | 'auto'`）、`variant`（`'standard' | 'vibrant'`）、`showSeconds`、时间边界、`isTimeSelectable`、`locale`、`label`、`triggerLabel`、`disabled` 和无障碍标签（`hourLabel`、`minuteLabel`、`secondLabel`、`periodLabel`、`dialLabel`、`inputLabel`、`modeToggleLabel`、`useDialLabel`、`cancelLabel`、`confirmLabel`）。`dialValueLabel` 根据 `{ value, unit, max }` 格式化每个表盘目标的读屏名称；`hideModeToggle` 会隐藏表盘/输入切换按钮。停靠呈现、紧凑布局自动适配、秒数以及 `variant="vibrant"` 属于项目扩展。独立 `TimePicker` 还接受 `layoutType`（`'vertical' | 'horizontal'`）。
 
 ## 行为与无障碍
+
+项目决策：语言切换保留当前模式、弹窗草稿和无效输入，不确认弹窗或提交新值。自动小时制下，无效输入保留编辑时的小时周期，直到修正或丢弃，以防重新解释输入；文案仍跟随当前语言。空验证文案不会使确认按钮变为可用。
 
 独立控件会在值变化时立即触发 `update:modelValue` 和 `change`。`TimePickerDialog` 只在确认时触发一次 `update:modelValue` 和 `change`，在对话框状态变化时触发 `update:open`，并在用户切换表盘/输入模式时触发 `update:mode`。Cancel、Escape 和点击遮罩会放弃临时选择，并把焦点还给触发器。其 `trigger` 插槽接收 `value` 和 `open`，可自定义触发器内容。若要自行组合布局，可让 `TimePicker` 与 `TimeInput` 共用同一个 `v-model`。
 

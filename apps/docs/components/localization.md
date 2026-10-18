@@ -50,14 +50,14 @@ Keep application translations in your own files and pass a reactive message obje
 
 ## API
 
-| Prop       | Default                       | Use                                                                                                                                                                                                   |
-| ---------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                            |
-| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
+| Prop       | Default                       | Use                                                                                                                                                                                                                 |
+| ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                                          |
+| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `timePicker`, `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, and `treeView`. Each namespace accepts partial message entries. |
 
 The default slot renders children without an extra DOM element. The provider has no models, events, or exposed methods. `LocaleMessages` describes the complete namespace contracts; existing component-specific message type exports remain available.
 
-Provider support currently applies to [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
+Provider support currently applies to [Time pickers](/components/time-picker), [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), and [Tree view](/components/tree-view). Other components retain their own locale and label APIs.
 
 `numberField` entries `rangeUnderflow(minimum)`, `rangeOverflow(maximum)`, `increment(label)`, and `decrement(label)` are functions receiving formatted bounds or the field label. The Number field component keeps its existing string-valued `messages`, which take precedence over provider text.
 
@@ -65,11 +65,13 @@ Provider support currently applies to [Date input](/components/date-input), [Cal
 
 `dateInput` supports `date`, `time`, and `datetime` group labels, validation text, and optional `month`, `day`, `year`, `hour`, `minute`, `second`, and `period` segment-name overrides. Unspecified segment names come from `Intl.DisplayNames`; component `labels` take precedence.
 
+`timePicker` supports field, mode, action, and dialog labels, plus `dialValue({ value, unit, max })`, `invalidPart(unit)`, and `outsideRange` messages. `period` overrides the AM/PM group name; default group and option names come from `Intl`.
+
 ## Behavior and accessibility
 
 For each supported component, configuration resolves in this order:
 
-1. Component `locale`, nearest provider `locale`, then the component's standalone default (`en-US` except Calendar and Date input's browser locale).
+1. Component `locale`, nearest provider `locale`, then the component's standalone default (`en-US` except Calendar, Date input, and Time pickers' browser locale).
 2. Built-in English messages, followed by the applicable built-in language messages.
 3. Inherited provider overrides for the same language, nearest provider overrides, then component `messages` or individual label/message props.
 
@@ -77,7 +79,7 @@ Built-in translations live in separate files under `localization/locales/`. Engl
 
 Nested providers inherit message overrides when their language is the same, including different regions. Changing language starts with that language's defaults and does not carry a parent's differently translated overrides. A component with an explicit different language likewise excludes provider messages from the other language.
 
-Configuration updates reactively without remounting controls or resetting page, selection, check, queue, or form values. Stored error messages and adapter results remain snapshots from their source. Computed validation feedback, such as Date input's current error, follows the active catalog; changing language does not rerun application validation or retry requests. Separate provider trees have independent configuration, including during server rendering.
+Configuration updates reactively without remounting controls or resetting page, selection, check, queue, or form values. Stored error messages and adapter results remain snapshots from their source. Computed validation feedback, such as Date input's current error, follows the active catalog; changing language does not restart Form validation adapters or retry requests. Separate provider trees have independent configuration, including during server rendering.
 
 The provider translates built-in UI messages, not application labels, row data, browser-native validation messages, or server errors. Set document or region `lang` and `dir` in the application; a wrapperless Vue provider does not modify DOM language or writing direction.
 

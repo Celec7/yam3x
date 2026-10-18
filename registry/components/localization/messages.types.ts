@@ -147,7 +147,25 @@ export interface DateInputMessages {
   period?: string
 }
 
+export interface TimePickerMessages {
+  label: string
+  hour: string
+  minute: string
+  second: string
+  period?: string
+  modeToggle: string
+  useDial: string
+  dial: string
+  input: string
+  cancel: string
+  confirm: string
+  dialValue: (context: { value: number; unit: 'hour' | 'minute' | 'second'; max: number }) => string
+  invalidPart: (part: 'hour' | 'minute' | 'second') => string
+  outsideRange: string
+}
+
 export interface LocaleMessages {
+  timePicker: TimePickerMessages
   dateInput: DateInputMessages
   calendar: CalendarMessages
   numberField: NumberFieldLocaleMessages

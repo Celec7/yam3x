@@ -1,5 +1,24 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  timePicker: {
+    label: '选择时间',
+    hour: '小时',
+    minute: '分钟',
+    second: '秒',
+    modeToggle: '手动输入时间',
+    useDial: '使用时钟表盘',
+    dial: '选择时间',
+    input: '编辑时间',
+    cancel: '取消',
+    confirm: '确定',
+    dialValue: ({ value, unit, max }) => {
+      const label = unit === 'hour' ? '小时' : unit === 'minute' ? '分钟' : '秒'
+      return `${value} ${label}，共 ${max} ${label}`
+    },
+    invalidPart: (part) =>
+      `请输入有效的${part === 'hour' ? '小时' : part === 'minute' ? '分钟' : '秒'}。`,
+    outsideRange: '此时间超出允许范围。',
+  },
   dateInput: {
     date: '日期',
     time: '时间',
