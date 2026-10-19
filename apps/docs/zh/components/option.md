@@ -57,6 +57,10 @@ const order = ref('recent')
 
 `OptionGroup` 使用 `label`、`labelledby` 或 `#label` 插槽为相关选项分组；`hidden` 会移除分组。`OptionPanel` 使用 `anchor` 锚定到 `HTMLElement`。它支持 `v-model:open`、`loading`、`empty`、`#loading` 和 `#no-data`。`fitAnchorWidth`、`anchorOffset`、`scrollStrategy`、`teleport`、`panelClass` 可配置面板；`label` 或 `labelledby` 为面板命名。它会发出 `beforetoggle`、`toggle`、`open` 和 `close`。
 
+`role` 默认为 `listbox`。组合包含树或其他控件的选择器时，可设为 `role="dialog"`。此配置只改变面板语义：父组件必须为对话框命名、打开时将焦点移入、管理关闭和焦点返回，并在焦点离开时关闭。OptionPanel 不会捕获焦点或使页面不可交互；dialog 模式会省略列表框专用的 `aria-multiselectable`。
+
+组件引用暴露 `panel` 元素和响应式 `positioned` 标志。将焦点移入新打开的面板前应等待 `positioned`，定位过程仍将弹层隐藏时该标志为 false。
+
 ## 行为与无障碍
 
 父控件负责提交或拒绝选择，并管理焦点和方向键导航。选项默认使用 `tabindex="-1"`。OptionPanel 围绕锚点定位，在视口内翻转，并在外部指针操作时关闭。每个选项的触控目标至少为 48 × 48px；不要在一行中嵌套控件或加入第二个独立操作。

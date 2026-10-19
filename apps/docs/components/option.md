@@ -57,6 +57,10 @@ const order = ref('recent')
 
 `OptionGroup` wraps related options with `label`, `labelledby`, or a `#label` slot; `hidden` removes the group. `OptionPanel` anchors to an `HTMLElement` with `anchor`. It supports `v-model:open`, `loading`, `empty`, `#loading`, and `#no-data`. Use `fitAnchorWidth`, `anchorOffset`, `scrollStrategy`, `teleport`, or `panelClass` to configure the surface; `label` or `labelledby` names it. It emits `beforetoggle`, `toggle`, `open`, and `close`.
 
+`role` defaults to `listbox`. Use `role="dialog"` for a composed picker with its own tree or other controls. This changes surface semantics only: the parent must name the dialog, move focus inside on opening, manage dismissal and focus return, and close when focus leaves. OptionPanel does not trap focus or make the page inert; dialog mode omits listbox-only `aria-multiselectable`.
+
+The component ref exposes the `panel` element and a reactive `positioned` flag. Wait for `positioned` before moving focus into a newly opened surface; it remains false while the positioning pass keeps the popup hidden.
+
 ## Behavior and accessibility
 
 The parent control commits or rejects selection and manages focus and arrow-key navigation. Options default to `tabindex="-1"`. OptionPanel positions around the anchor, flips within the viewport, and closes on outside pointer input. Keep each option's touch target at least 48 × 48px; avoid nested controls or another independent action within a row.

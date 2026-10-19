@@ -8,6 +8,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
+    role?: 'listbox' | 'dialog'
     locale?: string
     id?: string
     anchor?: HTMLElement | null
@@ -25,6 +26,7 @@ const props = withDefaults(
     panelClass?: string
   }>(),
   {
+    role: 'listbox',
     id: '',
     anchor: null,
     label: '',
@@ -59,6 +61,7 @@ const { messages } = useComponentLocale(
   () => ({ loading: props.loadingText, noData: props.noDataText }),
 )
 const panel = ref<HTMLElement | null>(null)
+const positioned = ref(false)
 const generatedId = useId()
 const panelId = computed(() => props.id || `yam3x-option-panel-${generatedId}`)
 const floatingStyle = ref<Record<string, string>>({ visibility: 'hidden' })
@@ -165,6 +168,7 @@ async function updatePosition() {
     ],
   })
   if (!open.value || revision !== positionRevision) return
+  positioned.value = true
   floatingStyle.value = {
     ...floatingStyle.value,
     left: `${x}px`,
@@ -202,6 +206,7 @@ watch(open, async (value) => {
     window.removeEventListener('scroll', onAnchorScroll, true)
     stopPositioning?.()
     stopPositioning = undefined
+    positioned.value = false
     floatingStyle.value = { visibility: 'hidden' }
   }
 })
@@ -232,6 +237,7 @@ defineExpose({
   show: () => requestOpen(true),
   toggle,
   panel,
+  positioned,
 })
 </script>
 
@@ -247,11 +253,11 @@ defineExpose({
       class="yam3x-option-panel"
       :class="panelClass"
       :style="floatingStyle"
-      role="listbox"
+      :role="role"
       tabindex="-1"
       :aria-label="label || undefined"
       :aria-labelledby="labelledby || undefined"
-      :aria-multiselectable="multiple ? 'true' : undefined"
+      :aria-multiselectable="role === 'listbox' && multiple ? 'true' : undefined"
       :aria-busy="loading ? 'true' : undefined"
       :hidden="!open"
     >
