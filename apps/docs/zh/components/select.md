@@ -123,6 +123,8 @@ const frequency = ref('daily')
 
 ## 行为与无障碍
 
+不可搜索的多选列表中，目录更新移除或禁用活动选项时，只有列表仍持有焦点才会将焦点移至可用的替代项。列表为空时由列表容器接收焦点，并保留 Escape 关闭能力。外部焦点与已接受的值保持不变。
+
 可搜索模式是项目定义的组合：单选与多选均保持输入框焦点，以 `aria-activedescendant` 指向活动选项。多选列表暴露 `aria-multiselectable`，输入框的无障碍描述包含已接受的值。空分组不出现在筛选结果中。
 
 单选触发器的名称由外层 `FormField` 标签或 `aria-label`／`aria-labelledby` 提供，并使用 combobox 语义；活动选项通过 `aria-activedescendant` 暴露，DOM 焦点保留在触发器上。多选模式下，触发器是按钮，其无障碍描述会提供当前选中值；打开后焦点移至多选 listbox 中的活动选项。方向键移动选项焦点，Space 或 Enter 切换选择，弹层保持打开。Escape 关闭列表并将焦点返回触发器；Tab 关闭列表并继续离开该控件。

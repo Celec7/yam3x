@@ -123,6 +123,8 @@ The chips sit beside the named menu trigger, with separate focus targets. After 
 
 ## Behavior and accessibility
 
+When a catalog update removes or disables the active option in a non-searchable multiple picker, focus moves to an enabled replacement only if the picker still owns focus. An empty list receives focus and retains Escape dismissal. External focus and accepted values are preserved.
+
 Searchable mode is a project-defined composition: single and multiple selection keep input focus and expose the active option with `aria-activedescendant`. The multiple list exposes `aria-multiselectable`, and the input description names accepted values. Empty groups are hidden from filtered results.
 
 The single-select trigger is named by its surrounding `FormField` label or `aria-label`/`aria-labelledby`. It uses combobox semantics; the active option is exposed with `aria-activedescendant` while DOM focus stays on the trigger. In multiple mode, the trigger is a button whose accessible description gives the selected values. Opening it moves focus to the active option in a multiselect listbox; arrow keys move option focus, Space or Enter toggles selection, and the list stays open. Escape closes the list and returns focus to the trigger. Tab closes the list and continues out of the field.

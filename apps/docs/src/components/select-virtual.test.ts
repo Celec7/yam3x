@@ -3,7 +3,7 @@ import { afterEach, expect, it } from 'vitest'
 import { h } from 'vue'
 import { renderToString, type SSRContext } from 'vue/server-renderer'
 import Select from '../../../../registry/components/select/select.vue'
-import { Option } from '../../../../registry/components/option'
+import { Option, OptionPanel } from '../../../../registry/components/option'
 
 enableAutoUnmount(afterEach)
 const options = Array.from({ length: 10000 }, (_, index) => ({
@@ -81,3 +81,80 @@ it('select.virtual.catalog: server rendering bounds rows and retains a selected 
   expect(popup.querySelectorAll('[role="option"]').length).toBeLessThan(30)
   expect(popup.querySelector('[role="option"]')?.getAttribute('aria-setsize')).toBe('10000')
 })
+
+it.each(
+  [false, true].flatMap((virtual) => ['remove', 'disable'].map((action) => ({ virtual, action }))),
+)(
+  'select.options.focus: $action restores a usable entry without changing accepted values (virtual=$virtual)',
+  async ({ virtual, action }) => {
+    const wrapper = mount(Select, {
+      attachTo: document.body,
+      props: { options: options.slice(0, 20), virtual, multiple: true, modelValue: ['item-0'] },
+    })
+    wrapper.vm.show()
+    await flushPromises()
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+    const first = wrapper
+      .findAllComponents(Option)
+      .find((option) => option.props('value') === 'item-0')!
+    ;(first.element as HTMLElement).focus()
+    await wrapper.setProps({
+      options:
+        action === 'remove'
+          ? options.slice(1, 20)
+          : options.slice(0, 20).map((option, index) => ({ ...option, disabled: index === 0 })),
+    })
+    await flushPromises()
+    expect((document.activeElement as HTMLElement).dataset.value).toBe('item-1')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(
+      [...wrapper.get<HTMLSelectElement>('select').element.selectedOptions].map(
+        (option) => option.value,
+      ),
+    ).toEqual(['item-0'])
+  },
+)
+
+it.each([false, true])(
+  'select.options.focus: an emptied list retains keyboard dismissal (virtual=%s)',
+  async (virtual) => {
+    const wrapper = mount(Select, {
+      attachTo: document.body,
+      props: { options: options.slice(0, 20), virtual, multiple: true },
+    })
+    wrapper.vm.show()
+    await flushPromises()
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+    ;(wrapper.findAllComponents(Option)[0]!.element as HTMLElement).focus()
+    await wrapper.setProps({ options: [] })
+    await flushPromises()
+    const panel = wrapper.getComponent(OptionPanel).vm.panel!
+    expect(document.activeElement).toBe(panel)
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    await flushPromises()
+    expect(wrapper.get('button').attributes('aria-expanded')).toBe('false')
+  },
+)
+it.each([false, true])(
+  'select.options.focus: catalog reconciliation preserves unrelated focus (virtual=%s)',
+  async (virtual) => {
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    try {
+      const wrapper = mount(Select, {
+        attachTo: document.body,
+        props: { options: options.slice(0, 20), virtual, multiple: true },
+      })
+      wrapper.vm.show()
+      await flushPromises()
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      outside.focus()
+      await wrapper.setProps({ options: options.slice(1, 20) })
+      await flushPromises()
+      expect(document.activeElement).toBe(outside)
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    } finally {
+      outside.remove()
+    }
+  },
+)

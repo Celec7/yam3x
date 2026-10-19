@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Select } from '@registry/components/select'
 import { FormField } from '@registry/components/form-field'
 import { Button } from '@registry/components/button'
@@ -14,6 +14,9 @@ const options = Array.from({ length: 10000 }, (_, index) => ({
 const value = ref('item-9999')
 const values = ref(['item-1'])
 const searchable = ref(false)
+const hideLeading = ref(false)
+const empty = ref(false)
+const catalog = computed(() => (empty.value ? [] : hideLeading.value ? options.slice(2) : options))
 </script>
 <template>
   <section
@@ -24,7 +27,7 @@ const searchable = ref(false)
       <FormField :label="t('Large catalog', '大型选项目录')">
         <Select
           v-model="value"
-          :options="options"
+          :options="catalog"
           virtual
           :searchable="searchable"
           name="large-item"
@@ -45,7 +48,7 @@ const searchable = ref(false)
       <FormField :label="t('Large collection', '大型选项集合')"
         ><Select
           v-model="values"
-          :options="options"
+          :options="catalog"
           virtual
           multiple
           selection-display="chips"
@@ -60,6 +63,14 @@ const searchable = ref(false)
     <Checkbox
       v-model="searchable"
       :label="t('Search catalog', '搜索目录')"
+    />
+    <Checkbox
+      v-model="hideLeading"
+      :label="t('Hide leading choices', '隐藏开头选项')"
+    />
+    <Checkbox
+      v-model="empty"
+      :label="t('Empty large catalog', '清空大型目录')"
     />
   </section>
 </template>

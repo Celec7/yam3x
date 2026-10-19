@@ -651,7 +651,28 @@ watch(
       activeValue.value &&
       !current.some((option) => option.value === activeValue.value && !option.disabled)
     ) {
-      setActive(activeOrSelected()?.value ?? null)
+      const document = panel.value?.panel?.ownerDocument
+      const before = document?.activeElement
+      const owned = !!(
+        open.value &&
+        props.multiple &&
+        !props.searchable &&
+        panel.value?.panel?.contains(before ?? null)
+      )
+      setActive(
+        activeOrSelected()?.value ?? null,
+        owned || (open.value && before === trigger.value),
+      )
+      if (owned)
+        void nextTick(() => {
+          if (
+            open.value &&
+            !props.disabled &&
+            document &&
+            (document.activeElement === before || document.activeElement === document.body)
+          )
+            focusActiveOption()
+        })
     }
   },
   { deep: true },
@@ -867,6 +888,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       }"
       @beforetoggle="onPanelBeforeToggle"
       @toggle="onPanelToggle"
+      @keydown="onMultiListKeydown"
     >
       <div
         class="yam3x-select__options"
@@ -881,7 +903,6 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
         "
         @pointerdown="searchable && $event.preventDefault()"
         @pointermove="onPointerMove"
-        @keydown="onMultiListKeydown"
       >
         <template v-if="props.options !== undefined">
           <Option

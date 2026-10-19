@@ -760,3 +760,33 @@ test('select.virtual.catalog: filtering uses full data and reports filtered posi
   await page.keyboard.press('Escape')
   await expect(input).toHaveValue('Item 10000')
 })
+
+test('select.options.focus: catalog removal restores multi-select focus and an empty list still handles Escape', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const example = page.getByTestId('select-virtual')
+  const trigger = example.getByRole('button', { name: 'Large collection', exact: true })
+  await trigger.click()
+  const list = page.getByRole('listbox', { name: 'Large collection', exact: true })
+  await expect(list.getByRole('option', { name: 'Item 2', exact: true })).toBeFocused()
+  // Simulate an application update while the user remains in the picker.
+  await example
+    .getByRole('checkbox', { name: 'Hide leading choices', exact: true })
+    .evaluate((element: HTMLInputElement) => element.click())
+  await expect(list.getByRole('option', { name: 'Item 3', exact: true })).toBeFocused()
+  await page.keyboard.press('ArrowDown')
+  await expect(list.getByRole('option', { name: 'Item 4', exact: true })).toBeFocused()
+  expect(
+    await example
+      .locator('form')
+      .evaluate((form: HTMLFormElement) => new FormData(form).getAll('large-items')),
+  ).toEqual(['item-1'])
+  await example
+    .getByRole('checkbox', { name: 'Empty large catalog', exact: true })
+    .evaluate((element: HTMLInputElement) => element.click())
+  await expect(list).toBeFocused()
+  await list.press('Escape')
+  await expect(list).toBeHidden()
+  await expect(trigger).toBeFocused()
+})
