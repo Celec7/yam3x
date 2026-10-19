@@ -223,6 +223,15 @@ test('Autocomplete native required, selection required, form data, reset, and in
     await form.evaluate((element) => new FormData(element as HTMLFormElement).get('fruit')),
   ).toBe('Apple')
 
+  await form.evaluate((element: HTMLFormElement) => {
+    element.addEventListener('reset', (event) => event.preventDefault(), { once: true })
+    element.reset()
+  })
+  await expect(required).toHaveValue('Apple')
+  await expect(page.getByTestId('required-selection')).toHaveText('apple')
+  expect(
+    await form.evaluate((element: HTMLFormElement) => new FormData(element).get('fruit')),
+  ).toBe('Apple')
   await form.getByRole('button', { name: 'Reset' }).click()
   await expect(required).toHaveValue('')
   await expect(page.getByTestId('required-selection')).toHaveText('None')

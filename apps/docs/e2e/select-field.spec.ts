@@ -48,6 +48,12 @@ for (const locale of ['en', 'zh']) {
     await input.focus()
     await input.press('Tab')
     await expect(field).not.toHaveClass(/yam3x-form-field--floating/)
+    await example.locator('form').evaluate((form: HTMLFormElement) => {
+      form.addEventListener('reset', (event) => event.preventDefault(), { once: true })
+      form.reset()
+    })
+    await expect(chips).toHaveCount(0)
+    await expect(field).not.toHaveClass(/yam3x-form-field--floating/)
     await example
       .getByRole('button', {
         name: locale === 'zh' ? '重置语言' : 'Reset languages',

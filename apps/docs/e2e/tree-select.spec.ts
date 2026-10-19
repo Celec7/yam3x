@@ -106,6 +106,12 @@ test('tree-select.form.native: clearing validates accepted values and reset rest
   await expect(trigger).toBeFocused()
   await expect(trigger).toHaveAttribute('aria-invalid', 'true')
   await expect(trigger).not.toContainText('Brief')
+  await demo.locator('form').evaluate((form: HTMLFormElement) => {
+    form.addEventListener('reset', (event) => event.preventDefault(), { once: true })
+    form.reset()
+  })
+  await expect(trigger).not.toContainText('Brief')
+  await expect(trigger).toHaveAttribute('aria-invalid', 'true')
   await demo.getByRole('button', { name: 'Reset documents' }).click()
   await expect(trigger).toContainText('Brief')
   expect(

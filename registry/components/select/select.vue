@@ -605,8 +605,9 @@ function onInvalid(event: Event) {
   emit('invalid', event)
   if (shouldFocus) trigger.value?.focus()
 }
-function onFormReset() {
+function onFormReset(event: Event) {
   queueMicrotask(() => {
+    if (event.defaultPrevented) return
     query.value = ''
     modelValue.value = Array.isArray(initialValue) ? [...initialValue] : initialValue
     invalid.value = false

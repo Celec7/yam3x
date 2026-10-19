@@ -37,3 +37,30 @@ it('derives the required label from aria-required without requiring query text n
     wrapper.unmount()
   }
 })
+
+it('retains native error presentation when a later listener cancels an associated form reset', async () => {
+  const form = document.createElement('form')
+  form.id = 'field-canceled-reset'
+  document.body.append(form)
+  const wrapper = mount(FormField, {
+    attachTo: document.body,
+    props: { label: 'Required value' },
+    slots: { default: '<input required form="field-canceled-reset" />' },
+  })
+  try {
+    await flushPromises()
+    await wrapper.get('input').trigger('invalid')
+    expect(wrapper.classes()).toContain('yam3x-form-field--invalid')
+    form.addEventListener('reset', (event) => event.preventDefault(), { once: true })
+    form.reset()
+    await flushPromises()
+    expect(wrapper.classes()).toContain('yam3x-form-field--invalid')
+    expect(wrapper.get('input').attributes('aria-invalid')).toBe('true')
+    form.reset()
+    await flushPromises()
+    expect(wrapper.classes()).not.toContain('yam3x-form-field--invalid')
+  } finally {
+    wrapper.unmount()
+    form.remove()
+  }
+})

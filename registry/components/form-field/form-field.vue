@@ -242,12 +242,15 @@ function onInvalid(event: Event) {
     event.target instanceof HTMLElement ? getValidationMessage(event.target) : ''
   syncControl()
 }
-function onReset() {
-  nativeInvalid.value = false
-  invalidState.value = false
-  validationMessage.value = ''
-  requestAnimationFrame(() => {
-    syncControl()
+function onReset(event: Event) {
+  queueMicrotask(() => {
+    if (event.defaultPrevented) return
+    nativeInvalid.value = false
+    invalidState.value = false
+    validationMessage.value = ''
+    requestAnimationFrame(() => {
+      syncControl()
+    })
   })
 }
 function onFocusIn() {

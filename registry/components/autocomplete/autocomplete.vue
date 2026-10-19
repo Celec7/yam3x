@@ -549,15 +549,18 @@ async function updatePosition() {
   })
   floatingStyle.value = { left: `${x}px`, top: `${y}px`, visibility: 'visible' }
 }
-function onFormReset() {
-  query.value = initialQuery
-  selected.value = initialSelected
-  activeValue.value = null
-  activeSource.value = null
-  close()
-  void nextTick(() => {
-    if (input.value) input.value.value = initialQuery
-    setCustomValidity()
+function onFormReset(event: Event) {
+  queueMicrotask(() => {
+    if (event.defaultPrevented) return
+    query.value = initialQuery
+    selected.value = initialSelected
+    activeValue.value = null
+    activeSource.value = null
+    close()
+    void nextTick(() => {
+      if (input.value) input.value.value = initialQuery
+      setCustomValidity()
+    })
   })
 }
 watch([query, selected, () => messages.value.selectionRequired], setCustomValidity)

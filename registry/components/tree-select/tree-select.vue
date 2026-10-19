@@ -310,8 +310,9 @@ function attachForm() {
   resetForm = native.value?.form ?? null
   resetForm?.addEventListener('reset', onReset)
 }
-function onReset() {
+function onReset(event: Event) {
   queueMicrotask(() => {
+    if (event.defaultPrevented) return
     modelValue.value = Array.isArray(initial) ? [...initial] : initial
     invalid.value = false
     close(false)
