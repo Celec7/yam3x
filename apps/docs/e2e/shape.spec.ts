@@ -106,16 +106,43 @@ test('Shape morphs between named shapes through an interpolated clip path', asyn
   expect(transition.value).toBe(`clip-path ${transition.motion}`)
   expect(Number.parseFloat(transition.duration)).toBeGreaterThan(0)
 
+  await wrapper.evaluate((element) => {
+    element.addEventListener(
+      'transitionrun',
+      () => {
+        const animation = element
+          .getAnimations()
+          .find(
+            (animation) =>
+              animation instanceof CSSTransition && animation.transitionProperty === 'clip-path',
+          )
+        animation?.pause()
+      },
+      { once: true },
+    )
+  })
   await selectM3Option(page, page.getByRole('combobox', { name: 'From shape' }), 'diamond')
   await expect
-    .poll(() => wrapper.evaluate((element) => getComputedStyle(element).clipPath))
-    .not.toBe(initial)
-  await page.waitForTimeout(120)
-  const middle = await wrapper.evaluate((element) => getComputedStyle(element).clipPath)
+    .poll(() =>
+      wrapper.evaluate((element) =>
+        element.getAnimations().some((animation) => animation.playState === 'paused'),
+      ),
+    )
+    .toBe(true)
+  const middle = await wrapper.evaluate((element) => {
+    const animation = element
+      .getAnimations()
+      .find(
+        (animation) =>
+          animation instanceof CSSTransition && animation.transitionProperty === 'clip-path',
+      )!
+    animation.currentTime = Number(animation.effect!.getComputedTiming().duration) / 2
+    const middle = getComputedStyle(element).clipPath
+    animation.finish()
+    return middle
+  })
   await expect
-    .poll(() => wrapper.evaluate((element) => getComputedStyle(element).clipPath), {
-      timeout: 1000,
-    })
+    .poll(() => wrapper.evaluate((element) => getComputedStyle(element).clipPath))
     .toBe(target)
   expect(middle).not.toBe(initial)
   expect(middle).not.toBe(target)
