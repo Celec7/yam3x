@@ -299,3 +299,24 @@ it('tree-view.load.recovery: cancels an obsolete read even when explicit replace
   expect(wrapper.emitted('loadError')).toBeUndefined()
   expect(wrapper.get('[data-tree-key="local"]').text()).toContain('Local')
 })
+
+it('tree-view.load.recovery: explicit child data replaces stale loader failure feedback', async () => {
+  const wrapper = mount(TreeView, {
+    props: {
+      nodes: [{ key: 'remote', label: 'Remote', hasChildren: true }],
+      label: 'Records',
+      expandedKeys: ['remote'],
+      loadChildren: async () => {
+        throw new Error('Offline')
+      },
+    },
+  })
+  await flushPromises()
+  expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+  await wrapper.setProps({
+    nodes: [{ key: 'remote', label: 'Remote', children: [{ key: 'local', label: 'Local' }] }],
+  })
+  await flushPromises()
+  expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  expect(wrapper.get('[data-tree-key="local"]').text()).toContain('Local')
+})

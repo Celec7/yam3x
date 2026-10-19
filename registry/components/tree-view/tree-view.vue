@@ -352,7 +352,10 @@ watch(
       }
     }
     if (changed) cache.value = next
-    for (const key of states.value.keys()) if (!records.value.has(key)) setState(key)
+    for (const key of states.value.keys()) {
+      const node = records.value.get(key)?.node
+      if (!node || node.children !== undefined || !node.hasChildren) setState(key)
+    }
     for (const key of ids.keys()) if (!records.value.has(key)) ids.delete(key)
     for (const record of visible.value)
       if (
