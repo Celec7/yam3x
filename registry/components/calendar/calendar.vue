@@ -491,13 +491,18 @@ function shiftPreservingDay(date: Date, amount: number): Date {
     Math.min(date.getUTCDate(), lastDay),
   )
 }
+const fullDateFormatter = computed(
+  () =>
+    new Intl.DateTimeFormat(locale.value, {
+      timeZone: 'UTC',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+)
 function fullDateLabel(date: Date): string {
-  return formatDate(date, locale.value, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  return fullDateFormatter.value.format(date)
 }
 function dateDescription(date: Date): string | undefined {
   const value = toIsoDate(date)

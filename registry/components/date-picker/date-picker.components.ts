@@ -1,4 +1,5 @@
 import {
+  computed,
   defineComponent,
   h,
   nextTick as vueNextTick,
@@ -55,6 +56,16 @@ export const DatePickerCalendar = defineComponent({
     'day-keydown',
   ],
   setup(props, { emit }) {
+    const fullDateFormatter = computed(
+      () =>
+        new Intl.DateTimeFormat(props.locale, {
+          timeZone: 'UTC',
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+    )
     const focusedOptionIndex = vueRef<number | null>(null)
     const monthDirection = vueRef<'next' | 'previous'>('next')
     const viewViewport = vueRef<HTMLElement | null>(null)
@@ -241,12 +252,7 @@ export const DatePickerCalendar = defineComponent({
           disabled: !props.allowed(value),
           tabindex: value === props.rovingDate ? 0 : -1,
           'data-date': value,
-          'aria-label': formatDate(date, props.locale, {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          }),
+          'aria-label': fullDateFormatter.value.format(date),
           'aria-selected': props.isSelected(value) || props.isInRange(value),
           'aria-current': value === props.today ? 'date' : undefined,
           onClick: () => {
