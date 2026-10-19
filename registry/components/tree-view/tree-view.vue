@@ -164,12 +164,17 @@ const virtualChildren = computed(() => {
     }
   }
   const result = new Map<TreeViewKey | null, TreeViewNode[]>()
-  for (const record of visible.value) {
-    if (!retained.has(record.node.key)) continue
+  for (const key of retained) {
+    const record = records.value.get(key)!
     const siblings = result.get(record.parent) ?? []
     siblings.push(record.node)
     result.set(record.parent, siblings)
   }
+  for (const siblings of result.values())
+    siblings.sort(
+      (left, right) =>
+        records.value.get(left.key)!.position - records.value.get(right.key)!.position,
+    )
   return result
 })
 const renderedRoots = computed(() =>

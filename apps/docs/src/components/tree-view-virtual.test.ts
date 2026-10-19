@@ -12,6 +12,66 @@ const children: TreeViewNode[] = Array.from({ length: 10000 }, (_, index) => ({
   disabled: index === 9998,
 }))
 const nodes: TreeViewNode[] = [{ key: 0, label: 'Root', children }]
+it('tree-view.virtual.catalog: scrolling only visits retained rows and their ancestors', async () => {
+  let reads = 0
+  const catalog = children.map((node) => ({
+    get key() {
+      reads++
+      return node.key
+    },
+    label: node.label,
+  }))
+  const wrapper = mount(TreeView, {
+    props: {
+      nodes: [{ key: 0, label: 'Root', children: catalog }],
+      label: 'Items',
+      virtual: true,
+      expandedKeys: [0],
+    },
+  })
+  await flushPromises()
+  const before = reads
+  const scroller = wrapper.get<HTMLElement>('.yam3x-tree-view__scroll').element
+  scroller.scrollTop = 4000
+  scroller.dispatchEvent(new Event('scroll'))
+  await flushPromises()
+  expect(reads - before).toBeLessThan(500)
+  expect(wrapper.findAll('[role="treeitem"]').length).toBeLessThan(30)
+  expect(wrapper.get('[role="group"] [role="treeitem"]').attributes('aria-setsize')).toBe('10000')
+})
+it('tree-view.virtual.catalog: retained ancestors keep sibling order across branch boundaries', async () => {
+  const nodes = Array.from({ length: 3 }, (_, root) => ({
+    key: `root-${root}`,
+    label: `Root ${root}`,
+    children: Array.from({ length: 5 }, (_, index) => ({
+      key: `${root}-${index}`,
+      label: `Child ${index}`,
+    })),
+  }))
+  const wrapper = mount(TreeView, {
+    props: {
+      nodes,
+      label: 'Items',
+      virtual: { overscan: 0 },
+      expandedKeys: nodes.map((node) => node.key),
+    },
+  })
+  await flushPromises()
+  const scroller = wrapper.get<HTMLElement>('.yam3x-tree-view__scroll').element
+  scroller.scrollTop = 9 * 56
+  scroller.dispatchEvent(new Event('scroll'))
+  await flushPromises()
+  expect(
+    wrapper
+      .findAll('[role="tree"] > [role="treeitem"]')
+      .map((row) => row.attributes('data-tree-key')),
+  ).toEqual(['root-0', 'root-1', 'root-2'])
+  expect(
+    wrapper
+      .findAll('[data-tree-key="root-1"] [role="group"] > [role="treeitem"]')
+      .map((row) => row.attributes('data-tree-key')),
+  ).toEqual(['1-2', '1-3', '1-4'])
+})
 it('tree-view.virtual.catalog: bounds the expanded tree and mounts distant focus targets with full hierarchy metadata', async () => {
   const wrapper = mount(TreeView, {
     attachTo: document.body,
