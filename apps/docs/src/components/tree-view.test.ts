@@ -34,6 +34,24 @@ function deferred() {
 }
 
 describe('Tree view', () => {
+  it('checks a deep complete subtree without repeatedly traversing its descendants', () => {
+    const depth = 400
+    let root: TreeViewNode = { key: depth, label: 'Leaf' }
+    for (let key = depth - 1; key >= 0; key--) root = { key, label: String(key), children: [root] }
+    let reads = 0
+    const children = (node: TreeViewNode) => {
+      reads++
+      return node.children
+    }
+    const records = treeRecords([root], children)
+    reads = 0
+    const result = updateTreeChecks(root, true, ['unknown'], records, children, true)
+    expect(result).toHaveLength(depth + 2)
+    expect(result).toContain('unknown')
+    expect(reads).toBeLessThan(depth * 20)
+    const cleared = updateTreeChecks(root, false, result, records, children, true)
+    expect(cleared).toEqual(['unknown'])
+  })
   it('derives mixed checks for complete branches and changes only the target subtree and its ancestors', () => {
     // tree-view.check.known
     const records = treeRecords(nodes, children)
