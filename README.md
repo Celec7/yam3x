@@ -29,6 +29,7 @@ The CLI copies editable source and declares dependencies. Add `@tailwindcss/vite
 - [Shared design foundations](docs/specs/foundations.md)
 - [Architecture and source ownership](docs/architecture.md)
 - [CLI package reference](packages/cli/README.md)
+- [Changelog](CHANGELOG.md)
 - [CLI release procedure](docs/releasing.md)
 
 ## Development

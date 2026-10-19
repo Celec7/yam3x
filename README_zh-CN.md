@@ -29,6 +29,7 @@ CLI 会复制可编辑源码并声明依赖。如果应用尚未配置，请将 
 - [共享设计基础](docs/specs/foundations.md)
 - [架构与源码归属](docs/architecture.md)
 - [CLI 包参考](packages/cli/README.md)
+- [更改日志](CHANGELOG.md)
 - [CLI 发布流程](docs/releasing.md)
 
 ## 开发
