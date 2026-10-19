@@ -13,6 +13,7 @@
     "build": "pnpm tokens:generate && pnpm --filter yam3x-docs build",
     "typecheck": "pnpm --filter yam3x-docs typecheck",
     "test": "pnpm tokens:generate && pnpm --filter yam3x-docs test",
+    "test:release": "node --test scripts/release-notes.test.mjs",
     "test:cli": "pnpm registry:check && pnpm --filter @celec7/yam3x test",
     "registry:generate": "node scripts/generate-registry.mjs",
     "registry:check": "node scripts/generate-registry.mjs --check",

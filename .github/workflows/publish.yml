@@ -38,11 +38,13 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Validate release tag
+      - name: Validate release tag and notes
         id: release
         run: |
           node --input-type=module <<'NODE'
-          import { appendFileSync, readFileSync } from 'node:fs';
+          import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          import { extractReleaseNotes } from './scripts/release-notes.mjs';
 
           const { name, version } = JSON.parse(readFileSync('packages/cli/package.json', 'utf8'));
           const tag = process.env.GITHUB_REF_NAME;
@@ -51,6 +53,9 @@ jobs:
             console.error(`Tag ${tag} must match the stable package version v${version}.`);
             process.exit(1);
           }
+
+          const notes = extractReleaseNotes(readFileSync('CHANGELOG.md', 'utf8'), version);
+          writeFileSync(join(process.env.RUNNER_TEMP, 'release-notes.md'), notes);
 
           const archive = `${name.replace(/^@/, '').replaceAll('/', '-')}-${version}.tgz`;
           appendFileSync(process.env.GITHUB_OUTPUT, `package_name=${name}\nversion=${version}\narchive=${archive}\n`);
@@ -71,6 +76,9 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      - name: Release tooling tests
+        run: pnpm test:release
+
       - name: CLI and registry tests
         run: pnpm test:cli
 
@@ -85,7 +93,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: cli-package
-          path: ${{ runner.temp }}/${{ steps.release.outputs.archive }}
+          path: |
+            ${{ runner.temp }}/${{ steps.release.outputs.archive }}
+            ${{ runner.temp }}/release-notes.md
           if-no-files-found: error
           retention-days: 1
 
@@ -151,3 +161,40 @@ jobs:
           --access public
           --no-git-checks
           --publish-wait-timeout 600000
+
+  release:
+    name: Publish GitHub Release
+    needs: [package, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download verified release files
+        uses: actions/download-artifact@v8
+        with:
+          name: cli-package
+          path: ${{ runner.temp }}/package
+
+      - name: Create GitHub Release after npm publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: v${{ needs.package.outputs.version }}
+          PACKAGE_ARCHIVE: ${{ needs.package.outputs.archive }}
+        run: |
+          if draft=$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft' 2>/dev/null); then
+            if [ "$draft" = true ]; then
+              gh release upload "$RELEASE_TAG" "${RUNNER_TEMP}/package/${PACKAGE_ARCHIVE}" --clobber
+              gh release edit "$RELEASE_TAG" --draft=false
+            else
+              echo "Release $RELEASE_TAG already exists; preserving its notes and assets."
+            fi
+          else
+            gh release create "$RELEASE_TAG" \
+              "${RUNNER_TEMP}/package/${PACKAGE_ARCHIVE}" \
+              --verify-tag \
+              --title "$RELEASE_TAG" \
+              --notes-file "${RUNNER_TEMP}/package/release-notes.md"
+          fi

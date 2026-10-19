@@ -48,6 +48,9 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      - name: Release tooling tests
+        run: pnpm test:release
+
       - name: CLI and registry tests
         run: pnpm test:cli
 

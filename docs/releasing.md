@@ -2,7 +2,7 @@
 
 The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generated registry and installs editable component source into an existing Vue/Vite app. The CLI binary is named `yam3x`.
 
-## Before the first release
+## Release checks
 
 1. Confirm that the npm package `@celec7/yam3x` can be published by the release owner. If the package name changes, update `packages/cli/package.json` and every `pnpm dlx` command in the READMEs and English/Chinese docs, including this release procedure.
 2. Confirm that `packages/cli/package.json` links to the canonical GitHub repository, documentation site, and issue tracker.
@@ -11,7 +11,12 @@ The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generate
 
    ```sh
    pnpm install --frozen-lockfile
+   pnpm format:check
+   pnpm lint
+   pnpm typecheck
    pnpm registry:check
+   pnpm test
+   pnpm test:release
    pnpm test:cli
    pnpm build
    ```
@@ -23,7 +28,7 @@ The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generate
    pnpm pack --pack-destination /tmp/yam3x-release
    ```
 
-   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. The CLI integration tests exercise the repository entry point against disposable consumer apps. Separately, extract the archive into a temporary directory and run its `src/index.mjs` entry point against a disposable consumer app to verify the packaged files work together.
+   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. The CLI integration suite exercises the repository entry point against disposable consumer apps and separately packs, extracts, and runs the packaged CLI to install a component. For release verification, also install the archive into a disposable consumer app and check its copied source, type checking, and build.
 
 ## First publish
 
@@ -48,13 +53,15 @@ If you tag the manually published version, CI runs the checks and skips the regi
 
 ## Later releases
 
-For each release, update `packages/cli/package.json` to a new stable version and commit the change to `main`. For the first CI release, configure the trusted publisher immediately before pushing its tag. Then push a tag that matches the package version. For example, package version `0.2.0` uses tag `v0.2.0`:
+For each release, update `packages/cli/package.json` to a new stable version and add its release notes to the root [`CHANGELOG.md`](../CHANGELOG.md) under an exact `## <version>` heading, for example `## 0.2.0`. Keep one nonempty section per version, with upgrade instructions when needed. Complete the release checks above and commit the changes to `main`. For the first CI release, configure the trusted publisher immediately before pushing its tag. Then push a tag that matches the package version. For example, package version `0.2.0` uses tag `v0.2.0`:
 
 ```sh
 git tag v0.2.0
 git push origin v0.2.0
 ```
 
-The `Publish npm package` workflow verifies the tag matches the package version, runs the repository checks, packs the CLI, and publishes that exact archive using npm trusted publishing. It also waits for the new package version to become available. No npm token is stored in GitHub secrets. Do not reuse a version that has already been published.
+The `Publish npm package` workflow verifies the tag matches the package version, runs the repository checks, packs the CLI, and publishes that exact archive using npm trusted publishing. It also waits for the new package version to become available. Before publishing, it requires a unique, nonempty changelog section matching the package version and includes those notes with the verified archive artifact.
+
+After npm publication succeeds, a separate job creates the GitHub Release for the existing tag using those notes and attaches that same archive. A rerun skips an existing npm version and preserves an existing published GitHub Release. If a failed asset upload leaves a draft Release, the rerun uploads the archive again and publishes that draft, preserving its notes. A failed Release job can therefore be retried without republishing the package. No npm token is stored in GitHub secrets. Do not reuse a version that has already been published.
 
 The OIDC publisher settings must match the repository and workflow filename exactly. If the workflow is renamed, update the npm trusted publisher configuration before the next release. For background, see npm's [trusted publishing guide](https://docs.npmjs.com/trusted-publishers/) and pnpm's [`publish` reference](https://pnpm.io/cli/publish).
