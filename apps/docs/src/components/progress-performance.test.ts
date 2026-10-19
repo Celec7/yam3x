@@ -19,11 +19,11 @@ it('animates circular progress without remeasuring geometry on every frame', asy
   const geometryReads = vi
     .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
     .mockImplementation(function (this: HTMLElement) {
-      const width = this.style.width.includes('amplitude')
+      const width = this.className.includes('amplitude')
         ? 1.6
-        : this.style.width.includes('wavelength')
+        : this.className.includes('wavelength')
           ? 15
-          : this.style.width.includes('diameter')
+          : this.className.includes('diameter')
             ? 48
             : 4
       return DOMRect.fromRect({ width })
@@ -43,4 +43,13 @@ it('animates circular progress without remeasuring geometry on every frame', asy
   expect(geometryReads).not.toHaveBeenCalled()
   wrapper.unmount()
   expect(frames.size).toBe(0)
+})
+
+it('does not start animation after an immediate unmount', async () => {
+  const schedule = vi.fn(() => 1)
+  vi.stubGlobal('requestAnimationFrame', schedule)
+  const wrapper = mount(CircularProgressIndicator, { props: { variant: 'wavy', value: 50 } })
+  wrapper.unmount()
+  await flushPromises()
+  expect(schedule).not.toHaveBeenCalled()
 })

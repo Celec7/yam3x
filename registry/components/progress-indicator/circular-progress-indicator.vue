@@ -26,6 +26,10 @@ const props = withDefaults(
 )
 const attrs = useAttrs()
 const root = ref<HTMLElement | null>(null)
+const diameterProbe = ref<HTMLElement | null>(null)
+const thicknessProbe = ref<HTMLElement | null>(null)
+const amplitudeProbe = ref<HTMLElement | null>(null)
+const wavelengthProbe = ref<HTMLElement | null>(null)
 const geometry = ref({ size: 40, thickness: 4, amplitude: 1.6, wavelength: 15 })
 const maxValue = computed(() => progressMaximum(props.max))
 const fraction = computed(() => progressFraction(props.value, maxValue.value))
@@ -202,6 +206,7 @@ function syncAnimation() {
   if (animationFrame) cancelAnimationFrame(animationFrame)
   animationFrame = 0
   animationStart = undefined
+  if (!root.value) return
   if (
     variant.value === 'wavy' &&
     !reducedMotion.value &&
@@ -220,27 +225,18 @@ function onMotionPreferenceChange(event: MediaQueryListEvent) {
   syncProgressAnimation()
   syncAnimation()
 }
-function cssLength(probe: HTMLElement, name: string, fallback: number, allowZero = false): number {
-  probe.style.width = `var(${name}, ${fallback}px)`
-  const value = probe.getBoundingClientRect().width
+function cssLength(probe: HTMLElement | null, fallback: number, allowZero = false): number {
+  const value = probe?.getBoundingClientRect().width ?? fallback
   return Number.isFinite(value) && (value > 0 || (allowZero && value === 0)) ? value : fallback
 }
 function readGeometry() {
   if (!root.value) return
-  const probe = document.createElement('span')
-  probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:0'
-  root.value.append(probe)
-  const sizeName =
-    variant.value === 'wavy'
-      ? '--_yam3x-circular-progress-diameter-wavy'
-      : '--_yam3x-circular-progress-diameter-flat'
   const nextGeometry = {
-    size: cssLength(probe, sizeName, variant.value === 'wavy' ? 48 : 40),
-    thickness: cssLength(probe, '--_yam3x-circular-progress-thickness', 4),
-    amplitude: cssLength(probe, '--_yam3x-circular-progress-wave-amplitude', 1.6, true),
-    wavelength: cssLength(probe, '--_yam3x-circular-progress-wave-wavelength', 15),
+    size: cssLength(diameterProbe.value, variant.value === 'wavy' ? 48 : 40),
+    thickness: cssLength(thicknessProbe.value, 4),
+    amplitude: cssLength(amplitudeProbe.value, 1.6, true),
+    wavelength: cssLength(wavelengthProbe.value, 15),
   }
-  probe.remove()
   if (
     Object.keys(nextGeometry).some(
       (key) =>
@@ -253,10 +249,13 @@ function readGeometry() {
 }
 onMounted(async () => {
   await nextTick()
+  if (!root.value) return
   readGeometry()
   if (root.value && typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(readGeometry)
     resizeObserver.observe(root.value)
+    for (const probe of [diameterProbe, thicknessProbe, amplitudeProbe, wavelengthProbe])
+      if (probe.value) resizeObserver.observe(probe.value)
   }
   if (root.value && typeof MutationObserver !== 'undefined') {
     styleObserver = new MutationObserver(readGeometry)
@@ -387,6 +386,28 @@ onUnmounted(() => {
       inert
       ><slot
     /></span>
+    <span
+      class="yam3x-circular-progress__geometry"
+      aria-hidden="true"
+      inert
+    >
+      <span
+        ref="diameterProbe"
+        class="yam3x-circular-progress__diameter-probe"
+      />
+      <span
+        ref="thicknessProbe"
+        class="yam3x-circular-progress__thickness-probe"
+      />
+      <span
+        ref="amplitudeProbe"
+        class="yam3x-circular-progress__amplitude-probe"
+      />
+      <span
+        ref="wavelengthProbe"
+        class="yam3x-circular-progress__wavelength-probe"
+      />
+    </span>
   </div>
 </template>
 
@@ -430,6 +451,32 @@ onUnmounted(() => {
 }
 .yam3x-circular-progress--wavy {
   width: var(--_yam3x-circular-progress-diameter-wavy);
+}
+.yam3x-circular-progress__geometry {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+.yam3x-circular-progress__geometry > span {
+  position: absolute;
+  height: 0;
+}
+.yam3x-circular-progress__diameter-probe {
+  width: var(--_yam3x-circular-progress-diameter-flat);
+}
+.yam3x-circular-progress--wavy .yam3x-circular-progress__diameter-probe {
+  width: var(--_yam3x-circular-progress-diameter-wavy);
+}
+.yam3x-circular-progress__thickness-probe {
+  width: var(--_yam3x-circular-progress-thickness);
+}
+.yam3x-circular-progress__amplitude-probe {
+  width: var(--_yam3x-circular-progress-wave-amplitude);
+}
+.yam3x-circular-progress__wavelength-probe {
+  width: var(--_yam3x-circular-progress-wave-wavelength);
 }
 .yam3x-circular-progress__graphic,
 .yam3x-circular-progress__content,

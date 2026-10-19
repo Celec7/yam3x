@@ -32,7 +32,7 @@ test('circular animation advances without measuring CSS geometry on each frame',
     const original = HTMLElement.prototype.getBoundingClientRect
     let reads = 0
     HTMLElement.prototype.getBoundingClientRect = function () {
-      if (this.parentElement === element && this.style.width.startsWith('var(')) reads++
+      if (element.contains(this) && this.localName === 'span') reads++
       return original.call(this)
     }
     try {
@@ -44,6 +44,33 @@ test('circular animation advances without measuring CSS geometry on each frame',
   })
   expect(result.after).not.toBe(result.before)
   expect(result.reads).toBe(0)
+})
+
+test('circular geometry follows inherited overrides without resizing the root', async ({
+  page,
+}) => {
+  await page.getByRole('checkbox', { name: 'Wavy style' }).check()
+  const circular = page.getByTestId('circular-progress')
+  const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+  await circular.evaluate((element) => {
+    element.parentElement!.style.setProperty(
+      '--yam3x-circular-wavy-progress-indicator-amplitude',
+      '7px',
+    )
+    element.parentElement!.style.setProperty(
+      '--yam3x-circular-wavy-progress-indicator-wavelength',
+      '10000px',
+    )
+  })
+  await expect(circular).toHaveCSS('width', '48px')
+  await expect(circular.locator('svg')).toHaveAttribute('viewBox', '0 0 66 66')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(scrollWidth)
+  await circular.evaluate((element) => {
+    element.parentElement!.style.removeProperty(
+      '--yam3x-circular-wavy-progress-indicator-amplitude',
+    )
+  })
+  await expect(circular.locator('svg')).not.toHaveAttribute('viewBox', '0 0 66 66')
 })
 
 test('linear stop size is independent from track thickness and zero hides the stop', async ({
