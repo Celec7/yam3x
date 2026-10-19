@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import TreeView from '../../../../registry/components/tree-view/tree-view.vue'
 import {
   treeRecords,
@@ -272,4 +272,30 @@ describe('Tree view', () => {
     expect(wrapper.emitted('load')).toBeUndefined()
     await nextTick()
   })
+})
+
+it('tree-view.load.recovery: cancels an obsolete read even when explicit replacement children make reload inapplicable', async () => {
+  const nodes = ref<TreeViewNode[]>([{ key: 'remote', label: 'Remote', hasChildren: true }])
+  const pending = deferred()
+  let signal!: AbortSignal
+  const wrapper = mount(TreeView, {
+    props: {
+      nodes: nodes.value,
+      label: 'Records',
+      expandedKeys: ['remote'],
+      loadChildren: (_node, context) => {
+        signal = context.signal
+        return pending.promise
+      },
+    },
+  })
+  await flushPromises()
+  nodes.value[0]!.children = [{ key: 'local', label: 'Local' }]
+  expect(wrapper.vm.reload('remote')).toBe(false)
+  expect(signal.aborted).toBe(true)
+  pending.resolve([{ key: 'old', label: 'Obsolete' }])
+  await flushPromises()
+  expect(wrapper.emitted('load')).toBeUndefined()
+  expect(wrapper.emitted('loadError')).toBeUndefined()
+  expect(wrapper.get('[data-tree-key="local"]').text()).toContain('Local')
 })

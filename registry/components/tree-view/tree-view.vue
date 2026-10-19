@@ -313,9 +313,10 @@ function retry(node: TreeViewNode) {
   }
 }
 function reload(key: TreeViewKey) {
+  // Explicit replacement children can supersede a read without being reloadable.
+  cancel(key)
   const node = records.value.get(key)?.node
   if (!node || node.children !== undefined || !node.hasChildren || unavailable(node)) return false
-  cancel(key)
   const next = new Map(cache.value)
   next.delete(key)
   cache.value = next
