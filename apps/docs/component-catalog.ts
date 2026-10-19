@@ -380,6 +380,14 @@ const extensions: CatalogSection[] = [
         },
       },
       {
+        path: 'tree-select',
+        title: 'TreeSelect',
+        summary: {
+          en: 'Choose hierarchical values with search, chips, and native form behavior.',
+          zh: '选择层级记录，支持搜索、芯片与原生表单行为。',
+        },
+      },
+      {
         path: 'calendar',
         title: 'Calendar',
         summary: {

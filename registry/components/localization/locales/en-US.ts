@@ -1,5 +1,10 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  treeSelect: {
+    search: 'Search records',
+    empty: 'No records yet',
+    noResults: 'No matching records',
+  },
   descriptions: { empty: 'No details yet', missingValue: 'Not provided' },
   actions: {
     newNotification: 'New notification',

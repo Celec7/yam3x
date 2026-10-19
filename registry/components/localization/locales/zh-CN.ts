@@ -1,5 +1,6 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  treeSelect: { search: '搜索记录', empty: '暂无记录', noResults: '没有匹配的记录' },
   descriptions: { empty: '暂无详情', missingValue: '未提供' },
   actions: {
     newNotification: '新通知',

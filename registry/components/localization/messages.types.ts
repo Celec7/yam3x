@@ -236,6 +236,7 @@ export interface ActionMessages {
 }
 
 export interface LocaleMessages {
+  treeSelect: { search: string; empty: string; noResults: string }
   descriptions: { empty: string; missingValue: string }
   actions: ActionMessages
   optionPanel: OptionPanelMessages
