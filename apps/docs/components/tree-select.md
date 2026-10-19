@@ -103,6 +103,8 @@ A hidden native select owns accepted keys, name/form association, required valid
 
 `virtual` uses Tree view's measured window, including the focused row and required ancestors/groups. Filtering and labels use the complete known hierarchy, and only accepted values need native form proxy options. Import `VirtualListOptions` from the TreeSelect entry to configure the initial estimate and overscan. No record loading or paging is implied by virtualization.
 
+Catalog updates follow [Tree view's viewport anchor policy](/components/tree-view#virtualization), preserving the reading position independently of accepted values.
+
 ## Styling
 
 Use FormField for outlined/filled field appearance and supporting text. The popup reuses OptionPanel's surface and Tree view's rounded rows, state layers, focus indicator, and press feedback. Popup width follows the field with a 400px minimum when space permits, capped at 640px and the viewport; its height is capped at 480px with a 280px tree scroll area. In small viewports, available space can lower these caps. Use `panelClass` for popup-specific styles; [Tree view](/components/tree-view) and [Input chips](/components/chips) own their component styling contracts.

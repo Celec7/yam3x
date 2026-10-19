@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { TreeView, type TreeViewKey, type TreeViewNode } from '@registry/components/tree-view'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
@@ -10,7 +10,7 @@ const expanded = ref<TreeViewKey[]>([0])
 const selected = ref<TreeViewKey[]>([])
 const checked = ref<TreeViewKey[]>([])
 const rtl = ref(false)
-const nodes: TreeViewNode[] = [
+const sourceNodes: TreeViewNode[] = [
   {
     key: 0,
     label: 'Catalog',
@@ -26,6 +26,12 @@ const nodes: TreeViewNode[] = [
     })),
   },
 ]
+const hideLeading = ref(false)
+const nodes = computed(() =>
+  hideLeading.value
+    ? [{ ...sourceNodes[0]!, children: sourceNodes[0]!.children!.slice(2) }]
+    : sourceNodes,
+)
 function reset() {
   expanded.value = [0]
   selected.value = []
@@ -64,6 +70,10 @@ function reset() {
       <Checkbox
         v-model="rtl"
         :label="t('Mirror large tree', '镜像大型树')"
+      />
+      <Checkbox
+        v-model="hideLeading"
+        :label="t('Hide leading records', '隐藏开头记录')"
       />
     </div>
     <p>

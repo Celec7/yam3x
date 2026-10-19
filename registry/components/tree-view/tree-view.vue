@@ -382,6 +382,7 @@ watch(
     const document = tree.value?.ownerDocument
     const before = document?.activeElement
     const owned = tree.value?.contains(before ?? null)
+    const previousFocus = focused.value
     if (!list.some((record) => record.node.key === focused.value)) {
       const old = new Map(previous?.map((record) => [record.node.key, record]))
       let key = focused.value
@@ -394,7 +395,11 @@ watch(
         owned &&
         document &&
         (document.activeElement === before || document.activeElement === document.body) &&
-        focused.value !== null
+        focused.value !== null &&
+        (!virtualEnabled.value ||
+          document.activeElement !== before ||
+          !before?.isConnected ||
+          focused.value !== previousFocus)
       )
         focus(focused.value)
       measure()

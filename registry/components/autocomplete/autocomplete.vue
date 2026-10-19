@@ -155,11 +155,14 @@ const renderedOptions = computed(() => {
         offset: 0,
       }))
 })
-watch(filteredOptions, () => {
-  if (!virtualEnabled.value) return
-  const target = activeOption.value ?? filteredOptions.value[0]
-  if (target) windowed.scrollToKey(target.value)
-})
+watch(
+  () => [query.value, props.filter, props.caseSensitive],
+  () => {
+    if (!virtualEnabled.value) return
+    const target = activeOption.value ?? filteredOptions.value[0]
+    if (target) windowed.scrollToKey(target.value)
+  },
+)
 let optionMovementGeneration = 0
 const optionMovementCleanups = new WeakMap<HTMLElement, () => void>()
 function captureOptionPositions(): Map<string, number> {

@@ -79,6 +79,6 @@ These guides define project-owned compositions and behavior derived from the sha
 
 Use [TEMPLATE.md](TEMPLATE.md) for a new guide and [foundations.md](foundations.md) for shared design guidance.
 
-Shared foundation pages: [cross-component design guidance](foundations.md) and [theme and color](foundations/theme.md).
+Shared foundation pages: [cross-component design guidance](foundations.md), [theme and color](foundations/theme.md), and [project-defined virtual windows](virtual-windows.md).
 
 The Chips family guide links guides for Material's assist, filter, input, and suggestion variants, and identifies the passive Chip and set helpers as project extensions.

@@ -87,6 +87,8 @@ The Standard variant uses a `surface-container-low` popup and `tertiary-containe
 
 Filtering, disabled-option handling, accepted values, and result announcements use the full catalog. The active suggestion remains mounted while scrolling, with `aria-posinset` and `aria-setsize` describing its position in the filtered results. Focus stays in the editable input. Virtual window recycling is immediate; filtering can still ease retained suggestions into their new positions. Native form submission and reset retain their usual behavior. Each option needs a unique, stable `value`.
 
+Data insertions and removals retain the first visible record and its row-relative offset. If that record disappears, the window starts at the next surviving record in the previous order, then the preceding survivor; a wholly replaced collection returns to the beginning. Scroll boundaries still apply. Explicit keyboard and search navigation takes priority, and data updates do not scroll back to an unchanged offscreen focus target.
+
 ## Styling
 
 Supported CSS overrides are `--yam3x-autocomplete-popup-min-width`, `--yam3x-autocomplete-popup-max-width`, `--yam3x-autocomplete-popup-max-height`, `--yam3x-autocomplete-popup-padding-block`, `--yam3x-autocomplete-popup-padding-inline`, `--yam3x-autocomplete-popup-shape`, `--yam3x-autocomplete-popup-elevation`, `--yam3x-autocomplete-option-container-height`, `--yam3x-autocomplete-option-shape`, `--yam3x-autocomplete-option-first-child-shape`, `--yam3x-autocomplete-option-last-child-shape`, `--yam3x-autocomplete-option-selected-shape`, and `--yam3x-autocomplete-option-label-text-font-size`. Set them on the Autocomplete root. Theme colors are controlled by the active System tokens and `variant`.

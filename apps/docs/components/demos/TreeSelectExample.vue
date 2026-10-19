@@ -37,7 +37,7 @@ const nodes = computed<TreeSelectNode[]>(() => [
     ],
   },
 ])
-const largeNodes: TreeSelectNode[] = [
+const sourceLargeNodes: TreeSelectNode[] = [
   {
     key: 'catalog',
     label: 'Catalog',
@@ -48,6 +48,12 @@ const largeNodes: TreeSelectNode[] = [
     })),
   },
 ]
+const hideLeadingLarge = ref(false)
+const largeNodes = computed(() =>
+  hideLeadingLarge.value
+    ? [{ ...sourceLargeNodes[0]!, children: sourceLargeNodes[0]!.children!.slice(2) }]
+    : sourceLargeNodes,
+)
 const remoteNodes = computed<TreeSelectNode[]>(() => [
   { key: 'remote', label: t('Remote records', '远端记录'), hasChildren: true, selectable: false },
 ])
@@ -143,6 +149,10 @@ async function loadRemote(_node: Readonly<TreeSelectNode>, { signal }: { signal:
           virtual
           searchable
       /></FormField>
+      <Checkbox
+        v-model="hideLeadingLarge"
+        :label="t('Hide leading large records', '隐藏大型目录开头记录')"
+      />
       <p>
         {{ t('Selected document', '已选文档') }}: <output>{{ value ?? '—' }}</output>
       </p>

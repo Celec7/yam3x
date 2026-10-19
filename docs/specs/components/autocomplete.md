@@ -22,3 +22,5 @@ Autocomplete combines an editable text field with a filtered suggestion menu. Ma
 - Project-defined: Use a 280px popup height cap, loading/no-results rows, and the current positioning behavior. Material does not specify these as standalone Autocomplete requirements.
 
 - Project-defined (`autocomplete.virtual.catalog`): Allow opt-in measured windowing for large suggestion catalogs. Filtering, accepted values, and keyboard navigation use the full catalog; keep the active suggestion mounted and expose its logical result position. Preserve input focus, loading/no-results states, and filtering motion for retained rows; recycled rows enter immediately. Keep visible rows covered when overscan is disabled or popup spacing changes. Material does not define a virtualization algorithm. Follow the [combobox focus pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) for Web semantics.
+
+The [shared virtual-window decisions](../virtual-windows.md) own viewport coverage, measured-height anchoring, catalog-change recovery, and navigation priority.

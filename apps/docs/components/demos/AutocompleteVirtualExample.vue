@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Autocomplete } from '@registry/components/autocomplete'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
@@ -11,11 +11,13 @@ const selected = ref<string | null>(null)
 const virtual = ref(true)
 const loading = ref(false)
 const zeroOverscan = ref(false)
-const options = Array.from({ length: 10000 }, (_, index) => ({
+const sourceOptions = Array.from({ length: 10000 }, (_, index) => ({
   value: `item-${index}`,
   label: `Item ${index + 1}`,
   disabled: index === 9998,
 }))
+const hideLeading = ref(false)
+const options = computed(() => (hideLeading.value ? sourceOptions.slice(2) : sourceOptions))
 </script>
 
 <template>
@@ -64,6 +66,10 @@ const options = Array.from({ length: 10000 }, (_, index) => ({
     <Checkbox
       v-model="zeroOverscan"
       :label="t('Use zero overscan', '不预渲染额外行')"
+    />
+    <Checkbox
+      v-model="hideLeading"
+      :label="t('Hide leading choices', '隐藏开头选项')"
     />
     <p>
       {{ t('Accepted value', '已确认的值') }}: <output>{{ selected ?? '—' }}</output>

@@ -109,6 +109,8 @@ Use `:options="options" virtual` for a large catalog. Import `VirtualListOptions
 
 Only nearby and active options mount; navigation and filtering still use the complete catalog. Distant keyboard targets mount and scroll into view, with option positions and totals representing the full filtered result. Native proxies contain accepted values only, submitted in catalog order followed by accepted values with missing metadata. Selection, cancellable events, reset, and required validation retain their semantics. Virtualization requires data-driven `options` because unmounted slots cannot supply a complete catalog; a slotted-only configuration reports an error.
 
+Data insertions and removals retain the first visible record and its row-relative offset. If that record disappears, the window starts at the next surviving record in the previous order, then the preceding survivor; a wholly replaced collection returns to the beginning. Scroll boundaries still apply. Explicit keyboard and search navigation takes priority, and data updates do not scroll back to an unchanged offscreen focus target.
+
 ### Searchable selection
 
 Set `searchable` to search data-driven or grouped slotted options. `v-model` retains accepted values while `v-model:query` holds filter text independently. Typing, empty results, Escape, and leaving the field preserve accepted choices; acceptance or dismissal clears the query. Use `filter="none"` when the application supplies options based on the query; accepted values retain their form values while their metadata is absent.

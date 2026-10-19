@@ -128,6 +128,8 @@ The window contains expanded records in tree order and keeps the focused node an
 
 `focus(key)` accepts a visible logical node and returns `true` before mounting and focusing it on Vue's next render. A hidden or unknown key returns `false`. Collapsing or removing the focused node restores focus to a surviving ancestor, while unrelated external focus is preserved. Window recycling and branch insertion/removal are immediate in virtual mode; row press feedback remains available. Use the default mode when animated branch geometry is the priority.
 
+Data insertions and removals retain the first visible record and its row-relative offset. If that record disappears, the window starts at the next surviving record in the previous order, then the preceding survivor; a wholly replaced collection returns to the beginning. Scroll boundaries still apply. Explicit keyboard and search navigation takes priority, and data updates do not scroll back to an unchanged offscreen focus target.
+
 ## Styling
 
 Labels use Body Large, metadata and guidance Body Small, and the title Title Medium. Rows start at 56 px, with 16 px outer inline padding and 24 px indentation per level; text can wrap and grow. Selected nodes use Secondary Container/On Secondary Container, and focus has an independent visible outline. Expansion alone does not select a row.

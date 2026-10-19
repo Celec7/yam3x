@@ -87,6 +87,8 @@ Standard 变体使用 `surface-container-low` 弹出面板，选中项使用 `te
 
 筛选、禁用项处理、已确认值和结果数量播报均基于完整目录。滚动时活动建议会保持挂载，`aria-posinset` 和 `aria-setsize` 描述其在筛选结果中的位置，焦点始终保留在可编辑输入框中。窗口回收会立即完成；筛选时仍可对保留的建议使用位置过渡。原生表单提交和重置行为不变。每项建议都需要唯一且稳定的 `value`。
 
+数据插入或移除时，会保留首个可见记录及其行内偏移。若该记录被移除，窗口优先从原顺序中下一个存活记录的开头显示，其次回退到前一个存活记录；整批替换且没有存活记录时回到开头。滚动边界仍然生效。显式键盘导航与搜索跳转优先，数据更新不会强制滚回未变化的屏外焦点项。
+
 ## 样式
 
 支持的 CSS 覆盖项为 `--yam3x-autocomplete-popup-min-width`、`--yam3x-autocomplete-popup-max-width`、`--yam3x-autocomplete-popup-max-height`、`--yam3x-autocomplete-popup-padding-block`、`--yam3x-autocomplete-popup-padding-inline`、`--yam3x-autocomplete-popup-shape`、`--yam3x-autocomplete-popup-elevation`、`--yam3x-autocomplete-option-container-height`、`--yam3x-autocomplete-option-shape`、`--yam3x-autocomplete-option-first-child-shape`、`--yam3x-autocomplete-option-last-child-shape`、`--yam3x-autocomplete-option-selected-shape` 和 `--yam3x-autocomplete-option-label-text-font-size`。在 Autocomplete 根元素上设置这些属性。主题颜色由当前 System token 和 `variant` 控制。

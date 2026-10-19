@@ -103,6 +103,8 @@ const nodes: TreeSelectNode[] = [
 
 `virtual` 使用 Tree view 的测量窗口，包含焦点行及必要的祖先／分组。筛选和标签解析基于完整的已知层级，原生表单代理仅需保留已确认值。可从 TreeSelect 入口导入 `VirtualListOptions` 配置初始估计与额外渲染行数。虚拟化不隐含记录加载或分页。
 
+目录更新遵循 [Tree view 的视口锚点策略](/zh/components/tree-view#虚拟化)，在保留已确认值的同时保持阅读位置。
+
 ## 样式
 
 使用 FormField 提供轮廓／填充字段外观与说明文字。弹层复用 OptionPanel 表面和 Tree view 的圆角行、状态层、焦点指示与按下反馈。弹层宽度跟随字段，可用空间足够时最小为 400px，最大为 640px 且受视口限制；最大高度为 480px，树滚动区为 280px。小视口的可用空间可能进一步降低这些上限。可通过 `panelClass` 设置弹层样式；[Tree view](/zh/components/tree-view) 和 [Input chip](/zh/components/chips) 各自拥有相应的组件样式约定。

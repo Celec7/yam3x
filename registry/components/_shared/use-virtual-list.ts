@@ -29,6 +29,11 @@ export function useVirtualList<K extends Key>(config: {
   let previousAnchor = ''
   let mounted = false
   let pendingTarget: K | null = null
+  type Anchor = { order: readonly K[]; index: number; withinRow: number }
+  let viewportAnchor: Anchor | undefined
+  let pendingAnchor: Anchor | undefined
+  let dataRevision = 0
+  let navigationRevision = 0
   const keys = computed(config.keys)
   const estimate = computed(() => {
     const value = config.options()?.estimateSize ?? 48
@@ -55,6 +60,15 @@ export function useVirtualList<K extends Key>(config: {
       else high = middle
     }
     return Math.min(low, Math.max(0, keys.value.length - 1))
+  }
+  function captureAnchor(): Anchor | undefined {
+    if (!keys.value.length) return
+    const index = indexAt(top.value - paddingStart.value)
+    return {
+      order: keys.value,
+      index,
+      withinRow: top.value - paddingStart.value - offsets.value[index]!,
+    }
   }
   const items = computed(() => {
     if (!config.enabled()) return []
@@ -90,6 +104,7 @@ export function useVirtualList<K extends Key>(config: {
     if (!scrollElement) return
     top.value = scrollElement.scrollTop
     measureViewport()
+    viewportAnchor = captureAnchor()
   }
   function writeTop(value: number) {
     top.value = Math.max(
@@ -100,11 +115,18 @@ export function useVirtualList<K extends Key>(config: {
       ),
     )
     if (scrollElement) scrollElement.scrollTop = top.value
+    viewportAnchor = captureAnchor()
     void nextTick(() => {
       if (scrollElement) scrollElement.scrollTop = top.value
     })
   }
   function scrollToKey(key: K) {
+    navigationRevision++
+    pendingAnchor = undefined
+    revealKey(key)
+    viewportAnchor = captureAnchor()
+  }
+  function revealKey(key: K) {
     measureViewport()
     const element = elements.get(key)
     pendingTarget =
@@ -132,6 +154,9 @@ export function useVirtualList<K extends Key>(config: {
     observer?.observe(element, { box: 'border-box' })
   }
   function disconnect() {
+    viewportAnchor = undefined
+    pendingAnchor = undefined
+    dataRevision++
     observer?.disconnect()
     observer = undefined
     scrollElement?.removeEventListener('scroll', readViewport)
@@ -179,22 +204,83 @@ export function useVirtualList<K extends Key>(config: {
       if (changed) {
         revision.value++
         const index = anchorKey === undefined ? -1 : keys.value.indexOf(anchorKey)
-        if (index >= 0) writeTop(paddingStart.value + offsets.value[index]! + withinRow)
+        if (index >= 0) {
+          const size = offsets.value[index + 1]! - offsets.value[index]!
+          writeTop(
+            paddingStart.value + offsets.value[index]! + Math.min(withinRow, Math.max(0, size - 1)),
+          )
+        }
       }
-      if (pendingTarget !== null && (targetMeasured || viewportMeasured)) scrollToKey(pendingTarget)
-      else if (pinnedVisible && pinned != null) scrollToKey(pinned)
+      if (pendingTarget !== null && (targetMeasured || viewportMeasured)) revealKey(pendingTarget)
+      else if (pinnedVisible && pinned != null) revealKey(pinned)
     })
     observer.observe(scrollElement)
     for (const element of elements.values()) observer.observe(element, { box: 'border-box' })
   }
   watch(() => [config.enabled(), config.scroller()], connect, { flush: 'post' })
-  watch(keys, (current) => {
-    const retained = new Set(current)
-    if (pendingTarget !== null && !retained.has(pendingTarget)) pendingTarget = null
-    for (const key of heights.keys()) if (!retained.has(key)) heights.delete(key)
-    for (const [key] of elements) if (!retained.has(key)) measure(key, null)
-    void nextTick(() => writeTop(top.value))
-  })
+  watch(
+    keys,
+    (current, previous) => {
+      if (
+        previous &&
+        current.length === previous.length &&
+        current.every((key, index) => key === previous[index])
+      ) {
+        if (viewportAnchor?.order === previous)
+          viewportAnchor = { ...viewportAnchor, order: current }
+        return
+      }
+      const scroller = scrollElement
+      const changeRevision = ++dataRevision
+      const navigation = navigationRevision
+      if (!pendingAnchor && config.enabled() && scroller && viewportAnchor?.order === previous)
+        pendingAnchor = viewportAnchor
+      const retained = new Set(current)
+      if (pendingTarget !== null && !retained.has(pendingTarget)) pendingTarget = null
+      for (const key of heights.keys()) if (!retained.has(key)) heights.delete(key)
+      for (const [key] of elements) if (!retained.has(key)) measure(key, null)
+      void nextTick(() => {
+        if (changeRevision !== dataRevision) return
+        const anchor = pendingAnchor
+        pendingAnchor = undefined
+        if (
+          !config.enabled() ||
+          !scroller ||
+          scroller !== scrollElement ||
+          navigation !== navigationRevision
+        )
+          return
+        if (!anchor) {
+          writeTop(top.value)
+          return
+        }
+        let key = anchor.order[anchor.index]!
+        let withinRow = anchor.withinRow
+        if (!retained.has(key)) {
+          const next = anchor.order
+            .slice(anchor.index + 1)
+            .find((candidate) => retained.has(candidate))
+          const previous = anchor.order
+            .slice(0, anchor.index)
+            .reverse()
+            .find((candidate) => retained.has(candidate))
+          const survivor = next ?? previous
+          if (survivor === undefined) {
+            writeTop(0)
+            return
+          }
+          key = survivor
+          withinRow = 0
+        }
+        const index = current.indexOf(key)
+        const size = offsets.value[index + 1]! - offsets.value[index]!
+        writeTop(
+          paddingStart.value + offsets.value[index]! + Math.min(withinRow, Math.max(0, size - 1)),
+        )
+      })
+    },
+    { flush: 'pre' },
+  )
   onMounted(() => {
     mounted = true
     connect()
