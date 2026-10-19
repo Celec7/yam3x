@@ -1,8 +1,9 @@
 import type { Locator, Page } from '@playwright/test'
 
 export async function selectM3Option(page: Page, control: Locator, value: string): Promise<void> {
-  await control.click()
-  const listboxId = await control.getAttribute('aria-controls')
+  const trigger = control.and(page.getByRole('combobox'))
+  await trigger.click()
+  const listboxId = await trigger.getAttribute('aria-controls')
   if (!listboxId) throw new Error('The M3 Select did not expose its open listbox.')
   await page.locator(`#${listboxId} [role="option"][data-value=${JSON.stringify(value)}]`).click()
 }

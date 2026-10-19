@@ -156,7 +156,7 @@ test('inbox stays inline in narrow desktop content panes and mobile viewports', 
   await expect(inbox).toHaveCSS('border-end-start-radius', '16px')
   await expect(inbox).toHaveCSS('border-end-end-radius', '16px')
 
-  await selectM3Option(page, appearance, 'standard')
+  await selectM3Option(page, demo.getByRole('combobox', { name: 'List appearance' }), 'standard')
   await inbox.click()
   await expect(inbox).toHaveAttribute('aria-expanded', 'true')
   await expect(expandIndicator).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
