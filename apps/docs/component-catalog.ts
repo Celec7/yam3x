@@ -380,6 +380,14 @@ const extensions: CatalogSection[] = [
         },
       },
       {
+        path: 'cascader',
+        title: 'Cascader',
+        summary: {
+          en: 'Choose a hierarchical path with level navigation and full-path search.',
+          zh: '逐级选择层级路径，并按完整路径搜索。',
+        },
+      },
+      {
         path: 'tree-select',
         title: 'TreeSelect',
         summary: {

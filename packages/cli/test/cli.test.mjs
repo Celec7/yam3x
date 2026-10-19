@@ -560,6 +560,55 @@ createApp(App).mount('#app')
   )
 })
 
+test('Cascader installs and builds as a standalone registry component', async (t) => {
+  const directory = await fixture(t)
+  const result = runCli(['add', 'cascader'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+
+  await writeFile(
+    join(directory, 'src/App.vue'),
+    `<script setup lang="ts">
+import { ref } from 'vue'
+import { Cascader, type CascaderOption } from './components/yam3x/cascader'
+const value = ref<string[]>([])
+const options: CascaderOption[] = [{ value: 'root', label: 'Root', children: [{ value: 'leaf', label: 'Leaf' }] }]
+</script>
+<template><Cascader v-model="value" :options="options" label="Location" searchable select-branches clearable required /></template>
+
+`,
+  )
+  await writeFile(
+    join(directory, 'src/main.ts'),
+    `import { createApp } from 'vue'
+import App from './App.vue'
+import './yam3x.css'
+createApp(App).mount('#app')
+`,
+  )
+
+  const packageJson = JSON.parse(await readFile(join(directory, 'package.json'), 'utf8'))
+  assertRegistryDependencies(packageJson, ['cascader'])
+
+  const typecheck = spawnSync(join(directory, 'node_modules/.bin/vue-tsc'), ['--noEmit'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(typecheck.status, 0, typecheck.stderr || typecheck.stdout)
+  const build = spawnSync(join(directory, 'node_modules/.bin/vite'), ['build'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  assert.equal(build.status, 0, build.stderr || build.stdout)
+  const cssFile = (await readdir(join(directory, 'dist/assets'))).find((name) =>
+    name.endsWith('.css'),
+  )
+  assert.ok(cssFile, 'Cascader consumer build should emit component CSS')
+  assert.match(
+    await readFile(join(directory, 'dist/assets', cssFile), 'utf8'),
+    /yam3x-cascader__trigger/,
+  )
+})
+
 test('Descriptions installs and builds as a standalone registry component', async (t) => {
   const directory = await fixture(t)
   const result = runCli(['add', 'descriptions'], directory)

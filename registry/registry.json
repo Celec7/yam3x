@@ -305,6 +305,43 @@
       "dependencies": {},
       "foundations": ["core"]
     },
+    "cascader": {
+      "files": [
+        "_shared/form-control.ts",
+        "_shared/ripple.ts",
+        "_shared/select-option.context.ts",
+        "button/button-base.vue",
+        "button/button.variants.ts",
+        "button/button.vue",
+        "cascader/cascader.types.ts",
+        "cascader/cascader.utils.ts",
+        "cascader/cascader.vue",
+        "cascader/index.ts",
+        "form-field/form-field.vue",
+        "heading/heading.vue",
+        "icon/icon-registry.ts",
+        "icon/icon.types.ts",
+        "icon/icon.vue",
+        "localization/context.ts",
+        "localization/locales/ar.ts",
+        "localization/locales/de.ts",
+        "localization/locales/en-US.ts",
+        "localization/locales/es.ts",
+        "localization/locales/fr.ts",
+        "localization/locales/it.ts",
+        "localization/locales/ja.ts",
+        "localization/locales/ko.ts",
+        "localization/locales/pt.ts",
+        "localization/locales/ru.ts",
+        "localization/locales/zh-CN.ts",
+        "localization/messages.types.ts",
+        "option/option-panel.vue",
+        "option/option.types.ts",
+        "option/option.vue"
+      ],
+      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "foundations": ["core"]
+    },
     "checkbox": {
       "files": [
         "_shared/ripple.ts",

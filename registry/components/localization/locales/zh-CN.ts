@@ -1,5 +1,14 @@
 import type { LocaleOverrides } from '../messages.types'
 export default {
+  cascader: {
+    search: '搜索路径',
+    root: '所有选项',
+    empty: '暂无选项',
+    noResults: '没有匹配的路径',
+    choosePath: '选择此路径',
+    level: (position, parent) => `第 ${position} 级${parent ? `：${parent}` : ''}`,
+    results: (label) => `${label}路径`,
+  },
   treeSelect: { search: '搜索记录', empty: '暂无记录', noResults: '没有匹配的记录' },
   descriptions: { empty: '暂无详情', missingValue: '未提供' },
   actions: {

@@ -1,5 +1,14 @@
 import type { LocaleMessages } from '../messages.types'
 export default {
+  cascader: {
+    search: 'Search paths',
+    root: 'All choices',
+    empty: 'No choices yet',
+    noResults: 'No matching paths',
+    choosePath: 'Select this path',
+    level: (position, parent) => `Level ${position}${parent ? `: ${parent}` : ''}`,
+    results: (label) => `${label} paths`,
+  },
   treeSelect: {
     search: 'Search records',
     empty: 'No records yet',

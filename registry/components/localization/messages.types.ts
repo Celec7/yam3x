@@ -236,6 +236,15 @@ export interface ActionMessages {
 }
 
 export interface LocaleMessages {
+  cascader: {
+    search: string
+    root: string
+    empty: string
+    noResults: string
+    choosePath: string
+    level: (position: number, parent: string) => string
+    results: (label: string) => string
+  }
   treeSelect: { search: string; empty: string; noResults: string }
   descriptions: { empty: string; missingValue: string }
   actions: ActionMessages
