@@ -31,6 +31,35 @@ it('select.virtual.catalog: bounds mounted rows and native proxies while retaini
     'missing',
   ])
 })
+it('select.virtual.catalog: recycling rows does not reread the complete catalog', async () => {
+  let reads = 0
+  const catalog = options.map((option) => ({
+    value: option.value,
+    get label() {
+      reads++
+      return option.label
+    },
+  }))
+  const wrapper = mount(Select, {
+    props: { options: catalog, virtual: true, modelValue: 'item-9999' },
+  })
+  await flushPromises()
+  const before = reads
+  const panel = wrapper.getComponent(OptionPanel).vm.panel!
+  panel.scrollTop = 4000
+  panel.dispatchEvent(new Event('scroll'))
+  await flushPromises()
+  expect(reads - before).toBeLessThan(200)
+  expect(wrapper.findAllComponents(Option).length).toBeLessThan(30)
+  expect(wrapper.get('.yam3x-select__trigger').text()).toContain('Item 9999')
+  await wrapper.setProps({
+    options: catalog.map((option) =>
+      option.value === 'item-9999' ? { ...option, label: 'Renamed item' } : option,
+    ),
+  })
+  expect(wrapper.get('.yam3x-select__trigger').text()).toContain('Renamed item')
+  expect(wrapper.get<HTMLSelectElement>('select').element.value).toBe('item-9999')
+})
 it('select.virtual.navigation: mounts a far keyboard target with full positional semantics before acceptance', async () => {
   const wrapper = mount(Select, { props: { options, virtual: true } })
   await wrapper.get('button').trigger('keydown', { key: 'End' })

@@ -121,15 +121,19 @@ const panel = ref<{
   panel: HTMLElement | null
 } | null>(null)
 const mountedOptions = shallowRef<SelectOptionRecord[]>([])
+const mountedOptionMap = computed(
+  () => new Map(mountedOptions.value.map((option) => [option.value, option])),
+)
 const options = computed<SelectOptionRecord[]>(() => {
   if (props.options === undefined) return mountedOptions.value
-  const mounted = new Map(mountedOptions.value.map((option) => [option.value, option]))
   return props.options.map((option, index) => ({
     ...option,
     disabled: option.disabled ?? false,
     selected: option.selected ?? false,
     id: `${listboxId}-option-${index}`,
-    element: mounted.get(option.value)?.element ?? null,
+    get element() {
+      return mountedOptionMap.value.get(option.value)?.element ?? null
+    },
   }))
 })
 function matchesOption(option: SelectOption) {
