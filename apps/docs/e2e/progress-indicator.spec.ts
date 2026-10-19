@@ -19,6 +19,33 @@ test('linear indicator follows the range input and reports determinate progress 
   await expect(progress).toHaveAttribute('aria-valuenow', '70')
 })
 
+test('circular animation advances without measuring CSS geometry on each frame', async ({
+  page,
+}) => {
+  await page.getByRole('checkbox', { name: 'Wavy style' }).check()
+  const circular = page.getByTestId('circular-progress')
+  const result = await circular.evaluate(async (element) => {
+    const path = element.querySelector('.yam3x-circular-progress__indicator')!
+    await new Promise(requestAnimationFrame)
+    await new Promise(requestAnimationFrame)
+    const before = path.getAttribute('d')
+    const original = HTMLElement.prototype.getBoundingClientRect
+    let reads = 0
+    HTMLElement.prototype.getBoundingClientRect = function () {
+      if (this.parentElement === element && this.style.width.startsWith('var(')) reads++
+      return original.call(this)
+    }
+    try {
+      for (let index = 0; index < 12; index++) await new Promise(requestAnimationFrame)
+      return { reads, before, after: path.getAttribute('d') }
+    } finally {
+      HTMLElement.prototype.getBoundingClientRect = original
+    }
+  })
+  expect(result.after).not.toBe(result.before)
+  expect(result.reads).toBe(0)
+})
+
 test('linear stop size is independent from track thickness and zero hides the stop', async ({
   page,
 }) => {

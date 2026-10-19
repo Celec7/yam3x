@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, onUpdated, ref, useAttrs, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, useAttrs, watch } from 'vue'
 import {
   circularArcPath,
   circularWaveArcPath,
@@ -269,7 +269,6 @@ onMounted(async () => {
   }
   syncAnimation()
 })
-onUpdated(readGeometry)
 watch([fraction, () => props.indeterminate], syncProgressAnimation)
 watch([variant, () => props.indeterminate], async () => {
   await nextTick()
