@@ -108,18 +108,84 @@ it('virtual.window.measurement: preserves the viewport anchor when measured heig
   expect(windowed.items.value.length).toBeLessThan(20)
   windowed.scrollToKey(99)
   await nextTick()
-  expect(element.scrollTop).toBe(920)
+  expect(element.scrollTop).toBe(916)
   expect(windowed.items.value.at(-1)?.key).toBe(99)
   sizes.set(99, 30)
   observers.at(-1)!.notify([wrapper.get('[data-key="99"]').element])
   await nextTick()
-  expect(element.scrollTop).toBe(940)
+  expect(element.scrollTop).toBe(936)
   Object.defineProperty(element, 'clientHeight', { configurable: true, value: 88 })
   observers.at(-1)!.notify([element])
   await nextTick()
-  expect(element.scrollTop).toBe(960)
+  expect(element.scrollTop).toBe(956)
   const observer = observers.at(-1)!
   wrapper.unmount()
   expect(observer.disconnected).toBe(true)
   expect(element.style.overflowAnchor).toBe('auto')
+})
+
+function mountWindow({ paddingTop = 0, paddingBottom = 0, height = 100 } = {}) {
+  const keys = shallowRef(Array.from({ length: 100 }, (_, index) => index))
+  const scroller = ref<HTMLElement | null>(null)
+  let windowed!: ReturnType<typeof useVirtualList<number>>
+  const wrapper = mount(
+    defineComponent({
+      setup() {
+        windowed = useVirtualList({
+          keys: () => keys.value,
+          scroller: () => scroller.value,
+          enabled: () => true,
+          options: () => ({ estimateSize: 10, overscan: 0 }),
+        })
+        return () =>
+          h(
+            'div',
+            {
+              ref: (node) => {
+                if (!node) return
+                const element = node as HTMLElement
+                Object.defineProperty(element, 'clientHeight', {
+                  configurable: true,
+                  value: height,
+                })
+                scroller.value = element
+              },
+              style: { paddingTop: `${paddingTop}px`, paddingBottom: `${paddingBottom}px` },
+            },
+            windowed.items.value.map((item) =>
+              h('div', { key: item.key, 'data-key': item.key }, String(item.key)),
+            ),
+          )
+      },
+    }),
+    { attachTo: document.body },
+  )
+  return {
+    wrapper,
+    keys,
+    windowed,
+    get element() {
+      return scroller.value!
+    },
+  }
+}
+
+it('virtual.window.coordinates: padding scrolls with content and overscan zero still includes every visible row', async () => {
+  const fixture = mountWindow({ paddingTop: 20, paddingBottom: 30 })
+  await nextTick()
+  fixture.element.scrollTop = 43
+  fixture.element.dispatchEvent(new Event('scroll'))
+  await nextTick()
+  // Content coordinates 23..123 intersect rows 2 through 12 in a 100px viewport.
+  expect(fixture.windowed.items.value.map((item) => item.key)).toEqual(
+    Array.from({ length: 11 }, (_, index) => index + 2),
+  )
+  fixture.windowed.scrollToKey(99)
+  await nextTick()
+  // The final row ends at 1020px, including leading padding; 100px remains visible.
+  expect(fixture.element.scrollTop).toBe(920)
+  fixture.element.scrollTop = 950
+  fixture.element.dispatchEvent(new Event('scroll'))
+  await nextTick()
+  expect(fixture.windowed.items.value.map((item) => item.key)).toEqual([93, 94, 95, 96, 97, 98, 99])
 })

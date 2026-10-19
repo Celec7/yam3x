@@ -14,6 +14,7 @@ const options = Array.from({ length: 10000 }, (_, index) => ({
 const value = ref('item-9999')
 const values = ref(['item-1'])
 const searchable = ref(false)
+const zeroOverscan = ref(false)
 const hideLeading = ref(false)
 const empty = ref(false)
 const catalog = computed(() => (empty.value ? [] : hideLeading.value ? options.slice(2) : options))
@@ -28,7 +29,7 @@ const catalog = computed(() => (empty.value ? [] : hideLeading.value ? options.s
         <Select
           v-model="value"
           :options="catalog"
-          virtual
+          :virtual="{ overscan: zeroOverscan ? 0 : 4 }"
           :searchable="searchable"
           name="large-item"
         >
@@ -49,7 +50,7 @@ const catalog = computed(() => (empty.value ? [] : hideLeading.value ? options.s
         ><Select
           v-model="values"
           :options="catalog"
-          virtual
+          :virtual="{ overscan: zeroOverscan ? 0 : 4 }"
           multiple
           selection-display="chips"
           name="large-items"
@@ -63,6 +64,10 @@ const catalog = computed(() => (empty.value ? [] : hideLeading.value ? options.s
     <Checkbox
       v-model="searchable"
       :label="t('Search catalog', '搜索目录')"
+    />
+    <Checkbox
+      v-model="zeroOverscan"
+      :label="t('Use zero overscan', '不预渲染额外行')"
     />
     <Checkbox
       v-model="hideLeading"

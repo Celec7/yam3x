@@ -83,7 +83,7 @@ The Standard variant uses a `surface-container-low` popup and `tertiary-containe
 
 ### Virtualization
 
-`virtual` is opt-in. `true` uses a 48px initial row estimate and four extra rows on each side of the viewport; an object can override these values. Import `VirtualListOptions` from the Autocomplete entry. The estimate does not fix row heights: custom option content is measured, and scrolling keeps the current viewport anchored when heights change.
+`virtual` is opt-in. `true` uses a 48px initial row estimate and four extra rows on each side of the viewport; an object can override these values. Import `VirtualListOptions` from the Autocomplete entry. `overscan: 0` disables extra rows while retaining full viewport coverage, including popup padding. The estimate does not fix row heights: custom option content is measured, and scrolling keeps the current viewport anchored when heights change.
 
 Filtering, disabled-option handling, accepted values, and result announcements use the full catalog. The active suggestion remains mounted while scrolling, with `aria-posinset` and `aria-setsize` describing its position in the filtered results. Focus stays in the editable input. Virtual window recycling is immediate; filtering can still ease retained suggestions into their new positions. Native form submission and reset retain their usual behavior. Each option needs a unique, stable `value`.
 

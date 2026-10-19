@@ -105,7 +105,7 @@ const frequency = ref('daily')
 
 ### 虚拟化
 
-大型目录可设置 `:options="options" virtual`。`VirtualListOptions` 可从 Select 模块导入，提供 `estimateSize`（默认 `48` CSS 像素）与 `overscan`（每侧默认 `4` 行）。例如 `:virtual="{ estimateSize: 64, overscan: 6 }"`。估算值只用于尚未测量的行，不会固定内容高度；可见行会自动测量，并响应换行、字体和密度变化。
+大型目录可设置 `:options="options" virtual`。`VirtualListOptions` 可从 Select 模块导入，提供 `estimateSize`（默认 `48` CSS 像素）与 `overscan`（每侧默认 `4` 行）。例如 `:virtual="{ estimateSize: 64, overscan: 6 }"`。`overscan: 0` 取消额外预渲染行，仍完整覆盖含弹层内边距的可见区域。估算值只用于尚未测量的行，不会固定内容高度；可见行会自动测量，并响应换行、字体和密度变化。
 
 窗口只挂载视口附近及活动选项，导航与筛选仍使用完整目录。键盘远距离跳转会挂载并滚动到目标；选项的无障碍位置与总数按完整筛选结果计算。原生代理只保留已选值，仍按目录顺序提交，缺少信息的已选值随后提交。选择、可取消事件、重置和必填校验保持相同语义。虚拟化需要数据式 `options`，因为已卸载的插槽无法提供完整目录；纯插槽调用会报告配置错误。
 

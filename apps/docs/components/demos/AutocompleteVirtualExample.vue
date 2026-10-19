@@ -10,6 +10,7 @@ const query = ref('')
 const selected = ref<string | null>(null)
 const virtual = ref(true)
 const loading = ref(false)
+const zeroOverscan = ref(false)
 const options = Array.from({ length: 10000 }, (_, index) => ({
   value: `item-${index}`,
   label: `Item ${index + 1}`,
@@ -28,7 +29,7 @@ const options = Array.from({ length: 10000 }, (_, index) => ({
         v-model:selected="selected"
         :label="t('Large suggestion catalog', '大型建议目录')"
         :options="options"
-        :virtual="virtual"
+        :virtual="virtual ? { overscan: zeroOverscan ? 0 : 4 } : false"
         :loading="loading"
         :locale="locale === 'zh' ? 'zh-CN' : 'en-US'"
         panel-class="autocomplete-virtual-demo__panel"
@@ -59,6 +60,10 @@ const options = Array.from({ length: 10000 }, (_, index) => ({
     <Checkbox
       v-model="loading"
       :label="t('Loading suggestions', '正在加载建议')"
+    />
+    <Checkbox
+      v-model="zeroOverscan"
+      :label="t('Use zero overscan', '不预渲染额外行')"
     />
     <p>
       {{ t('Accepted value', '已确认的值') }}: <output>{{ selected ?? '—' }}</output>

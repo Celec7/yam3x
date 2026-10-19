@@ -19,6 +19,8 @@ export function useVirtualList<K extends Key>(config: {
   const revision = ref(0)
   const top = ref(0)
   const viewport = ref(280)
+  const paddingStart = ref(0)
+  const paddingEnd = ref(0)
   const heights = new Map<K, number>()
   const elements = new Map<K, HTMLElement>()
   const elementKeys = new WeakMap<HTMLElement, K>()
@@ -56,10 +58,10 @@ export function useVirtualList<K extends Key>(config: {
   }
   const items = computed(() => {
     if (!config.enabled()) return []
-    const start = Math.max(0, indexAt(top.value) - overscan.value)
+    const start = Math.max(0, indexAt(top.value - paddingStart.value) - overscan.value)
     const end = Math.min(
       keys.value.length,
-      indexAt(top.value + viewport.value) + overscan.value + 1,
+      indexAt(top.value - paddingStart.value + viewport.value) + overscan.value + 1,
     )
     const indices = new Set(
       Array.from({ length: Math.max(0, end - start) }, (_, index) => start + index),
@@ -80,12 +82,9 @@ export function useVirtualList<K extends Key>(config: {
   function measureViewport() {
     if (!scrollElement?.clientHeight) return
     const style = getComputedStyle(scrollElement)
-    viewport.value = Math.max(
-      1,
-      scrollElement.clientHeight -
-        (parseFloat(style.paddingTop) || 0) -
-        (parseFloat(style.paddingBottom) || 0),
-    )
+    viewport.value = scrollElement.clientHeight
+    paddingStart.value = parseFloat(style.paddingTop) || 0
+    paddingEnd.value = parseFloat(style.paddingBottom) || 0
   }
   function readViewport() {
     if (!scrollElement) return
@@ -93,7 +92,13 @@ export function useVirtualList<K extends Key>(config: {
     measureViewport()
   }
   function writeTop(value: number) {
-    top.value = Math.max(0, Math.min(value, Math.max(0, totalSize.value - viewport.value)))
+    top.value = Math.max(
+      0,
+      Math.min(
+        value,
+        Math.max(0, totalSize.value + paddingStart.value + paddingEnd.value - viewport.value),
+      ),
+    )
     if (scrollElement) scrollElement.scrollTop = top.value
     void nextTick(() => {
       if (scrollElement) scrollElement.scrollTop = top.value
@@ -109,8 +114,8 @@ export function useVirtualList<K extends Key>(config: {
       pendingTarget = null
       return
     }
-    const start = offsets.value[index]!
-    const end = offsets.value[index + 1]!
+    const start = paddingStart.value + offsets.value[index]!
+    const end = paddingStart.value + offsets.value[index + 1]!
     if (start < top.value) writeTop(start)
     else if (end > top.value + viewport.value) writeTop(end - viewport.value)
   }
@@ -143,15 +148,15 @@ export function useVirtualList<K extends Key>(config: {
     scrollElement.addEventListener('scroll', readViewport, { passive: true })
     readViewport()
     observer = new ResizeObserver((entries) => {
-      const anchorIndex = indexAt(top.value)
+      const anchorIndex = indexAt(top.value - paddingStart.value)
       const anchorKey = keys.value[anchorIndex]
-      const withinRow = top.value - offsets.value[anchorIndex]!
+      const withinRow = top.value - paddingStart.value - offsets.value[anchorIndex]!
       const pinned = config.keepMounted?.()
       const pinnedIndex = pinned == null ? -1 : keys.value.indexOf(pinned)
       const pinnedVisible =
         pinnedIndex >= 0 &&
-        offsets.value[pinnedIndex]! >= top.value &&
-        offsets.value[pinnedIndex + 1]! <= top.value + viewport.value
+        paddingStart.value + offsets.value[pinnedIndex]! >= top.value &&
+        paddingStart.value + offsets.value[pinnedIndex + 1]! <= top.value + viewport.value
       let changed = false
       let targetMeasured = false
       let viewportMeasured = false
@@ -174,7 +179,7 @@ export function useVirtualList<K extends Key>(config: {
       if (changed) {
         revision.value++
         const index = anchorKey === undefined ? -1 : keys.value.indexOf(anchorKey)
-        if (index >= 0) writeTop(offsets.value[index]! + withinRow)
+        if (index >= 0) writeTop(paddingStart.value + offsets.value[index]! + withinRow)
       }
       if (pendingTarget !== null && (targetMeasured || viewportMeasured)) scrollToKey(pendingTarget)
       else if (pinnedVisible && pinned != null) scrollToKey(pinned)

@@ -105,7 +105,7 @@ Pass `:options="[{ value: 'daily', label: 'Daily digest' }, { value: 'weekly', l
 
 ### Virtualization
 
-Use `:options="options" virtual` for a large catalog. Import `VirtualListOptions` from the Select module to configure `estimateSize` (default `48` CSS pixels) and `overscan` (default `4` rows on each side), for example `:virtual="{ estimateSize: 64, overscan: 6 }"`. The estimate applies only before measurement and never fixes content height; visible rows are measured again when wrapping, fonts, or density change.
+Use `:options="options" virtual` for a large catalog. Import `VirtualListOptions` from the Select module to configure `estimateSize` (default `48` CSS pixels) and `overscan` (default `4` rows on each side), for example `:virtual="{ estimateSize: 64, overscan: 6 }"`. `overscan: 0` disables extra rows while retaining full viewport coverage, including popup padding. The estimate applies only before measurement and never fixes content height; visible rows are measured again when wrapping, fonts, or density change.
 
 Only nearby and active options mount; navigation and filtering still use the complete catalog. Distant keyboard targets mount and scroll into view, with option positions and totals representing the full filtered result. Native proxies contain accepted values only, submitted in catalog order followed by accepted values with missing metadata. Selection, cancellable events, reset, and required validation retain their semantics. Virtualization requires data-driven `options` because unmounted slots cannot supply a complete catalog; a slotted-only configuration reports an error.
 
