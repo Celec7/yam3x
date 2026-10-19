@@ -51,19 +51,19 @@ const items = [
 
 ## API
 
-该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+该组件的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
-| 属性                                  | 默认        | 作用                                                                              |
-| ------------------------------------- | ----------- | --------------------------------------------------------------------------------- |
-| `items`                               | 必填        | `value`、`label`、可选的 `ariaLabel`、`disabled`、`badge`。                       |
-| `v-model`                             | 首个可用项  | 当前标签的 `value`。                                                              |
-| `variant`                             | `secondary` | `primary` 或 `secondary`。                                                        |
-| `layout`                              | `auto`      | `fixed`、`scrollable` 或 `auto`；自动布局在超过四项时滚动。                       |
-| `headerPosition`                      | `before`    | 标题栏位于内容上方或下方；`after` 是项目扩展，Material 规范将 Tabs 放在内容之前。 |
-| `stretch`                             | `false`     | 让标签占满可用宽度。                                                              |
-| `disablePagination`                   | `false`     | 隐藏分页按钮；`auto` 在粗指针设备上隐藏。                                         |
-| `disableSwipe`                        | `false`     | 阻止固定布局中的内容区横向滑动切换；可滚动标签使用横向手势滚动标签栏。            |
-| `previousPageLabel` / `nextPageLabel` | 英文默认名  | 分页按钮的无障碍名称。                                                            |
+| 属性                                  | 默认         | 作用                                                                              |
+| ------------------------------------- | ------------ | --------------------------------------------------------------------------------- |
+| `items`                               | 必填         | `value`、`label`、可选的 `ariaLabel`、`disabled`、`badge`。                       |
+| `v-model`                             | 首个可用项   | 当前标签的 `value`。                                                              |
+| `variant`                             | `secondary`  | `primary` 或 `secondary`。                                                        |
+| `layout`                              | `auto`       | `fixed`、`scrollable` 或 `auto`；自动布局在超过四项时滚动。                       |
+| `headerPosition`                      | `before`     | 标题栏位于内容上方或下方；`after` 是项目扩展，Material 规范将 Tabs 放在内容之前。 |
+| `stretch`                             | `false`      | 让标签占满可用宽度。                                                              |
+| `disablePagination`                   | `false`      | 隐藏分页按钮；`auto` 在粗指针设备上隐藏。                                         |
+| `disableSwipe`                        | `false`      | 阻止固定布局中的内容区横向滑动切换；可滚动标签使用横向手势滚动标签栏。            |
+| `previousPageLabel` / `nextPageLabel` | 本地化默认名 | 分页按钮的无障碍名称。                                                            |
 
 ## 行为与无障碍
 

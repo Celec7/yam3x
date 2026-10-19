@@ -36,7 +36,7 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 ## API
 
-该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+该组件的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
 | 属性           | 默认值         | 用途                                                                         |
 | -------------- | -------------- | ---------------------------------------------------------------------------- |

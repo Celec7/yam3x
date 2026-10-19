@@ -49,7 +49,7 @@ const items = [
 
 ## API
 
-该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+该组件的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
 `items` 至少包含 `value`、`label` 和 `href`，可选 `ariaLabel`、`disabled`、`disabledInteractive`、`secondary`、`badge`、`badgeLabel` 和原生链接属性。Material 建议提供 3–7 个目的地，也允许一个可选 FAB；这是设计建议，不是运行时数量限制。`v-model` 指向当前目的地。`mode` 可为 `collapsed`、`expanded`、`auto`，并决定初始展开行为：`collapsed` 初始收起，`expanded` 初始展开，`auto` 在 960px 以下收起，在 960px 及以上展开。`v-model:expanded` 中提供的值优先于 `mode`。未绑定该模型时，使用内置菜单会保存手动选择；此后视口跨越断点不会再自动改变展开状态，但 `auto` 模式仍会在 960px 以下隐藏 rail。紧凑宽度应使用 Navigation Bar 接替。若绑定了该模型，将它设为 `undefined` 即可交回 `mode` 控制。`presentation` 可为 `standard` 或 `modal`；`alignment` 控制目的地靠上或居中。`divider` 在内容侧显示分隔线。`hideWhenCollapsed` 用于外部菜单控制的沉浸式布局，此时应用需要提供可访问的外部打开按钮。展开宽度上限为 360px。
 

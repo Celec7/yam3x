@@ -67,7 +67,7 @@ const price = ref<[number, number]>([25, 75])
 
 中、大、特大的标准 `Slider` 支持通过默认插槽设置可选的内嵌图标。
 
-旧用法 `<Slider variant="range" v-model="range">` 应迁移为 `<RangeSlider v-model="range">`。`SliderModel` 现在是 `number`；`RangeSliderModel` 是 `[number, number]`。
+旧用法 `<Slider variant="range" v-model="range">` 应迁移为 `<RangeSlider v-model="range">`。`SliderModel` 为 `number`；`RangeSliderModel` 是 `[number, number]`。
 
 ## 行为与无障碍
 

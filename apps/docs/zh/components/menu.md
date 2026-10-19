@@ -38,7 +38,7 @@ const items: MenuItem[] = [
 
 ## API
 
-该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+该组件的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
 `items` 是必填的 `MenuItem[]`；每项需有唯一的 `value`。`label` 为菜单命名，默认 `'Options'`；`triggerLabel` 为内置触发器命名，默认 `'Open menu'`。`variant` 默认为 `'standard'`，也可设为 `'vibrant'`；`dense` 默认为 `false`。`positionX` 默认为 `'after'`，也可设为 `'before'`；`positionY` 默认为 `'below'`，也可设为 `'above'`。
 

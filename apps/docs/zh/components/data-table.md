@@ -113,7 +113,9 @@ const selected = ref<DataTableKey[]>([])
 
 可排序列依次切换升序、降序和传入顺序。本地比较支持数值、Date、布尔值及随语言变化的自然文字排序；空值或无效值在两个方向都位于末尾，相等值保留原有顺序。每列应使用一致的值类型，或提供 `compare` 处理领域规则。自定义比较函数自行处理缺失值。所有客户端记录先排序，再分页，不修改输入数组。客户端列筛选先于排序和分页执行；应用自有搜索也可先缩小传入集合。外部搜索变化时请重置 `page`。超出范围的页面提供返回第一页的请求。
 
-事件：`update:sort`、`update:page` 和 `update:pageSize` 提议查询变化；`change({ sort, page, pageSize })` 报告一次完整查询请求。`update:selectedKeys(keys)` 提议完整键集合。`selectionChange({ selectedKeys, changedKeys, source })` 标识受影响的键及 `source: 'row' \| 'page'`。`retry()` 要求应用重复失败的查询。请处理重试，或通过 `#error-actions` 提供其他恢复路径。
+事件：`update:sort`、`update:page`、`update:pageSize` 和 `update:filters` 提议查询变化；`change(query)` 报告一次完整的 `DataTableQuery` 查询请求，包含 `sort`、`page` 和 `pageSize`。筛选请求或传入 `filters` 属性时，查询包含 `filters`；否则省略该属性。`update:filters(filters)` 提议完整筛选映射。
+
+`update:selectedKeys(keys)` 提议完整键集合。`selectionChange({ selectedKeys, changedKeys, source })` 标识受影响的键及 `source: 'row' \| 'page'`。`retry()` 要求应用重复失败的查询。请处理重试，或通过 `#error-actions` 提供其他恢复路径。
 
 ### 列筛选
 
@@ -121,7 +123,7 @@ const selected = ref<DataTableKey[]>([])
 
 菜单编辑临时草稿。应用操作提议草稿，清除操作提议移除该列条件，Escape 或外部关闭丢弃未应用的编辑。保留其他已接受筛选、排序和选择键；筛选请求回到第一页。触发按钮仅报告已接受的选择数量。传入集合非空但本地筛选无匹配时，自动使用筛选空状态；外部或服务端筛选使用 `emptyKind`。
 
-`update:filters(filters)` 提议完整筛选映射。在筛选请求后，或传入 `filters` 属性时，`DataTableQuery` 与 `change` 包含可选的 `filters`；否则保留原有结构。排序和翻页请求携带已接受筛选。应用筛选和重置页码形成一次 `change` 请求，模型更新仍是独立事件。
+排序和翻页请求携带已接受筛选。应用筛选和重置页码形成一次 `change` 请求，模型更新仍是独立事件。
 
 ### 固定表头与列
 

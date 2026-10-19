@@ -92,7 +92,7 @@ const current = ref('inbox')
 
 ## API
 
-该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+该组件的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
 `NavigationDrawer` 负责导航地标、目的地选中状态、层级和抽屉呈现。`mode` 可设为 `modal`、`standard` 或 `auto`；auto 模式按容器宽度响应，并在 `standardBreakpoint` 处切换，默认值为 840px。该项目断点对应 compact/medium 与 expanded 布局的常见边界。`v-model:open` 控制可见状态；未绑定时，modal 默认关闭，standard 默认展开。`v-model:selected` 必需，并应与应用当前路由同步。
 

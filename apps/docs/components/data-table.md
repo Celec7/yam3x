@@ -113,7 +113,9 @@ Columns have `id`, `label`, and optional `value(row)`, `format(value, row)`, `su
 
 Sortable columns cycle ascending, descending, then supplied order. Local comparison handles numbers, Dates, booleans, and locale-aware natural text, keeping empty/invalid values last in either direction and ties in supplied order. Use a consistent value type per column or provide `compare` for domain-specific rules. A custom comparator owns missing-value policy. All client rows are sorted before paging; the input array is not mutated. Client column filters run before sorting and paging; application-owned search can also reduce the supplied collection. Reset `page` when external search changes. An out-of-range page offers a first-page request.
 
-Events: `update:sort`, `update:page`, and `update:pageSize` propose query changes; `change({ sort, page, pageSize })` reports one complete requested query. `update:selectedKeys(keys)` proposes a complete key set. `selectionChange({ selectedKeys, changedKeys, source })` identifies the affected keys and `source: 'row' \| 'page'`. `retry()` asks the application to repeat its failed query. Handle retry or provide `#error-actions` with another recovery path.
+Events: `update:sort`, `update:page`, `update:pageSize`, and `update:filters` propose query changes; `change(query)` reports one complete requested `DataTableQuery` containing `sort`, `page`, and `pageSize`. The query includes `filters` for a filter request or when the `filters` prop is supplied; otherwise it omits that property. `update:filters(filters)` proposes the complete filter map.
+
+`update:selectedKeys(keys)` proposes a complete key set. `selectionChange({ selectedKeys, changedKeys, source })` identifies the affected keys and `source: 'row' \| 'page'`. `retry()` asks the application to repeat its failed query. Handle retry or provide `#error-actions` with another recovery path.
 
 ### Column filters
 
@@ -121,7 +123,7 @@ Set a column's `filter: { options, matches? }` to show a separate filter menu. E
 
 The menu edits a draft. Apply proposes the draft, Clear proposes removing that column's condition, and Escape or outside dismissal discards edits. Other accepted filters, sorting, and selection keys are retained; filter requests return to page one. The trigger reports only the accepted selection count. Local zero-match results use the filtered empty state automatically when the supplied collection is nonempty; use `emptyKind` for external/server filtering.
 
-`update:filters(filters)` proposes the complete filter map. `DataTableQuery` and `change` include optional `filters` after a filter request or when the `filters` prop is supplied; otherwise their previous shape is preserved. Sort and page requests carry accepted filters. Filter application and page reset form one `change` request, even though model updates are separate events.
+Sort and page requests carry accepted filters. Filter application and page reset form one `change` request, even though model updates are separate events.
 
 ### Fixed headers and columns
 

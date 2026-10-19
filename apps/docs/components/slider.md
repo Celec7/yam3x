@@ -67,7 +67,7 @@ Range endpoint names can inherit [LocaleProvider](/components/localization)'s `a
 
 Standard `Slider`s in medium, large, and extra-large sizes support an optional inset icon in the default slot.
 
-Replace the former `<Slider variant="range" v-model="range">` usage with `<RangeSlider v-model="range">`. `SliderModel` is now `number`; `RangeSliderModel` is `[number, number]`.
+Replace the former `<Slider variant="range" v-model="range">` usage with `<RangeSlider v-model="range">`. `SliderModel` is `number`; `RangeSliderModel` is `[number, number]`.
 
 ## Behavior and accessibility
 

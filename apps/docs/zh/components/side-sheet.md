@@ -59,7 +59,7 @@ const open = ref(false)
 
 ## API
 
-该组件 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
+该组件的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
 
 `mode` 可设为 `modal`、`standard` 或 `adaptive`。`modal` 模式在主要内容上方显示 scrim、约束焦点，并暴露 `aria-modal="true"`。`standard` 模式会重新布局主要内容，同时保持其可交互；容器需要足够宽，才能为两侧区域保留可用空间。`adaptive` 模式根据组件容器宽度，在 `adaptiveBreakpoint`（默认为 600px）处切换上述呈现方式。响应式布局建议使用 `adaptive`；若在断点以下强制使用 `standard`，可能导致侧边面板空间不足。面板锚定在逻辑行末，因此在 RTL 布局中会移到左侧。
 
