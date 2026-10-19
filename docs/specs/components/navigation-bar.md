@@ -28,7 +28,7 @@ The official specs expose `Nav bar - Common`, `Nav bar - Item - Vertical`, and `
 | `md.comp.nav-bar.item.inactive.icon.color` and `.inactive.label-text.color` (`on-surface-variant`) | `--_yam3x-navigation-bar-inactive-color` → `--md-sys-color-on-surface-variant`                                                                                    |
 | Vertical indicator width 56dp and height 32dp; icon-label gap 4dp; container-between gap 6dp       | Component values define the 56×32dp indicator and 6dp compact item gap. The 4dp selector value describes indicator-to-icon alignment in the official arrangement. |
 | Horizontal indicator height 40dp; leading and trailing space 16dp; icon-label gap 4dp              | Component values define a 40dp indicator, 16dp inset on each side, and 4dp horizontal icon-label gap.                                                             |
-| `md.comp.nav-bar.container.shadow-color` and `.elevation`                                          | The selector exposes these tokens; the web component currently renders the container color without a shadow. This is a project rendering choice.                  |
+| `md.comp.nav-bar.container.shadow-color` and `.elevation`                                          | Project rendering choice: use the container color without a shadow.                                                                                               |
 
 Navigation bar styles consume private `--_yam3x-navigation-bar-*` aliases declared on the component root. No navigation-bar custom-property override is part of the public API; documented props and slots are the customization surface.
 

@@ -428,6 +428,7 @@ watch(
     --_yam3x-navigation-rail-color-active-label-vertical
   );
   --_yam3x-navigation-rail-focus-ring-thickness: var(--yam3x-focus-ring-thickness, 3px);
+  /* TODO: Add the Material narrow collapsed layout (80px); only the 96px layout is supported. */
   --_yam3x-navigation-rail-width-collapsed: 96px;
   --_yam3x-navigation-rail-width-expanded-min: 220px;
   --_yam3x-navigation-rail-width-expanded: var(--_yam3x-navigation-rail-width-expanded-min);

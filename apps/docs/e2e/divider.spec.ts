@@ -21,6 +21,7 @@ test('horizontal dividers expose thickness and color while retaining measured in
     'rgb(18, 52, 86)',
   )
 
+  // divider.geometry.inset
   const geometry = await Promise.all(
     [inset, insetStart].map((divider) =>
       divider.evaluate((element) => {

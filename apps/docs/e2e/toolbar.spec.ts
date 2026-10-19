@@ -127,6 +127,7 @@ test('RTL reverses horizontal arrow movement and vertical layout uses up and dow
   await expect(save).toBeFocused()
   await page.getByRole('checkbox', { name: 'Vertical' }).check()
   await expect(toolbar).toHaveClass(/yam3x-toolbar--vertical/)
+  // toolbar.a11y.orientation
   await expect(toolbar).toHaveAttribute('aria-orientation', 'vertical')
   await expect(toolbar).toHaveCSS('min-width', '64px')
   await save.press('ArrowDown')

@@ -553,6 +553,7 @@ test('vertical menu spacing follows the current expressive measurements', async 
     probe.remove()
     return color
   })
+  // menu.color.divider
   await expect(divider).toHaveCSS('background-color', outlineVariant)
   await expect(divider).toHaveCSS('margin-block-start', '2px')
   await expect(divider).toHaveCSS('margin-block-end', '2px')

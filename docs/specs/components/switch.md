@@ -27,7 +27,7 @@ A switch controls one independent setting whose effect takes place immediately. 
 - `switch.a11y.name-description`: The inline label provides the accessible name; supporting text may provide a description. See [Switch accessibility: labeling](https://m3.material.io/components/switch/accessibility).
 - `switch.a11y.focus`: Keyboard focus lands on the handle, with its focus indicator around the handle rather than the full track. See [Switch accessibility: initial focus](https://m3.material.io/components/switch/accessibility).
 
-### Project decisions
+## Project decisions
 
 - Map selected icons to `primary` and the selected hover handle to `primary-container`, following the named token values in the specs selector. The color figure labels selected icons `on-primary-container`; the selector is the chosen mapping source for this project.
 - When `icons="both"`, keep the unselected icon visible while disabled, using the disabled-unselected icon color at 38% opacity. This uses the disabled icon token available in the selector and keeps both icon variants available to the component.

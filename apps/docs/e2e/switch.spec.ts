@@ -175,6 +175,7 @@ test('descriptions, disabled states, dark colors, RTL, forced colors, and reduce
   await page.keyboard.press('Shift+Tab')
   await page.keyboard.press('Tab')
   await expect(notifications).toBeFocused()
+  // switch.a11y.focus
   await expect(notificationControl.locator('.yam3x-switch__thumb')).toHaveCSS(
     'outline-style',
     'solid',

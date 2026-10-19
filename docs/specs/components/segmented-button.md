@@ -14,7 +14,7 @@ Material 3 continues to document classic Segmented buttons. The M3 Expressive up
 
 - `segmented-button.legacy.geometry`: When maintaining the classic control, use the 40 dp visual height, 1 dp outline, fully rounded outer corners, and 48 dp interactive target shown in the classic [Segmented buttons measurement figures](https://m3.material.io/components/segmented-buttons/specs).
 - `segmented-button.legacy.selection-modes`: The classic control supports single-select and multi-select groups, with icons, labels, or both; selection may be indicated with a check icon. See [Segmented buttons guidelines](https://m3.material.io/components/segmented-buttons/guidelines) and [specifications](https://m3.material.io/components/segmented-buttons/specs).
-- `segmented-button.legacy.keyboard`: The first enabled segment is the initial Tab stop in LTR; the last enabled segment is the initial stop in RTL. Arrow keys move focus among segments; Space or Enter activates the focused segment. Expose single-select options with radio semantics and multi-select options with checkbox semantics. See [Segmented buttons accessibility](https://m3.material.io/components/segmented-buttons/accessibility).
+- The first enabled segment is the initial Tab stop in LTR; the last enabled segment is the initial stop in RTL. Arrow keys move focus among segments; Space or Enter activates the focused segment. Expose single-select options with radio semantics and multi-select options with checkbox semantics. See [Segmented buttons accessibility](https://m3.material.io/components/segmented-buttons/accessibility).
 
 ## Project decisions
 

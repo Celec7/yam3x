@@ -15,7 +15,7 @@ A divider is a thin, passive line that groups content in a list or container and
 
 ### Interaction and accessibility
 
-- `divider.a11y.decorative`: A divider is decorative by default: it does not take focus or intercept interaction. See [Divider accessibility: decorative dividers](https://m3.material.io/components/divider/accessibility).
+- A divider is decorative by default: it does not take focus or intercept interaction. See [Divider accessibility: decorative dividers](https://m3.material.io/components/divider/accessibility).
 
 ## Project decisions
 

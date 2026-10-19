@@ -257,7 +257,7 @@ test('Select cancellation retains the value and multi-select stays open and subm
   expect(submitted).toEqual(['stable', 'beta'])
 })
 
-test('Select multiple uses a focused multi-select listbox and returns focus on Escape', async ({
+test('select.a11y.multiple: multiple uses a focused multi-select listbox and returns focus on Escape', async ({
   page,
 }) => {
   await page.goto('/components/select')

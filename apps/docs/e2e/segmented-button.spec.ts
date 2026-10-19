@@ -8,6 +8,7 @@ test('segmented button rows render composed segments with the classic geometry',
   const group = page.getByRole('radiogroup', { name: 'View mode' })
   const segments = group.getByRole('radio')
   await expect(segments).toHaveCount(3)
+  // segmented-button.legacy.geometry
   const measurements = await segments.evaluateAll((elements) =>
     elements.map((element) => {
       const surface = element.querySelector<HTMLElement>('.yam3x-segmented-button__surface')!
@@ -31,6 +32,7 @@ test('segmented button rows render composed segments with the classic geometry',
     return { thickness: style.outlineWidth, offset: style.outlineOffset }
   })
   expect(focusIndicator).toEqual({ thickness: '3px', offset: '2px' })
+  // segmented-button.legacy.selection-modes
   await expect(
     page
       .getByRole('group', { name: 'Content filters' })
@@ -56,6 +58,7 @@ test('single and multiple rows expose separate models, semantics, keyboard behav
   page,
 }) => {
   await page.goto('/components/segmented-button')
+  // segmented-button.legacy.selection-modes
   const single = page.getByRole('radiogroup', { name: 'View mode' })
   const list = single.getByRole('radio', { name: 'List' })
   const grid = single.getByRole('radio', { name: 'Grid' })

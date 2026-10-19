@@ -23,7 +23,7 @@ The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generate
    pnpm pack --pack-destination /tmp/yam3x-release
    ```
 
-   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. The package test exercises the packed CLI against a disposable consumer app.
+   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. The CLI integration tests exercise the repository entry point against disposable consumer apps. Separately, extract the archive into a temporary directory and run its `src/index.mjs` entry point against a disposable consumer app to verify the packaged files work together.
 
 ## First publish
 

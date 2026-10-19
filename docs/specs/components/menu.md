@@ -12,7 +12,7 @@ Menus show a temporary list of choices or actions. This project adopts the curre
 - `menu.geometry.items`: Use the vertical-menu anatomy, item height, spacing, grouping, and measurement figures in [Menus specifications](https://m3.material.io/components/menus/specs). A menu item may include a label and supporting or leading/trailing content; it represents one action or choice.
 - Material recommends dividers for Web menus and says scrollable menus must not use gaps. Dividers are also recommended for text-field dropdown menus when grouping is unnecessary. See [Menus guidelines](https://m3.material.io/components/menus/guidelines).
 - Place the menu relative to its trigger and reposition it when needed to remain in the viewport. Follow the [adaptive placement guidance](https://m3.material.io/components/menus/guidelines).
-- `menu.motion.placement`: Expand from the trigger-facing edge after adaptive placement flips the menu. Material shows menus expanding down from the top and up from the bottom.
+- Expand from the trigger-facing edge after adaptive placement flips the menu. Material shows menus expanding down from the top and up from the bottom.
 - `menu.a11y.keyboard`: Support keyboard access, focus movement, activation, and dismissal. Expose menu-item, selected, disabled, and submenu states as applicable. See [Menus accessibility](https://m3.material.io/components/menus/accessibility); apply Web semantics as described by the [WAI-ARIA menu pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu/).
 
 ## Project decisions
