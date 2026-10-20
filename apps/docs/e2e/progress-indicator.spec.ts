@@ -245,8 +245,15 @@ test('circular determinate progress interpolates visually while ARIA updates imm
   }
 
   // progress-indicator.motion.reduced
+  await circular.evaluate((element) => {
+    // Media preference changes are delivered asynchronously to component listeners.
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
+    query.addEventListener('change', () => element.setAttribute('data-test-motion-ready', ''), {
+      once: true,
+    })
+  })
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.waitForTimeout(50)
+  await expect(circular).toHaveAttribute('data-test-motion-ready', '')
   await setM3SliderValue(slider, 20)
   await expect(circular).toHaveAttribute('aria-valuenow', '20')
   await expect.poll(arcLength).toBeLessThan(80)
