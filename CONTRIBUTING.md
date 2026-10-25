@@ -13,7 +13,7 @@ Run `pnpm format` to apply Prettier and `pnpm lint` to check JavaScript, TypeScr
 
 In Vue single-file components, declare props, models, emits, and slots in that order. Name event handlers `onX` (for example, `onKeydown`). Keep component-specific selectors in `yam3x-*` BEM classes and use `--yam3x-*` custom properties for project-owned CSS hooks. Keep Material system tokens under their official `--md-sys-*` names. Use kebab-case for component directories and filenames; expose Vue components with their PascalCase names and no project prefix.
 
-These names are public because consumers copy registry source and can depend on its imports and CSS hooks. Breaking renames require a major-version migration.
+These names are public because consumers copy registry source and can depend on its imports and CSS hooks. Breaking renames require an explicit migration guide and a breaking release: increment the minor version before 1.0, then the major version after 1.0.
 
 For token-layer ownership, component mappings, CSS source structure, and custom-property scope rules, follow [CSS and token conventions](docs/css-and-tokens.md).
 

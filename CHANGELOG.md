@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0
+
+### Added
+
+- Distribute a scoped `AGENTS.md` in `src/components/yam3x/` when core foundations are initialized, preserving an existing target file.
+- Summarize Material 3 Expressive layout, typography, and spacing guidance in the bilingual design guide, with Tailwind theme utility examples.
+
+### Breaking changes
+
+- Namespace YAM3X Tailwind color, typography, font, and easing utilities with `yam3x` to avoid collisions with application token names. For example, rename `bg-primary` to `bg-yam3x-primary` and `text-body-medium` to `text-yam3x-body-medium`.
+
+### Updating copied source
+
+When updating an existing app, merge the new `src/styles/yam3x-tokens.css` and rename earlier unprefixed utility classes. The CLI preserves files already installed in the app; follow the [source update guide](https://yam3x.iscccc.cc/guide/updating) to merge foundation changes.
+
+[Compare changes from 0.2.0](https://github.com/Celec7/yam3x/compare/v0.2.0...v0.3.0).
+
 ## 0.2.0
 
 ### Added
