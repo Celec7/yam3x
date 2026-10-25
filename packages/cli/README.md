@@ -20,7 +20,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-`--version` prints the CLI version. `list` prints the component names accepted by `add`. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry. `add` copies the requested components and declares their dependencies. The CLI installs dependencies with the package manager declared by the app, inferred from its lockfile, or npm by default.
+`--version` prints the CLI version. `list` prints the component names accepted by `add`. `init` copies shared foundation files, including the YAM3X design route as `src/components/yam3x/AGENTS.md` when no file exists there, declares dependencies, and imports `yam3x.css` from the app entry. `add` initializes core when needed, then copies the requested components and their dependencies. The CLI installs dependencies with the package manager declared by the app, inferred from its lockfile, or npm by default.
 
 Add `@tailwindcss/vite` to the existing Vite plugin list if it is not configured. The CLI prints a reminder but does not edit Vite configuration.
 
@@ -30,4 +30,4 @@ Use `--cwd <project>` to target a different directory. Use `--no-install` to upd
 pnpm dlx @celec7/yam3x@latest add button --cwd ../my-app --no-install
 ```
 
-The CLI preserves existing destination files. Running `add` again does not overwrite copied or edited source. It validates component names and dependency ranges before copying, but installation is not transactional: inspect the target if a later copy or package-manager step fails.
+The CLI preserves existing destination files, including an existing `src/components/yam3x/AGENTS.md`; an app-root `AGENTS.md` is independent. Running `add` again does not overwrite copied or edited source. It validates component names and dependency ranges before copying, but installation is not transactional: inspect the target if a later copy or package-manager step fails.

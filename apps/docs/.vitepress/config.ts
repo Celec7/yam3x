@@ -18,7 +18,7 @@ function localeThemeConfig(prefix: '' | '/zh', english = false) {
   const labels = english
     ? {
         guide: 'Guides',
-        design: 'Design foundations',
+        design: 'Design guidance',
         components: 'Components',
         extensions: 'Extensions',
         catalog: 'Component catalog',
@@ -32,7 +32,7 @@ function localeThemeConfig(prefix: '' | '/zh', english = false) {
       }
     : {
         guide: '使用指南',
-        design: '设计基础',
+        design: '设计指南',
         components: '组件',
         extensions: '项目拓展',
         catalog: '组件目录',

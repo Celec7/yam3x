@@ -12,4 +12,4 @@ Use these guides to get started and maintain the component source copied into yo
 
 - [Update copied source](/guide/updating): compare versions and merge changes manually.
 
-Design guidance for theming and interactions is grouped under [Design foundations](/guide/design).
+The [design guide](/guide/design) explains how to apply Material 3 Expressive typography, spacing, page layouts, and YAM3X components.

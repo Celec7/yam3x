@@ -7,7 +7,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-Run `init` and `add` from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. `add` copies component source and declares component dependencies. To find accepted component names, run `pnpm dlx @celec7/yam3x@latest list` from any directory; see the [component catalog](/components/) for categorized documentation. If Tailwind's Vite plugin is not configured, add it to the existing Vite configuration:
+Run `init` and `add` from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. When `add` initializes core, it copies the same foundation files. Core setup also adds the YAM3X design route as `src/components/yam3x/AGENTS.md` if no file exists there; an existing app-root `AGENTS.md` is independent, and an existing file at the YAM3X path is preserved. `add` copies component source and declares component dependencies. To find accepted component names, run `pnpm dlx @celec7/yam3x@latest list` from any directory; see the [component catalog](/components/) for categorized documentation. If Tailwind's Vite plugin is not configured, add it to the existing Vite configuration:
 
 ```ts
 import tailwindcss from '@tailwindcss/vite'
@@ -41,4 +41,4 @@ const enabled = ref(false)
 
 Build the target app to confirm that the Vite plugin and dependencies are ready. Demo source on the component pages uses the site-only `@registry` path; when copying an example, use the corresponding `./components/yam3x/` path in your app.
 
-`--no-install` updates project files and dependency declarations without running a package manager. Use `--cwd <project>` to target a directory other than the current one. The CLI preserves existing files in the target app; running `add` again does not overwrite copied or edited source. See [Update copied source](/guide/updating) for later merges.
+`--no-install` updates project files and dependency declarations without running a package manager. Use `--cwd <project>` to target a directory other than the current one. The CLI preserves existing files in the target app, including `src/components/yam3x/AGENTS.md`; merge the [distributed YAM3X guidance](https://github.com/Celec7/yam3x/blob/main/registry/foundations/AGENTS.md) into that file when needed. Running `add` again does not overwrite copied or edited source. See [Update copied source](/guide/updating) for later merges.

@@ -3,6 +3,7 @@
   "foundations": {
     "core": {
       "files": [
+        { "source": "foundations/AGENTS.md", "target": "src/components/yam3x/AGENTS.md" },
         { "source": "foundations/entry.css", "target": "src/yam3x.css" },
         {
           "source": "foundations/gestures/binding.ts",

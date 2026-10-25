@@ -46,3 +46,17 @@ Set `mode` to `light`, `dark`, or `system`. The controller follows system color-
 ## Custom tokens
 
 Default tokens are in `src/styles/yam3x-tokens.css`; shared interaction styles are in `src/styles/yam3x-base.css`. Edit these copied files in your app to customize them. Component demos use the registry source, not your app's copy.
+
+## Spacing for application layout
+
+The copied foundation stylesheet provides reusable spacing variables at 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, and 64 CSS pixels at default density. Names such as **--md-sys-spacing-16** and **--md-sys-spacing-24** are YAM3X's Web implementation of a spacing scale, not official Material CSS token names. Use them for application-owned page gutters and layout gaps:
+
+```css
+.page-layout {
+  display: grid;
+  gap: var(--md-sys-spacing-24);
+  padding-inline: var(--md-sys-spacing-16);
+}
+```
+
+Tailwind v4 aliases the same scale; for example, **gap-yam3x-6** maps to 24px and **px-yam3x-4** maps to 16px at default density. Setting density scales these variables and aliases too, including values used by application layouts. Check page gutters and content fit at the density used by your app. For design guidance, see [Spacing overview](https://m3.material.io/styles/spacing/overview), [spacing tokens](https://m3.material.io/styles/spacing/tokens), and [applying spacing](https://m3.material.io/styles/spacing/applying-spacing).

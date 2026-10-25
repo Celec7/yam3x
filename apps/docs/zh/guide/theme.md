@@ -46,3 +46,17 @@ theme.dispose()
 ## 自定义令牌
 
 默认令牌位于 `src/styles/yam3x-tokens.css`，共享基础交互样式位于 `src/styles/yam3x-base.css`。可以直接修改复制到应用中的文件。组件演示使用 registry 源码，而不是应用内副本。
+
+## 应用布局间距
+
+复制的基础样式表在默认密度下提供 4、8、12、16、20、24、28、32、40、48、56、64 CSS 像素的可复用间距变量。**--md-sys-spacing-16** 和 **--md-sys-spacing-24** 等名称是 YAM3X 的 Web 实现，并非 Material 官方 CSS token 名称。可将它们用于应用自有页面边距和布局间隔：
+
+```css
+.page-layout {
+  display: grid;
+  gap: var(--md-sys-spacing-24);
+  padding-inline: var(--md-sys-spacing-16);
+}
+```
+
+Tailwind v4 也提供对应别名。例如，默认密度下 **gap-yam3x-6** 对应 24px，**px-yam3x-4** 对应 16px。设置 density 后，这些变量和别名也会缩放，包括应用布局所用的间距。请检查应用实际密度下的页面边距和内容空间。设计原则参阅[间距概览](https://m3.material.io/styles/spacing/overview)、[间距 token](https://m3.material.io/styles/spacing/tokens)和[间距应用指南](https://m3.material.io/styles/spacing/applying-spacing)。

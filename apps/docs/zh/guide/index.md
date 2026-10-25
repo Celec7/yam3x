@@ -12,4 +12,4 @@
 
 - [更新已复制的源码](/zh/guide/updating)：比较新旧版本并手动合并更改。
 
-主题与交互设计指南统一列在[设计基础](/zh/guide/design)下。
+[设计指南](/zh/guide/design)说明如何应用 Material 3 Expressive 排版、间距、页面布局和 YAM3X 组件。
