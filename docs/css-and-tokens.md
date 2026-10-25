@@ -19,7 +19,7 @@ Theme application writes tokens to a target element. CSS custom properties inher
 
 The `--md-sys-*` namespace is reserved for Material system semantics. Project-wide hooks such as focus-ring visibility, scrollbar colors, and density configuration are project extensions even where an existing name uses an `md-sys` prefix. The `--yam3x-*` prefix alone does not make a property public: list supported consumer overrides in the component documentation. When revising a component, move undocumented implementation properties directly to `--_yam3x-*`; do not keep compatibility aliases for those incidental names. Renaming a documented override requires an explicit breaking-change and migration plan. Do not present project extensions as official Material tokens.
 
-As a project decision, project-owned CSS custom properties use the `yam3x` name, including documented component overrides, private implementation aliases, and Tailwind theme tokens. Consumers must update any `m3x`-named overrides or utility tokens; no compatibility aliases are provided.
+As a project decision, project-owned CSS custom properties use the `yam3x` name, including documented component overrides, private implementation aliases, and Tailwind theme tokens. Tailwind aliases use names such as `--color-yam3x-primary`, `--text-yam3x-body-medium`, `--font-yam3x-sans`, and `--ease-yam3x-standard`; shape and spacing aliases use `--radius-yam3x-*` and `--spacing-yam3x-*`. Consumers must update any `m3x`-named overrides and earlier unprefixed utility aliases; no compatibility aliases are provided.
 
 ## Component mappings and overrides
 
