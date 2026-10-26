@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- Align idle labels in outlined multi-line FormField controls with the first text line.
+- Align compact Navigation Bar indicators and ripple targets with the icon row.
+
+### Updating copied source
+
+Existing apps keep their installed component files. Merge the updated component files into your app to apply these fixes; see the [source update guide](https://yam3x.iscccc.cc/guide/updating).
+
+[Compare changes from 0.3.0](https://github.com/Celec7/yam3x/compare/v0.3.0...v0.3.1).
+
 ## 0.3.0
 
 ### Added
