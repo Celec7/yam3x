@@ -78,7 +78,6 @@ provide(navigationBarContextKey, { modelValue, activate })
   --_yam3x-navigation-bar-horizontal-item-gap: 4px;
   --_yam3x-navigation-bar-compact-indicator-width: 56px;
   --_yam3x-navigation-bar-compact-indicator-height: 32px;
-  --_yam3x-navigation-bar-compact-indicator-top: 12px;
   --_yam3x-navigation-bar-horizontal-indicator-height: 40px;
   --_yam3x-navigation-bar-horizontal-indicator-inset: 16px;
   --_yam3x-navigation-bar-horizontal-item-width: 144px;
@@ -106,6 +105,8 @@ provide(navigationBarContextKey, { modelValue, activate })
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  /* Keep the indicator and ripple anchored to the icon row, independent of label metrics. */
+  grid-template-rows: var(--_yam3x-navigation-bar-icon-size) auto;
   min-width: 0;
   flex: 1 1 0;
   align-content: center;
@@ -122,8 +123,11 @@ provide(navigationBarContextKey, { modelValue, activate })
 .yam3x-navigation-bar__indicator {
   position: absolute;
   z-index: 0;
-  top: var(--_yam3x-navigation-bar-compact-indicator-top);
-  left: calc(50% - var(--_yam3x-navigation-bar-compact-indicator-width) / 2);
+  grid-area: 1 / 1 / 2 / 2;
+  align-self: center;
+  justify-self: center;
+  top: auto;
+  left: auto;
   width: var(--_yam3x-navigation-bar-compact-indicator-width);
   height: var(--_yam3x-navigation-bar-compact-indicator-height);
   border-radius: var(--_yam3x-navigation-bar-indicator-shape);
@@ -207,8 +211,11 @@ provide(navigationBarContextKey, { modelValue, activate })
   display: none;
 }
 .yam3x-navigation-bar .yam3x-navigation-bar__item .yam3x-ripple-container {
-  top: var(--_yam3x-navigation-bar-compact-indicator-top);
-  left: calc(50% - var(--_yam3x-navigation-bar-compact-indicator-width) / 2);
+  grid-area: 1 / 1 / 2 / 2;
+  align-self: center;
+  justify-self: center;
+  top: auto;
+  left: auto;
   width: var(--_yam3x-navigation-bar-compact-indicator-width);
   height: var(--_yam3x-navigation-bar-compact-indicator-height);
   bottom: auto;
@@ -273,7 +280,6 @@ provide(navigationBarContextKey, { modelValue, activate })
 }
 .yam3x-navigation-bar__label {
   text-align: center;
-  transform: translateY(10px);
 }
 @media (min-width: 600px) {
   .yam3x-navigation-bar[data-layout='auto'] {
