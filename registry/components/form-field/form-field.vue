@@ -339,6 +339,7 @@ onBeforeUnmount(() => {
       {
         'yam3x-form-field--with-prefix': !!$slots.prefix || !!$slots['prefix-text'],
         'yam3x-form-field--with-suffix': !!$slots.suffix || !!$slots['suffix-text'],
+        'yam3x-form-field--multiline': control?.localName === 'textarea',
       },
     ]"
     :style="width ? { '--_yam3x-form-field-width-runtime': width } : undefined"
@@ -583,6 +584,12 @@ onBeforeUnmount(() => {
     top var(--_yam3x-form-field-motion-spatial),
     transform var(--_yam3x-form-field-motion-spatial),
     color var(--_yam3x-form-field-motion-effects);
+}
+.yam3x-form-field--multiline.yam3x-form-field--outlined:not(.yam3x-form-field--floating)
+  .yam3x-form-field__label {
+  top: calc(
+    var(--_yam3x-form-field-label-line-height) * var(--_yam3x-form-field-line-height-scale) * 0.5
+  );
 }
 .yam3x-form-field:not(.yam3x-form-field--floating) .yam3x-form-field__control input::placeholder,
 .yam3x-form-field:not(.yam3x-form-field--floating)
