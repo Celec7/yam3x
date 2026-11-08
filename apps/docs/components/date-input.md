@@ -42,7 +42,7 @@ Built-in text, segment names, and date formatting can inherit [LocaleProvider](/
 
 | Prop                                   | Type                                        | Default                   | Description                                                                                              |
 | -------------------------------------- | ------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `modelValue` / `value`                 | `Date \| null`                              | `null`                    | Localized date or time value for `v-model`; `value` is a compatibility alias.                            |
+| `modelValue`                           | `Date \| null`                              | `null`                    | Localized date or time value for `v-model`.                                                              |
 | `type`                                 | `'date' \| 'time' \| 'datetime'`            | `'date'`                  | Edits a date, time, or both.                                                                             |
 | `showSeconds`                          | `boolean`                                   | `false`                   | Whether time includes seconds.                                                                           |
 | `timeFormat`                           | `'12' \| '24' \| 'auto'`                    | `'auto'`                  | Hour format; `auto` follows the locale.                                                                  |
@@ -61,7 +61,7 @@ Built-in text, segment names, and date formatting can inherit [LocaleProvider](/
 
 Project decision: in automatic hour-cycle mode, an unfinished time draft retains its original cycle across language changes until a valid commit or clearing. This prevents a 12-hour edit from becoming a different 24-hour value. Labels and segment order still update while preserving drafts and the focused segment; a language change alone does not commit a value.
 
-Events are `update:modelValue`, `update:value`, `beforeinput`, `input`, `change`, and `invalid`. Dates and date-times use separate numeric segments ordered by locale; typing into an empty segment does not insert mask characters. The 12-hour format displays localized AM/PM segments, while the 24-hour format uses hours from 0 to 23. Required state has a visible marker; error text is linked to the affected field segments and announced through an alert, with an error icon.
+Events are `update:modelValue`, `beforeinput`, `input`, `change`, and `invalid`. Dates and date-times use separate numeric segments ordered by locale; typing into an empty segment does not insert mask characters. The 12-hour format displays localized AM/PM segments, while the 24-hour format uses hours from 0 to 23. Required state has a visible marker; error text is linked to the affected field segments and announced through an alert, with an error icon.
 
 An empty validation-message override hides the visible text but does not make an invalid value valid; native validity retains a fallback message.
 

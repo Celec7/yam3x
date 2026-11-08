@@ -119,9 +119,7 @@ let ownsAriaInvalid = false
 
 function findControl() {
   if (!root.value) return null
-  return root.value.querySelector<HTMLElement>(
-    '[data-form-field-control], input, textarea, select, m3e-select, m3e-date-input, m3e-input-chip-set',
-  )
+  return root.value.querySelector<HTMLElement>('[data-form-field-control], input, textarea, select')
 }
 function getValue(element: HTMLElement) {
   return [element, getFormValidationControl(element)].some((control) => {

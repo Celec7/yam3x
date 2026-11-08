@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- DateInput removes the controlled `value` and `update:value` compatibility aliases. Use `v-model`, `modelValue`, and `update:modelValue` instead.
+- FormField resolves form controls through native form elements or `data-form-field-control`; external custom-element tags are no longer special-cased.
 - Remove the mandatory Tailwind CSS dependency. Copied components now use standard CSS without Tailwind or its Vite plugin, and the published Tailwind theme aliases (`bg-yam3x-*`, `text-yam3x-*`, `font-yam3x-*`, `rounded-yam3x-*`, `p-yam3x-*`, `gap-yam3x-*`, and other generated utilities) are no longer provided. Replace them with application-owned CSS using the retained semantic `--md-sys-*` custom properties.
 - Button variants no longer use `tailwind-variants`. The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
 
@@ -17,7 +19,7 @@
 
 ### Updating copied source
 
-Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-base.css`, and affected component files, including `src/components/yam3x/form-field/`, `src/components/yam3x/select/`, `src/components/yam3x/dialog/`, `src/components/yam3x/menu/`, `src/components/yam3x/bottom-sheet/`, `src/components/yam3x/fab-menu/`, `src/components/yam3x/autocomplete/`, `src/components/yam3x/search/`, `src/components/yam3x/time-picker/`, `src/components/yam3x/date-picker/`, `src/components/yam3x/list/`, `src/components/yam3x/navigation-rail/`, `src/components/yam3x/tooltip/`, `src/components/yam3x/option/`, and `src/components/yam3x/_shared/overlay-layer.ts` for the current interaction fixes. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/updating).
+Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-base.css`, and affected component files, including `src/components/yam3x/form-field/`, `src/components/yam3x/select/`, `src/components/yam3x/dialog/`, `src/components/yam3x/menu/`, `src/components/yam3x/bottom-sheet/`, `src/components/yam3x/fab-menu/`, `src/components/yam3x/autocomplete/`, `src/components/yam3x/search/`, `src/components/yam3x/time-picker/`, `src/components/yam3x/date-picker/`, `src/components/yam3x/date-input/`, `src/components/yam3x/list/`, `src/components/yam3x/navigation-rail/`, `src/components/yam3x/tooltip/`, `src/components/yam3x/option/`, and `src/components/yam3x/_shared/overlay-layer.ts` for the current interaction fixes. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/updating).
 
 ## 0.3.1
 

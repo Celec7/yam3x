@@ -149,7 +149,7 @@ function submit(event: Event) {
     <section class="date-input-demo__section">
       <h3>{{ text.disabled }}</h3>
       <DateInput
-        :value="time"
+        :model-value="time"
         :label="text.disabledInput"
         disabled
         :locale="locale"
@@ -190,7 +190,7 @@ function submit(event: Event) {
     <section class="date-input-demo__section">
       <h3>{{ text.rtlDate }}</h3>
       <DateInput
-        :value="new Date(2026, 9, 5)"
+        :model-value="new Date(2026, 9, 5)"
         :label="text.rtlDate"
         locale="he-IL"
       />
@@ -198,7 +198,7 @@ function submit(event: Event) {
     <section class="date-input-demo__section">
       <h3>{{ text.readOnly }}</h3>
       <DateInput
-        :value="dateTime"
+        :model-value="dateTime"
         :label="text.readOnlyInput"
         readonly
         :locale="locale"

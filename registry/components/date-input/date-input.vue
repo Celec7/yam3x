@@ -21,8 +21,6 @@ type SegmentLabel = Partial<Record<DateInputSegment, string>>
 const props = withDefaults(
   defineProps<{
     modelValue?: Date | null
-    /** m3e-compatible controlled-value alias. */
-    value?: Date | null
     type?: DateInputType
     showSeconds?: boolean
     timeFormat?: DateInputTimeFormat
@@ -46,7 +44,6 @@ const props = withDefaults(
   }>(),
   {
     modelValue: undefined,
-    value: undefined,
     type: 'date',
     showSeconds: false,
     timeFormat: 'auto',
@@ -65,7 +62,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   'update:modelValue': [value: Date | null]
-  'update:value': [value: Date | null]
   beforeinput: [event: InputEvent]
   input: [value: Date | null]
   change: [value: Date | null]
@@ -80,8 +76,8 @@ const emit = defineEmits<{
 const root = ref<HTMLElement>()
 const uid = useId()
 const fields = new Map<DateInputSegment, HTMLInputElement>()
-const currentValue = ref<Date | null>(copyDate(props.modelValue ?? props.value ?? null))
-const initialValue = copyDate(props.modelValue ?? props.value ?? null)
+const currentValue = ref<Date | null>(copyDate(props.modelValue ?? null))
+const initialValue = copyDate(props.modelValue ?? null)
 const draft = ref<Partial<Record<DateInputSegment, string>>>({})
 const activeSegment = ref<DateInputSegment>('month')
 const changedSinceFocus = ref(false)
@@ -219,9 +215,9 @@ const nativeValidationMessage = computed(() =>
 )
 
 watch(
-  () => [props.modelValue, props.value] as const,
-  ([modelValue, value]) => {
-    const incoming = copyDate(modelValue !== undefined ? modelValue : value)
+  () => props.modelValue,
+  (modelValue) => {
+    const incoming = copyDate(modelValue)
     if (incoming?.getTime() !== currentValue.value?.getTime()) {
       currentValue.value = incoming
       setDraft({})
@@ -275,7 +271,6 @@ function moveField(id: DateInputSegment, step: number): void {
 function emitValue(value: Date | null, input = true): void {
   currentValue.value = copyDate(value)
   emit('update:modelValue', copyDate(value))
-  emit('update:value', copyDate(value))
   if (input) emit('input', copyDate(value))
   changedSinceFocus.value = true
 }
@@ -522,7 +517,6 @@ function onFormReset(): void {
   currentValue.value = copyDate(initialValue)
   setDraft({})
   emit('update:modelValue', copyDate(initialValue))
-  emit('update:value', copyDate(initialValue))
 }
 let form: HTMLFormElement | null = null
 onMounted(() => {
