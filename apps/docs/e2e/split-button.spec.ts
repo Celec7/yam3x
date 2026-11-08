@@ -1,5 +1,13 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
 import { selectM3Option } from './test-utils'
+
+async function settleMenuMotion(menu: Locator) {
+  await menu.evaluate(async (element) => {
+    await Promise.all(
+      element.getAnimations().map((animation) => animation.finished.catch(() => undefined)),
+    )
+  })
+}
 
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 900 })
@@ -31,6 +39,7 @@ test('keeps primary and menu actions independent and exposes the group and popup
   await more.click()
   const menu = page.getByRole('menu', { name: 'Save options' })
   await expect(menu).toBeVisible()
+  await settleMenuMotion(menu)
   await expect(more).toHaveAttribute('aria-expanded', 'true')
   const menuId = await menu.getAttribute('id')
   expect(menuId).toBeTruthy()
@@ -317,6 +326,7 @@ test('flips the menu above the trailing control when the viewport has no room be
   await more.click()
   const menu = page.getByRole('menu', { name: 'Save options' })
   await expect(menu).toBeVisible()
+  await settleMenuMotion(menu)
   const trigger = (await more.boundingBox())!
   const popup = (await menu.boundingBox())!
   expect(560 - trigger.y - trigger.height).toBeLessThan(popup.height + 4 + 8)
@@ -339,6 +349,7 @@ test('v-model:open can open and close the menu from outside the split button', a
   await openMenu.click()
   const menu = page.getByRole('menu', { name: 'Save options' })
   await expect(menu).toBeVisible()
+  await settleMenuMotion(menu)
   await expect(more).toHaveAttribute('aria-expanded', 'true')
   const popupBounds = await menu.boundingBox()
   const triggerBounds = await more.boundingBox()
