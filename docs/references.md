@@ -8,25 +8,35 @@ Project component design guides in [`specs/`](specs/README.md) summarize the Mat
 
 ## Source boundaries
 
-| Source                                                    | Use                                                                                                              | Authority                                                                     |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Material 3 Expressive pages and their diagrams            | Define intended component design, supported variants, appearance, interaction, and accessibility where specified | Normative design target                                                       |
-| yam3x project design guides                               | Distill the applicable Material target and record necessary project decisions                                    | Guidance for this project's design and implementation                         |
-| Vue source in `registry/`                                 | Define the current public API and actual implemented behavior                                                    | Authoritative for current code facts; not a replacement for the design target |
-| Tests and browser checks                                  | Show which implementation behavior has evidence                                                                  | Verification evidence only                                                    |
-| Compose, Material Web, and other platform implementations | Cross-check implementation mechanics when useful                                                                 | Secondary; cannot add or override Expressive requirements                     |
+| Source                                                                | Use                                                                                                              | Authority                                                                           |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Material 3 Expressive pages and their diagrams                        | Define intended component design, supported variants, appearance, interaction, and accessibility where specified | Normative design target                                                             |
+| yam3x project design guides                                           | Distill the applicable Material target and record necessary project decisions                                    | Guidance for this project's design and implementation                               |
+| Vue source in `registry/`                                             | Define the current public API and actual implemented behavior                                                    | Authoritative for current code facts; not a replacement for the design target       |
+| Tests and browser checks                                              | Show which implementation behavior has evidence                                                                  | Verification evidence only                                                          |
+| Compose Expressive, MDC-Android Expressive, Material Web, and Flutter | Resolve behavior the Material pages leave implicit                                                               | Secondary implementation references; cannot add or override Expressive requirements |
 
 When Material leaves a necessary detail unspecified, record the choice as a project decision. Do not present requirements inferred from comparison libraries or platform implementations as official Material requirements. Keep exact Vue API details in source and public API documentation, and keep detailed verification results with the tests or verification records.
 
-## Implementation references
+## Platform implementation order
+
+Use platform implementations to resolve behavior that the Material pages leave implicit. They inform semantics, not API shape.
+
+1. **Jetpack Compose Material 3 Expressive** is the primary reference for variants, state models, interaction semantics, tokens, and motion parameters. Read its APIs as evidence of those semantics. Vue props, slots, and events follow Vue and Web conventions.
+2. **MDC-Android Expressive** is the secondary reference for geometry, token mappings, and behavior that Compose leaves unclear. When the two diverge, the Material page and its token tables decide.
+3. **Flutter** implements baseline Material 3 only. Material states that M3 Expressive is [not available on Flutter](https://m3.material.io/develop/flutter), so use it for baseline mechanics, not Expressive appearance, variants, states, or motion.
+
+**Material Web** is the Web mechanics reference for focus, hover, pointer input, scrolling, and overlays. It implements baseline M3; its visuals, defaults, and motion do not define Expressive appearance.
+
+Keyboard, focus, and ARIA behavior follow the [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) and measured browser behavior. Compose semantics describe Android accessibility, not the Web DOM contract.
+
+An implementation-dependent decision records its exact library version in the decision record that owns it. Component design guides cite the Material page.
+
+## Implementation inputs
 
 - [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) is a runtime dependency used by [`generate.ts`](../registry/foundations/theme/generate.ts) to generate light and dark 2025 tonal schemes.
 - AndroidX [ExpressiveMotionTokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ExpressiveMotionTokens.kt) informs the spring parameters stored in [`foundation-tokens.mjs`](../registry/foundations/tokens/foundation-tokens.mjs); the M3 Web motion specification supplies the CSS duration/easing mappings. [`generate-foundation-tokens.mjs`](../scripts/generate-foundation-tokens.mjs) generates their CSS representation. These are implementation inputs, not authorities for component-specific requirements that Material defines.
 - [Ark UI](https://ark-ui.com/) is an implementation dependency described in [Architecture and ownership](architecture.md). The source-copying workflow is similar to [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.
-
-## Material Web
-
-Material Web is an implementation project, not the Material 3 Expressive design target. Consult it only to understand a Web mechanic that remains applicable and agrees with the current Expressive guidance. Do not use its visuals, defaults, or motion to fill gaps in the Expressive design target; label any necessary project choice explicitly.
 
 ## m3e
 
