@@ -1067,7 +1067,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
 .yam3x-select__trigger:disabled {
   cursor: default;
 }
-.yam3x-select__trigger:focus-visible {
+.yam3x-select__trigger:focus-visible:not(.yam3x-form-field__control *) {
   outline: 2px solid var(--_yam3x-select-focus-color);
   outline-offset: -2px;
   border-radius: inherit;

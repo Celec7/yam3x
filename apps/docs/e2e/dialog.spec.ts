@@ -260,17 +260,36 @@ test('matches dialog spacing, omits an empty body, centers the icon, and fades w
 test('keeps a floating label inside the scrollport and lets a teleported select receive pointer input', async ({
   page,
 }) => {
+  // form-field.geometry.label-notch
   await page.getByRole('button', { name: 'Open dialog with form controls', exact: true }).click()
   const dialog = page.getByRole('alertdialog', { name: 'Install extension' })
   await expect(dialog).toBeVisible()
 
   const bodyBox = await dialog.locator('.yam3x-dialog__body').boundingBox()
-  const labelBox = await dialog.locator('.yam3x-form-field__label').boundingBox()
+  const label = dialog.locator('.yam3x-form-field__label')
+  const labelBox = await label.boundingBox()
   expect(bodyBox).not.toBeNull()
   expect(labelBox).not.toBeNull()
   expect(labelBox!.y).toBeGreaterThanOrEqual(bodyBox!.y)
+  await expect(label).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+  const notch = await label.evaluate((element) => {
+    const field = element.closest<HTMLElement>('.yam3x-form-field')!
+    return [
+      Number.parseFloat(field.style.getPropertyValue('--_yam3x-form-field-notch-start')),
+      Number.parseFloat(field.style.getPropertyValue('--_yam3x-form-field-notch-end')),
+    ]
+  })
+  expect(notch[0]).toBeGreaterThan(0)
+  expect(notch[1]).toBeGreaterThan(notch[0]!)
 
   const trigger = dialog.locator('.yam3x-select__trigger')
+  await dialog.focus()
+  const labelBlurred = await label.boundingBox()
+  await trigger.focus()
+  const labelFocused = await label.boundingBox()
+  expect(labelFocused!.x).toBeCloseTo(labelBlurred!.x, 1)
+  expect(labelFocused!.y).toBeCloseTo(labelBlurred!.y, 1)
+
   await trigger.click()
   const panel = page.locator('.yam3x-option-panel')
   await expect(panel).toBeVisible()

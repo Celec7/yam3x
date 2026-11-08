@@ -111,6 +111,8 @@ const stateClass = computed(() => ({
 let observer: MutationObserver | undefined
 let disabledObserver: MutationObserver | undefined
 let prefixObserver: ResizeObserver | undefined
+let outlineObserver: ResizeObserver | undefined
+let directionObserver: MutationObserver | undefined
 let observedForm: HTMLFormElement | null = null
 let controlsToCleanup: HTMLElement[] = []
 let ownsAriaInvalid = false
@@ -157,6 +159,35 @@ function syncLabelInset() {
   )
   if (prefix) prefixObserver?.observe(prefix)
   if (prefixText) prefixObserver?.observe(prefixText)
+  scheduleOutlineSync()
+}
+let outlineFrame = 0
+function syncOutlineNotch() {
+  if (!root.value || props.variant !== 'outlined') return
+  if (!labelFloats.value) {
+    root.value.style.setProperty('--_yam3x-form-field-notch-start', '0px')
+    root.value.style.setProperty('--_yam3x-form-field-notch-end', '0px')
+    return
+  }
+  const label = root.value.querySelector<HTMLElement>('.yam3x-form-field__label')
+  const container = root.value.querySelector<HTMLElement>('.yam3x-form-field__container')
+  if (!label || !container) return
+  const scale =
+    Number.parseFloat(
+      getComputedStyle(root.value).getPropertyValue('--_yam3x-form-field-label-scale'),
+    ) || 0.75
+  const width = label.offsetWidth * scale
+  const rtl = getComputedStyle(container).direction === 'rtl'
+  const start = rtl ? label.offsetLeft + label.offsetWidth - width : label.offsetLeft
+  root.value.style.setProperty('--_yam3x-form-field-notch-start', `${start}px`)
+  root.value.style.setProperty('--_yam3x-form-field-notch-end', `${start + width}px`)
+}
+function scheduleOutlineSync() {
+  if (outlineFrame) return
+  outlineFrame = requestAnimationFrame(() => {
+    outlineFrame = 0
+    syncOutlineNotch()
+  })
 }
 function syncControl() {
   syncLabelInset()
@@ -293,6 +324,10 @@ watch([describedIds, invalid], () => {
 watch(controlId, () => {
   void nextTick(syncControl)
 })
+watch([focused, populated, invalid, () => props.floatLabel], async () => {
+  await nextTick()
+  scheduleOutlineSync()
+})
 onMounted(() => {
   syncControl()
   disabledObserver = new MutationObserver(syncControl)
@@ -302,6 +337,27 @@ onMounted(() => {
   }
   prefixObserver = new ResizeObserver(syncLabelInset)
   syncLabelInset()
+  outlineObserver = new ResizeObserver(scheduleOutlineSync)
+  if (root.value) {
+    outlineObserver.observe(root.value)
+    const container = root.value.querySelector<HTMLElement>('.yam3x-form-field__container')
+    const label = root.value.querySelector<HTMLElement>('.yam3x-form-field__label')
+    if (container) outlineObserver.observe(container)
+    if (label) outlineObserver.observe(label)
+  }
+  scheduleOutlineSync()
+  if (typeof document !== 'undefined' && document.fonts)
+    void document.fonts.ready.then(scheduleOutlineSync)
+  directionObserver = new MutationObserver(scheduleOutlineSync)
+  if (typeof document !== 'undefined') {
+    directionObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['dir'],
+    })
+  }
+  for (let ancestor = root.value; ancestor; ancestor = ancestor.parentElement) {
+    directionObserver.observe(ancestor, { attributes: true, attributeFilter: ['dir'] })
+  }
   observer = new MutationObserver(() => syncControl())
   if (root.value)
     observer.observe(root.value, {
@@ -324,6 +380,9 @@ onBeforeUnmount(() => {
   observer?.disconnect()
   disabledObserver?.disconnect()
   prefixObserver?.disconnect()
+  outlineObserver?.disconnect()
+  directionObserver?.disconnect()
+  if (outlineFrame) cancelAnimationFrame(outlineFrame)
   observedForm?.removeEventListener('reset', onReset)
   for (const element of controlsToCleanup) element.removeEventListener('invalid', onInvalid)
 })
@@ -379,6 +438,11 @@ onBeforeUnmount(() => {
       >
         <slot name="suffix" />
       </div>
+      <span
+        v-if="variant === 'outlined'"
+        class="yam3x-form-field__outline"
+        aria-hidden="true"
+      />
       <label
         :id="labelId"
         class="yam3x-form-field__label"
@@ -451,6 +515,10 @@ onBeforeUnmount(() => {
   --_yam3x-form-field-label-font-weight: var(--md-sys-typescale-body-large-weight, 400);
   --_yam3x-form-field-label-line-height: var(--md-sys-typescale-body-large-line-height, 24px);
   --_yam3x-form-field-label-tracking: var(--md-sys-typescale-body-large-tracking, 0.5px);
+  --_yam3x-form-field-label-scale: 0.75;
+  --_yam3x-form-field-outline-width: 1px;
+  --_yam3x-form-field-notch-start: 0px;
+  --_yam3x-form-field-notch-end: 0px;
   --_yam3x-form-field-icon-size: 24px;
   --_yam3x-form-field-subscript-line-height: var(--md-sys-typescale-body-small-line-height, 16px);
   --_yam3x-form-field-subscript-color: var(--md-sys-color-on-surface-variant);
@@ -490,7 +558,6 @@ onBeforeUnmount(() => {
   --_yam3x-form-field-hover-opacity: var(--md-sys-state-hover-opacity, 0.08);
   --_yam3x-form-field-on-surface: var(--md-sys-color-on-surface);
   --_yam3x-form-field-on-surface-variant: var(--md-sys-color-on-surface-variant);
-  --_yam3x-form-field-surface: var(--md-sys-color-surface);
   --_yam3x-form-field-motion-spatial: var(--md-sys-motion-spring-fast-spatial);
   --_yam3x-form-field-motion-effects: var(--md-sys-motion-spring-fast-effects);
   --_yam3x-form-field-density-container-scale: var(--md-sys-density-container-scale, 1);
@@ -599,7 +666,7 @@ onBeforeUnmount(() => {
 }
 .yam3x-form-field__label--floating {
   top: 0;
-  transform: translateY(-50%) scale(0.75);
+  transform: translateY(-50%) scale(var(--_yam3x-form-field-label-scale));
 }
 .yam3x-form-field:dir(rtl) .yam3x-form-field__label {
   transform-origin: top right;
@@ -689,9 +756,31 @@ onBeforeUnmount(() => {
   border: 0;
 }
 .yam3x-form-field--outlined .yam3x-form-field__container {
-  border: 1px solid var(--_yam3x-form-field-outline-color);
+  border: 0;
   border-radius: var(--_yam3x-form-field-container-shape);
   background: transparent;
+}
+.yam3x-form-field__outline {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  box-sizing: border-box;
+  border-width: var(--_yam3x-form-field-outline-width);
+  border-style: solid;
+  border-color: var(--_yam3x-form-field-outline-color);
+  border-radius: var(--_yam3x-form-field-container-shape);
+  pointer-events: none;
+  clip-path: polygon(
+    0 0,
+    var(--_yam3x-form-field-notch-start) 0,
+    var(--_yam3x-form-field-notch-start) var(--_yam3x-form-field-outline-width),
+    var(--_yam3x-form-field-notch-end) var(--_yam3x-form-field-outline-width),
+    var(--_yam3x-form-field-notch-end) 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+  transition: border-color var(--_yam3x-form-field-motion-effects);
 }
 .yam3x-form-field--filled .yam3x-form-field__container {
   align-items: end;
@@ -711,24 +800,24 @@ onBeforeUnmount(() => {
 }
 .yam3x-form-field--filled .yam3x-form-field__label--floating {
   top: 5px;
-  transform: scale(0.75);
-}
-.yam3x-form-field--focused .yam3x-form-field__container {
-  border-color: var(--_yam3x-form-field-focused-outline-color);
+  transform: scale(var(--_yam3x-form-field-label-scale));
 }
 .yam3x-form-field--focused .yam3x-form-field__label {
   color: var(--_yam3x-form-field-focused-color);
 }
-.yam3x-form-field--focused.yam3x-form-field--outlined .yam3x-form-field__container {
-  border-width: 3px;
+.yam3x-form-field--focused.yam3x-form-field--outlined .yam3x-form-field__outline {
+  --_yam3x-form-field-outline-width: 3px;
+  border-color: var(--_yam3x-form-field-focused-outline-color);
 }
 .yam3x-form-field--focused.yam3x-form-field--filled .yam3x-form-field__container {
+  border-bottom-color: var(--_yam3x-form-field-focused-outline-color);
   border-bottom-width: 3px;
 }
 .yam3x-form-field--focused.yam3x-form-field--filled .yam3x-form-field__container {
   padding-inline: calc(15px * var(--_yam3x-form-field-density-spacing-scale, 1));
 }
-.yam3x-form-field--invalid .yam3x-form-field__container {
+.yam3x-form-field--invalid .yam3x-form-field__container,
+.yam3x-form-field--invalid .yam3x-form-field__outline {
   border-color: var(--_yam3x-form-field-invalid-color);
 }
 .yam3x-form-field--invalid .yam3x-form-field__label,
@@ -738,7 +827,11 @@ onBeforeUnmount(() => {
 .yam3x-form-field:not(.yam3x-form-field--disabled):not(.yam3x-form-field--focused):not(
     .yam3x-form-field--invalid
   ):hover.yam3x-form-field--outlined
-  .yam3x-form-field__container {
+  .yam3x-form-field__container,
+.yam3x-form-field:not(.yam3x-form-field--disabled):not(.yam3x-form-field--focused):not(
+    .yam3x-form-field--invalid
+  ):hover.yam3x-form-field--outlined
+  .yam3x-form-field__outline {
   border-color: var(--_yam3x-form-field-hover-outline-color);
 }
 .yam3x-form-field:not(.yam3x-form-field--disabled):not(.yam3x-form-field--focused):not(
@@ -772,7 +865,8 @@ onBeforeUnmount(() => {
   .yam3x-form-field__container {
   border-bottom-color: var(--_yam3x-form-field-hover-outline-color);
 }
-.yam3x-form-field--invalid:not(.yam3x-form-field--disabled):hover .yam3x-form-field__container {
+.yam3x-form-field--invalid:not(.yam3x-form-field--disabled):hover .yam3x-form-field__container,
+.yam3x-form-field--invalid:not(.yam3x-form-field--disabled):hover .yam3x-form-field__outline {
   border-color: var(--_yam3x-form-field-error-hover-color);
 }
 .yam3x-form-field--invalid:not(.yam3x-form-field--disabled):hover .yam3x-form-field__label,
@@ -802,7 +896,8 @@ onBeforeUnmount(() => {
   );
 }
 .yam3x-form-field--disabled.yam3x-form-field--outlined .yam3x-form-field__container,
-.yam3x-form-field--disabled.yam3x-form-field--filled .yam3x-form-field__container {
+.yam3x-form-field--disabled.yam3x-form-field--filled .yam3x-form-field__container,
+.yam3x-form-field--disabled.yam3x-form-field--outlined .yam3x-form-field__outline {
   border-color: color-mix(in srgb, var(--_yam3x-form-field-on-surface) 12%, transparent);
 }
 .yam3x-form-field--disabled.yam3x-form-field--outlined .yam3x-form-field__container {
@@ -822,7 +917,6 @@ onBeforeUnmount(() => {
 }
 .yam3x-form-field--outlined.yam3x-form-field--floating .yam3x-form-field__label {
   padding-inline: calc(4px * var(--_yam3x-form-field-density-spacing-scale, 1));
-  background: var(--_yam3x-form-field-surface);
 }
 .yam3x-form-field--filled .yam3x-form-field__subscript {
   margin-top: calc(4px * var(--_yam3x-form-field-density-spacing-scale, 1));
@@ -834,6 +928,7 @@ onBeforeUnmount(() => {
 }
 @media (prefers-reduced-motion: reduce) {
   .yam3x-form-field__container,
+  .yam3x-form-field__outline,
   .yam3x-form-field__label,
   .yam3x-form-field__subscript {
     transition: none !important;
@@ -841,6 +936,9 @@ onBeforeUnmount(() => {
 }
 @media (forced-colors: active) {
   .yam3x-form-field__container {
+    border-color: CanvasText;
+  }
+  .yam3x-form-field__outline {
     border-color: CanvasText;
   }
   .yam3x-form-field--invalid .yam3x-form-field__container,

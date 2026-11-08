@@ -187,28 +187,20 @@ test('FormField follows native disabled and read-only states and supports docume
     /yam3x-form-field-hint/,
   )
 
+  const outline = field.locator('.yam3x-form-field__outline')
   await field.evaluate((element) => {
     element.style.setProperty('--yam3x-form-field-outline-color', 'rgb(7, 8, 9)')
     element.style.setProperty('--yam3x-form-field-container-shape', '18px')
   })
-  await expect(field.locator('.yam3x-form-field__container')).toHaveCSS(
-    'border-top-color',
-    'rgb(7, 8, 9)',
-  )
-  await expect(field.locator('.yam3x-form-field__container')).toHaveCSS(
-    'border-top-left-radius',
-    '18px',
-  )
+  await expect(outline).toHaveCSS('border-top-color', 'rgb(7, 8, 9)')
+  await expect(outline).toHaveCSS('border-top-left-radius', '18px')
 
   await input.focus()
   await field.evaluate((element) => {
     element.style.setProperty('--yam3x-form-field-focused-outline-color', 'rgb(11, 12, 13)')
     element.style.setProperty('--yam3x-form-field-focused-color', 'rgb(14, 15, 16)')
   })
-  await expect(field.locator('.yam3x-form-field__container')).toHaveCSS(
-    'border-top-color',
-    'rgb(11, 12, 13)',
-  )
+  await expect(outline).toHaveCSS('border-top-color', 'rgb(11, 12, 13)')
   await expect(field.locator('.yam3x-form-field__label')).toHaveCSS('color', 'rgb(14, 15, 16)')
 
   await input.blur()
@@ -236,6 +228,7 @@ test('FormField uses the specified focus geometry, hover label, and error hover 
   const field = page.locator('.form-field-demo__main-field')
   const input = field.locator('input')
   const container = field.locator('.yam3x-form-field__container')
+  const outline = field.locator('.yam3x-form-field__outline')
   const label = field.locator('.yam3x-form-field__label')
   const systemOnSurface = await field.evaluate((element) => {
     const probe = document.createElement('span')
@@ -247,7 +240,7 @@ test('FormField uses the specified focus geometry, hover label, and error hover 
   })
 
   await input.focus()
-  await expect(container).toHaveCSS('border-top-width', '3px')
+  await expect(outline).toHaveCSS('border-top-width', '3px')
   await input.blur()
   const labelBeforeHover = await label.evaluate((element) => getComputedStyle(element).color)
   await container.hover()
@@ -260,7 +253,7 @@ test('FormField uses the specified focus geometry, hover label, and error hover 
   const supporting = field.locator('.yam3x-form-field__subscript')
   const baseError = await supporting.evaluate((element) => getComputedStyle(element).color)
   await container.hover()
-  const hoverError = await container.evaluate((element) => getComputedStyle(element).borderTopColor)
+  const hoverError = await outline.evaluate((element) => getComputedStyle(element).borderTopColor)
   const hoverLabel = await label.evaluate((element) => getComputedStyle(element).color)
   expect(hoverError).not.toBe(baseError)
   expect(hoverLabel).not.toBe(baseError)

@@ -424,7 +424,8 @@ test('Select honors reduced motion and keeps focus visible in forced colors', as
   expect(duration.split(',').map((value) => parseFloat(value))).toContain(0)
   await page.emulateMedia({ forcedColors: 'active' })
   await trigger.focus()
-  await expect(trigger).toHaveCSS('outline-style', 'solid')
+  const field = page.locator('.yam3x-form-field').filter({ has: trigger })
+  await expect(field.locator('.yam3x-form-field__container')).toHaveCSS('outline-style', 'solid')
 })
 
 test('Select blocks disabled triggers and announces an empty option list', async ({ page }) => {
