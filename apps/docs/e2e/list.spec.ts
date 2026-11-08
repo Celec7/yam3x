@@ -479,6 +479,18 @@ test('lists preserve row geometry, selection semantics, theme roles, and RTL ord
   await expect(disabled).toHaveAttribute('aria-disabled', 'true')
   await expect(disabled).toHaveAttribute('tabindex', '-1')
   await expect(inbox).toHaveCSS('border-radius', '16px')
+  const inboxIcon = inbox.locator('.yam3x-list-item__leading .yam3x-icon')
+  const onSecondaryContainer = await resolveColorToken(
+    inbox,
+    '--md-sys-color-on-secondary-container',
+  )
+  const onSurface = await resolveColorToken(inbox, '--md-sys-color-on-surface')
+  await expect(inboxIcon).toHaveCSS('color', onSecondaryContainer)
+  await inbox.hover()
+  await expect
+    .poll(() => inboxIcon.evaluate((element) => getComputedStyle(element).color))
+    .toBe(onSurface)
+  await page.mouse.move(0, 0)
   await priority.hover()
   await expect(priority).toHaveCSS('border-radius', '12px')
   await page.mouse.move(0, 0)

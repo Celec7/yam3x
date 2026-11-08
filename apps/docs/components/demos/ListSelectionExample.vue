@@ -5,6 +5,7 @@ import { Checkbox } from '@registry/components/checkbox'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { ListOption, SelectionList, type ListVariant } from '@registry/components/list'
+import { Icon } from '@registry/components/icon'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
@@ -62,12 +63,10 @@ function onFormSubmit(event: SubmitEvent): void {
           >
             {{ t('Inbox', '收件箱') }}
             <template #leading
-              ><span
-                class="yam3x-list-demo__icon"
+              ><Icon
+                name="mail"
                 aria-hidden="true"
-                >✉</span
-              ></template
-            >
+            /></template>
             <template #overline
               ><span aria-hidden="true">{{ t('Default', '默认') }}</span></template
             >

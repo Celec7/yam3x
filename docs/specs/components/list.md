@@ -12,6 +12,7 @@ Lists present related content, destinations, or actions as rows. Choose the item
 - `list.geometry.icons`: Use the 20dp Expressive size for leading and trailing icons. The baseline icon size remains 24dp.
 - Limit supporting text to three lines and truncate it responsively when it exceeds the available space, following [Lists guidelines](https://m3.material.io/components/lists/guidelines).
 - `list.selection.semantics`: Give each list a coherent interaction purpose. A row that navigates, selects, or performs an action must communicate that role. Preserve the keyboard, selection, and accessible-name behavior in [Lists accessibility](https://m3.material.io/components/lists/accessibility).
+- `list.state.selected-icons`: Selected leading and trailing icons use the selected content role. Hover, focus, and pressed selected states switch those icons to `on-surface` while the label keeps the selected label role.
 - Adapt a list to its containing layout using the [canonical layout examples](https://m3.material.io/foundations/layout/canonical-examples/overview).
 
 ## Token mapping

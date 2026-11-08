@@ -758,6 +758,20 @@
 }
 .yam3x-list-option[aria-selected='true'].yam3x-state-layer:hover:not(:disabled):not(
     [aria-disabled='true']
+  )
+  :is(.yam3x-list-item__leading, .yam3x-list-item__trailing),
+.yam3x-list-option[aria-selected='true'].yam3x-state-layer:focus-visible:not(:disabled):not(
+    [aria-disabled='true']
+  )
+  :is(.yam3x-list-item__leading, .yam3x-list-item__trailing),
+.yam3x-list-option[aria-selected='true'].yam3x-state-layer:is(:active, [data-yam3x-pressed]):not(
+    :disabled
+  ):not([aria-disabled='true'])
+  :is(.yam3x-list-item__leading, .yam3x-list-item__trailing) {
+  color: var(--_yam3x-list-item-selected-hover-icon-color, var(--_yam3x-list-color-on-surface));
+}
+.yam3x-list-option[aria-selected='true'].yam3x-state-layer:hover:not(:disabled):not(
+    [aria-disabled='true']
   ) {
   --yam3x-state-layer-color: var(
     --_yam3x-list-item-selected-hover-state-layer-color,
