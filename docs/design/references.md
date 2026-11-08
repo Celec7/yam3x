@@ -16,7 +16,9 @@ Classify a component before changing it. The class comes from the applicable des
 | **M3 baseline**       | Official Material 3 baseline page                                   | Material Web may be the primary Web implementation and API reference; Compose and Android Views confirm semantics | Material Web is authoritative for current Web mechanics, not for design requirements |
 | **Project extension** | Related official Material guidance plus explicit project decisions  | The nearest Material semantics, translated through Vue and Web conventions                                        | Material Web only for Web interaction and accessibility mechanics                    |
 
-Record **reference availability** separately from the class: whether an official Compose, Android Views, or Material Web implementation exists. A component with an Expressive design source but no Compose implementation is still Expressive. A component with only a Compose Expressive implementation does not require a Material Web counterpart. Material Web implements M3 baseline, not Expressive; its defaults cannot define Expressive appearance, motion, or variants.
+Record **reference availability** separately from the class: whether official Compose and Android Views implementations exist, and whether Material Web provides a baseline Web implementation. A component with an Expressive design source but no Compose implementation is still Expressive. A component with only a Compose Expressive implementation does not require a Material Web counterpart.
+
+Material provides **no official Web Expressive implementation for any component**. The Resources panel's `Web: Expressive — Unavailable` is universal, not a per-component gap. Material Web implements M3 baseline; its defaults cannot define Expressive appearance, motion, or variants. Every Expressive Web component is a project-defined implementation built from Compose/Views semantics and Web mechanics.
 
 ## Source boundaries
 

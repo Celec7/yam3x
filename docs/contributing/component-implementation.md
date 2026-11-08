@@ -12,7 +12,7 @@ Classify a component before changing it. The class comes from the applicable des
 | **M3 baseline**       | Official M3 baseline page                                   | Material Web may lead the Web implementation and API reference; Compose and Views confirm semantics |
 | **Project extension** | Related Material guidance plus project decisions            | Nearest Material semantics, shaped by Vue and Web conventions                                       |
 
-Record reference availability separately: Compose, Android Views, and Material Web may each be present or absent. A Compose-only Expressive component does not wait for a Web implementation, and a Material Web implementation does not turn a baseline component into an Expressive one.
+Record reference availability separately: Compose and Android Views may each be present or absent, and Material Web may provide a baseline implementation. Material Web provides no official Expressive implementation for any component; Web Expressive behavior is project-defined. A Compose-only Expressive component does not wait for a Web implementation, and a Material Web baseline implementation does not turn a baseline component into an Expressive one.
 
 ## Pipeline
 

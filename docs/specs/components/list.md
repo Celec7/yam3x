@@ -22,6 +22,7 @@ Lists present related content, destinations, or actions as rows. Choose the item
 ## Project decisions
 
 - Project-defined: Expressive is the default visual target. Standard and segmented configurations remain available when they better support a specific content hierarchy.
+- Project-defined: A segmented list represents one visual group. Multiple groups use separate labelled List instances, with spacing owned by the surrounding layout; no ListGroup API is introduced without a concrete requirement that one list must contain multiple groups.
 - Project-defined extension: `ExpandableListItem` uses inline disclosure by default. Its optional `presentation="fullScreen"` mode provides the official full-screen container-transform pattern and requires an accessible dialog name, supplied through `fullScreenTitle`, the `#full-screen-title` slot, or the root `aria-label`.
 - Project-defined extension: Web `aria-current="page"` styling represents the current navigation destination. It remains visually distinct in state semantics from `ListOption` selection (`aria-selected`), even where both use the same selected colors.
 - Project-defined extension: the density spacing scale adjusts List Component spacing aliases; the official token dimensions map to CSS pixels using the project's density convention.

@@ -83,7 +83,7 @@ Expansion reveals child items. `current` independently sets `aria-current="page"
 
 ## Styling
 
-Place an explicit horizontal [Divider](/components/divider) in `<li class="yam3x-list-divider" role="separator">` for a standard list. Its default logical start and end insets are 16px. Segmented lists use space between items instead. Items fill their parent width; the surrounding layout controls columns and line length.
+Place an explicit horizontal [Divider](/components/divider) in `<li class="yam3x-list-divider" role="separator">` for a standard list. Its default logical start and end insets are 16px. Segmented lists use space between items instead. A segmented list is one visual group; use separate labelled lists for multiple groups. Items fill their parent width; the surrounding layout controls columns, group spacing, and line length.
 
 ## Material references
 
