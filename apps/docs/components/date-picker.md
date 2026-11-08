@@ -6,7 +6,7 @@ import DatePickerExample from './demos/DatePickerExample.vue'
 
 Date pickers help people choose a date or date range. Use `DatePicker` for one date and `DateRangePicker` for a range. Both combine calendar selection with typed input and support modal or docked presentation.
 
-Modal range selection presents a vertically scrollable sequence of months. Single-date and docked calendars keep one-month navigation.
+Modal range selection presents a vertically scrollable sequence of months with one weekday header and month subheads, without month paging controls. Single-date and docked calendars keep one-month navigation.
 
 ## Interactive example
 

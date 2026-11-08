@@ -6,7 +6,7 @@ import DatePickerExample from '../../components/demos/DatePickerExample.vue'
 
 Date picker 用于选择日期或日期范围。单日期使用 `DatePicker`，范围使用 `DateRangePicker`。两者均结合日历选择与文本输入，并支持 modal 或 docked 呈现。
 
-模态范围选择以纵向连续月份供滚动浏览。单日期和 docked 日历仍按月切换。
+模态范围选择以纵向连续月份供滚动浏览，共用一行星期标题和月份小标题，不显示月份翻页控件。单日期和 docked 日历仍按月切换。
 
 ## 交互示例
 

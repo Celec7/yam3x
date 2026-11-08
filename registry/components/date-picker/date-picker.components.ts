@@ -355,25 +355,34 @@ export const DatePickerCalendar = defineComponent({
         String(date.getUTCDate()),
       )
     }
-    const monthGrid = () =>
-      h('div', { class: 'yam3x-date-picker__grid', role: 'grid', 'aria-label': props.titleMonth }, [
-        h(
-          'div',
-          { class: 'yam3x-date-picker__week-row yam3x-date-picker__weekday-row', role: 'row' },
-          props.weekdays.map((day, index) =>
-            h(
-              'div',
-              {
-                key: `w${index}`,
-                class: 'yam3x-date-picker__weekday',
-                role: 'columnheader',
-                'aria-label': props.weekdayFullLabels[index],
-                title: props.weekdayFullLabels[index],
-              },
-              day,
-            ),
+    const weekdayRow = (hidden = false) =>
+      h(
+        'div',
+        {
+          class: [
+            'yam3x-date-picker__week-row',
+            'yam3x-date-picker__weekday-row',
+            { 'is-visually-hidden': hidden },
+          ],
+          role: 'row',
+        },
+        props.weekdays.map((day, index) =>
+          h(
+            'div',
+            {
+              key: `w${index}`,
+              class: 'yam3x-date-picker__weekday',
+              role: 'columnheader',
+              'aria-label': props.weekdayFullLabels[index],
+              title: props.weekdayFullLabels[index],
+            },
+            day,
           ),
         ),
+      )
+    const monthGrid = () =>
+      h('div', { class: 'yam3x-date-picker__grid', role: 'grid', 'aria-label': props.titleMonth }, [
+        weekdayRow(),
         h(
           'div',
           {
@@ -420,23 +429,7 @@ export const DatePickerCalendar = defineComponent({
       h('section', { key: toIsoDate(month.month), class: 'yam3x-date-picker__continuous-month' }, [
         h('h3', { class: 'yam3x-date-picker__continuous-month-title' }, month.title),
         h('div', { class: 'yam3x-date-picker__grid', role: 'grid', 'aria-label': month.title }, [
-          h(
-            'div',
-            { class: 'yam3x-date-picker__week-row yam3x-date-picker__weekday-row', role: 'row' },
-            props.weekdays.map((day, index) =>
-              h(
-                'div',
-                {
-                  key: `w${index}`,
-                  class: 'yam3x-date-picker__weekday',
-                  role: 'columnheader',
-                  'aria-label': props.weekdayFullLabels[index],
-                  title: props.weekdayFullLabels[index],
-                },
-                day,
-              ),
-            ),
-          ),
+          weekdayRow(true),
           h(
             'div',
             { class: 'yam3x-date-picker__month-viewport', role: 'rowgroup' },
@@ -594,11 +587,12 @@ export const DatePickerCalendar = defineComponent({
     const viewContent = () => {
       if (props.view === 'days') {
         if (props.continuousMonths.length)
-          return h(
-            'div',
-            { class: 'yam3x-date-picker__continuous-months' },
-            props.continuousMonths.map(continuousMonthGrid),
-          )
+          return h('div', { class: 'yam3x-date-picker__continuous-months' }, [
+            h('div', { class: 'yam3x-date-picker__continuous-weekdays', 'aria-hidden': 'true' }, [
+              weekdayRow(),
+            ]),
+            ...props.continuousMonths.map(continuousMonthGrid),
+          ])
         return monthGrid()
       }
       if (props.view === 'months')
@@ -633,7 +627,7 @@ export const DatePickerCalendar = defineComponent({
     }
     return () =>
       h('div', { class: 'yam3x-date-picker__calendar' }, [
-        calendarHeader(),
+        props.continuousMonths.length ? null : calendarHeader(),
         h(
           'div',
           {

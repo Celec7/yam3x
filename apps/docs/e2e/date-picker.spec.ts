@@ -147,6 +147,9 @@ test.describe('Date picker', () => {
 
     const dialog = page.getByRole('dialog', { name: 'Booking dates' })
     await expect(dialog.locator('.yam3x-date-picker__modal-value')).toHaveCSS('font-size', '22px')
+    await expect(dialog.locator('.yam3x-date-picker__calendar-header')).toHaveCount(0)
+    await expect(dialog.locator('.yam3x-date-picker__continuous-weekdays')).toHaveCount(1)
+    await expect(dialog.locator('.yam3x-date-picker__continuous-month')).toHaveCount(12)
     const monthViewport = dialog.locator('.yam3x-date-picker__view-viewport')
     await expect(monthViewport).toHaveClass(/is-continuous-range/)
     await expect(dialog.getByRole('grid')).toHaveCount(12)

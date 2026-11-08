@@ -17,6 +17,7 @@
 
 - Date pickers separate docked month and year controls into their own dropdown-and-arrow groups. Docked month and year menus are vertical 48px listboxes with a selected-row check; the selected row scrolls into view when opened.
 - Modal date pickers combine month and year into one dropdown with adjacent month arrows, keep the headline to one short line, and use the full localized date as its accessible name.
+- Modal range calendars share one visible weekday row above the continuous month sequence, omit month paging controls, and keep hidden weekday headers for each month grid.
 - Date picker weekday headers use narrow one-character labels, while today uses a `primary` label and 1dp outline. Modal year options use the unselected `on-surface-variant` label role.
 - Hovering a selected date range endpoint keeps its primary fill and layers the state tint above it, instead of replacing the selected surface with a translucent hover circle.
 - Docked date fields draw a notched 3px focus outline without shifting layout or drawing a second ring inside the input.

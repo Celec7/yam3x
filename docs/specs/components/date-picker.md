@@ -21,6 +21,7 @@ This guide covers Material date pickers with docked or modal presentation, singl
 - `date-picker.state.selected-hover`: A selected range endpoint keeps its `primary` fill while hovered. The state layer adds the `on-primary` tint over that fill; it must not replace the selection with a state-layer-only surface.
 - `date-picker.field.focus`: The docked field draws its outline in a separate layer, with a transparent notch around each floating label. Focus raises the stroke to 3px without moving layout; the inner input does not draw a second ring.
 - `date-picker.modal.headline`: The modal headline is one line with an abbreviated month and numeric day and year. The accessible name remains the complete localized date.
+- `date-picker.range.continuous`: A modal range calendar uses one visible weekday row above a continuous month sequence. Month titles separate the grids; the range view has no month paging header. Each grid keeps a visually hidden weekday header for assistive technology.
 - `date-picker.compact.close`: A full-screen modal adds a close icon button in the header; the footer actions remain available.
 
 ### Appearance and accessibility

@@ -408,6 +408,17 @@
   align-items: center;
   justify-items: center;
 }
+.yam3x-date-picker__weekday-row.is-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .yam3x-date-picker__weekday {
   display: grid;
   place-items: center;
@@ -860,8 +871,10 @@
   overscroll-behavior: contain;
 }
 .yam3x-date-picker__continuous-months {
-  display: grid;
-  gap: 16px;
+  display: block;
+}
+.yam3x-date-picker__continuous-month + .yam3x-date-picker__continuous-month {
+  margin-block-start: 16px;
 }
 .yam3x-date-picker .yam3x-date-picker__continuous-month-title {
   margin: 8px 0 8px;
