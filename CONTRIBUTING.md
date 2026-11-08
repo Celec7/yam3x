@@ -19,19 +19,19 @@ For token-layer ownership, component mappings, CSS source structure, and custom-
 
 Before changing a component, classify it as Expressive, M3 baseline, or a project extension and follow the [component delivery pipeline](docs/contributing/component-implementation.md). Shared terms and the source hierarchy are defined in the [project glossary](docs/glossary.md) and [design and implementation references](docs/design/references.md).
 
-`pnpm dev` starts the VitePress site. Use its component pages to review appearance, API guidance, and interactions. Before finishing a component or foundation change, run the relevant checks:
+`pnpm dev` starts the VitePress site. Use its component pages to review appearance, API guidance, and interactions. Before finishing a component or foundation change, run:
 
 ```sh
 pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm test
-pnpm test:cli
-pnpm test:e2e
 pnpm build
 ```
 
-GitHub Actions runs formatting, lint, type checks, unit tests, CLI and registry checks, and the documentation build on pull requests and pushes. It does not run the browser E2E suite. Run `pnpm test:e2e` locally when browser verification is needed. The Playwright config uses system Chromium if available; otherwise install its browser with `pnpm --filter yam3x-docs exec playwright install chromium`. Dependabot checks for GitHub Actions updates weekly. CLI tests create disposable Vue/Vite consumers and run typecheck/build for each component with only its declared dependencies available. Changes to motion parameters require `pnpm motion:generate` to update the generated curves in the token stylesheet.
+Run the browser checks that cover the changed surface. Run a full `pnpm test:e2e` only for cross-cutting changes, shared foundations, or a risk that targeted checks cannot exercise. Run `pnpm test:cli` when component imports, dependencies, or distribution change.
+
+GitHub Actions runs formatting, lint, type checks, unit tests, CLI and registry checks, and the documentation build on pull requests and pushes. It does not run the browser E2E suite. The Playwright config uses system Chromium if available; otherwise install its browser with `pnpm --filter yam3x-docs exec playwright install chromium`. Dependabot checks for GitHub Actions updates weekly. CLI tests create disposable Vue/Vite consumers and run typecheck/build for each component with only its declared dependencies available. Changes to motion parameters require `pnpm motion:generate` to update the generated curves in the token stylesheet.
 
 ## Dependency maintenance
 

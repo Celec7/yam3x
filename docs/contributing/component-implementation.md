@@ -62,11 +62,13 @@ Update `apps/docs/` when the public API or usage changes. Keep the English page 
 
 Output: public API docs, examples, changelog, and registry entries.
 
-Gate: copied source builds in an isolated consumer through the CLI checks.
+Gate: copied source builds in an isolated consumer when imports, dependencies, or distribution change.
 
 ### 6. Verify
 
-Use focused unit and browser checks for the changed behavior, visual inspection for appearance and motion, and `test:cli` for copied-source independence. Record detailed results with the test or verification owner, not in the design guide.
+Use focused unit and browser checks for the changed behavior, visual inspection for appearance and motion, and `test:cli` when copied-source imports, dependencies, or distribution change. Record detailed results with the test or verification owner, not in the design guide.
+
+Run targeted checks by default. Run a full browser suite only for cross-cutting changes, shared foundations, or a risk that targeted checks cannot exercise.
 
 Output: implementation evidence linked to design criterion IDs where applicable.
 
@@ -75,6 +77,14 @@ Gate: the changed path is exercised, not only type-checked; visual or motion cla
 ### 7. Audit separately
 
 An alignment audit compares design items, current implementation, and evidence. It is separate from feature work and does not rewrite the design guide to match a defect.
+
+Audit one component or component family at a time:
+
+1. Read the applicable official overview, specs, guidelines, accessibility page, figures, and motion recordings at the rendered size, theme, and state they depict.
+2. Expand the Resources panel and record Compose and Android Views availability. Material Web may have a baseline implementation. No component has an official Web Expressive implementation, so Web Expressive behavior is project-owned for every Expressive component.
+3. Resolve token values from the official token table, including shape, color, size, and state aliases. Token labels alone are not a value. Cross-check Compose and Android Views; the official token and design page decide a conflict.
+4. Map each design item to its project criterion, implementation, and evidence. Confirm an implementation gap with the token value, code, and a runtime measurement where visual geometry is involved.
+5. Classify the result, fix confirmed gaps at their owner, and add or update the owning test. Record the criterion in the design guide only when a test verifies it.
 
 Use this matrix per component:
 
