@@ -45,3 +45,14 @@ export function acquireOverlayLayer(kind: OverlayLayerKind, close?: () => void):
     },
   }
 }
+
+/** Set one layer property without replacing inline styles owned by the consumer. */
+export function setOverlayLayerProperty(
+  element: HTMLElement | null | undefined,
+  property: string,
+  zIndex: number | undefined,
+): void {
+  if (!element) return
+  if (zIndex === undefined) element.style.removeProperty(property)
+  else element.style.setProperty(property, String(zIndex))
+}

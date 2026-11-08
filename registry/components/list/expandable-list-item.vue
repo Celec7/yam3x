@@ -15,6 +15,11 @@ import ListItemLayout from './list-item-layout.vue'
 import Icon from '../icon/icon.vue'
 import { actionListKey, listVariantKey, type ListVariant } from './list.types'
 import { vRipple } from '../_shared/ripple'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import './list.css'
 
 defineOptions({ inheritAttrs: false })
@@ -49,6 +54,20 @@ const emit = defineEmits<{
   closing: [event: Event]
   closed: [event: Event]
 }>()
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  [open, () => props.presentation],
+  ([isOpen, presentation]) => {
+    layer?.release()
+    layer = undefined
+    layerZ.value = undefined
+    if (!isOpen || presentation !== 'fullScreen') return
+    layer = acquireOverlayLayer('dialog', () => setOpen(false))
+    layerZ.value = layer.zIndex
+  },
+  { immediate: true },
+)
 const { messages: actionMessages } = useComponentLocale(
   'actions',
   () => props.locale,
@@ -62,6 +81,9 @@ const headerId = `yam3x-expandable-list-header-${id}`
 const contentId = computed(() => `${attrs.id ? String(attrs.id) : generatedContentId}-content`)
 const header = ref<HTMLButtonElement | null>(null)
 const panel = ref<HTMLElement | null>(null)
+watch([layerZ, panel], () =>
+  setOverlayLayerProperty(panel.value, '--_yam3x-list-layer-z', layerZ.value),
+)
 const root = ref<HTMLLIElement | null>(null)
 const actionContext = inject(actionListKey, null)
 const variantContext = inject(listVariantKey, { variant: computed((): ListVariant => 'standard') })
@@ -169,6 +191,8 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   clearTimeout(transitionTimer)
 })
 </script>

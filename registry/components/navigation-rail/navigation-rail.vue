@@ -2,6 +2,11 @@
 import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import Icon from '../icon/icon.vue'
 import type { NavigationRailItem, NavigationRailMode } from './navigation-rail.types'
 
@@ -63,6 +68,26 @@ const resolvedExpanded = computed(
   () => expandedModel.value ?? (props.mode === 'expanded' || (props.mode === 'auto' && wide.value)),
 )
 const modalOpen = computed(() => resolvedExpanded.value && props.presentation === 'modal')
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  modalOpen,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('dialog', close)
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
+watch([layerZ, root], () => {
+  setOverlayLayerProperty(root.value, '--_yam3x-navigation-rail-layer-z', layerZ.value)
+})
 const visibleItems = computed(() =>
   props.items.filter(
     (item) => resolvedExpanded.value || !item.secondary || item.value === model.value,
@@ -213,6 +238,8 @@ onMounted(() => {
   })
 })
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   media?.removeEventListener('change', updateWide)
   if (oldOverflow !== null) document.body.style.overflow = oldOverflow
 })
@@ -851,7 +878,7 @@ watch(
 .yam3x-navigation-rail--modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--_yam3x-navigation-rail-layer-z, 1000);
   inline-size: auto;
   block-size: auto;
 }

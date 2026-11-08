@@ -484,6 +484,7 @@
     "date-picker": {
       "files": [
         "_shared/focus-trap.ts",
+        "_shared/overlay-layer.ts",
         "date-picker/date-picker-core.vue",
         "date-picker/date-picker-range-fields.vue",
         "date-picker/date-picker.components.ts",
@@ -863,6 +864,7 @@
     },
     "list": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",
@@ -1001,6 +1003,7 @@
     },
     "navigation-rail": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",

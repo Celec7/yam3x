@@ -2,6 +2,11 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useComponentLocale } from '../localization/context'
 import { trapTabKey } from '../_shared/focus-trap'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import Icon from '../icon/icon.vue'
 import './date-picker.css'
 import { DatePickerActions, DatePickerCalendar } from './date-picker.components'
@@ -137,6 +142,20 @@ const visibleMonth = ref(monthStart(initialVisibleDate))
 const draftSingle = ref(selectedSingle.value)
 const draftRange = ref<DateRangeValue>({ ...selectedRange.value })
 const opened = ref(false)
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  [opened, resolvedMode],
+  ([isOpen, mode]) => {
+    layer?.release()
+    layer = undefined
+    layerZ.value = undefined
+    if (!isOpen) return
+    layer = acquireOverlayLayer(mode === 'modal' ? 'dialog' : 'popup', cancel)
+    layerZ.value = layer.zIndex
+  },
+  { immediate: true },
+)
 const view = ref<'days' | 'months' | 'years'>('days')
 const inputMode = ref(false)
 const typedValue = ref('')
@@ -153,6 +172,9 @@ const errorMessage = computed(() =>
 const typedLocale = ref(locale.value)
 const rangeLocales = ref({ start: locale.value, end: locale.value })
 const root = ref<HTMLElement>()
+watch([layerZ, root], () =>
+  setOverlayLayerProperty(root.value, '--_yam3x-date-picker-layer-z', layerZ.value),
+)
 const calendarButton = ref<HTMLButtonElement>()
 const modeViewport = ref<HTMLElement>()
 const rovingDate = ref(selectedSingle.value ?? selectedRange.value.start ?? today)
@@ -780,6 +802,8 @@ function updateDockedPlacement(): void {
   dockedPlacement.value = below < surfaceHeight && above > below ? 'above' : 'below'
 }
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   document.removeEventListener('pointerdown', onOutsideClick)
   document.removeEventListener('keydown', onDockedEscape, true)
   document.removeEventListener('keydown', onModalKeydown, true)

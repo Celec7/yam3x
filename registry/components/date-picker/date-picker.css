@@ -290,7 +290,7 @@
 }
 .yam3x-date-picker__surface {
   position: absolute;
-  z-index: 100;
+  z-index: var(--_yam3x-date-picker-layer-z, 100);
   inset-block-start: calc(100% + 4px);
   inset-inline-start: 0;
   background-color: var(--_yam3x-date-picker-docked-container-color);
@@ -479,7 +479,7 @@
 }
 .yam3x-date-picker__scrim {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--_yam3x-date-picker-layer-z, 1000);
   inset: 0;
   display: grid;
   place-items: center;
