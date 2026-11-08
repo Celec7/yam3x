@@ -4,7 +4,7 @@ Each page is the canonical statement of the design yam3x intends to implement. F
 
 When Material does not define a standalone component, its guide is labeled as a project extension and links the related official guidance. Project decisions remain explicit and separate from Material requirements.
 
-The [component guide template](TEMPLATE.md) defines the intended scope and content. Use the [implementation workflow](../component-implementation.md) when creating or revising a guide. The installable inventory remains [`registry/registry.json`](../../registry/registry.json); this index is navigation, not a second component registry.
+The [component guide template](TEMPLATE.md) defines the intended scope and content. Before revising a guide, classify the component as Expressive, M3 baseline, or a project extension using the [project glossary](../glossary.md) and [reference boundaries](../references.md). Use the [implementation workflow](../component-implementation.md) when creating or revising a guide. The installable inventory remains [`registry/registry.json`](../../registry/registry.json); this index is navigation, not a second component registry.
 
 | Component                                 | Project design guide                                                                 |
 | ----------------------------------------- | ------------------------------------------------------------------------------------ |

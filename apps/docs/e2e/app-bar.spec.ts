@@ -338,7 +338,9 @@ test('keyboard order, centered labels, and RTL preserve action placement', async
   expect(positions.leadingCenter).toBeGreaterThan(positions.trailingCenter)
 })
 
-test('m3e custom properties, reduced motion, and forced colors remain usable', async ({ page }) => {
+test('documented custom properties, reduced motion, and forced colors remain usable', async ({
+  page,
+}) => {
   const bar = page.getByTestId('app-bar')
   await selectM3Option(page, page.getByRole('combobox', { name: 'App bar type' }), 'small')
   await bar.evaluate((element) => {

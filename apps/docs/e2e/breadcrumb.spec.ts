@@ -109,9 +109,7 @@ test('contains narrow paths locally, supports wrapping, and mirrors separators i
     .toBe(true)
 })
 
-test('honors m3e item and separator style hooks and accessibility media modes', async ({
-  page,
-}) => {
+test('honors item and separator style hooks and accessibility media modes', async ({ page }) => {
   await page.goto('/components/breadcrumb')
   const navigation = page.getByRole('navigation', { name: 'Page path' })
   const iconNavigation = page.getByRole('navigation', { name: 'Supporting states example' })

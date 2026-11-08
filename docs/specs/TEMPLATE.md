@@ -6,6 +6,8 @@ Use this page as the canonical statement of the design this project intends to i
 
 In a few sentences, explain the component's design purpose and the scope adopted by this project. For a Material component, use its official Expressive name and identify the adopted variant or family members. For a project-defined extension, label it as an extension.
 
+State its design lineage: **Expressive**, **M3 baseline**, or **project extension**. Lineage comes from the applicable official design source, not from the current implementation. API and implementation references belong to the delivery record, not this guide.
+
 ## Design target
 
 Describe the adopted design in direct, actionable language, grouped under only the applicable topics, such as usage and selection, appearance and states, or interaction and accessibility. Paraphrase the official guidance rather than copying passages. Preserve whether Material requires, recommends, or permits a behavior. Place the exact official page link beside each source-backed requirement. When a figure or recording establishes geometry, state, shape, or motion, cite it and state the visual fact it establishes.

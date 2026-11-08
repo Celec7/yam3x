@@ -21,6 +21,8 @@ The CLI copies editable source and declares dependencies; the copied components 
 
 - [Documentation site](https://yam3x.iscccc.cc/)
 - [Documentation index](docs/README.md)
+- [Project glossary](docs/glossary.md)
+- [Component delivery pipeline](docs/component-implementation.md)
 - [Install and use components](apps/docs/guide/installation.md)
 - [Design foundations](apps/docs/guide/design.md)
 - [Project component design guides](docs/specs/README.md)
@@ -39,4 +41,6 @@ The CLI copies editable source and declares dependencies; the copied components 
 ## References
 
 - [Material 3 Expressive guidance](https://m3.material.io/)
-- [matraic/m3e](https://github.com/matraic/m3e)
+- [Jetpack Compose Material 3](https://developer.android.com/develop/ui/compose/designsystems/material3)
+- [Android Views Material Components](https://github.com/material-components/material-components-android)
+- [Material Web](https://github.com/material-components/material-web)

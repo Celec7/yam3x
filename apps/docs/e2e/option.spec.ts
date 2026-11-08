@@ -82,7 +82,7 @@ test('OptionPanel follows its anchor, clamps its width, closes outside, and supp
   await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 })
 
-test('Option selection styling, text highlighting, states, and m3e CSS hooks affect rendering', async ({
+test('Option selection styling, text highlighting, states, and CSS hooks affect rendering', async ({
   page,
 }) => {
   await page.goto('/components/option')
@@ -243,7 +243,7 @@ test('OptionPanel loading and empty states are statuses rather than selectable o
   await expect(panel.getByRole('option')).toHaveCount(0)
 })
 
-test('Option remaining m3e state, group, panel-bound, and sizing hooks affect rendered styles', async ({
+test('Option remaining state, group, panel-bound, and sizing hooks affect rendered styles', async ({
   page,
 }) => {
   await page.goto('/components/option')

@@ -8,11 +8,12 @@
 - Tests and browser checks provide implementation evidence. Keep detailed results with their verification owner, not in design guides.
 - Label details not defined by Material as project decisions. Keep them brief and explain the reason when they affect component design or behavior.
 
-## Reference libraries
+## Reference order and component classes
 
-- Use [m3e](https://github.com/matraic/m3e) as an unpinned comparison library when it helps explore a Web implementation. It does not define the Material target, project API, component scope, or a coverage denominator. Do not require a local checkout to match a fixed commit.
-- Compose, Material Web, and other platform libraries are secondary implementation references. They may help investigate a Web or platform mechanic, but cannot add or override design requirements from Material 3 Expressive.
-- Follow [Design and implementation references](docs/references.md) for detailed source boundaries.
+- Classify each component before changing it: **Expressive**, **M3 baseline**, or **project extension**. Class comes from whether an applicable Expressive design source exists, not from what Material Web or Compose currently implements.
+- Use Jetpack Compose Expressive first for API semantics and behavior, Android Views Expressive second, and Material Web for Web mechanics. Vue and Web conventions determine the actual public API shape.
+- Material Web implements M3 baseline, not Expressive. Use it as a primary Web implementation reference for baseline components and only for Web mechanics in Expressive components; never let its defaults define Expressive appearance, motion, or variants.
+- Follow [Design and implementation references](docs/references.md) for source boundaries, [project terminology](docs/glossary.md) for shared terms, and [component design and implementation](docs/component-implementation.md) for the delivery pipeline.
 
 ## Canonical documentation
 

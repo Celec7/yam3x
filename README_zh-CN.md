@@ -21,6 +21,8 @@ CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 
 
 - [文档站点](https://yam3x.iscccc.cc/)
 - [文档索引](docs/README.md)
+- [项目术语表](docs/glossary.md)
+- [组件交付流水线](docs/component-implementation.md)
 - [安装和使用组件](apps/docs/zh/guide/installation.md)
 - [设计基础](apps/docs/zh/guide/design.md)
 - [项目组件设计指南](docs/specs/README.md)
@@ -39,4 +41,6 @@ CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 
 ## 参考资料
 
 - [Material 3 Expressive 指南](https://m3.material.io/)
-- [matraic/m3e](https://github.com/matraic/m3e)
+- [Jetpack Compose Material 3](https://developer.android.com/develop/ui/compose/designsystems/material3)
+- [Android Views Material Components](https://github.com/material-components/material-components-android)
+- [Material Web](https://github.com/material-components/material-web)

@@ -6,27 +6,41 @@ The project's design target is the currently applicable **Material 3 Expressive*
 
 Project component design guides in [`specs/`](specs/README.md) summarize the Material facts needed to guide this project and identify deliberate project decisions. Link the exact official pages that support those facts rather than copying whole sections or preserving inspection logs.
 
+## Component classes
+
+Classify a component before changing it. The class comes from the applicable design source, not from whether an implementation currently exists in Compose, Android Views, or Material Web.
+
+| Class                 | Design source                                                       | API semantics and behavior                                                                                        | Web mechanics                                                                        |
+| --------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Expressive**        | Official Material 3 Expressive page, figures, and motion recordings | Jetpack Compose Expressive first; Android Views Expressive when Compose is missing or unclear                     | Material Web only for Web interaction and accessibility mechanics                    |
+| **M3 baseline**       | Official Material 3 baseline page                                   | Material Web may be the primary Web implementation and API reference; Compose and Android Views confirm semantics | Material Web is authoritative for current Web mechanics, not for design requirements |
+| **Project extension** | Related official Material guidance plus explicit project decisions  | The nearest Material semantics, translated through Vue and Web conventions                                        | Material Web only for Web interaction and accessibility mechanics                    |
+
+Record **reference availability** separately from the class: whether an official Compose, Android Views, or Material Web implementation exists. A component with an Expressive design source but no Compose implementation is still Expressive. A component with only a Compose Expressive implementation does not require a Material Web counterpart. Material Web implements M3 baseline, not Expressive; its defaults cannot define Expressive appearance, motion, or variants.
+
 ## Source boundaries
 
-| Source                                                                | Use                                                                                                              | Authority                                                                           |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Material 3 Expressive pages and their diagrams                        | Define intended component design, supported variants, appearance, interaction, and accessibility where specified | Normative design target                                                             |
-| yam3x project design guides                                           | Distill the applicable Material target and record necessary project decisions                                    | Guidance for this project's design and implementation                               |
-| Vue source in `registry/`                                             | Define the current public API and actual implemented behavior                                                    | Authoritative for current code facts; not a replacement for the design target       |
-| Tests and browser checks                                              | Show which implementation behavior has evidence                                                                  | Verification evidence only                                                          |
-| Compose Expressive, MDC-Android Expressive, Material Web, and Flutter | Resolve behavior the Material pages leave implicit                                                               | Secondary implementation references; cannot add or override Expressive requirements |
+| Source                                         | Use                                                                                                                                                   | Authority                                                                                              |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Material 3 Expressive pages and their diagrams | Define intended component design, supported variants, appearance, interaction, and accessibility where specified                                      | Normative design target for Expressive components                                                      |
+| Material 3 baseline pages and their diagrams   | Define the design of components without an Expressive version                                                                                         | Normative design target for baseline components                                                        |
+| yam3x project design guides                    | Distill the applicable Material target and record necessary project decisions                                                                         | Guidance for this project's design and implementation                                                  |
+| Vue source in `registry/`                      | Define the current public API and actual implemented behavior                                                                                         | Authoritative for current code facts; not a replacement for the design target                          |
+| Tests and browser checks                       | Show which implementation behavior has evidence                                                                                                       | Verification evidence only                                                                             |
+| Jetpack Compose Expressive                     | Resolve variants, state models, interaction semantics, tokens, and motion parameters                                                                  | Primary implementation reference                                                                       |
+| Android Views Expressive / MDC-Android         | Resolve geometry, token mappings, and behavior that Compose leaves unclear                                                                            | Secondary implementation reference                                                                     |
+| Material Web                                   | Resolve Web focus, hover, pointer, scrolling, form, overlay, and ARIA mechanics; provide a primary baseline implementation reference where applicable | Web mechanics and baseline implementation reference; it cannot add or override Expressive requirements |
 
-When Material leaves a necessary detail unspecified, record the choice as a project decision. Do not present requirements inferred from comparison libraries or platform implementations as official Material requirements. Keep exact Vue API details in source and public API documentation, and keep detailed verification results with the tests or verification records.
+When Material leaves a necessary detail unspecified, record the choice as a project decision. Do not present requirements inferred from platform implementations as official Material requirements. Keep exact Vue API details in source and public API documentation, and keep detailed verification results with the tests or verification records.
 
-## Platform implementation order
+## Platform reference order
 
-Use platform implementations to resolve behavior that the Material pages leave implicit. They inform semantics, not API shape.
+Use platform implementations to resolve behavior that the Material pages leave implicit and to inform API capability. They do not determine the Vue API form by themselves.
 
-1. **Jetpack Compose Material 3 Expressive** is the primary reference for variants, state models, interaction semantics, tokens, and motion parameters. Read its APIs as evidence of those semantics. Vue props, slots, and events follow Vue and Web conventions.
-2. **MDC-Android Expressive** is the secondary reference for geometry, token mappings, and behavior that Compose leaves unclear. When the two diverge, the Material page and its token tables decide.
-3. **Flutter** implements baseline Material 3 only. Material states that M3 Expressive is [not available on Flutter](https://m3.material.io/develop/flutter), so use it for baseline mechanics, not Expressive appearance, variants, states, or motion.
-
-**Material Web** is the Web mechanics reference for focus, hover, pointer input, scrolling, and overlays. It implements baseline M3; its visuals, defaults, and motion do not define Expressive appearance.
+1. **Jetpack Compose Material 3** is the primary reference for variants, state models, interaction semantics, tokens, and motion parameters. Use Compose Expressive APIs for Expressive components and Compose baseline APIs for baseline components. Read its APIs as evidence of those semantics. Vue props, slots, and events follow Vue and Web conventions.
+2. **Android Views Expressive / MDC-Android** is the secondary reference for geometry, token mappings, and behavior that Compose leaves unclear. When the two diverge, the Material page and its token tables decide.
+3. **Material Web** is the reference for Web mechanics. It implements M3 baseline rather than Expressive, so use it more heavily for baseline components and only for mechanics in Expressive components. Its visuals, defaults, and motion do not define Expressive appearance.
+4. **Vue and Web conventions** determine the public API shape: props, events, slots, `v-model`, attrs forwarding, native elements, SSR behavior, and the DOM accessibility contract.
 
 Keyboard, focus, and ARIA behavior follow the [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) and measured browser behavior. Compose semantics describe Android accessibility, not the Web DOM contract.
 
@@ -37,7 +51,3 @@ An implementation-dependent decision records its exact library version in the de
 - [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) is a runtime dependency used by [`generate.ts`](../registry/foundations/theme/generate.ts) to generate light and dark 2025 tonal schemes.
 - AndroidX [ExpressiveMotionTokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ExpressiveMotionTokens.kt) informs the spring parameters stored in [`foundation-tokens.mjs`](../registry/foundations/tokens/foundation-tokens.mjs); the M3 Web motion specification supplies the CSS duration/easing mappings. [`generate-foundation-tokens.mjs`](../scripts/generate-foundation-tokens.mjs) generates their CSS representation. These are implementation inputs, not authorities for component-specific requirements that Material defines.
 - [Ark UI](https://ark-ui.com/) is an implementation dependency described in [Architecture and ownership](architecture.md). The source-copying workflow is similar to [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.
-
-## m3e
-
-[matraic/m3e](https://github.com/matraic/m3e) is an independent Material 3 Expressive Web Components library. Its source and behavior can be compared when useful, but the project does not track a fixed m3e commit or use its module inventory as a completion target. Cite a specific revision only when a project decision depends on a particular observed behavior; ordinary design guides should link to Material sources first.

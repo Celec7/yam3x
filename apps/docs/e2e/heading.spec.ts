@@ -21,7 +21,7 @@ test('optional levels expose native heading semantics while default content stay
   await expect(page.getByTestId('heading-title-small')).toHaveCSS('display', 'block')
 })
 
-test('all standard and emphasized type scale properties accept their m3e token overrides', async ({
+test('all standard and emphasized type scale properties accept their token overrides', async ({
   page,
 }) => {
   await expect(page.locator('.yam3x-demo .yam3x-heading')).toHaveCount(27)

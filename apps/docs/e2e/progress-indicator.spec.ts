@@ -364,9 +364,7 @@ test('hidden state and forced colors preserve passive progress semantics and pai
   await expect(linear.locator('.yam3x-linear-progress__track')).toHaveCSS('outline-width', '1px')
 })
 
-test('circular size, thickness, waveform, and colors respond to m3e style hooks', async ({
-  page,
-}) => {
+test('circular size, thickness, waveform, and colors respond to style hooks', async ({ page }) => {
   const circular = page.getByTestId('circular-progress')
   await circular.evaluate((element) => {
     const host = element as HTMLElement
@@ -394,9 +392,7 @@ test('circular size, thickness, waveform, and colors respond to m3e style hooks'
   await expect.poll(async () => wavePath.getAttribute('d')).not.toBe(firstWavePath)
 })
 
-test('linear geometry and shared colors respond to the remaining m3e style hooks', async ({
-  page,
-}) => {
+test('linear geometry and shared colors respond to the remaining style hooks', async ({ page }) => {
   const linear = page.getByTestId('linear-progress')
   await linear.evaluate((element) => {
     const host = element as HTMLElement
@@ -535,7 +531,7 @@ test('wavy indeterminate uses one global wave path for both moving segments', as
   ).toHaveAttribute('d', reducedFrame!)
 })
 
-test('circular indeterminate motion uses the flat and wavy m3e timing layers', async ({ page }) => {
+test('circular indeterminate motion uses the flat and wavy timing layers', async ({ page }) => {
   await page.getByRole('checkbox', { name: 'Circular indeterminate progress' }).check()
   await expect(page.locator('.yam3x-circular-progress__rotation')).toHaveCSS(
     'animation-duration',

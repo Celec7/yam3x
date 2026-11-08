@@ -45,7 +45,7 @@ describe('dynamic theme foundations', () => {
     )
   })
 
-  it('applies every dynamic color role exported by Material Color Utilities and m3e extras', () => {
+  it('applies every dynamic color role exported by Material Color Utilities and additional roles', () => {
     const dynamicColors = new MaterialDynamicColors()
     const roles = [
       ...dynamicColors.allColors,

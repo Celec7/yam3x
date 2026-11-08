@@ -73,7 +73,7 @@ test('hover and label press feedback stay centered on the checkbox touch target'
   await expect(checkbox).toBeChecked()
 })
 
-test('short Space presses retain the m3e minimum pressed feedback duration', async ({ page }) => {
+test('short Space presses retain the minimum pressed feedback duration', async ({ page }) => {
   const checkbox = page.getByRole('checkbox', { name: 'Accept the terms of use' })
   const elapsed = await checkbox.evaluate(async (input) => {
     const control = input.parentElement!

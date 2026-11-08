@@ -67,9 +67,7 @@ test('uses foundation color roles in light and dark themes', async ({ page }) =>
   }
 })
 
-test('all m3e avatar custom properties override geometry, shape, type, and color', async ({
-  page,
-}) => {
+test('all avatar custom properties override geometry, shape, type, and color', async ({ page }) => {
   const avatar = page.locator('.yam3x-avatar').first()
   const base = avatar.locator('.yam3x-avatar__base')
   await avatar.evaluate((element) => {

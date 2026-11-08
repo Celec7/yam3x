@@ -357,9 +357,7 @@ test('label hover and press ripple use the centered state layer and disabled opt
   await page.mouse.up()
 })
 
-test('short Space activation retains the pinned m3e pressed feedback duration', async ({
-  page,
-}) => {
+test('short Space activation retains the pinned pressed feedback duration', async ({ page }) => {
   const radio = page.getByRole('radio', { name: 'Callisto' })
   const elapsed = await radio.evaluate(async (input) => {
     const target = input.parentElement!

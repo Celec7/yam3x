@@ -17,6 +17,8 @@ These names are public because consumers copy registry source and can depend on 
 
 For token-layer ownership, component mappings, CSS source structure, and custom-property scope rules, follow [CSS and token conventions](docs/css-and-tokens.md).
 
+Before changing a component, classify it as Expressive, M3 baseline, or a project extension and follow the [component delivery pipeline](docs/component-implementation.md). Shared terms and the source hierarchy are defined in the [project glossary](docs/glossary.md) and [design and implementation references](docs/references.md).
+
 `pnpm dev` starts the VitePress site. Use its component pages to review appearance, API guidance, and interactions. Before finishing a component or foundation change, run the relevant checks:
 
 ```sh
