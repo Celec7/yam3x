@@ -5,6 +5,7 @@ import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { List, ListItem, type ListVariant } from '@registry/components/list'
 import { HorizontalDivider } from '@registry/components/divider'
+import { Icon } from '@registry/components/icon'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
@@ -76,12 +77,10 @@ const showDraggedState = ref(false)
           <ListItem leading-type="icon">
             {{ t('Primary', '主要邮件') }}
             <template #leading
-              ><span
-                class="yam3x-list-demo__icon"
+              ><Icon
+                name="mail"
                 aria-hidden="true"
-                >✉</span
-              ></template
-            >
+            /></template>
             <template #overline
               ><span aria-hidden="true">{{ t('Inbox', '收件箱') }}</span></template
             >
@@ -125,7 +124,11 @@ const showDraggedState = ref(false)
               t('This video attachment cannot be opened right now.', '此视频附件当前无法打开')
             }}</template>
             <template #trailing-text>{{ t('Video', '视频') }}</template>
-            <template #trailing><span aria-hidden="true">⋮</span></template>
+            <template #trailing
+              ><Icon
+                name="more_vert"
+                aria-hidden="true"
+            /></template>
           </ListItem>
         </List>
       </section>

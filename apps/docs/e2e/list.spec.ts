@@ -374,6 +374,30 @@ test('lists preserve row geometry, selection semantics, theme roles, and RTL ord
   expect(leadingStartBox!.y - rowBox!.y).toBeCloseTo(10, 0)
   expect(trailingBox!.y - rowBox!.y).toBeCloseTo(10, 0)
 
+  // list.geometry.media
+  const leadingImage = contentDemo
+    .locator('.yam3x-list-item__leading[data-leading-type="image"] img')
+    .first()
+  const leadingVideo = contentDemo
+    .locator('.yam3x-list-item__leading[data-leading-type="video"] video')
+    .first()
+  await expect(leadingImage).toHaveCSS('border-top-left-radius', '8px')
+  await expect(leadingImage).toHaveCSS('border-bottom-right-radius', '8px')
+  await expect(leadingVideo).toHaveCSS('border-top-left-radius', '8px')
+  await expect(leadingVideo).toHaveCSS('border-bottom-right-radius', '8px')
+
+  // list.geometry.icons
+  const leadingIcon = contentDemo
+    .locator('.yam3x-list-item__leading[data-leading-type="icon"] .yam3x-icon')
+    .first()
+  const trailingIcon = contentDemo.locator('.yam3x-list-item__trailing .yam3x-icon').first()
+  await expect(leadingIcon).toHaveCSS('font-size', '20px')
+  await expect(leadingIcon).toHaveCSS('width', '20px')
+  await expect(leadingIcon).toHaveCSS('height', '20px')
+  await expect(trailingIcon).toHaveCSS('font-size', '20px')
+  await expect(trailingIcon).toHaveCSS('width', '20px')
+  await expect(trailingIcon).toHaveCSS('height', '20px')
+
   await passiveList.evaluate((element) => {
     element.style.width = '240px'
   })

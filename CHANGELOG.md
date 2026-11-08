@@ -11,6 +11,7 @@
 
 ### Fixed
 
+- Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.
 - Select option panels keep receiving pointer input when a modal dialog locks the body, so options work with pointer and keyboard input.
