@@ -343,7 +343,6 @@ defineExpose({ show, hide, toggle, root: host })
   --_yam3x-menu-color-tertiary: var(--md-sys-color-tertiary);
   --_yam3x-menu-color-on-tertiary: var(--md-sys-color-on-tertiary);
   --_yam3x-menu-color-divider: var(--md-sys-color-outline-variant);
-  --_yam3x-menu-color-shadow: var(--md-sys-color-shadow);
   --_yam3x-menu-shape-corner-large: var(--md-sys-shape-corner-large, 16px);
   --_yam3x-menu-shape-corner-medium: var(--md-sys-shape-corner-medium, 12px);
   --_yam3x-menu-shape-corner-small: var(--md-sys-shape-corner-small, 8px);
@@ -441,8 +440,7 @@ defineExpose({ show, hide, toggle, root: host })
     --md-sys-typescale-label-large-tracking,
     0.1px
   );
-  --_yam3x-menu-container-elevation: 0 4px 8px 3px
-    color-mix(in srgb, var(--_yam3x-menu-color-shadow) 15%, transparent);
+  --_yam3x-menu-container-elevation: var(--md-sys-elevation-level2);
   --_yam3x-menu-item-first-child-shape: var(
     --yam3x-menu-item-shape,
     var(--_yam3x-menu-shape-corner-medium)
@@ -829,21 +827,21 @@ defineExpose({ show, hide, toggle, root: host })
 @keyframes yam3x-menu-enter {
   from {
     opacity: 0;
-    clip-path: var(--_yam3x-menu-collapse-clip, inset(0 0 100% 0 round 4px));
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
-    clip-path: inset(0 round 4px);
+    transform: none;
   }
 }
 @keyframes yam3x-menu-exit {
   from {
     opacity: 1;
-    clip-path: inset(0 round 4px);
+    transform: none;
   }
   to {
     opacity: 0;
-    clip-path: var(--_yam3x-menu-collapse-clip, inset(0 0 100% 0 round 4px));
+    transform: scale(0.9);
   }
 }
 @media (prefers-reduced-motion: reduce) {

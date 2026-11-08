@@ -1,5 +1,13 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Locator } from '@playwright/test'
 import { selectM3Option } from './test-utils'
+
+async function settleMenuMotion(menu: Locator) {
+  await menu.evaluate(async (element) => {
+    await Promise.all(
+      element.getAnimations().map((animation) => animation.finished.catch(() => undefined)),
+    )
+  })
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/components/menu')
@@ -43,6 +51,29 @@ test('show(anchor) supports a separate context-menu invoker', async ({ page }) =
   await expect(anchor).toHaveAttribute('aria-expanded', 'false')
   await expect(anchor).not.toHaveAttribute('data-yam3x-pressed')
   await expect(anchor).toBeFocused()
+})
+
+test('menu keeps its rounded container and System elevation shadow after opening', async ({
+  page,
+}) => {
+  await page.getByRole('button', { name: 'Open layer actions' }).click()
+  const menu = page.getByRole('menu', { name: 'Layer actions' })
+
+  await expect(menu).toHaveCSS('clip-path', 'none')
+  await expect(menu).toHaveCSS('border-radius', '16px')
+
+  const shadows = await page.evaluate(() => {
+    const panel = document.querySelector('.yam3x-menu__panel')!
+    const probe = document.createElement('div')
+    probe.style.boxShadow = getComputedStyle(document.documentElement)
+      .getPropertyValue('--md-sys-elevation-level2')
+      .trim()
+    document.body.append(probe)
+    const expected = getComputedStyle(probe).boxShadow
+    probe.remove()
+    return { actual: getComputedStyle(panel).boxShadow, expected }
+  })
+  expect(shadows.actual).toBe(shadows.expected)
 })
 
 test('menu exit motion hides the leaving surface before removing it', async ({ page }) => {
@@ -528,6 +559,8 @@ test('vertical menu spacing follows the current expressive measurements', async 
   const divider = menu.getByRole('separator').first()
 
   await expect(menu).toHaveCSS('border-radius', '16px')
+  // Wait for the enter animation so bounding boxes are not scaled.
+  await settleMenuMotion(menu)
   await expect(menu).toHaveCSS('padding-inline-start', '4px')
   await expect(menu).toHaveCSS('padding-inline-end', '4px')
   await expect(menu).toHaveCSS('padding-block-start', '2px')
@@ -615,6 +648,8 @@ test('expressive gaps separate group surfaces without separator semantics', asyn
   expect(menuId).toBeTruthy()
   await expect(trigger).toHaveAttribute('aria-controls', menuId!)
   await expect(menu).toBeVisible()
+  // Wait for the enter animation so bounding boxes are not scaled.
+  await settleMenuMotion(menu)
   await expect(groups).toHaveCount(2)
   await expect(menu).toHaveCSS('row-gap', '0px')
   await expect(menu.getByRole('separator')).toHaveCount(1)

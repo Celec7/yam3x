@@ -349,9 +349,6 @@ async function updatePosition() {
     top: `${y}px`,
     visibility: 'visible',
     '--_yam3x-menu-transform-origin': resolvedPlacement.startsWith('top') ? 'bottom' : 'top',
-    '--_yam3x-menu-collapse-clip': resolvedPlacement.startsWith('top')
-      ? 'inset(100% 0 0 0 round 4px)'
-      : 'inset(0 0 100% 0 round 4px)',
   }
 }
 onMounted(() => {
