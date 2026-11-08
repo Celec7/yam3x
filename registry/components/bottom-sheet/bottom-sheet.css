@@ -1,6 +1,9 @@
+.yam3x-bottom-sheet-host {
+  display: contents;
+}
 .yam3x-bottom-sheet__positioner {
   position: fixed;
-  z-index: 60;
+  z-index: var(--_yam3x-bottom-sheet-layer-z, 60);
   inset: 0;
   display: flex;
   align-items: flex-end;
@@ -21,7 +24,7 @@
     var(--_yam3x-overlay-scrim-opacity)
   );
   position: fixed;
-  z-index: 59;
+  z-index: calc(var(--_yam3x-bottom-sheet-layer-z, 60) - 1);
   inset: 0;
   background: color-mix(
     in srgb,
@@ -137,7 +140,10 @@
   --_yam3x-bottom-sheet-content-line-height: var(--yam3x-bottom-sheet-content-line-height, 24px);
   --_yam3x-bottom-sheet-content-tracking: var(--yam3x-bottom-sheet-content-tracking, 0.5px);
   --_yam3x-bottom-sheet-z-index-override: var(--yam3x-bottom-sheet-z-index);
-  --_yam3x-bottom-sheet-z-index: var(--_yam3x-bottom-sheet-z-index-override, 61);
+  --_yam3x-bottom-sheet-z-index: var(
+    --_yam3x-bottom-sheet-z-index-override,
+    calc(var(--_yam3x-bottom-sheet-layer-z, 60) + 1)
+  );
   position: fixed;
   z-index: var(--_yam3x-bottom-sheet-z-index);
   inset-block-end: 0;
@@ -178,7 +184,10 @@
   box-shadow: var(--_yam3x-bottom-sheet-modal-elevation);
 }
 .yam3x-bottom-sheet--standard {
-  --_yam3x-bottom-sheet-z-index: var(--_yam3x-bottom-sheet-z-index-override, 30);
+  --_yam3x-bottom-sheet-z-index: var(
+    --_yam3x-bottom-sheet-z-index-override,
+    var(--_yam3x-bottom-sheet-layer-z, 30)
+  );
   z-index: var(--_yam3x-bottom-sheet-z-index);
 }
 .yam3x-bottom-sheet[data-dragging='true'] {

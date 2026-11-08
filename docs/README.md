@@ -26,3 +26,4 @@ Installable components are discovered from the entrypoints under [`registry/comp
 Shared architecture decision records live under `agents/notes/`, grouped by lifecycle status. `proposed` includes accepted directions awaiting implementation; move a record to `implemented` with its code and verification evidence, repairing inbound links.
 
 - [Remove Tailwind from development and distribution](agents/notes/implemented/2026-11-08-remove-tailwind.md)
+- [Order floating overlays by open sequence](agents/notes/implemented/2026-11-08-overlay-layer-stack.md)

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useComponentLocale } from '../localization/context'
-import { nextTick, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { Dialog } from '@ark-ui/vue/dialog'
 import Icon from '../icon/icon.vue'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 
 const props = withDefaults(
   defineProps<{
@@ -24,7 +25,6 @@ const props = withDefaults(
 )
 const open = defineModel<boolean>('open', { default: false })
 const returnValue = defineModel<string>('returnValue', { default: '' })
-
 const emit = defineEmits<{
   opening: [event: Event]
   opened: [event: Event]
@@ -32,6 +32,28 @@ const emit = defineEmits<{
   closing: [event: Event]
   closed: [event: Event]
 }>()
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+
+watch(
+  open,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('dialog')
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
+onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
+})
 const { messages: actionMessages } = useComponentLocale(
   'actions',
   () => props.locale,
@@ -105,81 +127,89 @@ defineExpose({ close: closeWithValue, returnValue })
 </script>
 
 <template>
-  <Dialog.Root
-    :open="open"
-    role="alertdialog"
-    :lazy-mount="true"
-    :unmount-on-exit="false"
-    :close-on-escape="dismissOnEscape"
-    :close-on-interact-outside="dismissOnClickOutside"
-    :trap-focus="true"
-    :prevent-scroll="true"
-    :restore-focus="true"
-    @open-change="onOpenChange"
-    @escape-key-down="onEscapeKeydown"
+  <div
+    class="yam3x-dialog"
+    :style="layerZ ? { '--_yam3x-dialog-layer-z': String(layerZ) } : undefined"
   >
-    <Dialog.Backdrop class="yam3x-dialog__backdrop" />
-    <Dialog.Positioner class="yam3x-dialog__positioner">
-      <Dialog.Content
-        class="yam3x-dialog__content"
-        :aria-hidden="!open"
-        :inert="!open"
-      >
-        <header
-          class="yam3x-dialog__header"
-          :class="{ 'yam3x-dialog__header--with-icon': Boolean($slots.icon) }"
+    <Dialog.Root
+      :open="open"
+      role="alertdialog"
+      :lazy-mount="true"
+      :unmount-on-exit="false"
+      :close-on-escape="dismissOnEscape"
+      :close-on-interact-outside="dismissOnClickOutside"
+      :trap-focus="true"
+      :prevent-scroll="true"
+      :restore-focus="true"
+      @open-change="onOpenChange"
+      @escape-key-down="onEscapeKeydown"
+    >
+      <Dialog.Backdrop class="yam3x-dialog__backdrop" />
+      <Dialog.Positioner class="yam3x-dialog__positioner">
+        <Dialog.Content
+          class="yam3x-dialog__content"
+          :aria-hidden="!open"
+          :inert="!open"
         >
+          <header
+            class="yam3x-dialog__header"
+            :class="{ 'yam3x-dialog__header--with-icon': Boolean($slots.icon) }"
+          >
+            <div
+              v-if="$slots.icon"
+              class="yam3x-dialog__icon"
+            >
+              <slot name="icon" />
+            </div>
+            <Dialog.Title class="yam3x-dialog__title"
+              ><slot name="title">{{ title }}</slot></Dialog.Title
+            >
+            <Dialog.Description
+              v-if="description"
+              class="yam3x-dialog__description"
+            >
+              {{ description }}
+            </Dialog.Description>
+            <button
+              v-if="showCloseButton"
+              class="yam3x-dialog__close"
+              type="button"
+              :aria-label="actionMessages.close"
+              @click="close"
+            >
+              <slot name="close-icon">
+                <Icon name="close" />
+              </slot>
+            </button>
+          </header>
           <div
-            v-if="$slots.icon"
-            class="yam3x-dialog__icon"
+            v-if="$slots.default"
+            class="yam3x-dialog__body"
           >
-            <slot name="icon" />
+            <slot />
           </div>
-          <Dialog.Title class="yam3x-dialog__title"
-            ><slot name="title">{{ title }}</slot></Dialog.Title
+          <div
+            v-if="$slots.divider"
+            class="yam3x-dialog__divider"
           >
-          <Dialog.Description
-            v-if="description"
-            class="yam3x-dialog__description"
+            <slot name="divider" />
+          </div>
+          <footer
+            v-if="$slots.actions"
+            class="yam3x-dialog__actions"
           >
-            {{ description }}
-          </Dialog.Description>
-          <button
-            v-if="showCloseButton"
-            class="yam3x-dialog__close"
-            type="button"
-            :aria-label="actionMessages.close"
-            @click="close"
-          >
-            <slot name="close-icon">
-              <Icon name="close" />
-            </slot>
-          </button>
-        </header>
-        <div
-          v-if="$slots.default"
-          class="yam3x-dialog__body"
-        >
-          <slot />
-        </div>
-        <div
-          v-if="$slots.divider"
-          class="yam3x-dialog__divider"
-        >
-          <slot name="divider" />
-        </div>
-        <footer
-          v-if="$slots.actions"
-          class="yam3x-dialog__actions"
-        >
-          <slot name="actions" />
-        </footer>
-      </Dialog.Content>
-    </Dialog.Positioner>
-  </Dialog.Root>
+            <slot name="actions" />
+          </footer>
+        </Dialog.Content>
+      </Dialog.Positioner>
+    </Dialog.Root>
+  </div>
 </template>
 
 <style scoped>
+.yam3x-dialog {
+  display: contents;
+}
 .yam3x-dialog__backdrop,
 .yam3x-dialog__positioner {
   --_yam3x-dialog-space-viewport-inset: calc(24px * var(--md-sys-density-spacing-scale, 1));
@@ -199,7 +229,7 @@ defineExpose({ close: closeWithValue, returnValue })
   --_yam3x-dialog-color-scrim: var(--md-sys-color-scrim);
   --_yam3x-dialog-opacity-scrim: var(--_yam3x-overlay-scrim-opacity);
   position: fixed;
-  z-index: 40;
+  z-index: var(--_yam3x-dialog-layer-z, 40);
   inset: 0;
   background: color-mix(
     in srgb,
@@ -256,7 +286,7 @@ defineExpose({ close: closeWithValue, returnValue })
   --_yam3x-dialog-type-body-tracking: var(--md-sys-typescale-body-large-tracking);
   --_yam3x-dialog-color-header: transparent;
   position: fixed;
-  z-index: 41;
+  z-index: calc(var(--_yam3x-dialog-layer-z, 40) + 1);
   inset: 0;
   display: grid;
   align-items: center;

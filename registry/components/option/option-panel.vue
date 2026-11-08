@@ -3,6 +3,7 @@ import { useComponentLocale } from '../localization/context'
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import type { OptionToggleDetail } from './option.types'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 
 defineOptions({ inheritAttrs: false })
 
@@ -68,6 +69,7 @@ const floatingStyle = ref<Record<string, string>>({ visibility: 'hidden' })
 let stopPositioning: (() => void) | undefined
 let positionRevision = 0
 let inheritedTokensAnchor: HTMLElement | null = null
+let layer: OverlayLayer | undefined
 
 function requestOpen(value: boolean, source: OptionToggleDetail['source'] = 'programmatic') {
   if (open.value === value) return
@@ -190,6 +192,26 @@ function toggle() {
   requestOpen(!open.value)
 }
 
+watch(
+  open,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('popup', () => requestOpen(false, 'programmatic'))
+      floatingStyle.value = { ...floatingStyle.value, zIndex: String(layer.zIndex) }
+    } else {
+      layer?.release()
+      layer = undefined
+      if ('zIndex' in floatingStyle.value) {
+        const next = { ...floatingStyle.value }
+        delete next.zIndex
+        floatingStyle.value = next
+      }
+    }
+  },
+  { immediate: true },
+)
+
 watch(open, async (value) => {
   await nextTick()
   if (value && props.anchor && panel.value) {
@@ -225,6 +247,8 @@ watch(
   },
 )
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   document.removeEventListener('pointerdown', onOutsidePointer, true)
   window.removeEventListener('scroll', onAnchorScroll, true)
   stopPositioning?.()

@@ -4,6 +4,7 @@ import { autoUpdate, computePosition, flip, offset, shift, size } from '@floatin
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import ToggleFloatingActionButton from '../fab/toggle-floating-action-button.vue'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import type {
   FabMenuHorizontalAlignment,
   FabMenuTriggerSize,
@@ -148,6 +149,23 @@ watch(
   { immediate: true },
 )
 const rootStyle = computed(() => createFabMenuComponentTokens(props.variant, props.presentation))
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  expanded,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('popup', () => requestExpanded(false))
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
 
 function requestExpanded(value: boolean) {
   if (props.disabled || value === expanded.value) return
@@ -422,6 +440,8 @@ watch(
   { deep: true },
 )
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   cancelAnimationFrame(motionFrame)
   cancelAnimationFrame(itemAnimationFrame)
   window.clearTimeout(hideTimer)
@@ -498,7 +518,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
           `yam3x-fab-menu__panel--opening-${openingSide}`,
           { 'yam3x-fab-menu__panel--open': expanded },
         ]"
-        :style="[positionStyle, rootStyle]"
+        :style="[positionStyle, rootStyle, layerZ ? { zIndex: String(layerZ) } : undefined]"
         role="menu"
         :aria-label="actionMessages.actions"
         :aria-hidden="!expanded"

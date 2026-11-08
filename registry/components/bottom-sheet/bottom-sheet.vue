@@ -15,6 +15,7 @@ import { Dialog } from '@ark-ui/vue/dialog'
 import { bottomSheetCloseKey } from './bottom-sheet.context'
 import Icon from '../icon/icon.vue'
 import type { BottomSheetDetent, BottomSheetVariant } from './bottom-sheet.types'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import './bottom-sheet.css'
 
 type DragSession = {
@@ -217,6 +218,22 @@ function close(): boolean {
   return requestOpen(false, 'dismiss')
 }
 provide(bottomSheetCloseKey, close)
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  [open, () => props.variant],
+  ([value, variant]) => {
+    layer?.release()
+    layer = undefined
+    layerZ.value = undefined
+    if (!value) return
+    layer = acquireOverlayLayer(variant === 'modal' ? 'dialog' : 'popup', () =>
+      requestOpen(false, 'dismiss'),
+    )
+    layerZ.value = layer.zIndex
+  },
+  { immediate: true },
+)
 
 function requestDetent(next: BottomSheetDetent): void {
   if (next === activeDetent.value) {
@@ -505,6 +522,8 @@ onMounted(() => {
   window.addEventListener('resize', syncHeight)
 })
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   resizeObserver?.disconnect()
   contentObserver?.disconnect()
   window.removeEventListener('resize', syncHeight)
@@ -518,196 +537,201 @@ defineExpose({ close, requestOpen, requestDetent })
 </script>
 
 <template>
-  <template v-if="variant === 'modal'">
-    <Dialog.Root
-      :open="open"
-      :modal="true"
-      :lazy-mount="true"
-      :unmount-on-exit="false"
-      :close-on-escape="true"
-      :close-on-interact-outside="true"
-      :trap-focus="true"
-      :prevent-scroll="true"
-      :restore-focus="true"
-      @open-change="onOpenChange"
-    >
-      <Dialog.Trigger
-        v-if="$slots.trigger"
-        as-child
-        ><slot
-          name="trigger"
-          :trigger-props="triggerProps()"
-          :activate="onTriggerSlotClick"
-      /></Dialog.Trigger>
-      <Dialog.Backdrop
-        class="yam3x-bottom-sheet__scrim"
-        @click="close"
-      />
-      <Dialog.Positioner class="yam3x-bottom-sheet__positioner">
-        <Dialog.Content
-          :id="id"
-          :ref="setPanelElement"
-          class="yam3x-bottom-sheet yam3x-bottom-sheet--modal"
-          :data-detent="String(activeDetent)"
-          :data-dragging="isDragging"
-          :style="{
-            '--_yam3x-bottom-sheet-height': `${currentHeight}px`,
-            '--_yam3x-bottom-sheet-prop-max-width': maxWidth,
-          }"
-          :aria-label="accessibleLabel"
-          :aria-labelledby="accessibleLabel ? undefined : headerId"
-          @keydown.capture="onModalKeydown"
-        >
-          <div
-            v-if="handle || hasResizeControl"
-            class="yam3x-bottom-sheet__handle-row"
+  <div
+    class="yam3x-bottom-sheet-host"
+    :style="layerZ ? { '--_yam3x-bottom-sheet-layer-z': String(layerZ) } : undefined"
+  >
+    <template v-if="variant === 'modal'">
+      <Dialog.Root
+        :open="open"
+        :modal="true"
+        :lazy-mount="true"
+        :unmount-on-exit="false"
+        :close-on-escape="true"
+        :close-on-interact-outside="true"
+        :trap-focus="true"
+        :prevent-scroll="true"
+        :restore-focus="true"
+        @open-change="onOpenChange"
+      >
+        <Dialog.Trigger
+          v-if="$slots.trigger"
+          as-child
+          ><slot
+            name="trigger"
+            :trigger-props="triggerProps()"
+            :activate="onTriggerSlotClick"
+        /></Dialog.Trigger>
+        <Dialog.Backdrop
+          class="yam3x-bottom-sheet__scrim"
+          @click="close"
+        />
+        <Dialog.Positioner class="yam3x-bottom-sheet__positioner">
+          <Dialog.Content
+            :id="id"
+            :ref="setPanelElement"
+            class="yam3x-bottom-sheet yam3x-bottom-sheet--modal"
+            :data-detent="String(activeDetent)"
             :data-dragging="isDragging"
-            @pointerdown="handle && beginDrag($event)"
+            :style="{
+              '--_yam3x-bottom-sheet-height': `${currentHeight}px`,
+              '--_yam3x-bottom-sheet-prop-max-width': maxWidth,
+            }"
+            :aria-label="accessibleLabel"
+            :aria-labelledby="accessibleLabel ? undefined : headerId"
+            @keydown.capture="onModalKeydown"
           >
-            <button
-              v-if="handle"
-              class="yam3x-bottom-sheet__handle-button"
-              type="button"
-              :aria-label="actionMessages.resizeSheet"
-              @click="onHandleClick"
-            >
-              <slot name="handle"><span class="yam3x-bottom-sheet__handle" /></slot>
-            </button>
-            <slot
-              v-else
-              name="resize-control"
-              :resize="cycleDetent"
+            <div
+              v-if="handle || hasResizeControl"
+              class="yam3x-bottom-sheet__handle-row"
+              :data-dragging="isDragging"
+              @pointerdown="handle && beginDrag($event)"
             >
               <button
-                class="yam3x-bottom-sheet__resize"
+                v-if="handle"
+                class="yam3x-bottom-sheet__handle-button"
                 type="button"
                 :aria-label="actionMessages.resizeSheet"
-                @click="cycleDetent"
+                @click="onHandleClick"
               >
-                Resize
+                <slot name="handle"><span class="yam3x-bottom-sheet__handle" /></slot>
               </button>
-            </slot>
-          </div>
-          <header
-            v-if="$slots.header || isFullHeight"
-            class="yam3x-bottom-sheet__header"
-          >
-            <h2
-              v-if="$slots.header"
-              :id="headerId"
-              class="yam3x-bottom-sheet__title"
+              <slot
+                v-else
+                name="resize-control"
+                :resize="cycleDetent"
+              >
+                <button
+                  class="yam3x-bottom-sheet__resize"
+                  type="button"
+                  :aria-label="actionMessages.resizeSheet"
+                  @click="cycleDetent"
+                >
+                  Resize
+                </button>
+              </slot>
+            </div>
+            <header
+              v-if="$slots.header || isFullHeight"
+              class="yam3x-bottom-sheet__header"
             >
-              <slot name="header" />
-            </h2>
-            <button
-              v-if="isFullHeight"
-              class="yam3x-bottom-sheet__close"
-              type="button"
-              :aria-label="actionMessages.closeSheet"
-              @click="close"
-            >
-              <Icon name="close" />
-            </button>
-          </header>
-          <div class="yam3x-bottom-sheet__body"><slot /></div>
-        </Dialog.Content>
-      </Dialog.Positioner>
-    </Dialog.Root>
-  </template>
-  <template v-else>
-    <slot
-      name="trigger"
-      :trigger-props="triggerProps()"
-      :activate="onTriggerSlotClick"
-    />
-    <section
-      :id="id"
-      :ref="setPanelElement"
-      class="yam3x-bottom-sheet yam3x-bottom-sheet--standard"
-      :data-open="String(open)"
-      :data-detent="String(activeDetent)"
-      :data-dragging="isDragging"
-      :style="{
-        '--_yam3x-bottom-sheet-height': `${currentHeight}px`,
-        '--_yam3x-bottom-sheet-prop-max-width': maxWidth,
-      }"
-      role="region"
-      :aria-label="accessibleLabel"
-      :aria-labelledby="accessibleLabel ? undefined : headerId"
-      :aria-hidden="!open"
-      :inert="!open"
-      @keydown="onKeydown"
-    >
-      <div
-        v-if="handle || hasResizeControl"
-        class="yam3x-bottom-sheet__handle-row"
+              <h2
+                v-if="$slots.header"
+                :id="headerId"
+                class="yam3x-bottom-sheet__title"
+              >
+                <slot name="header" />
+              </h2>
+              <button
+                v-if="isFullHeight"
+                class="yam3x-bottom-sheet__close"
+                type="button"
+                :aria-label="actionMessages.closeSheet"
+                @click="close"
+              >
+                <Icon name="close" />
+              </button>
+            </header>
+            <div class="yam3x-bottom-sheet__body"><slot /></div>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
+    </template>
+    <template v-else>
+      <slot
+        name="trigger"
+        :trigger-props="triggerProps()"
+        :activate="onTriggerSlotClick"
+      />
+      <section
+        :id="id"
+        :ref="setPanelElement"
+        class="yam3x-bottom-sheet yam3x-bottom-sheet--standard"
+        :data-open="String(open)"
+        :data-detent="String(activeDetent)"
         :data-dragging="isDragging"
-        @pointerdown="handle && beginDrag($event)"
+        :style="{
+          '--_yam3x-bottom-sheet-height': `${currentHeight}px`,
+          '--_yam3x-bottom-sheet-prop-max-width': maxWidth,
+        }"
+        role="region"
+        :aria-label="accessibleLabel"
+        :aria-labelledby="accessibleLabel ? undefined : headerId"
+        :aria-hidden="!open"
+        :inert="!open"
+        @keydown="onKeydown"
       >
-        <button
-          v-if="handle"
-          class="yam3x-bottom-sheet__handle-button"
-          type="button"
-          :aria-label="actionMessages.resizeSheet"
-          @click="onHandleClick"
-        >
-          <slot name="handle"><span class="yam3x-bottom-sheet__handle" /></slot>
-        </button>
-        <slot
-          v-else
-          name="resize-control"
-          :resize="cycleDetent"
+        <div
+          v-if="handle || hasResizeControl"
+          class="yam3x-bottom-sheet__handle-row"
+          :data-dragging="isDragging"
+          @pointerdown="handle && beginDrag($event)"
         >
           <button
-            class="yam3x-bottom-sheet__resize"
+            v-if="handle"
+            class="yam3x-bottom-sheet__handle-button"
             type="button"
             :aria-label="actionMessages.resizeSheet"
-            @click="cycleDetent"
+            @click="onHandleClick"
           >
-            Resize
+            <slot name="handle"><span class="yam3x-bottom-sheet__handle" /></slot>
           </button>
-        </slot>
-      </div>
-      <header
-        v-if="$slots.header || isFullHeight || variant === 'standard'"
-        class="yam3x-bottom-sheet__header"
-      >
-        <h2
-          v-if="$slots.header"
-          :id="headerId"
-          class="yam3x-bottom-sheet__title"
-        >
-          <slot name="header" />
-        </h2>
-        <button
-          v-if="variant === 'standard'"
-          class="yam3x-bottom-sheet__close"
-          type="button"
-          :aria-label="actionMessages.closeSheet"
-          @click="close"
-        >
-          <Icon name="close" />
-        </button>
-        <div
-          v-if="isFullHeight"
-          class="yam3x-bottom-sheet__collapse-action"
-        >
           <slot
-            name="collapse-action"
-            :collapse="() => requestDetent(resolvedDetents[0])"
+            v-else
+            name="resize-control"
+            :resize="cycleDetent"
           >
             <button
-              class="yam3x-bottom-sheet__close"
+              class="yam3x-bottom-sheet__resize"
               type="button"
-              :aria-label="actionMessages.collapseSheet"
-              @click="requestDetent(resolvedDetents[0])"
+              :aria-label="actionMessages.resizeSheet"
+              @click="cycleDetent"
             >
-              <Icon name="expand_more" />
+              Resize
             </button>
           </slot>
         </div>
-      </header>
-      <div class="yam3x-bottom-sheet__body"><slot /></div>
-    </section>
-  </template>
+        <header
+          v-if="$slots.header || isFullHeight || variant === 'standard'"
+          class="yam3x-bottom-sheet__header"
+        >
+          <h2
+            v-if="$slots.header"
+            :id="headerId"
+            class="yam3x-bottom-sheet__title"
+          >
+            <slot name="header" />
+          </h2>
+          <button
+            v-if="variant === 'standard'"
+            class="yam3x-bottom-sheet__close"
+            type="button"
+            :aria-label="actionMessages.closeSheet"
+            @click="close"
+          >
+            <Icon name="close" />
+          </button>
+          <div
+            v-if="isFullHeight"
+            class="yam3x-bottom-sheet__collapse-action"
+          >
+            <slot
+              name="collapse-action"
+              :collapse="() => requestDetent(resolvedDetents[0])"
+            >
+              <button
+                class="yam3x-bottom-sheet__close"
+                type="button"
+                :aria-label="actionMessages.collapseSheet"
+                @click="requestDetent(resolvedDetents[0])"
+              >
+                <Icon name="expand_more" />
+              </button>
+            </slot>
+          </div>
+        </header>
+        <div class="yam3x-bottom-sheet__body"><slot /></div>
+      </section>
+    </template>
+  </div>
 </template>

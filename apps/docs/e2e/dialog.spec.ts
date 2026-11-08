@@ -294,6 +294,13 @@ test('keeps a floating label inside the scrollport and lets a teleported select 
   const panel = page.locator('.yam3x-option-panel')
   await expect(panel).toBeVisible()
   await expect(panel).toHaveCSS('pointer-events', 'auto')
+  const [panelZ, positionerZ] = await Promise.all([
+    panel.evaluate((element) => Number(getComputedStyle(element).zIndex)),
+    dialog
+      .locator('xpath=ancestor::div[contains(@class,"yam3x-dialog__positioner")]')
+      .evaluate((element) => Number(getComputedStyle(element).zIndex)),
+  ])
+  expect(panelZ).toBeGreaterThan(positionerZ)
   await panel.locator('.yam3x-option', { hasText: 'GitHub' }).click()
   await expect(trigger).toContainText('GitHub')
 })

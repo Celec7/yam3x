@@ -3,6 +3,7 @@ import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import MenuPanel from './menu-panel.vue'
 import type { MenuItem, MenuPositionX, MenuPositionY, MenuVariant } from './menu.types'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
@@ -72,6 +73,19 @@ let opener: HTMLElement | null = null
 let internalChange = false
 let restoreAfterClose = false
 let panelCloseTimer = 0
+let layer: OverlayLayer | undefined
+const layerZ = ref<number>()
+
+function ensureLayer() {
+  if (layer) return
+  layer = acquireOverlayLayer('popup', () => hide(false))
+  layerZ.value = layer.zIndex
+}
+function releaseLayer() {
+  layer?.release()
+  layer = undefined
+  layerZ.value = undefined
+}
 
 const menuExitFallbackMs = 250
 
@@ -79,12 +93,21 @@ function finishPanelClose() {
   window.clearTimeout(panelCloseTimer)
   panelRendered.value = false
   panelClosing.value = false
+  releaseLayer()
 }
 
 function onPanelCloseComplete() {
   if (open.value) return
   finishPanelClose()
 }
+watch(
+  open,
+  (value) => {
+    if (value) ensureLayer()
+    else if (!panelRendered.value) releaseLayer()
+  },
+  { immediate: true },
+)
 
 function fireToggle(next: boolean) {
   const event = new CustomEvent<{ open: boolean }>('beforetoggle', {
@@ -254,6 +277,7 @@ onBeforeUnmount(() => {
   window.clearTimeout(panelCloseTimer)
   document.removeEventListener('pointerdown', onDocumentPointer, true)
   setAnchorExpanded(anchor.value, false)
+  releaseLayer()
 })
 
 defineExpose({ show, hide, toggle, root: host })
@@ -267,6 +291,7 @@ defineExpose({ show, hide, toggle, root: host })
       `yam3x-menu--${validVariant}`,
       { 'yam3x-menu--dense': dense, 'yam3x-menu--open': open },
     ]"
+    :style="layerZ ? { '--_yam3x-menu-layer-z': String(layerZ) } : undefined"
     v-bind="$attrs"
   >
     <div
@@ -489,7 +514,7 @@ defineExpose({ show, hide, toggle, root: host })
 .yam3x-menu__panel {
   box-sizing: border-box;
   position: fixed;
-  z-index: 1200;
+  z-index: var(--_yam3x-menu-layer-z, 1200);
   display: flex;
   flex-direction: column;
   gap: 0;

@@ -171,6 +171,7 @@
     },
     "bottom-sheet": {
       "files": [
+        "_shared/overlay-layer.ts",
         "bottom-sheet/bottom-sheet-action.vue",
         "bottom-sheet/bottom-sheet.context.ts",
         "bottom-sheet/bottom-sheet.css",
@@ -309,6 +310,7 @@
     "cascader": {
       "files": [
         "_shared/form-control.ts",
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "button/button-base.vue",
@@ -393,6 +395,7 @@
     "data-table": {
       "files": [
         "_shared/form-control.ts",
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "_shared/use-virtual-list.ts",
@@ -534,6 +537,7 @@
     },
     "dialog": {
       "files": [
+        "_shared/overlay-layer.ts",
         "dialog/dialog.vue",
         "dialog/index.ts",
         "icon/icon-registry.ts",
@@ -621,6 +625,7 @@
     },
     "fab-menu": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "fab-menu/fab-menu.tokens.ts",
         "fab-menu/fab-menu.types.ts",
@@ -919,6 +924,7 @@
     },
     "menu": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",
@@ -1050,6 +1056,7 @@
     },
     "option": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "icon/icon-registry.ts",
@@ -1080,6 +1087,7 @@
     "pagination": {
       "files": [
         "_shared/form-control.ts",
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "_shared/use-virtual-list.ts",
@@ -1190,6 +1198,7 @@
     },
     "select": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/select-option.context.ts",
         "_shared/use-virtual-list.ts",
@@ -1315,6 +1324,7 @@
     },
     "split-button": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "button/button-base.vue",
         "button/button.variants.ts",
@@ -1457,6 +1467,7 @@
     "tree-select": {
       "files": [
         "_shared/form-control.ts",
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/use-virtual-list.ts",
         "button/button-base.vue",
