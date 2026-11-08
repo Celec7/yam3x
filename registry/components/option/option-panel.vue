@@ -347,6 +347,9 @@ defineExpose({
   --_yam3x-option-panel-loading-tracking: var(--yam3x-option-panel-loading-tracking, 0.1px);
   position: fixed;
   z-index: 42;
+  /* Modal layers set pointer-events: none on the body. A panel teleported
+     outside the modal content must opt back in to remain clickable. */
+  pointer-events: auto;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

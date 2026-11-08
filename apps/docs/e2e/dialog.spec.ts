@@ -256,3 +256,25 @@ test('matches dialog spacing, omits an empty body, centers the icon, and fades w
   const icon = iconDialog.locator('.yam3x-dialog__icon')
   await expect(icon).toHaveCSS('justify-content', 'center')
 })
+
+test('keeps a floating label inside the scrollport and lets a teleported select receive pointer input', async ({
+  page,
+}) => {
+  await page.getByRole('button', { name: 'Open dialog with form controls', exact: true }).click()
+  const dialog = page.getByRole('alertdialog', { name: 'Install extension' })
+  await expect(dialog).toBeVisible()
+
+  const bodyBox = await dialog.locator('.yam3x-dialog__body').boundingBox()
+  const labelBox = await dialog.locator('.yam3x-form-field__label').boundingBox()
+  expect(bodyBox).not.toBeNull()
+  expect(labelBox).not.toBeNull()
+  expect(labelBox!.y).toBeGreaterThanOrEqual(bodyBox!.y)
+
+  const trigger = dialog.locator('.yam3x-select__trigger')
+  await trigger.click()
+  const panel = page.locator('.yam3x-option-panel')
+  await expect(panel).toBeVisible()
+  await expect(panel).toHaveCSS('pointer-events', 'auto')
+  await panel.locator('.yam3x-option', { hasText: 'GitHub' }).click()
+  await expect(trigger).toContainText('GitHub')
+})

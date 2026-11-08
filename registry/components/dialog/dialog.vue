@@ -185,6 +185,10 @@ defineExpose({ close: closeWithValue, returnValue })
   --_yam3x-dialog-space-viewport-inset: calc(24px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-dialog-space-header-gap: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-dialog-space-body-gap: calc(16px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-dialog-space-body-label-inset: calc(
+    var(--md-sys-typescale-body-large-line-height, 24px) *
+      var(--md-sys-typescale-line-height-scale, 1) * 0.5 + 2px
+  );
   --_yam3x-dialog-space-actions-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-dialog-space-actions-inset: calc(24px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-dialog-motion-fade: var(--md-sys-motion-spring-default-effects);
@@ -363,7 +367,11 @@ defineExpose({ close: closeWithValue, returnValue })
 }
 .yam3x-dialog__body {
   min-height: 0;
-  margin-top: var(--_yam3x-dialog-space-body-gap);
+  margin-top: max(
+    0px,
+    calc(var(--_yam3x-dialog-space-body-gap) - var(--_yam3x-dialog-space-body-label-inset))
+  );
+  padding-block-start: var(--_yam3x-dialog-space-body-label-inset);
   overflow: auto;
   color: var(--_yam3x-dialog-color-on-surface-variant);
   font-family: var(--_yam3x-dialog-type-body-font-family);

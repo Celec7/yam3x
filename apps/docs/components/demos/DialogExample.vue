@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Button from '@registry/components/button/button.vue'
 import Dialog from '@registry/components/dialog/dialog.vue'
+import FormField from '@registry/components/form-field/form-field.vue'
 import { HorizontalDivider } from '@registry/components/divider'
 import { Icon } from '@registry/components/icon'
+import Select from '@registry/components/select/select.vue'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
@@ -14,6 +16,12 @@ const dialog = ref<{ close: (value?: string) => void } | null>(null)
 const alertOpen = ref(false)
 const outsideLockedOpen = ref(false)
 const iconDialogOpen = ref(false)
+const formOpen = ref(false)
+const source = ref('index')
+const sourceOptions = computed(() => [
+  { value: 'index', label: t('Package index', '包索引') },
+  { value: 'github', label: 'GitHub' },
+])
 const preventNextClose = ref(false)
 const eventLog = ref<string[]>([])
 
@@ -54,6 +62,11 @@ function onClosing(event: Event): void {
       >{{
         t('Open dialog with icon and project close button', '打开带图标和项目关闭按钮的对话框')
       }}</Button
+    >
+    <Button
+      variant="outlined"
+      @click="formOpen = true"
+      >{{ t('Open dialog with form controls', '打开带表单控件的对话框') }}</Button
     >
     <Dialog
       ref="dialog"
@@ -138,6 +151,29 @@ function onClosing(event: Event): void {
           >{{ t('Done', '完成') }}</Button
         ></template
       >
+    </Dialog>
+    <Dialog
+      v-model:open="formOpen"
+      :title="t('Install extension', '安装扩展')"
+      :description="t('Choose an install source.', '选择安装来源。')"
+    >
+      <FormField
+        :label="t('Install source', '安装来源')"
+        float-label="always"
+        width="100%"
+      >
+        <Select
+          v-model="source"
+          :options="sourceOptions"
+        />
+      </FormField>
+      <template #actions>
+        <Button
+          variant="text"
+          @click="formOpen = false"
+          >{{ t('Close', '关闭') }}</Button
+        >
+      </template>
     </Dialog>
     <p
       class="yam3x-demo__status"

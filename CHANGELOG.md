@@ -10,10 +10,12 @@
 ### Fixed
 
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
+- Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.
+- Select option panels keep receiving pointer input when a modal dialog locks the body, so options work with pointer and keyboard input.
 
 ### Updating copied source
 
-Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-base.css`, and affected component files, including `src/components/yam3x/menu/` for the menu shadow fix. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/updating).
+Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-base.css`, and affected component files, including `src/components/yam3x/menu/`, `src/components/yam3x/dialog/`, and `src/components/yam3x/option/` for the current interaction fixes. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/updating).
 
 ## 0.3.1
 
