@@ -2,7 +2,7 @@
 
 ## Scope
 
-Material 3 Expressive defines four chip variants: Assist, Filter, Input, and Suggestion. Each supports a different task role. See the [Chips overview](https://m3.material.io/components/chips/overview).
+Material 3 defines four chip variants: Assist, Filter, Input, and Suggestion. Each supports a different task role. See the [Chips overview](https://m3.material.io/components/chips/overview).
 
 ## Design target
 
