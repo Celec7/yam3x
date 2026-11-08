@@ -27,6 +27,9 @@ export const DatePickerCalendar = defineComponent({
     monthAvailability: { type: Array as () => boolean[], required: true },
     previousMonthAvailable: { type: Boolean, required: true },
     nextMonthAvailable: { type: Boolean, required: true },
+    previousYearAvailable: { type: Boolean, required: true },
+    nextYearAvailable: { type: Boolean, required: true },
+    headerLayout: { type: String, default: 'docked' },
     locale: { type: String, required: true },
     titleMonth: { type: String, required: true },
     titleMonthOnly: { type: String, required: true },
@@ -49,6 +52,8 @@ export const DatePickerCalendar = defineComponent({
   emits: [
     'month',
     'year',
+    'previous-year',
+    'next-year',
     'select-month',
     'select-month-view',
     'select-year-view',
@@ -129,8 +134,12 @@ export const DatePickerCalendar = defineComponent({
     vueOnBeforeUnmount(clearSwipe)
     vueWatch(
       () => props.view,
-      () => {
+      async () => {
         focusedOptionIndex.value = null
+        await vueNextTick()
+        viewViewport.value
+          ?.querySelector<HTMLElement>('[role="option"][aria-selected="true"]')
+          ?.scrollIntoView({ block: 'nearest' })
       },
     )
     vueWatch(
@@ -180,6 +189,85 @@ export const DatePickerCalendar = defineComponent({
         },
         [h(Icon, { name: direction === 'previous' ? 'chevron_left' : 'chevron_right' })],
       )
+    const yearButton = (
+      label: string,
+      direction: 'previous' | 'next',
+      available: boolean,
+      onClick: () => void,
+    ) =>
+      h(
+        'button',
+        {
+          class: 'yam3x-date-picker__nav',
+          type: 'button',
+          disabled: !available,
+          'aria-label': `${label}, ${props.visibleMonth.getUTCFullYear() + (direction === 'previous' ? -1 : 1)}`,
+          title: `${label} (Shift + ${direction === 'previous' ? 'Page Up' : 'Page Down'})`,
+          'aria-keyshortcuts': direction === 'previous' ? 'Shift+PageUp' : 'Shift+PageDown',
+          onClick,
+        },
+        [h(Icon, { name: direction === 'previous' ? 'chevron_left' : 'chevron_right' })],
+      )
+    const periodButton = (text: string, label: string, onClick: () => void, disabled = false) =>
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'yam3x-date-picker__period',
+          'aria-label': label,
+          'aria-haspopup': 'listbox',
+          disabled,
+          onClick,
+        },
+        [text, h(Icon, { name: 'arrow_drop_down' })],
+      )
+    const calendarHeader = () => {
+      if (props.headerLayout === 'modal') {
+        return h('div', { class: 'yam3x-date-picker__calendar-header is-modal' }, [
+          h('div', { class: 'yam3x-date-picker__period-group' }, [
+            periodButton(props.titleMonth, props.chooseYearLabel(props.titleMonth), () =>
+              emit('select-year-view'),
+            ),
+          ]),
+          h('div', { class: 'yam3x-date-picker__period-group is-navigation' }, [
+            iconButton(props.previousMonthLabel, 'previous', props.previousMonthAvailable, () =>
+              navigateMonth(-1),
+            ),
+            iconButton(props.nextMonthLabel, 'next', props.nextMonthAvailable, () =>
+              navigateMonth(1),
+            ),
+          ]),
+        ])
+      }
+      return h('div', { class: 'yam3x-date-picker__calendar-header' }, [
+        h('div', { class: 'yam3x-date-picker__period-group' }, [
+          iconButton(props.previousMonthLabel, 'previous', props.previousMonthAvailable, () =>
+            navigateMonth(-1),
+          ),
+          periodButton(
+            props.titleMonthOnly,
+            props.chooseMonthLabel(props.titleMonthOnly),
+            () => emit('select-month-view'),
+            props.view === 'years',
+          ),
+          iconButton(props.nextMonthLabel, 'next', props.nextMonthAvailable, () =>
+            navigateMonth(1),
+          ),
+        ]),
+        h('div', { class: 'yam3x-date-picker__period-group' }, [
+          yearButton(props.previousYearLabel, 'previous', props.previousYearAvailable, () =>
+            emit('previous-year'),
+          ),
+          periodButton(
+            props.titleYearOnly,
+            props.chooseYearLabel(props.titleYearOnly),
+            () => emit('select-year-view'),
+            props.view === 'months',
+          ),
+          yearButton(props.nextYearLabel, 'next', props.nextYearAvailable, () => emit('next-year')),
+        ]),
+      ])
+    }
     const optionKeydown = (event: KeyboardEvent) => {
       const key = event.key
       if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(key)) return
@@ -364,11 +452,99 @@ export const DatePickerCalendar = defineComponent({
           ),
         ]),
       ])
+    const menuKeydown = (event: KeyboardEvent) => {
+      const key = event.key
+      if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(key)) return
+      const listbox = (event.currentTarget as HTMLElement).closest<HTMLElement>('[role="listbox"]')
+      const items = [
+        ...(listbox?.querySelectorAll<HTMLButtonElement>('button[role="option"]') ?? []),
+      ]
+      const active = items.filter((item) => !item.disabled)
+      if (!active.length) return
+      const current = Number((event.currentTarget as HTMLElement).dataset.optionIndex)
+      let next = key === 'Home' ? active[0] : key === 'End' ? active[active.length - 1] : undefined
+      if (!next) {
+        const delta = key === 'ArrowUp' ? -1 : 1
+        for (let index = current + delta; index >= 0 && index < items.length; index += delta) {
+          if (!items[index].disabled) {
+            next = items[index]
+            break
+          }
+        }
+      }
+      if (!next) return
+      event.preventDefault()
+      const index = items.indexOf(next)
+      focusedOptionIndex.value = index
+      void vueNextTick(() =>
+        listbox?.querySelector<HTMLButtonElement>(`[data-option-index="${index}"]`)?.focus(),
+      )
+    }
+    const menuList = (optionView: 'months' | 'years') =>
+      h(
+        'div',
+        {
+          class: 'yam3x-date-picker__menu-list',
+          role: 'listbox',
+          'aria-label':
+            optionView === 'months' ? props.chooseMonthLabel() : props.chooseYearLabel(),
+        },
+        optionView === 'months'
+          ? props.months.map((month, index) => {
+              const selectedIndex = props.visibleMonth.getUTCMonth()
+              return h(
+                'button',
+                {
+                  key: index,
+                  type: 'button',
+                  role: 'option',
+                  class: 'yam3x-date-picker__menu-item',
+                  'aria-selected': index === selectedIndex,
+                  tabindex: index === (focusedOptionIndex.value ?? selectedIndex) ? 0 : -1,
+                  'data-option-index': index,
+                  disabled: !props.monthAvailability[index],
+                  onClick: () => emit('select-month', index),
+                  onKeydown: menuKeydown,
+                },
+                [
+                  h('span', { class: 'yam3x-date-picker__menu-check' }, [
+                    index === props.visibleMonth.getUTCMonth() ? h(Icon, { name: 'check' }) : null,
+                  ]),
+                  h('span', null, month),
+                ],
+              )
+            })
+          : props.years.map((year, index) => {
+              const selectedIndex = props.years.indexOf(props.visibleMonth.getUTCFullYear())
+              return h(
+                'button',
+                {
+                  key: year,
+                  type: 'button',
+                  role: 'option',
+                  class: 'yam3x-date-picker__menu-item',
+                  'aria-selected': year === props.visibleMonth.getUTCFullYear(),
+                  tabindex: index === (focusedOptionIndex.value ?? selectedIndex) ? 0 : -1,
+                  'data-option-index': index,
+                  onClick: () => emit('year', year),
+                  onKeydown: menuKeydown,
+                },
+                [
+                  h('span', { class: 'yam3x-date-picker__menu-check' }, [
+                    year === props.visibleMonth.getUTCFullYear()
+                      ? h(Icon, { name: 'check' })
+                      : null,
+                  ]),
+                  h('span', null, String(year)),
+                ],
+              )
+            }),
+      )
     const optionGrid = (optionView: 'months' | 'years') =>
       h(
         'div',
         {
-          class: 'yam3x-date-picker__option-grid',
+          class: ['yam3x-date-picker__option-grid', { 'is-modal': props.headerLayout === 'modal' }],
           role: 'listbox',
           'aria-label':
             optionView === 'months' ? props.chooseMonthLabel() : props.chooseYearLabel(),
@@ -425,7 +601,9 @@ export const DatePickerCalendar = defineComponent({
           )
         return monthGrid()
       }
-      if (props.view === 'months') return optionGrid('months')
+      if (props.view === 'months')
+        return props.headerLayout === 'docked' ? menuList('months') : optionGrid('months')
+      if (props.headerLayout === 'docked' && props.view === 'years') return menuList('years')
       return h('div', { class: 'yam3x-date-picker__year-view' }, [
         h(
           'div',
@@ -455,34 +633,7 @@ export const DatePickerCalendar = defineComponent({
     }
     return () =>
       h('div', { class: 'yam3x-date-picker__calendar' }, [
-        h('div', { class: 'yam3x-date-picker__calendar-header' }, [
-          iconButton(props.previousMonthLabel, 'previous', props.previousMonthAvailable, () =>
-            navigateMonth(-1),
-          ),
-          h(
-            'button',
-            {
-              type: 'button',
-              class: 'yam3x-date-picker__period',
-              'aria-label': props.chooseMonthLabel(props.titleMonthOnly),
-              onClick: () => emit('select-month-view'),
-            },
-            props.titleMonthOnly,
-          ),
-          h(
-            'button',
-            {
-              type: 'button',
-              class: 'yam3x-date-picker__period',
-              'aria-label': props.chooseYearLabel(props.titleYearOnly),
-              onClick: () => emit('select-year-view'),
-            },
-            props.titleYearOnly,
-          ),
-          iconButton(props.nextMonthLabel, 'next', props.nextMonthAvailable, () =>
-            navigateMonth(1),
-          ),
-        ]),
+        calendarHeader(),
         h(
           'div',
           {

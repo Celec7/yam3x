@@ -96,6 +96,22 @@ test.describe('Date picker', () => {
           ]),
       )
       .toEqual(['4px', '4px'])
+    // date-picker.state.selected-hover
+    await newStart.hover()
+    const selectedHover = await newStart.evaluate((element) => {
+      const probe = document.createElement('span')
+      probe.style.color = getComputedStyle(element).getPropertyValue('--md-sys-color-primary')
+      document.body.append(probe)
+      const primary = getComputedStyle(probe).color
+      probe.remove()
+      return {
+        fill: getComputedStyle(element, '::before').backgroundColor,
+        image: getComputedStyle(element, '::before').backgroundImage,
+        primary,
+      }
+    })
+    expect(selectedHover.fill).toBe(selectedHover.primary)
+    expect(selectedHover.image).toContain('linear-gradient')
     await page.getByRole('button', { name: 'OK', exact: true }).click()
     await expect(page.getByText('Current value: 2026-10-04 – 2026-10-08')).toBeVisible()
   })
@@ -258,7 +274,7 @@ test.describe('Date picker', () => {
       .toBe('336px')
   })
 
-  test('uses localized short weekday labels and keeps focus treatment circular', async ({
+  test('uses localized one-character weekday labels and keeps focus treatment circular', async ({
     page,
   }) => {
     await page.goto('/components/date-picker')
@@ -271,13 +287,13 @@ test.describe('Date picker', () => {
     await expect(grid.getByRole('columnheader')).toHaveCount(7)
     await expect(grid.getByRole('row')).toHaveCount(6)
     expect(await grid.getByRole('columnheader').allTextContents()).toEqual([
-      'Sun',
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
+      'S',
+      'M',
+      'T',
+      'W',
+      'T',
+      'F',
+      'S',
     ])
     const today = grid.locator('.yam3x-date-picker__day.is-today')
     await today.focus()
@@ -396,7 +412,7 @@ test.describe('Date picker', () => {
     const months = page.getByRole('listbox', { name: 'Choose month' })
     const october = months.getByRole('option', { name: 'October' })
     await expect(october).toBeFocused()
-    await october.press('ArrowRight')
+    await october.press('ArrowDown')
     await expect(months.getByRole('option', { name: 'November' })).toBeFocused()
     await months.getByRole('option', { name: 'November' }).press('End')
     const december = months.getByRole('option', { name: 'December' })
@@ -409,7 +425,7 @@ test.describe('Date picker', () => {
     await expect(years.getByRole('option')).toHaveCount(3)
     const currentYear = years.getByRole('option', { name: '2026' })
     await expect(currentYear).toBeFocused()
-    await currentYear.press('ArrowRight')
+    await currentYear.press('ArrowDown')
     const nextYear = years.getByRole('option', { name: '2027' })
     await expect(nextYear).toBeFocused()
     await nextYear.press('Enter')
@@ -500,7 +516,8 @@ test.describe('Date picker', () => {
 
   test('year selection transitions the calendar into year options', async ({ page }) => {
     await page.goto('/components/date-picker')
-    await page.getByRole('button', { name: 'Open calendar' }).click()
+    await selectM3Option(page, page.getByLabel('Mode'), 'modal')
+    await page.getByRole('button', { name: 'Event date' }).click()
     const viewport = page.locator('.yam3x-date-picker__view-viewport')
     const viewTransition = viewport.evaluate(
       (element) =>
@@ -525,8 +542,13 @@ test.describe('Date picker', () => {
           )
         }),
     )
-    await page.getByRole('button', { name: /Choose year/ }).click()
-    const years = page.getByRole('listbox', { name: 'Choose year' })
+    await page
+      .getByRole('dialog', { name: 'Event date' })
+      .getByRole('button', { name: /Choose year/ })
+      .click()
+    const years = page.getByRole('dialog', { name: 'Event date' }).getByRole('listbox', {
+      name: 'Choose year',
+    })
     await expect(years).toBeVisible()
     await viewTransition
     await expect(
@@ -891,5 +913,136 @@ test.describe('Date picker', () => {
       'aria-current',
       'date',
     )
+  })
+
+  test('docked header exposes separate month and year menus with Material menu states', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/components/date-picker')
+    await page.getByRole('button', { name: 'Open calendar' }).click()
+    const surface = page.locator('.yam3x-date-picker__surface')
+
+    const header = surface.locator('.yam3x-date-picker__calendar-header')
+    await expect(header).toHaveCSS('height', '64px')
+    expect(await header.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(
+      true,
+    )
+    await expect(surface.getByRole('button', { name: /Previous month/ })).toHaveCount(1)
+    await expect(surface.getByRole('button', { name: /Next month/ })).toHaveCount(1)
+    await expect(surface.getByRole('button', { name: /Previous year/ })).toHaveCount(1)
+    await expect(surface.getByRole('button', { name: /Next year/ })).toHaveCount(1)
+
+    const monthButton = surface.getByRole('button', { name: /Choose month/ })
+    const yearButton = surface.getByRole('button', { name: /Choose year/ })
+    await expect(monthButton).toHaveCSS('font-size', '14px')
+    await expect(monthButton.locator('.yam3x-icon')).toHaveCSS('font-size', '18px')
+    await expect(yearButton).toHaveCSS('font-size', '14px')
+
+    const today = surface.locator('.yam3x-date-picker__day.is-today')
+    const todayColors = await today.evaluate((element) => {
+      const probe = document.createElement('span')
+      probe.style.color = getComputedStyle(element).getPropertyValue('--md-sys-color-primary')
+      document.body.append(probe)
+      const primary = getComputedStyle(probe).color
+      probe.remove()
+      return {
+        color: getComputedStyle(element).color,
+        outline: getComputedStyle(element, '::before').outlineColor,
+        primary,
+      }
+    })
+    expect(todayColors.color).toBe(todayColors.primary)
+    expect(todayColors.outline).toBe(todayColors.primary)
+    await expect(surface.locator('.yam3x-date-picker__weekday').first()).toHaveCSS(
+      'color',
+      await surface.evaluate((element) => getComputedStyle(element).color),
+    )
+
+    await yearButton.click()
+    const years = surface.getByRole('listbox', { name: 'Choose year' })
+    await expect(years).toBeVisible()
+    await expect(surface.locator('.yam3x-date-picker__actions')).toHaveCount(0)
+    const selectedYear = years.getByRole('option', { name: '2026' })
+    await expect(selectedYear).toHaveAttribute('aria-selected', 'true')
+    await expect(selectedYear).toHaveCSS('background-color', 'rgb(232, 222, 248)')
+    await expect(selectedYear).toHaveCSS('height', '48px')
+    await expect(selectedYear.locator('.yam3x-icon__ligature')).toHaveText('check')
+
+    await years.getByRole('option', { name: '2027' }).click()
+    await expect(surface.getByRole('grid', { name: 'October 2027' })).toBeVisible()
+    await surface.getByRole('button', { name: /Choose month/ }).click()
+    const months = surface.getByRole('listbox', { name: 'Choose month' })
+    await expect(months).toBeVisible()
+    await expect(months.getByRole('option', { name: 'October' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+  })
+
+  test('modal combines month and year controls and exposes a compact close', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/components/date-picker')
+    await selectM3Option(page, page.getByLabel('Mode'), 'modal')
+    await page.getByRole('button', { name: 'Event date' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Event date' })
+    const combined = dialog.getByRole('button', { name: /Choose year, October 2026/ })
+    await expect(combined).toBeVisible()
+    await expect(dialog.getByRole('button', { name: /Choose month/ })).toHaveCount(0)
+    await expect(dialog.locator('.yam3x-date-picker__calendar-header')).toHaveCSS(
+      'min-height',
+      '56px',
+    )
+    await expect(dialog.locator('.yam3x-date-picker__modal-value')).toHaveCSS(
+      'color',
+      'rgb(97, 93, 104)',
+    )
+    await expect(dialog.locator('.yam3x-date-picker__modal-value')).toHaveCSS(
+      'white-space',
+      'nowrap',
+    )
+    await expect(dialog.locator('.yam3x-date-picker__modal-value')).toHaveAttribute(
+      'aria-label',
+      'Sunday, October 4, 2026',
+    )
+
+    await combined.click()
+    const years = dialog.getByRole('listbox', { name: 'Choose year' })
+    await expect(years).toBeVisible()
+    const unselected = years.getByRole('option', { name: '2027' })
+    await expect(unselected).toHaveCSS('color', 'rgb(97, 93, 104)')
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    const close = dialog.getByRole('button', { name: 'Close' })
+    await expect(close).toBeVisible()
+    await close.click()
+    await expect(dialog).toBeHidden()
+  })
+
+  // date-picker.field.focus
+  test('docked field uses a notched 3px focus outline without an inner input ring', async ({
+    page,
+  }) => {
+    await page.goto('/components/date-picker')
+    const input = page.getByLabel('Event date')
+    await input.focus()
+    const field = page.locator('.yam3x-date-picker__field-wrap')
+    const outline = field.locator('.yam3x-date-picker__field-outline')
+    await expect(outline).toHaveCSS('border-width', '3px')
+    await expect(outline).toHaveCSS('border-color', 'rgb(101, 87, 137)')
+    await expect
+      .poll(() => outline.evaluate((element) => getComputedStyle(element).clipPath))
+      .toContain('polygon')
+    await expect(input).toHaveCSS('outline-style', 'none')
+    await expect(field).toHaveCSS('border-width', '0px')
+
+    await selectM3Option(page, page.getByLabel('Selection'), 'range')
+    await page.locator('.yam3x-date-picker__range-field input').first().focus()
+    await expect(field).toHaveAttribute('data-notches', '2')
+    await expect
+      .poll(() =>
+        outline.evaluate((element) => getComputedStyle(element).clipPath.split(',').length),
+      )
+      .toBe(12)
   })
 })

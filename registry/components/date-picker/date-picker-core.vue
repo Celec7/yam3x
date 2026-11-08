@@ -55,6 +55,7 @@ const props = withDefaults(
     nextYearLabel?: string
     confirmLabel?: string
     cancelLabel?: string
+    closeLabel?: string
     clearLabel?: string
   }>(),
   {
@@ -102,6 +103,7 @@ const { locale, messages } = useComponentLocale(
     nextYear: props.nextYearLabel,
     confirm: props.confirmLabel,
     cancel: props.cancelLabel,
+    close: props.closeLabel,
     clear: props.clearLabel,
   }),
   () => (typeof navigator === 'undefined' ? 'en-US' : navigator.language),
@@ -176,6 +178,7 @@ watch([layerZ, root], () =>
   setOverlayLayerProperty(root.value, '--_yam3x-date-picker-layer-z', layerZ.value),
 )
 const calendarButton = ref<HTMLButtonElement>()
+const fieldWrap = ref<HTMLElement>()
 const modeViewport = ref<HTMLElement>()
 const rovingDate = ref(selectedSingle.value ?? selectedRange.value.start ?? today)
 
@@ -225,11 +228,22 @@ onMounted(() => {
   breakpointQuery.addEventListener('change', syncBreakpoint)
   if ('fonts' in document) {
     void document.fonts
-      .load('24px "Material Symbols Outlined"', 'calendar_month chevron_left chevron_right edit')
+      .load(
+        '24px "Material Symbols Outlined"',
+        'calendar_month chevron_left chevron_right edit arrow_drop_down close check',
+      )
       .catch(() => {})
+    void document.fonts.ready.then(() => syncFieldOutline())
   }
+  fieldOutlineObserver = new ResizeObserver(syncFieldOutline)
+  if (fieldWrap.value) fieldOutlineObserver.observe(fieldWrap.value)
+  syncFieldOutline()
 })
-onBeforeUnmount(() => breakpointQuery?.removeEventListener('change', syncBreakpoint))
+onBeforeUnmount(() => {
+  breakpointQuery?.removeEventListener('change', syncBreakpoint)
+  fieldOutlineObserver?.disconnect()
+  if (fieldOutlineFrame) cancelAnimationFrame(fieldOutlineFrame)
+})
 watch(
   [
     () => props.selection,
@@ -269,7 +283,7 @@ watch([opened, view, inputMode], async ([isOpen, currentView, isInput]) => {
   } else {
     const target =
       root.value?.querySelector<HTMLButtonElement>(
-        '.yam3x-date-picker__view-page:not([aria-hidden="true"]) .yam3x-date-picker__option-grid [aria-selected="true"]:not(:disabled)',
+        '.yam3x-date-picker__view-page:not([aria-hidden="true"]) [role="listbox"] [aria-selected="true"]:not(:disabled)',
       ) ??
       root.value?.querySelector<HTMLButtonElement>(
         '.yam3x-date-picker__view-page:not([aria-hidden="true"]) .yam3x-date-picker__option-grid button:not(:disabled)',
@@ -325,13 +339,8 @@ const localizedPlaceholder = computed(
 )
 const weekdayLabels = computed(() => {
   const start = weekStart()
-  const weekdayWidth: Intl.DateTimeFormatOptions['weekday'] = locale.value
-    .toLowerCase()
-    .startsWith('zh')
-    ? 'narrow'
-    : 'short'
   return Array.from({ length: 7 }, (_, index) =>
-    formatDate(addDays(start, index), locale.value, { weekday: weekdayWidth }),
+    formatDate(addDays(start, index), locale.value, { weekday: 'narrow' }),
   )
 })
 const weekdayFullLabels = computed(() => {
@@ -384,6 +393,12 @@ const nextMonthAvailable = computed(() => {
   const month = addMonths(visibleMonth.value, 1)
   return monthHasSelectableDate(month.getUTCFullYear(), month.getUTCMonth())
 })
+const previousYearAvailable = computed(() =>
+  yearHasSelectableDate(visibleMonth.value.getUTCFullYear() - 1),
+)
+const nextYearAvailable = computed(() =>
+  yearHasSelectableDate(visibleMonth.value.getUTCFullYear() + 1),
+)
 const fieldText = computed(() => {
   if (props.selection === 'range') {
     const { start, end } = selectedRange.value
@@ -404,6 +419,9 @@ const calendarProps = computed(() => ({
   monthAvailability: monthAvailability.value,
   previousMonthAvailable: previousMonthAvailable.value,
   nextMonthAvailable: nextMonthAvailable.value,
+  previousYearAvailable: previousYearAvailable.value,
+  nextYearAvailable: nextYearAvailable.value,
+  headerLayout: resolvedMode.value,
   locale: locale.value,
   titleMonth: titleMonth.value,
   titleMonthOnly: titleMonthOnly.value,
@@ -452,6 +470,30 @@ function dayLabel(value: string): string {
       })
     : value
 }
+function headlineDate(value: string, withYear = true): string {
+  const date = parseIsoDate(value)
+  return date
+    ? formatDate(date, locale.value, {
+        month: 'short',
+        day: 'numeric',
+        ...(withYear ? { year: 'numeric' } : {}),
+      })
+    : value
+}
+const modalHeadline = computed(() =>
+  draftSingle.value ? headlineDate(draftSingle.value) : messages.value.label,
+)
+const modalRangeHeadline = computed(() => {
+  const { start, end } = draftRange.value
+  if (!start) return messages.value.startDate
+  if (!end) return `${headlineDate(start)} – ${messages.value.endDate}`
+  const sameYear = start.slice(0, 4) === end.slice(0, 4)
+  return `${headlineDate(start, !sameYear)} – ${headlineDate(end, !sameYear)}`
+})
+const modalRangeLabel = computed(() => {
+  const { start, end } = draftRange.value
+  return `${start ? dayLabel(start) : messages.value.startDate} – ${end ? dayLabel(end) : messages.value.endDate}`
+})
 function allowed(value: string): boolean {
   return isDateAllowed(value, availability.value)
 }
@@ -477,6 +519,42 @@ function isInRange(value: string): boolean {
   const { start, end } = draftRange.value
   return Boolean(start && end && value >= start && value <= end)
 }
+let fieldOutlineObserver: ResizeObserver | undefined
+let fieldOutlineFrame = 0
+function scheduleFieldOutline(): void {
+  if (fieldOutlineFrame) return
+  fieldOutlineFrame = requestAnimationFrame(() => {
+    fieldOutlineFrame = 0
+    syncFieldOutline()
+  })
+}
+function syncFieldOutline(): void {
+  const wrap = fieldWrap.value
+  if (!wrap) return
+  const wrapRect = wrap.getBoundingClientRect()
+  const labels = [
+    ...wrap.querySelectorAll<HTMLElement>(
+      '.yam3x-date-picker__field-label, .yam3x-date-picker__range-field label',
+    ),
+  ]
+  labels.slice(0, 2).forEach((label, index) => {
+    const rect = label.getBoundingClientRect()
+    wrap.style.setProperty(
+      `--_yam3x-date-picker-notch-${index + 1}-start`,
+      `${rect.left - wrapRect.left}px`,
+    )
+    wrap.style.setProperty(
+      `--_yam3x-date-picker-notch-${index + 1}-end`,
+      `${rect.right - wrapRect.left}px`,
+    )
+  })
+  wrap.dataset.notches = String(Math.min(labels.length, 2))
+}
+watch([locale, resolvedMode, () => props.selection, () => props.open, opened], async () => {
+  await nextTick()
+  scheduleFieldOutline()
+})
+
 function setOpen(value: boolean, restoreFocus = true): void {
   const wasOpen = opened.value
   opened.value = value
@@ -680,6 +758,15 @@ function shiftMonth(delta: number): void {
   if (!monthHasSelectableDate(next.getUTCFullYear(), next.getUTCMonth())) return
   visibleMonth.value = next
 }
+function shiftYear(delta: number): void {
+  const next = createUtcDate(
+    visibleMonth.value.getUTCFullYear() + delta,
+    visibleMonth.value.getUTCMonth(),
+    1,
+  )
+  if (!monthHasSelectableDate(next.getUTCFullYear(), next.getUTCMonth())) return
+  visibleMonth.value = next
+}
 function showYear(year: number): void {
   const current = parseIsoDate(rovingDate.value) ?? visibleMonth.value
   const month = visibleMonth.value.getUTCMonth()
@@ -840,6 +927,7 @@ defineExpose({
     <template v-if="resolvedMode === 'docked'">
       <div class="yam3x-date-picker__anchor">
         <div
+          ref="fieldWrap"
           class="yam3x-date-picker__field-wrap"
           :class="{ 'is-range': selection === 'range' }"
         >
@@ -908,6 +996,10 @@ defineExpose({
               <Icon name="calendar_month" />
             </button>
           </template>
+          <span
+            class="yam3x-date-picker__field-outline"
+            aria-hidden="true"
+          />
         </div>
         <div
           v-if="opened"
@@ -920,6 +1012,8 @@ defineExpose({
             v-bind="calendarProps"
             @month="shiftMonth"
             @year="showYear"
+            @previous-year="shiftYear(-1)"
+            @next-year="shiftYear(1)"
             @select-month="showMonth"
             @select-date="chooseDate"
             @day-keydown="onDayKeydown"
@@ -927,6 +1021,7 @@ defineExpose({
             @select-year-view="view = 'years'"
           />
           <DatePickerActions
+            v-if="view === 'days'"
             :clearable="clearable"
             :clear-label="messages.clear"
             :cancel-label="messages.cancel"
@@ -971,12 +1066,25 @@ defineExpose({
       >
         <section
           class="yam3x-date-picker__modal"
+          :class="{ 'is-compact': compactWindow }"
           role="dialog"
           aria-modal="true"
           :aria-label="messages.label"
           :aria-describedby="supportingText ? `${uid}-modal-support` : undefined"
         >
-          <header class="yam3x-date-picker__modal-head">
+          <header
+            class="yam3x-date-picker__modal-head"
+            :class="{ 'is-range': selection === 'range' }"
+          >
+            <button
+              v-if="compactWindow"
+              class="yam3x-date-picker__close"
+              type="button"
+              :aria-label="messages.close"
+              @click="cancel()"
+            >
+              <Icon name="close" />
+            </button>
             <p class="yam3x-date-picker__headline">{{ messages.label }}</p>
             <p
               v-if="supportingText"
@@ -987,16 +1095,16 @@ defineExpose({
             </p>
             <div
               :class="['yam3x-date-picker__modal-value', { 'is-range': selection === 'range' }]"
+              :aria-label="
+                selection === 'single'
+                  ? draftSingle
+                    ? dayLabel(draftSingle)
+                    : messages.label
+                  : modalRangeLabel
+              "
               aria-live="polite"
             >
-              <template v-if="selection === 'single'">{{
-                draftSingle ? dayLabel(draftSingle) : messages.label
-              }}</template>
-              <template v-else
-                >{{ draftRange.start ? dayLabel(draftRange.start) : messages.startDate
-                }}<span> – </span
-                >{{ draftRange.end ? dayLabel(draftRange.end) : messages.endDate }}</template
-              >
+              {{ selection === 'single' ? modalHeadline : modalRangeHeadline }}
             </div>
             <button
               class="yam3x-date-picker__mode-toggle"
@@ -1096,6 +1204,8 @@ defineExpose({
                 v-bind="calendarProps"
                 @month="shiftMonth"
                 @year="showYear"
+                @previous-year="shiftYear(-1)"
+                @next-year="shiftYear(1)"
                 @select-month="showMonth"
                 @select-date="chooseDate"
                 @day-keydown="onDayKeydown"

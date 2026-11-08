@@ -70,6 +70,7 @@ export default {
     nextYear: 'Next year',
     confirm: 'OK',
     cancel: 'Cancel',
+    close: 'Close',
     clear: 'Clear',
     showCalendar: 'Show calendar',
     enterDate: 'Enter date manually',

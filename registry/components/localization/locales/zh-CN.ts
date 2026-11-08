@@ -66,6 +66,7 @@ export default {
     nextYear: '下一年',
     confirm: '确定',
     cancel: '取消',
+    close: '关闭',
     clear: '清除',
     showCalendar: '显示日历',
     enterDate: '手动输入日期',

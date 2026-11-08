@@ -13,6 +13,15 @@ This guide covers Material date pickers with docked or modal presentation, singl
 - For range selection, distinguish the start and end dates and show the interval between them. Keep selected, today, unavailable, and range states as shown in the [calendar state figures](https://m3.material.io/components/date-pickers/specs).
 - For modal range selection, browse months in a continuous vertical calendar as shown in [Date picker range guidelines](https://m3.material.io/components/date-pickers/guidelines). Keep single-date and docked calendars on their existing one-month paging behavior.
 - Follow locale conventions for date order, month names, weekday labels, and spoken date names. Keep date entry editable rather than forcing an input mask. See [Date picker accessibility](https://m3.material.io/components/date-pickers/accessibility).
+- `date-picker.header.docked`: Docked calendars place month and year controls in separate groups. Each group has its own dropdown and adjacent range arrows.
+- `date-picker.header.modal`: Modal calendars combine the month and year into one dropdown, with the month arrows beside it. The dropdown opens the year list; horizontal paging changes months.
+- `date-picker.menu.docked`: Docked month and year menus are vertical listboxes. Each row is 48px high and full width; the selected row uses `secondary-container` with a leading check.
+- `date-picker.calendar.weekdays`: Weekday headers use the locale's narrow one-character label. The full localized weekday remains the accessible name and hover title.
+- `date-picker.calendar.today`: An unselected today uses the `primary` label and a 1dp `primary` outline. Selected and in-range treatments take precedence.
+- `date-picker.state.selected-hover`: A selected range endpoint keeps its `primary` fill while hovered. The state layer adds the `on-primary` tint over that fill; it must not replace the selection with a state-layer-only surface.
+- `date-picker.field.focus`: The docked field draws its outline in a separate layer, with a transparent notch around each floating label. Focus raises the stroke to 3px without moving layout; the inner input does not draw a second ring.
+- `date-picker.modal.headline`: The modal headline is one line with an abbreviated month and numeric day and year. The accessible name remains the complete localized date.
+- `date-picker.compact.close`: A full-screen modal adds a close icon button in the header; the footer actions remain available.
 
 ### Appearance and accessibility
 

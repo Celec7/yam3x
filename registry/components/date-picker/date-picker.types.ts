@@ -24,6 +24,7 @@ export interface DatePickerCommonProps {
   nextYearLabel?: string
   confirmLabel?: string
   cancelLabel?: string
+  closeLabel?: string
   clearLabel?: string
 }
 
