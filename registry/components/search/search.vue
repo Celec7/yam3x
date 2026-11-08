@@ -14,6 +14,7 @@ import {
 } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import { acquirePageScrollLock } from '../_shared/page-scroll-lock'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import Icon from '../icon/icon.vue'
 import type { SearchLayout, SearchVariant } from './search.types'
 
@@ -58,6 +59,24 @@ defineSlots<{
   trailing?(): unknown
   back?(): unknown
 }>()
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  open,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('popup', close)
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
+
 const { messages: actionMessages } = useComponentLocale(
   'actions',
   () => props.locale,
@@ -473,6 +492,8 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   resizeObserver?.disconnect()
   window.removeEventListener('scroll', scheduleDockedViewPosition, true)
   window.removeEventListener('resize', syncPaneWidth)
@@ -491,6 +512,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
     v-bind="attrs"
     class="yam3x-search"
     :class="rootClasses"
+    :style="layerZ ? { '--_yam3x-search-layer-z': String(layerZ) } : undefined"
     :role="open ? 'dialog' : undefined"
     :aria-label="open ? actionMessages.search : undefined"
     :aria-modal="open ? 'true' : undefined"
@@ -713,7 +735,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
   display: none;
 }
 .yam3x-search--open {
-  z-index: 1000;
+  z-index: var(--_yam3x-search-layer-z, 1000);
 }
 .yam3x-search--open-fullscreen {
   --_yam3x-search-inline-margin: 12px;
@@ -960,7 +982,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
 }
 .yam3x-search__view--fullscreen {
   position: fixed;
-  z-index: 1001;
+  z-index: calc(var(--_yam3x-search-layer-z, 1000) + 1);
   inset: 0;
   top: 0;
   width: 100vw;
@@ -995,7 +1017,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
 }
 .yam3x-search--open-fullscreen .yam3x-search__bar-frame {
   position: fixed;
-  z-index: 1002;
+  z-index: calc(var(--_yam3x-search-layer-z, 1000) + 2);
   top: env(safe-area-inset-top, 0px);
   inset-inline-start: var(--_yam3x-search-view-contained-focused-leading-margin);
   width: min(

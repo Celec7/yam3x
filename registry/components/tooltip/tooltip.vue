@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useTooltipController } from './tooltip-controller'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import type { TooltipPosition, TooltipTouchGestures } from './tooltip.types'
 
 const props = withDefaults(
@@ -29,6 +30,8 @@ const emit = defineEmits<{
   beforetoggle: [event: Event]
   toggle: [event: Event]
 }>()
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
 const generatedId = useId()
 const tooltipId = computed(() => props.id || `yam3x-tooltip-${generatedId}`)
 const surface = ref<HTMLElement | null>(null)
@@ -55,6 +58,22 @@ const controller = useTooltipController({
   emitBeforeToggle: (event) => emit('beforetoggle', event),
   emitToggle: (event) => emit('toggle', event),
 })
+
+watch(
+  open,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('popup', () => controller.hide())
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
 let resizeObserver: ResizeObserver | undefined
 const multiline = ref(false)
 
@@ -69,7 +88,11 @@ onMounted(() => {
     resizeObserver.observe(surface.value)
   }
 })
-onBeforeUnmount(() => resizeObserver?.disconnect())
+onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
+  resizeObserver?.disconnect()
+})
 
 defineExpose({ show: controller.show, hide: controller.hide })
 </script>
@@ -78,6 +101,7 @@ defineExpose({ show: controller.show, hide: controller.hide })
   <div
     :id="tooltipId"
     ref="surface"
+    :style="layerZ ? { '--_yam3x-tooltip-layer-z': String(layerZ) } : undefined"
     class="yam3x-tooltip__surface"
     :class="{ 'yam3x-tooltip__surface--multiline': multiline }"
     popover="manual"
@@ -118,7 +142,7 @@ defineExpose({ show: controller.show, hide: controller.hide })
   position: fixed;
   inset: auto;
   margin: 0;
-  z-index: 1400;
+  z-index: var(--_yam3x-tooltip-layer-z, 1400);
   display: none;
   min-width: var(--_yam3x-tooltip-min-width);
   max-width: min(var(--_yam3x-tooltip-max-width), calc(100vw - 16px));

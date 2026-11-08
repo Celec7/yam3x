@@ -15,6 +15,7 @@ import {
 import type { FloatingActionButtonMenuContext } from './floating-action-button-menu.context'
 import type { FloatingActionButtonMenuItemRegistration } from './floating-action-button-menu.context'
 import { floatingActionButtonMenuKey } from './floating-action-button-menu.context'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import type { FabMenuHorizontalAlignment } from './fab-menu.types'
 import type { FabMenuPresentation, FabMenuVariant } from './fab-menu.types'
 import {
@@ -59,6 +60,24 @@ defineSlots<{
     triggerProps: Record<string, unknown>
   }): unknown
 }>()
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  expanded,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('popup', () => requestExpanded(false))
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
+
 const { messages: actionMessages } = useComponentLocale(
   'actions',
   () => props.locale,
@@ -332,6 +351,8 @@ watch(
   },
 )
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   window.clearTimeout(hideTimer)
   cancelAnimationFrame(itemAnimationFrame)
   document.removeEventListener('pointerdown', outsidePointerListener!, true)
@@ -359,7 +380,10 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
     ref="host"
     class="yam3x-floating-action-button-menu"
     :class="{ 'yam3x-floating-action-button-menu--expanded': expanded }"
-    :style="componentTokens"
+    :style="[
+      componentTokens,
+      layerZ ? { '--_yam3x-floating-action-button-menu-layer-z': String(layerZ) } : undefined,
+    ]"
     v-bind="$attrs"
   >
     <slot
@@ -381,7 +405,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
           `yam3x-floating-action-button-menu__panel--opening-${openingSide}`,
           { 'yam3x-floating-action-button-menu__panel--open': animationOpen },
         ]"
-        :style="[positionStyle, componentTokens]"
+        :style="[positionStyle, componentTokens, layerZ ? { zIndex: String(layerZ) } : undefined]"
         role="menu"
         :aria-label="actionMessages.actions"
         :aria-hidden="!expanded"
@@ -406,7 +430,7 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
 .yam3x-floating-action-button-menu__panel {
   --_yam3x-fab-menu-window-margin: 16px;
   position: fixed;
-  z-index: 1000;
+  z-index: var(--_yam3x-floating-action-button-menu-layer-z, 1000);
   display: flex;
   flex-direction: column;
   align-items: flex-end;

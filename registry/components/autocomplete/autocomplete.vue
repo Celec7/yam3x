@@ -6,6 +6,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } fro
 import { useVirtualList, type VirtualListOptions } from '../_shared/use-virtual-list'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import type {
   AutocompleteFilter,
   AutocompleteOption,
@@ -122,6 +123,23 @@ const generatedId = useId()
 const inputId = computed(() => props.id ?? `yam3x-autocomplete-${generatedId}`)
 const listboxId = computed(() => `${inputId.value}-listbox`)
 const open = ref(false)
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  open,
+  (value) => {
+    if (value) {
+      layer?.release()
+      layer = acquireOverlayLayer('popup', close)
+      layerZ.value = layer.zIndex
+    } else {
+      layer?.release()
+      layer = undefined
+      layerZ.value = undefined
+    }
+  },
+  { immediate: true },
+)
 const activeValue = ref<string | null>(null)
 const activeSource = ref<'automatic' | 'keyboard' | 'pointer' | null>(null)
 const floatingStyle = ref<Record<string, string>>({ visibility: 'hidden' })
@@ -621,6 +639,8 @@ onMounted(() => {
   setCustomValidity()
 })
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   window.clearTimeout(blurTimer)
   document.removeEventListener('pointerdown', onOutsidePointer, true)
   stopPositioning?.()
@@ -635,6 +655,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     ref="host"
     class="yam3x-autocomplete"
     v-bind="$attrs"
+    :style="layerZ ? { '--_yam3x-autocomplete-layer-z': String(layerZ) } : undefined"
     :class="{
       'yam3x-autocomplete--open': open,
       'yam3x-autocomplete--disabled': disabled,
@@ -1007,7 +1028,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
 }
 .yam3x-autocomplete__popup {
   position: fixed;
-  z-index: 40;
+  z-index: var(--_yam3x-autocomplete-layer-z, 40);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

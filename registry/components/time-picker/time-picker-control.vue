@@ -702,7 +702,7 @@ onBeforeUnmount(() => {
   --_yam3x-time-picker-scrim-color: var(--_yam3x-time-picker-color-scrim);
   --_yam3x-time-picker-scrim-opacity: var(--_yam3x-overlay-scrim-opacity);
   position: fixed;
-  z-index: 1100;
+  z-index: var(--_yam3x-time-picker-layer-z, 1100);
   inset: 0;
   display: grid;
   place-items: center;
@@ -758,7 +758,7 @@ onBeforeUnmount(() => {
 }
 .yam3x-time-picker__surface--docked {
   position: absolute;
-  z-index: 30;
+  z-index: var(--_yam3x-time-picker-layer-z, 30);
   inset-block-start: calc(100% + 8px);
   inset-inline-start: 0;
   border-radius: var(--_yam3x-time-picker-docked-container-shape);

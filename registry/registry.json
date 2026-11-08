@@ -118,6 +118,7 @@
     },
     "autocomplete": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "_shared/use-virtual-list.ts",
         "autocomplete/autocomplete.types.ts",
@@ -746,6 +747,7 @@
       "files": [
         "_shared/focus-trap.ts",
         "_shared/form-control.ts",
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "form/form-fields.ts",
         "form/form-registration.ts",
@@ -828,6 +830,7 @@
     },
     "inline-message": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/ripple.ts",
         "heading/heading.vue",
         "icon-button/icon-button-base.vue",
@@ -1155,6 +1158,7 @@
     },
     "search": {
       "files": [
+        "_shared/overlay-layer.ts",
         "_shared/page-scroll-lock.ts",
         "_shared/ripple.ts",
         "icon/icon-registry.ts",
@@ -1417,6 +1421,7 @@
     "time-picker": {
       "files": [
         "_shared/focus-trap.ts",
+        "_shared/overlay-layer.ts",
         "_shared/page-scroll-lock.ts",
         "icon/icon-registry.ts",
         "icon/icon.types.ts",
@@ -1454,6 +1459,7 @@
     },
     "tooltip": {
       "files": [
+        "_shared/overlay-layer.ts",
         "tooltip/index.ts",
         "tooltip/rich-tooltip-action.vue",
         "tooltip/rich-tooltip.vue",

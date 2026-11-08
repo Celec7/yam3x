@@ -4,6 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } fro
 import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { trapTabKey } from '../_shared/focus-trap'
 import { acquirePageScrollLock } from '../_shared/page-scroll-lock'
+import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
 import Icon from '../icon/icon.vue'
 import TimePickerControl from './time-picker-control.vue'
 import { formatTimeValue, resolveTimePickerFormat } from './time-picker.utils'
@@ -52,6 +53,20 @@ const root = ref<HTMLElement>()
 const surface = ref<HTMLElement>()
 const trigger = ref<HTMLButtonElement>()
 const opened = ref(false)
+const layerZ = ref<number>()
+let layer: OverlayLayer | undefined
+watch(
+  [opened, () => props.presentation],
+  ([isOpen, presentation]) => {
+    layer?.release()
+    layer = undefined
+    layerZ.value = undefined
+    if (!isOpen) return
+    layer = acquireOverlayLayer(presentation === 'modal' ? 'dialog' : 'popup', cancel)
+    layerZ.value = layer.zIndex
+  },
+  { immediate: true },
+)
 const currentMode = ref<'dial' | 'input'>(props.mode)
 const controlVersion = ref(0)
 const draft = ref<TimeValue>({ hour: new Date().getHours(), minute: 0 })
@@ -264,6 +279,8 @@ onMounted(() => {
   if (props.open) opened.value = true
 })
 onBeforeUnmount(() => {
+  layer?.release()
+  layer = undefined
   surfaceObserver?.disconnect()
   stopPositionUpdate?.()
   window.removeEventListener('resize', updateDockedViewport)
@@ -302,6 +319,7 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
   <div
     ref="root"
     class="yam3x-time-picker"
+    :style="layerZ ? { '--_yam3x-time-picker-layer-z': String(layerZ) } : undefined"
     :dir="
       locale.startsWith('ar') || locale.startsWith('he') || locale.startsWith('fa')
         ? 'rtl'

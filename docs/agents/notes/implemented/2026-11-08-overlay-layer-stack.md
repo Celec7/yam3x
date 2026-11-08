@@ -34,8 +34,13 @@ A shared module, [`overlay-layer.ts`](../../../../registry/components/_shared/ov
 - [Menu](../../../../registry/components/menu/menu.vue)
 - [Bottom sheet](../../../../registry/components/bottom-sheet/bottom-sheet.vue): modal variant as a dialog, standard variant as a popup
 - [FAB menu](../../../../registry/components/fab-menu/fab-menu.vue)
+- [Floating action button menu](../../../../registry/components/fab-menu/floating-action-button-menu.vue)
+- [Autocomplete](../../../../registry/components/autocomplete/autocomplete.vue)
+- [Search](../../../../registry/components/search/search.vue): open search takes a popup layer, so a newer dialog dismisses it, and its z-index fallbacks derive from that layer
+- [Time picker](../../../../registry/components/time-picker/time-picker-dialog.vue): modal presentation as a dialog, docked presentation as a popup
+- [Tooltip](../../../../registry/components/tooltip/tooltip.vue) and [Rich tooltip](../../../../registry/components/tooltip/rich-tooltip.vue)
 
-Search (native popover), time picker, tooltip, and snackbar still declare local z-index values. They are not part of the dialog-plus-popup composition this record covers and remain separate migrations.
+Snackbar remains a notice host outside modal ordering: opening a dialog must not dismiss a queued notice, so it keeps its host z-index. App bar and navigation rail z-index values position layout surfaces, not floating overlays.
 
 ## Alternatives considered
 
