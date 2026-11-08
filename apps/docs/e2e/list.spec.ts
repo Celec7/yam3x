@@ -421,6 +421,7 @@ test('lists preserve row geometry, selection semantics, theme roles, and RTL ord
 
   const draggedStateControl = contentDemo.getByRole('checkbox', { name: 'Simulate dragged state' })
   await draggedStateControl.check()
+  // list.state.dragged
   const draggedRow = passiveRows.nth(0)
   const draggedSurface = firstSurface
   await expect(draggedRow).toHaveAttribute('data-yam3x-dragged', 'true')
