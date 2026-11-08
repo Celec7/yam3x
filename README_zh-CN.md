@@ -15,7 +15,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-CLI 会复制可编辑源码并声明依赖。如果应用尚未配置，请将 `@tailwindcss/vite` 添加到 Vite 插件中；CLI 不会修改 Vite 配置。完整步骤请参阅[安装指南](apps/docs/zh/guide/installation.md)。
+CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 Vite 插件或样式构建步骤。完整步骤请参阅[安装指南](apps/docs/zh/guide/installation.md)。
 
 ## 文档
 

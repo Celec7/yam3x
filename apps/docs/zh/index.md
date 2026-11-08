@@ -13,7 +13,7 @@ hero:
       link: /zh/components/
 features:
   - title: Vue 组件源码
-    details: 将源码复制到 Vue、Vite 和 Tailwind CSS v4 应用；安装后由你的应用维护。
+    details: 将源码复制到 Vue、Vite 应用；安装后由你的应用维护。
   - title: 可操作的组件示例
     details: 查看实际组件的外观、选择状态和键盘交互，再按需组合。
   - title: Material 3 Expressive 基础

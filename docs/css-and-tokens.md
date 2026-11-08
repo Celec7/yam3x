@@ -19,7 +19,7 @@ Theme application writes tokens to a target element. CSS custom properties inher
 
 The `--md-sys-*` namespace is reserved for Material system semantics. Project-wide hooks such as focus-ring visibility, scrollbar colors, and density configuration are project extensions even where an existing name uses an `md-sys` prefix. The `--yam3x-*` prefix alone does not make a property public: list supported consumer overrides in the component documentation. When revising a component, move undocumented implementation properties directly to `--_yam3x-*`; do not keep compatibility aliases for those incidental names. Renaming a documented override requires an explicit breaking-change and migration plan. Do not present project extensions as official Material tokens.
 
-As a project decision, project-owned CSS custom properties use the `yam3x` name, including documented component overrides, private implementation aliases, and Tailwind theme tokens. Tailwind aliases use names such as `--color-yam3x-primary`, `--text-yam3x-body-medium`, `--font-yam3x-sans`, and `--ease-yam3x-standard`; shape and spacing aliases use `--radius-yam3x-*` and `--spacing-yam3x-*`. Consumers must update any `m3x`-named overrides and earlier unprefixed utility aliases; no compatibility aliases are provided.
+As a project decision, project-owned CSS custom properties use the `yam3x` name, including documented component overrides and private implementation aliases. Consumers must update any `m3x`-named overrides and earlier unprefixed override names; no compatibility aliases are provided.
 
 ## Component mappings and overrides
 
@@ -49,7 +49,7 @@ The theme system owns generation and application of shared tokens; each componen
 - Keep static styling in CSS. Use inline styles for runtime values, preferably by setting component custom properties instead of duplicating CSS declarations.
 - Compute a custom property in an element scope where all of its dependencies are available. Inherited variables can be consumed by descendants, but a child-defined variable is not available to its parent. Keep dependent calculations on the element that owns the dependency, or on a descendant that inherits it.
 
-Token layers describe value ownership and are independent of CSS cascade layers. The project currently uses Tailwind's `@layer base` for foundation rules; it has not established a general cascade-layer convention for component styles. Any broader `@layer` adoption needs compatibility review with Tailwind and consuming applications before it becomes a project rule.
+Token layers describe value ownership and are independent of CSS cascade layers. Foundation rules use the native CSS `@layer base`, while component styles remain unlayered so copied components keep ordinary specificity. Broader `@layer` adoption needs compatibility review with consuming applications before it becomes a project rule.
 
 ## Registry distribution and generated files
 

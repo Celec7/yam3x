@@ -15,7 +15,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-The CLI copies editable source and declares dependencies. Add `@tailwindcss/vite` to the app's Vite plugins if it is not already configured; the CLI does not edit Vite configuration. See the [installation guide](apps/docs/guide/installation.md) for a complete walkthrough.
+The CLI copies editable source and declares dependencies; the copied components need no additional Vite plugins or styling build step. See the [installation guide](apps/docs/guide/installation.md) for a complete walkthrough.
 
 ## Documentation
 

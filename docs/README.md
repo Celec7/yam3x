@@ -20,3 +20,9 @@ This directory contains maintained contributor guidance and project component de
 | Prepare and publish a CLI release                   | [CLI release procedure](releasing.md)                               |
 
 Installable components are discovered from the entrypoints under [`registry/components/`](../registry/components/). Foundation source mappings live in [`registry/foundations/registry.json`](../registry/foundations/registry.json), and dependency versions live in the pnpm workspace catalog. The CLI consumes the generated [`registry/registry.json`](../registry/registry.json); regenerate it with `pnpm registry:generate` instead of editing it directly. Current public props and slots live in component source; public usage belongs in `apps/docs/`.
+
+## Architecture decisions
+
+Shared architecture decision records live under `agents/notes/`, grouped by lifecycle status. `proposed` includes accepted directions awaiting implementation; move a record to `implemented` with its code and verification evidence, repairing inbound links.
+
+- [Remove Tailwind from development and distribution](agents/notes/implemented/2026-11-08-remove-tailwind.md)

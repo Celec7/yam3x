@@ -52,7 +52,7 @@ YAM3X 基础样式表提供 **--md-sys-spacing-16**、**--md-sys-spacing-24** �
 }
 ```
 
-这些变量名称和 CSS 像素值属于 YAM3X 的 Web 实现，并非 Material 官方 CSS token 名称。[主题指南](/zh/guide/theme#应用布局间距)列出可用值和 Tailwind 别名。YAM3X 的 density 设置会缩放这些共享间距变量，包括应用布局所用的值，因此请检查应用实际密度下的页面空间是否合适。
+这些变量名称和 CSS 像素值属于 YAM3X 的 Web 实现，并非 Material 官方 CSS token 名称。[主题指南](/zh/guide/theme#应用布局间距)列出可用值。YAM3X 的 density 设置会缩放这些共享间距变量，包括应用布局所用的值，因此请检查应用实际密度下的页面空间是否合适。
 
 ## 通过公开接口组合组件
 

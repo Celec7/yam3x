@@ -22,7 +22,7 @@ When Material leaves a necessary detail unspecified, record the choice as a proj
 
 - [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) is a runtime dependency used by [`generate.ts`](../registry/foundations/theme/generate.ts) to generate light and dark 2025 tonal schemes.
 - AndroidX [ExpressiveMotionTokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ExpressiveMotionTokens.kt) informs the spring parameters stored in [`foundation-tokens.mjs`](../registry/foundations/tokens/foundation-tokens.mjs); the M3 Web motion specification supplies the CSS duration/easing mappings. [`generate-foundation-tokens.mjs`](../scripts/generate-foundation-tokens.mjs) generates their CSS representation. These are implementation inputs, not authorities for component-specific requirements that Material defines.
-- [Ark UI](https://ark-ui.com/) and Tailwind are implementation dependencies described in [Architecture and ownership](architecture.md). The source-copying workflow is similar to [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.
+- [Ark UI](https://ark-ui.com/) is an implementation dependency described in [Architecture and ownership](architecture.md). The source-copying workflow is similar to [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.
 
 ## Material Web
 

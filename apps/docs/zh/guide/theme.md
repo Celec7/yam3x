@@ -59,18 +59,25 @@ theme.dispose()
 }
 ```
 
-Tailwind v4 也提供对应别名。例如，默认密度下 **gap-yam3x-6** 对应 24px，**px-yam3x-4** 对应 16px。设置 density 后，这些变量和别名也会缩放，包括应用布局所用的间距。请检查应用实际密度下的页面边距和内容空间。设计原则参阅[间距概览](https://m3.material.io/styles/spacing/overview)、[间距 token](https://m3.material.io/styles/spacing/tokens)和[间距应用指南](https://m3.material.io/styles/spacing/applying-spacing)。
+这些变量会随 YAM3X 的 density 设置缩放，包括应用布局所用的值。请检查应用实际密度下的页面边距和内容空间。设计原则参阅[间距概览](https://m3.material.io/styles/spacing/overview)、[间距 token](https://m3.material.io/styles/spacing/tokens)和[间距应用指南](https://m3.material.io/styles/spacing/applying-spacing)。
 
-## Tailwind 主题工具类
+## 应用样式
 
-基础样式表还提供带命名空间的颜色、排版、字体和形状工具类。Tailwind 会将主题变量映射为工具类，详见 [Theme variables](https://tailwindcss.com/docs/theme)。例如：
+基础样式表还提供语义化的颜色、排版、形状和间距 CSS 自定义属性，供应用自有 CSS 直接使用：
 
-```html
-<section class="rounded-yam3x-lg bg-yam3x-primary p-yam3x-4 text-yam3x-on-primary">
-  <p class="font-yam3x-sans text-yam3x-body-medium">内容</p>
-</section>
+```css
+.notice {
+  padding: var(--md-sys-spacing-16);
+  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-family: Roboto, ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  font-weight: var(--md-sys-typescale-body-medium-font-weight);
+}
 ```
 
-这些工具类适用于应用自有的布局和内容。调整 YAM3X 组件内部外观时，请使用组件页文档说明的 props 和 CSS 自定义属性。
+调整 YAM3X 组件内部外观时，请使用组件页文档说明的 props 和 CSS 自定义属性。
 
-这些别名使用 `yam3x` 前缀，避免占用应用自身的 token 名称。若应用使用过早期未加前缀的别名，在更新基础样式表时需要一并重命名，例如将 `bg-primary` 改为 `bg-yam3x-primary`，将 `text-body-medium` 改为 `text-yam3x-body-medium`。
+项目不附带工具类。消费应用可以自行添加样式工具，包括 Tailwind，但 YAM3X 组件使用标准 CSS 和上述语义自定义属性。

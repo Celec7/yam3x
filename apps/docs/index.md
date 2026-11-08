@@ -13,7 +13,7 @@ hero:
       link: /components/
 features:
   - title: Vue component source
-    details: Copy source into Vue, Vite, and Tailwind CSS v4 apps. Your app owns the copied files.
+    details: Copy source into Vue and Vite apps. Your app owns the copied files.
   - title: Interactive examples
     details: Explore component appearance, selection, and keyboard interactions, then compose them as needed.
   - title: Material 3 Expressive foundations

@@ -52,7 +52,7 @@ The installed YAM3X foundation stylesheet exposes project CSS variables such as 
 }
 ```
 
-These names and their CSS-pixel values are YAM3X's Web implementation, not official Material CSS token names. The [theme guide](/guide/theme#spacing-for-application-layout) documents the available values and Tailwind aliases. The YAM3X density setting scales these shared spacing variables, including application layouts that use them, so check page fit at the density your app uses.
+These names and their CSS-pixel values are YAM3X's Web implementation, not official Material CSS token names. The [theme guide](/guide/theme#spacing-for-application-layout) documents the available values. The YAM3X density setting scales these shared spacing variables, including application layouts that use them, so check page fit at the density your app uses.
 
 ## Compose components through their public surface
 

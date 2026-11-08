@@ -59,18 +59,25 @@ The copied foundation stylesheet provides reusable spacing variables at 4, 8, 12
 }
 ```
 
-Tailwind v4 aliases the same scale; for example, **gap-yam3x-6** maps to 24px and **px-yam3x-4** maps to 16px at default density. Setting density scales these variables and aliases too, including values used by application layouts. Check page gutters and content fit at the density used by your app. For design guidance, see [Spacing overview](https://m3.material.io/styles/spacing/overview), [spacing tokens](https://m3.material.io/styles/spacing/tokens), and [applying spacing](https://m3.material.io/styles/spacing/applying-spacing).
+These variables scale with the YAM3X density setting, including values used by application layouts. Check page gutters and content fit at the density used by your app. For design guidance, see [Spacing overview](https://m3.material.io/styles/spacing/overview), [spacing tokens](https://m3.material.io/styles/spacing/tokens), and [applying spacing](https://m3.material.io/styles/spacing/applying-spacing).
 
-## Tailwind theme utilities
+## Application styles
 
-The foundation stylesheet also exposes namespaced color, typography, font, and shape utilities. Tailwind maps theme variables to utility classes; see [Theme variables](https://tailwindcss.com/docs/theme). For example:
+The foundation stylesheet also exposes semantic color, typography, shape, and spacing custom properties for application-owned CSS. Use them directly:
 
-```html
-<section class="rounded-yam3x-lg bg-yam3x-primary p-yam3x-4 text-yam3x-on-primary">
-  <p class="font-yam3x-sans text-yam3x-body-medium">Content</p>
-</section>
+```css
+.notice {
+  padding: var(--md-sys-spacing-16);
+  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-family: Roboto, ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  font-weight: var(--md-sys-typescale-body-medium-font-weight);
+}
 ```
 
-Use these utilities for application-owned layout and content. For a YAM3X component's internal appearance, use the props and documented CSS custom properties on its component page.
+For a YAM3X component's internal appearance, use the props and documented CSS custom properties on its component page.
 
-These aliases use the `yam3x` prefix to avoid taking over application token names. When updating a foundation stylesheet in an app that used earlier unprefixed aliases, rename them—for example, `bg-primary` to `bg-yam3x-primary` and `text-body-medium` to `text-yam3x-body-medium`.
+The project does not ship utility classes. Consuming applications may add their own styling tools, including Tailwind, but YAM3X components use standard CSS and the semantic custom properties above.

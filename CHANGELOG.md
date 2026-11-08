@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes
+
+- Remove the mandatory Tailwind CSS dependency. Copied components now use standard CSS without Tailwind or its Vite plugin, and the published Tailwind theme aliases (`bg-yam3x-*`, `text-yam3x-*`, `font-yam3x-*`, `rounded-yam3x-*`, `p-yam3x-*`, `gap-yam3x-*`, and other generated utilities) are no longer provided. Replace them with application-owned CSS using the retained semantic `--md-sys-*` custom properties.
+- Button variants no longer use `tailwind-variants`. The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
+
+### Updating copied source
+
+Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-base.css`, and affected component files. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/updating).
+
 ## 0.3.1
 
 ### Fixed
