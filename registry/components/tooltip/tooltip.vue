@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useTooltipController } from './tooltip-controller'
-import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import type { TooltipPosition, TooltipTouchGestures } from './tooltip.types'
 
 const props = withDefaults(
@@ -35,6 +39,9 @@ let layer: OverlayLayer | undefined
 const generatedId = useId()
 const tooltipId = computed(() => props.id || `yam3x-tooltip-${generatedId}`)
 const surface = ref<HTMLElement | null>(null)
+watch([layerZ, surface], () =>
+  setOverlayLayerProperty(surface.value, '--_yam3x-tooltip-layer-z', layerZ.value),
+)
 const position = computed(() =>
   (['above', 'below', 'before', 'after'] as const).includes(props.position as TooltipPosition)
     ? props.position
@@ -101,7 +108,6 @@ defineExpose({ show: controller.show, hide: controller.hide })
   <div
     :id="tooltipId"
     ref="surface"
-    :style="layerZ ? { '--_yam3x-tooltip-layer-z': String(layerZ) } : undefined"
     class="yam3x-tooltip__surface"
     :class="{ 'yam3x-tooltip__surface--multiline': multiline }"
     popover="manual"

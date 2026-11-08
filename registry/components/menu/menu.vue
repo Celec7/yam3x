@@ -3,7 +3,11 @@ import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import MenuPanel from './menu-panel.vue'
 import type { MenuItem, MenuPositionX, MenuPositionY, MenuVariant } from './menu.types'
-import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(
@@ -108,6 +112,9 @@ watch(
   },
   { immediate: true },
 )
+watch([layerZ, host], () => {
+  setOverlayLayerProperty(host.value, '--_yam3x-menu-layer-z', layerZ.value)
+})
 
 function fireToggle(next: boolean) {
   const event = new CustomEvent<{ open: boolean }>('beforetoggle', {
@@ -291,7 +298,6 @@ defineExpose({ show, hide, toggle, root: host })
       `yam3x-menu--${validVariant}`,
       { 'yam3x-menu--dense': dense, 'yam3x-menu--open': open },
     ]"
-    :style="layerZ ? { '--_yam3x-menu-layer-z': String(layerZ) } : undefined"
     v-bind="$attrs"
   >
     <div

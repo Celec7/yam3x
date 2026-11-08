@@ -6,7 +6,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } fro
 import { useVirtualList, type VirtualListOptions } from '../_shared/use-virtual-list'
 import { vRipple } from '../_shared/ripple'
 import Icon from '../icon/icon.vue'
-import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import type {
   AutocompleteFilter,
   AutocompleteOption,
@@ -140,6 +144,9 @@ watch(
   },
   { immediate: true },
 )
+watch([layerZ, host], () => {
+  setOverlayLayerProperty(host.value, '--_yam3x-autocomplete-layer-z', layerZ.value)
+})
 const activeValue = ref<string | null>(null)
 const activeSource = ref<'automatic' | 'keyboard' | 'pointer' | null>(null)
 const floatingStyle = ref<Record<string, string>>({ visibility: 'hidden' })
@@ -655,7 +662,6 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     ref="host"
     class="yam3x-autocomplete"
     v-bind="$attrs"
-    :style="layerZ ? { '--_yam3x-autocomplete-layer-z': String(layerZ) } : undefined"
     :class="{
       'yam3x-autocomplete--open': open,
       'yam3x-autocomplete--disabled': disabled,

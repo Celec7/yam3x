@@ -12,7 +12,11 @@ import {
   watch,
 } from 'vue'
 import { useTooltipController } from './tooltip-controller'
-import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import {
   richTooltipContextKey,
   type RichTooltipPosition,
@@ -56,6 +60,9 @@ const tooltipId = computed(() => props.id || `yam3x-rich-tooltip-${generatedId}`
 const subheadId = computed(() => `${tooltipId.value}-subhead`)
 const contentId = computed(() => `${tooltipId.value}-content`)
 const surface = ref<HTMLElement | null>(null)
+watch([layerZ, surface], () =>
+  setOverlayLayerProperty(surface.value, '--_yam3x-rich-tooltip-layer-z', layerZ.value),
+)
 const interactive = ref(false)
 const desktopPointerQuery =
   typeof window === 'undefined'
@@ -148,7 +155,6 @@ defineExpose({ show: controller.show, hide: controller.hide })
   <div
     :id="tooltipId"
     ref="surface"
-    :style="layerZ ? { '--_yam3x-rich-tooltip-layer-z': String(layerZ) } : undefined"
     class="yam3x-rich-tooltip__surface"
     :class="{
       'yam3x-rich-tooltip__surface--interactive': interactive,

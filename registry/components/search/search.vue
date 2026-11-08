@@ -14,7 +14,11 @@ import {
 } from 'vue'
 import { vRipple } from '../_shared/ripple'
 import { acquirePageScrollLock } from '../_shared/page-scroll-lock'
-import { acquireOverlayLayer, type OverlayLayer } from '../_shared/overlay-layer'
+import {
+  acquireOverlayLayer,
+  setOverlayLayerProperty,
+  type OverlayLayer,
+} from '../_shared/overlay-layer'
 import Icon from '../icon/icon.vue'
 import type { SearchLayout, SearchVariant } from './search.types'
 
@@ -86,6 +90,9 @@ const { messages: actionMessages } = useComponentLocale(
 const attrs = useAttrs()
 const slots = useSlots()
 const root = ref<HTMLElement | null>(null)
+watch([layerZ, root], () =>
+  setOverlayLayerProperty(root.value, '--_yam3x-search-layer-z', layerZ.value),
+)
 const barFrame = ref<HTMLElement | null>(null)
 const input = ref<HTMLInputElement | null>(null)
 const results = ref<HTMLElement | null>(null)
@@ -512,7 +519,6 @@ defineExpose({ close, clear, focus: focusSearchbox })
     v-bind="attrs"
     class="yam3x-search"
     :class="rootClasses"
-    :style="layerZ ? { '--_yam3x-search-layer-z': String(layerZ) } : undefined"
     :role="open ? 'dialog' : undefined"
     :aria-label="open ? actionMessages.search : undefined"
     :aria-modal="open ? 'true' : undefined"
