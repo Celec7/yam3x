@@ -1,6 +1,6 @@
 # CSS and token conventions
 
-This guide defines ownership boundaries for theme values and CSS in the installable registry. It describes project conventions; Material 3 Expressive remains the design authority for component roles, dimensions, states, and motion. See [design and implementation references](references.md) for source precedence and [component design and implementation](component-implementation.md) for the component workflow.
+This guide defines ownership boundaries for theme values and CSS in the installable registry. It describes project conventions; Material 3 Expressive remains the design authority for component roles, dimensions, states, and motion. See [design and implementation references](references.md) for source precedence and [component design and implementation](../contributing/component-implementation.md) for the component workflow.
 
 ## Token flow and ownership
 
@@ -13,7 +13,7 @@ Use four conceptual layers:
 | System      | The shared foundation exposes cross-component semantic roles and scales. Theme changes update applicable system values.                                                                      | `--md-sys-color-*`, `--md-sys-shape-*`, `--md-sys-motion-*`  |
 | Component   | The component maps official component requirements to component-owned aliases. Component styles consume this layer.                                                                          | `--_yam3x-button-*`, documented `--yam3x-button-*` overrides |
 
-As a project decision, Material Color Utilities generates dynamic color schemes from the configured source color, mode, and supported scheme options. Reference palette values and semantic system colors are generated together from the same scheme; they are not a CSS derivation chain. Changing a `--md-ref-*` value alone does not regenerate dependent `--md-sys-*` values. Prefer M3 Expressive system values where the project defines them; retain M3 baseline values as the fallback for components that have not adopted Expressive updates. Theme generation and application belong to [`registry/foundations/theme`](../registry/foundations/theme/), while generated static fallback tokens belong to [`tokens.css`](../registry/foundations/styles/tokens.css).
+As a project decision, Material Color Utilities generates dynamic color schemes from the configured source color, mode, and supported scheme options. Reference palette values and semantic system colors are generated together from the same scheme; they are not a CSS derivation chain. Changing a `--md-ref-*` value alone does not regenerate dependent `--md-sys-*` values. Prefer M3 Expressive system values where the project defines them; retain M3 baseline values as the fallback for components that have not adopted Expressive updates. Theme generation and application belong to [`registry/foundations/theme`](../../registry/foundations/theme/), while generated static fallback tokens belong to [`tokens.css`](../../registry/foundations/styles/tokens.css).
 
 Theme application writes tokens to a target element. CSS custom properties inherit only through descendants of that target. Vue provide/inject does not make CSS variables available to teleported DOM outside the target; place overlays within the themed subtree or explicitly apply the theme to their DOM target.
 
@@ -43,7 +43,7 @@ The theme system owns generation and application of shared tokens; each componen
 
 ## CSS ownership and structure
 
-- Put genuinely cross-component behavior in [`registry/foundations/styles/base.css`](../registry/foundations/styles/base.css), such as shared state layers, touch targets, control scales, and global focus or selection behavior. Foundation styles may consume System tokens directly for shared behavior.
+- Put genuinely cross-component behavior in [`registry/foundations/styles/base.css`](../../registry/foundations/styles/base.css), such as shared state layers, touch targets, control scales, and global focus or selection behavior. Foundation styles may consume System tokens directly for shared behavior.
 - Keep component selectors and component-specific styling with the component source in `registry/components/`. Component styles should consume Component aliases rather than reading theme input or raw Reference values.
 - Use `yam3x-*` BEM class names for component selectors. Treat published selectors and public custom properties as part of the copied-source contract.
 - Keep static styling in CSS. Use inline styles for runtime values, preferably by setting component custom properties instead of duplicating CSS declarations.
@@ -53,9 +53,9 @@ Token layers describe value ownership and are independent of CSS cascade layers.
 
 ## Registry distribution and generated files
 
-Registry components and their foundation dependencies must remain independently distributable. Do not make registry source depend on VitePress or files under `apps/docs/`. Declare foundation source-to-target mappings in [`registry/foundations/registry.json`](../registry/foundations/registry.json); the registry generator follows imports and emits the required shared styles and token files into [`registry/registry.json`](../registry/registry.json). Verify generated output and isolated component installation through the CLI checks when changing those dependencies.
+Registry components and their foundation dependencies must remain independently distributable. Do not make registry source depend on VitePress or files under `apps/docs/`. Declare foundation source-to-target mappings in [`registry/foundations/registry.json`](../../registry/foundations/registry.json); the registry generator follows imports and emits the required shared styles and token files into [`registry/registry.json`](../../registry/registry.json). Verify generated output and isolated component installation through the CLI checks when changing those dependencies.
 
-Generated token blocks in `tokens.css` are owned by [`pnpm tokens:generate`](../scripts/generate-foundation-tokens.mjs); edit their generator inputs and regenerate instead of hand-editing generated output. Keep hand-maintained foundation rules outside generated blocks.
+Generated token blocks in `tokens.css` are owned by [`pnpm tokens:generate`](../../scripts/generate-foundation-tokens.mjs); edit their generator inputs and regenerate instead of hand-editing generated output. Keep hand-maintained foundation rules outside generated blocks.
 
 ## Adoption
 

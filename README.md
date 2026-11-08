@@ -22,7 +22,7 @@ The CLI copies editable source and declares dependencies; the copied components 
 - [Documentation site](https://yam3x.iscccc.cc/)
 - [Documentation index](docs/README.md)
 - [Project glossary](docs/glossary.md)
-- [Component delivery pipeline](docs/component-implementation.md)
+- [Component delivery pipeline](docs/contributing/component-implementation.md)
 - [Install and use components](apps/docs/guide/installation.md)
 - [Design foundations](apps/docs/guide/design.md)
 - [Project component design guides](docs/specs/README.md)
@@ -32,7 +32,7 @@ The CLI copies editable source and declares dependencies; the copied components 
 - [Architecture and source ownership](docs/architecture.md)
 - [CLI package reference](packages/cli/README.md)
 - [Changelog](CHANGELOG.md)
-- [CLI release procedure](docs/releasing.md)
+- [CLI release procedure](docs/contributing/releasing.md)
 
 ## Development
 

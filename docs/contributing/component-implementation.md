@@ -1,6 +1,6 @@
 # Component design and implementation
 
-This page owns the component delivery pipeline. It explains how design sources, project guides, Vue API decisions, implementation, public documentation, and evidence fit together. See [Design and implementation references](references.md) for source authority, [Project glossary](glossary.md) for shared terms, and [Project component design guides](specs/README.md) for the guide index.
+This page owns the component delivery pipeline. It explains how design sources, project guides, Vue API decisions, implementation, public documentation, and evidence fit together. See [Design and implementation references](../design/references.md) for source authority, [Project glossary](../glossary.md) for shared terms, and [Project component design guides](../specs/README.md) for the guide index.
 
 ## Component classes
 
@@ -26,7 +26,7 @@ Gate: no design work starts from a platform implementation alone.
 
 ### 2. Write the project design guide
 
-Use the [spec template](specs/TEMPLATE.md). State each adopted design item in project-authored language, link the official page or figure beside it, and label every project decision. Preserve whether Material requires, recommends, or permits a behavior. Add a `<component>.<area>.<criterion>` ID only when an automated test verifies that item; reference the same ID in the test title or a nearby comment.
+Use the [spec template](../specs/TEMPLATE.md). State each adopted design item in project-authored language, link the official page or figure beside it, and label every project decision. Preserve whether Material requires, recommends, or permits a behavior. Add a `<component>.<area>.<criterion>` ID only when an automated test verifies that item; reference the same ID in the test title or a nearby comment.
 
 Output: the canonical design guide under `docs/specs/components/`.
 

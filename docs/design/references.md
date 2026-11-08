@@ -4,7 +4,7 @@
 
 The project's design target is the currently applicable **Material 3 Expressive** guidance on [m3.material.io](https://m3.material.io/). The site may expose more than one version or implementation for a component. Select the guidance explicitly marked Expressive and inspect its relevant overview, guidelines, specifications, accessibility guidance, diagrams, and images. Inspect rendered figures and motion recordings at the size, theme, and state they depict: anatomy, measurements, state transitions, shape changes, and motion frames are defined visually, not by surrounding prose. Do not use an older or non-Expressive variant when it conflicts with the Expressive target.
 
-Project component design guides in [`specs/`](specs/README.md) summarize the Material facts needed to guide this project and identify deliberate project decisions. Link the exact official pages that support those facts rather than copying whole sections or preserving inspection logs.
+Project component design guides in [`specs/`](../specs/README.md) summarize the Material facts needed to guide this project and identify deliberate project decisions. Link the exact official pages that support those facts rather than copying whole sections or preserving inspection logs.
 
 ## Component classes
 
@@ -48,6 +48,6 @@ An implementation-dependent decision records its exact library version in the de
 
 ## Implementation inputs
 
-- [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) is a runtime dependency used by [`generate.ts`](../registry/foundations/theme/generate.ts) to generate light and dark 2025 tonal schemes.
-- AndroidX [ExpressiveMotionTokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ExpressiveMotionTokens.kt) informs the spring parameters stored in [`foundation-tokens.mjs`](../registry/foundations/tokens/foundation-tokens.mjs); the M3 Web motion specification supplies the CSS duration/easing mappings. [`generate-foundation-tokens.mjs`](../scripts/generate-foundation-tokens.mjs) generates their CSS representation. These are implementation inputs, not authorities for component-specific requirements that Material defines.
-- [Ark UI](https://ark-ui.com/) is an implementation dependency described in [Architecture and ownership](architecture.md). The source-copying workflow is similar to [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.
+- [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) is a runtime dependency used by [`generate.ts`](../../registry/foundations/theme/generate.ts) to generate light and dark 2025 tonal schemes.
+- AndroidX [ExpressiveMotionTokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ExpressiveMotionTokens.kt) informs the spring parameters stored in [`foundation-tokens.mjs`](../../registry/foundations/tokens/foundation-tokens.mjs); the M3 Web motion specification supplies the CSS duration/easing mappings. [`generate-foundation-tokens.mjs`](../../scripts/generate-foundation-tokens.mjs) generates their CSS representation. These are implementation inputs, not authorities for component-specific requirements that Material defines.
+- [Ark UI](https://ark-ui.com/) is an implementation dependency described in [Architecture and ownership](../architecture.md). The source-copying workflow is similar to [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.

@@ -15,9 +15,9 @@ In Vue single-file components, declare props, models, emits, and slots in that o
 
 These names are public because consumers copy registry source and can depend on its imports and CSS hooks. Breaking renames require an explicit migration guide and a breaking release: increment the minor version before 1.0, then the major version after 1.0.
 
-For token-layer ownership, component mappings, CSS source structure, and custom-property scope rules, follow [CSS and token conventions](docs/css-and-tokens.md).
+For token-layer ownership, component mappings, CSS source structure, and custom-property scope rules, follow [CSS and token conventions](docs/design/css-and-tokens.md).
 
-Before changing a component, classify it as Expressive, M3 baseline, or a project extension and follow the [component delivery pipeline](docs/component-implementation.md). Shared terms and the source hierarchy are defined in the [project glossary](docs/glossary.md) and [design and implementation references](docs/references.md).
+Before changing a component, classify it as Expressive, M3 baseline, or a project extension and follow the [component delivery pipeline](docs/contributing/component-implementation.md). Shared terms and the source hierarchy are defined in the [project glossary](docs/glossary.md) and [design and implementation references](docs/design/references.md).
 
 `pnpm dev` starts the VitePress site. Use its component pages to review appearance, API guidance, and interactions. Before finishing a component or foundation change, run the relevant checks:
 

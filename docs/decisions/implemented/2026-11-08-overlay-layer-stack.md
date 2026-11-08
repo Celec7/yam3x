@@ -6,7 +6,7 @@ Lifecycle: implemented. The code, documentation, and verification landed togethe
 
 **Status:** implemented
 **Date:** 2026-11-08
-**Owner:** [Architecture and ownership](../../../architecture.md)
+**Owner:** [Architecture and ownership](../../architecture.md)
 
 ## Problem
 
@@ -16,7 +16,7 @@ The failure is concrete: a Select panel opened inside a Dialog sits at 42 while 
 
 ## Decision
 
-A shared module, [`overlay-layer.ts`](../../../../registry/components/_shared/overlay-layer.ts), assigns floating stacking order in open sequence.
+A shared module, [`overlay-layer.ts`](../../../registry/components/_shared/overlay-layer.ts), assigns floating stacking order in open sequence.
 
 ### Contract
 
@@ -29,19 +29,19 @@ A shared module, [`overlay-layer.ts`](../../../../registry/components/_shared/ov
 
 ### Current integration
 
-- [Dialog](../../../../registry/components/dialog/dialog.vue)
-- [Option panel](../../../../registry/components/option/option-panel.vue)
-- [Menu](../../../../registry/components/menu/menu.vue)
-- [Bottom sheet](../../../../registry/components/bottom-sheet/bottom-sheet.vue): modal variant as a dialog, standard variant as a popup
-- [FAB menu](../../../../registry/components/fab-menu/fab-menu.vue)
-- [Floating action button menu](../../../../registry/components/fab-menu/floating-action-button-menu.vue)
-- [Autocomplete](../../../../registry/components/autocomplete/autocomplete.vue)
-- [Search](../../../../registry/components/search/search.vue): open search takes a popup layer, so a newer dialog dismisses it, and its z-index fallbacks derive from that layer
-- [Time picker](../../../../registry/components/time-picker/time-picker-dialog.vue): modal presentation as a dialog, docked presentation as a popup
-- [Tooltip](../../../../registry/components/tooltip/tooltip.vue) and [Rich tooltip](../../../../registry/components/tooltip/rich-tooltip.vue)
-- [Date picker](../../../../registry/components/date-picker/date-picker-core.vue): modal presentation as a dialog, docked presentation as a popup
-- [Expandable list item](../../../../registry/components/list/expandable-list-item.vue): full-screen presentation as a dialog
-- [Navigation rail](../../../../registry/components/navigation-rail/navigation-rail.vue): modal presentation as a dialog
+- [Dialog](../../../registry/components/dialog/dialog.vue)
+- [Option panel](../../../registry/components/option/option-panel.vue)
+- [Menu](../../../registry/components/menu/menu.vue)
+- [Bottom sheet](../../../registry/components/bottom-sheet/bottom-sheet.vue): modal variant as a dialog, standard variant as a popup
+- [FAB menu](../../../registry/components/fab-menu/fab-menu.vue)
+- [Floating action button menu](../../../registry/components/fab-menu/floating-action-button-menu.vue)
+- [Autocomplete](../../../registry/components/autocomplete/autocomplete.vue)
+- [Search](../../../registry/components/search/search.vue): open search takes a popup layer, so a newer dialog dismisses it, and its z-index fallbacks derive from that layer
+- [Time picker](../../../registry/components/time-picker/time-picker-dialog.vue): modal presentation as a dialog, docked presentation as a popup
+- [Tooltip](../../../registry/components/tooltip/tooltip.vue) and [Rich tooltip](../../../registry/components/tooltip/rich-tooltip.vue)
+- [Date picker](../../../registry/components/date-picker/date-picker-core.vue): modal presentation as a dialog, docked presentation as a popup
+- [Expandable list item](../../../registry/components/list/expandable-list-item.vue): full-screen presentation as a dialog
+- [Navigation rail](../../../registry/components/navigation-rail/navigation-rail.vue): modal presentation as a dialog
 
 Snackbar remains a notice host outside modal ordering: opening a dialog must not dismiss a queued notice, so it keeps its host z-index. App bar and navigation rail z-index values position layout surfaces, not floating overlays.
 

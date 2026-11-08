@@ -22,7 +22,7 @@ CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 
 - [文档站点](https://yam3x.iscccc.cc/)
 - [文档索引](docs/README.md)
 - [项目术语表](docs/glossary.md)
-- [组件交付流水线](docs/component-implementation.md)
+- [组件交付流水线](docs/contributing/component-implementation.md)
 - [安装和使用组件](apps/docs/zh/guide/installation.md)
 - [设计基础](apps/docs/zh/guide/design.md)
 - [项目组件设计指南](docs/specs/README.md)
@@ -32,7 +32,7 @@ CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 
 - [架构与源码归属](docs/architecture.md)
 - [CLI 包参考](packages/cli/README.md)
 - [更改日志](CHANGELOG.md)
-- [CLI 发布流程](docs/releasing.md)
+- [CLI 发布流程](docs/contributing/releasing.md)
 
 ## 开发
 
