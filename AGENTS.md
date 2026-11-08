@@ -2,7 +2,7 @@
 
 ## Documentation sources and ownership
 
-- Treat the currently applicable **Material 3 Expressive** guidance on [m3.material.io](https://m3.material.io/) as the design target. When the site offers multiple versions or implementations, use the one explicitly marked Expressive. Review relevant diagrams and images as well as text.
+- Treat the currently applicable **Material 3 Expressive** guidance on [m3.material.io](https://m3.material.io/) as the design target. When the site offers multiple versions or implementations, use the one explicitly marked Expressive. Review rendered diagrams, figures, and motion recordings; visual details are normative, not decorative.
 - `docs/specs/` is the canonical statement of the design this project intends to implement. Its core requirements must come from applicable Material 3 Expressive sources; label any necessary project decisions separately. It guides design and implementation; it is not an API reference, exhaustive test matrix, implementation-status report, or copy of the upstream specification.
 - Vue source under `registry/` defines the current public API and implemented behavior. `apps/docs/` explains current usage and API; keep its established English/Chinese page pairs aligned when a change requires public documentation.
 - Tests and browser checks provide implementation evidence. Keep detailed results with their verification owner, not in design guides.

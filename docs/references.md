@@ -2,7 +2,7 @@
 
 ## Design target
 
-The project's design target is the currently applicable **Material 3 Expressive** guidance on [m3.material.io](https://m3.material.io/). The site may expose more than one version or implementation for a component. Select the guidance explicitly marked Expressive and inspect its relevant overview, guidelines, specifications, accessibility guidance, diagrams, and images. Do not use an older or non-Expressive variant when it conflicts with the Expressive target.
+The project's design target is the currently applicable **Material 3 Expressive** guidance on [m3.material.io](https://m3.material.io/). The site may expose more than one version or implementation for a component. Select the guidance explicitly marked Expressive and inspect its relevant overview, guidelines, specifications, accessibility guidance, diagrams, and images. Inspect rendered figures and motion recordings at the size, theme, and state they depict: anatomy, measurements, state transitions, shape changes, and motion frames are defined visually, not by surrounding prose. Do not use an older or non-Expressive variant when it conflicts with the Expressive target.
 
 Project component design guides in [`specs/`](specs/README.md) summarize the Material facts needed to guide this project and identify deliberate project decisions. Link the exact official pages that support those facts rather than copying whole sections or preserving inspection logs.
 

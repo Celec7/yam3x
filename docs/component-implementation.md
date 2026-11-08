@@ -10,6 +10,14 @@ This page explains how Material 3 Expressive guidance, project design guides, Vu
 4. **Implement and document current behavior.** Keep source files and [`registry/registry.json`](../registry/registry.json) aligned. The public `apps/docs` pages describe the current API and examples; update them when implementation facts change and keep the English/Chinese pair aligned.
 5. **Verify implementation separately.** Use focused unit/browser checks and consumer build checks appropriate to the change. Tests may reference design criterion IDs.
 
+## Visual inspection
+
+Material pages present anatomy, measurements, states, color roles, shape, and motion as figures and recordings. The rendered figure is the design statement for those details.
+
+- Open the official page in a browser and inspect each figure at the size, theme, and state it depicts, including light/dark and responsive variants where shown.
+- Inspect motion recordings frame by frame: start, end, intermediate shape, size, and position. A prose summary of the motion does not define those frames.
+- Cite the figure or section in the design guide. Keep captured screenshots, frame samples, and comparison results with the verification owner.
+
 ## Keeping design guidance stable
 
 A design guide describes the intended project design even when current code differs. When they disagree, retain the guide as the target and track the implementation gap with its code or verification work. Change the guide only when the applicable Material 3 Expressive source changes or the project deliberately changes its own design decision.

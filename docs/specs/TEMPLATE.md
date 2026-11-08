@@ -8,7 +8,7 @@ In a few sentences, explain the component's design purpose and the scope adopted
 
 ## Design target
 
-Describe the adopted design in direct, actionable language, grouped under only the applicable topics, such as usage and selection, appearance and states, or interaction and accessibility. Paraphrase the official guidance rather than copying passages. Preserve whether Material requires, recommends, or permits a behavior. Place the exact official page link beside each source-backed requirement, and identify a figure or section when it communicates important geometry or behavior.
+Describe the adopted design in direct, actionable language, grouped under only the applicable topics, such as usage and selection, appearance and states, or interaction and accessibility. Paraphrase the official guidance rather than copying passages. Preserve whether Material requires, recommends, or permits a behavior. Place the exact official page link beside each source-backed requirement. When a figure or recording establishes geometry, state, shape, or motion, cite it and state the visual fact it establishes.
 
 Prefix a criterion with a stable ID only when an automated test verifies it. Use the lowercase format `<component>.<area>.<criterion>`, such as `button.a11y.target` or `switch.geometry.track`. Keep the ID semantic rather than encoding a value or status. Reference the same ID in the owning test's title or a nearby comment. An ID identifies a design criterion; it does not report whether its test passes.
 
