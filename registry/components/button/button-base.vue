@@ -105,7 +105,7 @@ function onClick(event: MouseEvent) {
     >
       <slot name="selected-icon" />
     </span>
-    <span class="yam3x-button__label relative z-10 inline-flex items-center justify-center">
+    <span class="yam3x-button__label">
       <slot
         v-if="toggle && selected && !isLink"
         name="selected"
@@ -176,6 +176,9 @@ function onClick(event: MouseEvent) {
     0.999 90%,
     1.001 100%
   );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   column-gap: var(--_yam3x-button-icon-label-space);
   min-height: var(--_yam3x-button-height);
   min-width: var(--_yam3x-button-min-width);
@@ -218,6 +221,11 @@ function onClick(event: MouseEvent) {
   --_yam3x-button-label-weight: var(--md-sys-typescale-headline-large-font-weight);
 }
 .yam3x-button__label {
+  position: relative;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: var(--_yam3x-button-content-gap);
   white-space: nowrap;
 }

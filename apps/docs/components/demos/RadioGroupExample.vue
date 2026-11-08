@@ -24,7 +24,7 @@ function submitDelivery(): void {
 </script>
 
 <template>
-  <div class="grid gap-8">
+  <div class="radio-group-demo">
     <RadioGroup
       v-model="ringtone"
       :label="t('Ringtone', '铃声')"
@@ -82,7 +82,7 @@ function submitDelivery(): void {
     <form
       id="radio-group-example-form"
       ref="form"
-      class="grid justify-items-start gap-4"
+      class="radio-group-demo__form"
       @submit.prevent="submitDelivery"
     >
       <RadioGroup
@@ -94,7 +94,7 @@ function submitDelivery(): void {
         <RadioButton value="home">{{ t('Home address', '家庭地址') }}</RadioButton>
         <RadioButton value="office">{{ t('Office address', '办公地址') }}</RadioButton>
       </RadioGroup>
-      <div class="flex gap-3">
+      <div class="radio-group-demo__actions">
         <Button
           variant="outlined"
           type="submit"
@@ -144,3 +144,19 @@ function submitDelivery(): void {
     </form>
   </div>
 </template>
+
+<style scoped>
+.radio-group-demo {
+  display: grid;
+  gap: 32px;
+}
+.radio-group-demo__form {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+}
+.radio-group-demo__actions {
+  display: flex;
+  gap: 12px;
+}
+</style>

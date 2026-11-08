@@ -1,4 +1,3 @@
-import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitepress'
 import { getComponentCatalog, type ComponentGroup } from '../component-catalog'
@@ -150,7 +149,6 @@ export default defineConfig({
   ],
   cleanUrls: true,
   vite: {
-    plugins: [tailwindcss()],
     ssr: {
       noExternal: ['@material/material-color-utilities'],
     },

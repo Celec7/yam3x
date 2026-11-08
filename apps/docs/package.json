@@ -15,16 +15,13 @@
     "@floating-ui/dom": "catalog:",
     "@material/material-color-utilities": "catalog:",
     "composed-offset-position": "catalog:",
-    "tailwind-variants": "catalog:",
     "vue": "catalog:"
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
-    "@tailwindcss/vite": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "happy-dom": "catalog:",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitepress": "catalog:",

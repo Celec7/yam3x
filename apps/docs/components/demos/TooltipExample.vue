@@ -18,8 +18,8 @@ function recordAction(action: string): void {
 </script>
 
 <template>
-  <section class="grid gap-8 rounded-3xl border border-outline-variant p-6 text-on-surface">
-    <div class="flex flex-wrap items-center gap-4">
+  <section class="tooltip-demo">
+    <div class="tooltip-demo__row">
       <Button
         id="tooltip-help-trigger"
         variant="filled-tonal"
@@ -40,7 +40,7 @@ function recordAction(action: string): void {
       }}</span>
     </div>
 
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="tooltip-demo__row">
       <Button
         id="tooltip-info-trigger"
         variant="filled-tonal"
@@ -55,7 +55,7 @@ function recordAction(action: string): void {
       >
     </div>
 
-    <header class="flex flex-wrap items-center gap-4 rounded-xl border border-outline-variant p-3">
+    <header class="tooltip-demo__header">
       <Button
         id="tooltip-header-trigger"
         variant="text"
@@ -66,7 +66,7 @@ function recordAction(action: string): void {
       <Tooltip for="tooltip-header-trigger">{{ t('Toolbar actions', '工具栏操作') }}</Tooltip>
     </header>
 
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="tooltip-demo__row">
       <Button
         id="tooltip-rich-transient-trigger"
         variant="outlined"
@@ -83,7 +83,7 @@ function recordAction(action: string): void {
       </RichTooltip>
     </div>
 
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="tooltip-demo__row">
       <Button
         id="tooltip-feature-trigger"
         variant="outlined"
@@ -127,7 +127,7 @@ function recordAction(action: string): void {
       }}</output>
     </div>
 
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="tooltip-demo__row">
       <Button
         id="tooltip-persistent-trigger"
         variant="text"
@@ -152,3 +152,29 @@ function recordAction(action: string): void {
     </div>
   </section>
 </template>
+
+<style scoped>
+.tooltip-demo {
+  display: grid;
+  gap: 32px;
+  padding: 24px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 24px;
+  color: var(--md-sys-color-on-surface);
+}
+.tooltip-demo__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+.tooltip-demo__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+}
+</style>

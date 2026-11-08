@@ -86,7 +86,7 @@
         }
       ],
       "dependencies": { "@material/material-color-utilities": "^0.4.0", "vue": "^3.5.44" },
-      "devDependencies": { "@tailwindcss/vite": "^4.3.3", "tailwindcss": "^4.3.3" }
+      "devDependencies": {}
     }
   },
   "components": {
@@ -232,7 +232,7 @@
         "button/index.ts",
         "button/toggle-button.vue"
       ],
-      "dependencies": { "tailwind-variants": "^3.3.1" },
+      "dependencies": {},
       "foundations": ["core"]
     },
     "button-group": {
@@ -250,7 +250,7 @@
         "icon-button/icon-button.types.ts",
         "icon-button/icon-toggle-button.vue"
       ],
-      "dependencies": { "tailwind-variants": "^3.3.1" },
+      "dependencies": {},
       "foundations": ["core"]
     },
     "calendar": {
@@ -340,7 +340,7 @@
         "option/option.types.ts",
         "option/option.vue"
       ],
-      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
     },
     "checkbox": {
@@ -449,7 +449,7 @@
         "tooltip/tooltip.types.ts",
         "tooltip/tooltip.vue"
       ],
-      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
     },
     "date-input": {
@@ -682,7 +682,7 @@
         "progress-indicator/linear-progress-indicator.vue",
         "progress-indicator/progress-utils.ts"
       ],
-      "dependencies": { "tailwind-variants": "^3.3.1" },
+      "dependencies": {},
       "foundations": ["core"]
     },
     "filter-chip": {
@@ -1121,7 +1121,7 @@
         "tooltip/tooltip.types.ts",
         "tooltip/tooltip.vue"
       ],
-      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
     },
     "progress-indicator": {
@@ -1350,7 +1350,7 @@
         "split-button/split-button.types.ts",
         "split-button/split-button.vue"
       ],
-      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
     },
     "split-pane": {
@@ -1500,7 +1500,7 @@
         "tree-view/tree-view.utils.ts",
         "tree-view/tree-view.vue"
       ],
-      "dependencies": { "@floating-ui/dom": "^1.8.0", "tailwind-variants": "^3.3.1" },
+      "dependencies": { "@floating-ui/dom": "^1.8.0" },
       "foundations": ["core"]
     },
     "tree-view": {

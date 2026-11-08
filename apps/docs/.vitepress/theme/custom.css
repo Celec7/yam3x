@@ -1,11 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');
-@import 'tailwindcss/theme.css' layer(theme);
 @import '../../../../registry/foundations/styles/tokens.css';
-@import 'tailwindcss/utilities.css';
-
-@source "../../../**/*.{md,vue,ts}";
-@source "../../../../registry/components/**/*.{vue,ts}";
-@source "../../../../registry/foundations/**/*.{vue,ts}";
 
 .yam3x-demo {
   margin: 24px 0;

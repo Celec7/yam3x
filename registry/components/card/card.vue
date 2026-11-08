@@ -47,7 +47,7 @@ function activate(event: MouseEvent) {
   <component
     :is="rootTag"
     v-ripple
-    class="yam3x-card rounded-yam3x-md"
+    class="yam3x-card"
     :class="[
       `yam3x-card--${variant}`,
       `yam3x-card--${orientation}`,

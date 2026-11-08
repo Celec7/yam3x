@@ -89,7 +89,7 @@ function onViewChange({ previousValue, value }: SegmentedButtonChangeDetail<stri
     </form>
     <Checkbox
       v-model="disableFilters"
-      class="inline-flex items-center gap-2"
+      class="segmented-demo__checkbox"
       :label="t('Disable multi-select group', '禁用多选组')"
     />
     <p class="yam3x-demo__status">
@@ -102,3 +102,11 @@ function onViewChange({ previousValue, value }: SegmentedButtonChangeDetail<stri
     </p>
   </div>
 </template>
+
+<style scoped>
+.segmented-demo__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>
