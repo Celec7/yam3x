@@ -137,16 +137,6 @@ async function initProject(projectRoot, registry) {
     await writeFile(existingMainPath, mainSource)
   }
 
-  const viteConfig = await findViteConfig(projectRoot)
-  if (viteConfig) {
-    const configText = await readFile(viteConfig, 'utf8')
-    if (!configText.includes('@tailwindcss/vite')) {
-      console.warn('Add @tailwindcss/vite() to your existing Vite plugins before building.')
-    }
-  } else {
-    console.warn('Add @tailwindcss/vite() to your Vite config before building.')
-  }
-
   const devAdded = await addDependencies(project, core.devDependencies ?? {}, 'devDependencies')
   const runtimeAdded = await addDependencies(project, core.dependencies ?? {})
   project.yam3x = { ...(project.yam3x ?? {}), registry: 'yam3x', style: 'src/yam3x.css' }
@@ -158,14 +148,6 @@ async function initProject(projectRoot, registry) {
 async function findExistingMain(projectRoot) {
   for (const name of ['main.ts', 'main.js']) {
     const path = join(projectRoot, 'src', name)
-    if (await exists(path)) return path
-  }
-  return undefined
-}
-
-async function findViteConfig(projectRoot) {
-  for (const name of ['vite.config.ts', 'vite.config.js', 'vite.config.mts', 'vite.config.mjs']) {
-    const path = join(projectRoot, name)
     if (await exists(path)) return path
   }
   return undefined

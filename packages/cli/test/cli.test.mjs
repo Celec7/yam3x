@@ -49,7 +49,6 @@ async function fixture(t, { isolatedDependencies = false } = {}) {
         scripts: { build: 'vite build', typecheck: 'vue-tsc --noEmit' },
         dependencies: { vue: catalog.vue },
         devDependencies: {
-          '@tailwindcss/vite': catalog['@tailwindcss/vite'],
           '@vitejs/plugin-vue': catalog['@vitejs/plugin-vue'],
           typescript: catalog.typescript,
           vite: catalog.vite,
@@ -70,7 +69,7 @@ async function fixture(t, { isolatedDependencies = false } = {}) {
   )
   await writeFile(
     join(directory, 'vite.config.ts'),
-    "import tailwindcss from '@tailwindcss/vite'\nimport vue from '@vitejs/plugin-vue'\nexport default { plugins: [vue(), tailwindcss()] }\n",
+    "import vue from '@vitejs/plugin-vue'\nexport default { plugins: [vue()] }\n",
   )
   await writeFile(
     join(directory, 'tsconfig.json'),
@@ -290,7 +289,7 @@ test('add copies editable component sources and declares only required packages'
   assert.ok(stylesheet.includes('family=Material+Symbols+Rounded'))
   assert.ok(stylesheet.includes('family=Material+Symbols+Sharp'))
   assert.match(stylesheet, /@import ['"]\.\/styles\/yam3x-base\.css['"];?/)
-  assert.match(stylesheet, /@source ['"]\.\/components\/yam3x\//)
+  assert.doesNotMatch(stylesheet, /@import ['"]tailwindcss['"]|@source/)
   assert.match(
     await readFile(join(directory, 'src/styles/yam3x-base.css'), 'utf8'),
     /\.yam3x-state-layer/,
@@ -360,8 +359,7 @@ test('add installs foundation dependencies even when the component has no extra 
   })
 
   assert.equal(result.status, 0, result.stderr || result.stdout)
-  assert.match(result.stdout, /Declared dependencies:.*tailwindcss/)
-  assert.match(result.stdout, /@material\/material-color-utilities/)
+  assert.match(result.stdout, /Declared dependencies:.*@material\/material-color-utilities/)
   assert.equal(await readFile(join(directory, 'install-called'), 'utf8'), 'install')
 })
 
@@ -878,7 +876,7 @@ test('add with --no-install reports all new dependencies and foundation files', 
     await readFile(join(directory, 'src/lib/yam3x/gestures/long-press.ts'), 'utf8'),
     /class LongPressGestureRecognizer/,
   )
-  assert.match(result.stdout, /Declared dependencies:.*tailwindcss/)
+  assert.match(result.stdout, /Declared dependencies:.*@material\/material-color-utilities/)
   assert.match(result.stdout, /Run your package manager install/)
 })
 

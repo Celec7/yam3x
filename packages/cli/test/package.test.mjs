@@ -72,7 +72,7 @@ test('packed CLI contains a runnable registry and installs a component', async (
     assert.ok(existsSync(join(consumerRoot, 'src/yam3x.css')))
     assert.ok(
       JSON.parse(await readFile(join(consumerRoot, 'package.json'), 'utf8')).dependencies[
-        'tailwind-variants'
+        '@material/material-color-utilities'
       ],
     )
   } finally {
