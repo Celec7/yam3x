@@ -95,6 +95,12 @@ const sizePixels: Record<ToggleFloatingActionButtonSize, number> = {
   medium: 80,
   large: 96,
 }
+const iconPixels: Record<ToggleFloatingActionButtonSize, number> = {
+  small: 24,
+  default: 24,
+  medium: 28,
+  large: 36,
+}
 const dimensions = computed(() => {
   const from = sizePixels[props.size]
   const to = 56
@@ -111,6 +117,9 @@ const buttonStyle = computed(() => ({
   minHeight: `${dimensions.value}px`,
   borderRadius: `${radius.value}px`,
   '--yam3x-toggle-fab-anchor-shift': `${-((sizePixels[props.size] - 56) * progress.value)}px`,
+  '--yam3x-toggle-fab-icon-size': `${
+    iconPixels[props.size] + (20 - iconPixels[props.size]) * progress.value
+  }px`,
 }))
 const variant = computed<ToggleFabVariant>(() =>
   checked.value ? props.variant : `${props.variant}-container`,
@@ -179,12 +188,15 @@ defineExpose({ element: computed(() => button.value?.$el ?? null) })
 .yam3x-toggle-floating-action-button__icons {
   position: relative;
   display: grid;
-  width: 24px;
-  height: 24px;
+  width: var(--yam3x-toggle-fab-icon-size, 24px);
+  height: var(--yam3x-toggle-fab-icon-size, 24px);
   place-items: center;
 }
-.yam3x-toggle-floating-action-button__icons .yam3x-icon {
+.yam3x-toggle-floating-action-button__icons .yam3x-icon.yam3x-icon {
   position: absolute;
+  width: var(--yam3x-toggle-fab-icon-size, 24px);
+  height: var(--yam3x-toggle-fab-icon-size, 24px);
+  font-size: var(--yam3x-toggle-fab-icon-size, 24px);
 }
 .yam3x-toggle-floating-action-button__add {
   opacity: calc(1 - var(--toggle-progress));

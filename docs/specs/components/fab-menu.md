@@ -7,8 +7,9 @@ A FAB menu expands a regular floating action button to reveal a short group of r
 ## Design target
 
 - Keep the trigger in its page position as the menu opens. Place expanded actions in the arrangement and count shown by the [FAB menu specifications](https://m3.material.io/components/fab-menu/specs).
-- `fab-menu.geometry.close`: Align the close control with the trigger as shown in the [anatomy and measurement figures](https://m3.material.io/components/fab-menu/specs).
-- Use the available color configurations and action treatment from [FAB menu specifications](https://m3.material.io/components/fab-menu/specs). Keep each action's label visible.
+- `fab-menu.geometry.close`: Align the close control with the trigger as shown in the [anatomy and measurement figures](https://m3.material.io/components/fab-menu/specs). The close button is always 56dp with a 20dp icon and an 8dp gap to the nearest item.
+- Use the available color configurations and action treatment from [FAB menu specifications](https://m3.material.io/components/fab-menu/specs). Keep each action's label visible. Pill-stack items are 56dp high with 24dp leading/trailing space, a 24dp icon, an 8dp icon-label gap, and 4dp between items.
+- `fab-menu.state.focus`: Items use the 3dp `secondary` focus indicator with a 2dp offset. Pill-stack items rest at elevation 0, use level 4 on hover, and level 3 on focus and press.
 - Opening and closing use coordinated motion between the trigger and actions. Follow the behavior in [FAB menu guidelines](https://m3.material.io/components/fab-menu/guidelines) and respect the shared reduced-motion preference.
 - `fab-menu.a11y.keyboard`: Give actions clear accessible names and support keyboard navigation, activation, and dismissal. On Web, use the [ARIA menu-button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/) alongside [FAB menu accessibility](https://m3.material.io/components/fab-menu/accessibility).
 

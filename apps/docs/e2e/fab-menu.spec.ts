@@ -182,6 +182,36 @@ test('FAB menu implements roving keyboard navigation, close restoration, and Tab
   await expect(page.getByRole('menu')).toBeHidden()
 })
 
+test('FAB menu close button uses the 20px icon while closed triggers keep their FAB icon size', async ({
+  page,
+}) => {
+  await page.goto('/components/fab-menu')
+  const trigger = page.getByRole('button', { name: 'Create', exact: true })
+  const iconSize = () =>
+    trigger.evaluate((element) => {
+      const icon = element.querySelector<HTMLElement>(
+        '.yam3x-toggle-floating-action-button__icons',
+      )!
+      return getComputedStyle(icon).width
+    })
+  await expect.poll(iconSize).toBe('28px')
+  await trigger.click()
+  await expect.poll(iconSize).toBe('20px')
+  await expect
+    .poll(() => trigger.evaluate((element) => element.getBoundingClientRect().width))
+    .toBe(56)
+  await page.keyboard.press('Escape')
+
+  const size = page.getByRole('combobox', { name: 'Trigger FAB size' })
+  await selectM3Option(page, size, 'large')
+  await expect.poll(iconSize).toBe('36px')
+  await trigger.click()
+  await expect.poll(iconSize).toBe('20px')
+  await expect
+    .poll(() => trigger.evaluate((element) => element.getBoundingClientRect().width))
+    .toBe(56)
+})
+
 test('FAB menu presents pill stacks and baseline Web menus with distinct spacing', async ({
   page,
 }) => {
@@ -194,6 +224,22 @@ test('FAB menu presents pill stacks and baseline Web menus with distinct spacing
   await expect(pillAction).toHaveCSS('font-size', '16px')
   await expect(pillAction).toHaveCSS('padding-inline-start', '24px')
   await expect(pillAction).not.toHaveAttribute('aria-checked')
+  await page.keyboard.press('ArrowDown')
+  await expect(pillAction).toBeFocused()
+  await expect(pillAction).toHaveCSS('outline-width', '3px')
+  await expect(pillAction).toHaveCSS('outline-offset', '2px')
+  const focusStyle = await pillAction.evaluate((element) => {
+    const probe = document.createElement('span')
+    probe.style.color = getComputedStyle(document.documentElement).getPropertyValue(
+      '--md-sys-color-secondary',
+    )
+    document.body.append(probe)
+    const expectedColor = getComputedStyle(probe).color
+    probe.remove()
+    return { actualColor: getComputedStyle(element).outlineColor, expectedColor }
+  })
+  expect(focusStyle.actualColor).toBe(focusStyle.expectedColor)
+  await expect(pillAction).not.toHaveCSS('box-shadow', 'none')
   await trigger.click()
   await selectM3Option(page, page.getByLabel('FAB menu presentation'), 'web-menu')
   await trigger.click()

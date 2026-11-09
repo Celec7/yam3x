@@ -683,7 +683,8 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
   transition:
     opacity var(--_yam3x-fab-menu-motion-effects),
     transform var(--_yam3x-fab-menu-motion-spatial),
-    background-color var(--_yam3x-fab-menu-motion-effects);
+    background-color var(--_yam3x-fab-menu-motion-effects),
+    box-shadow var(--_yam3x-fab-menu-motion-effects);
 }
 .yam3x-fab-menu__panel--web-menu .yam3x-fab-menu__item {
   inline-size: 100%;
@@ -719,6 +720,13 @@ defineExpose({ open: () => requestExpanded(true), close: () => requestExpanded(f
 .yam3x-fab-menu__item--open {
   opacity: 1;
   transform: scaleX(1);
+}
+.yam3x-fab-menu__panel--pill-stack .yam3x-fab-menu__item:hover:not(:disabled) {
+  box-shadow: var(--md-sys-elevation-level4);
+}
+.yam3x-fab-menu__panel--pill-stack .yam3x-fab-menu__item:focus-visible:not(:disabled),
+.yam3x-fab-menu__panel--pill-stack .yam3x-fab-menu__item:active:not(:disabled) {
+  box-shadow: var(--md-sys-elevation-level3);
 }
 .yam3x-fab-menu__item:hover:not(:disabled) {
   --yam3x-state-layer-color: var(--_yam3x-fab-menu-item-hover);

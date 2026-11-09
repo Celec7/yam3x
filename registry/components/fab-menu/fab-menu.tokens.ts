@@ -9,7 +9,10 @@ export const fabMenuSystemTokenNames = [
   '--md-sys-color-outline-variant',
   '--md-sys-color-surface-container',
   '--md-sys-color-surface-container-highest',
+  '--md-sys-elevation-level0',
   '--md-sys-elevation-level2',
+  '--md-sys-elevation-level3',
+  '--md-sys-elevation-level4',
   '--md-sys-motion-spring-fast-effects',
   '--md-sys-motion-spring-fast-spatial',
   '--md-sys-shape-corner-extra-large',
@@ -116,9 +119,7 @@ export function createFabMenuComponentTokens(
       : 'var(--md-sys-typescale-label-large-font-family, inherit)',
     '--_yam3x-fab-menu-surface': 'var(--md-sys-color-surface-container)',
     '--_yam3x-fab-menu-outline': 'var(--md-sys-color-outline-variant)',
-    '--_yam3x-fab-menu-focus-ring': pillStack
-      ? 'var(--md-sys-color-primary)'
-      : 'var(--md-sys-color-secondary)',
+    '--_yam3x-fab-menu-focus-ring': 'var(--md-sys-color-secondary)',
     '--_yam3x-fab-menu-panel-shape': pillStack
       ? 'var(--md-sys-shape-corner-extra-large, 28px)'
       : 'var(--md-sys-shape-corner-extra-small, 4px)',
