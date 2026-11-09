@@ -234,6 +234,10 @@ onBeforeUnmount(() => {
   --_yam3x-switch-icon-size: 16px;
   --_yam3x-switch-state-layer-size: 40px;
   --_yam3x-switch-target-size: 48px;
+  --_yam3x-switch-thumb-center-unselected: 16px;
+  --_yam3x-switch-thumb-center-selected: 36px;
+  --_yam3x-switch-focus-indicator-thickness: 3px;
+  --_yam3x-switch-focus-indicator-offset: 2px;
   --_yam3x-switch-label-gap: 12px;
   --_yam3x-switch-description-gap: 2px;
   --_yam3x-switch-opacity-hover: 8%;
@@ -270,19 +274,20 @@ onBeforeUnmount(() => {
   place-items: center;
   isolation: isolate;
   direction: inherit;
-  inset-inline-start: 0;
+  inset-inline-start: calc(
+    var(--_yam3x-switch-thumb-center-unselected) - var(--_yam3x-switch-track-outline-width)
+  );
   width: var(--_yam3x-switch-handle-size-unselected);
   height: var(--_yam3x-switch-handle-size-unselected);
   border-radius: var(--_yam3x-switch-shape-handle);
   background: var(--_yam3x-switch-color-handle-unselected);
   color: var(--_yam3x-switch-color-icon-unselected);
-  --_yam3x-switch-thumb-offset: var(--_yam3x-switch-track-outline-width);
   transition:
     background-color var(--_yam3x-switch-motion-effects),
-    transform var(--_yam3x-switch-motion-spatial),
+    inset-inline-start var(--_yam3x-switch-motion-spatial),
     width var(--_yam3x-switch-motion-effects),
     height var(--_yam3x-switch-motion-effects);
-  transform: translate(var(--_yam3x-switch-thumb-offset), -50%);
+  transform: translate(-50%, -50%);
 }
 .yam3x-switch__thumb::before {
   position: absolute;
@@ -337,18 +342,13 @@ onBeforeUnmount(() => {
   background: var(--_yam3x-switch-color-track-selected);
 }
 .yam3x-switch[data-state='checked'] .yam3x-switch__thumb {
-  --_yam3x-switch-thumb-offset: calc(
-    var(--_yam3x-switch-track-width) - var(--_yam3x-switch-handle-size-selected) - 2 *
-      var(--_yam3x-switch-track-outline-width)
-  );
+  inset-inline-start: var(--_yam3x-switch-thumb-center-selected);
   width: var(--_yam3x-switch-handle-size-selected);
   height: var(--_yam3x-switch-handle-size-selected);
   background: var(--_yam3x-switch-color-handle-selected);
   color: var(--_yam3x-switch-color-icon-selected);
 }
-.yam3x-switch[data-state='unchecked'][data-icons='both']:not([data-disabled]):not(
-    [data-active]
-  ):not([data-touch-active])
+.yam3x-switch[data-state='unchecked'][data-icons='both']:not([data-active]):not([data-touch-active])
   .yam3x-switch__thumb {
   width: var(--_yam3x-switch-handle-size-with-icon);
   height: var(--_yam3x-switch-handle-size-with-icon);
@@ -414,15 +414,15 @@ onBeforeUnmount(() => {
 .yam3x-switch[data-state='checked'][data-focus-visible]:not([data-disabled]) .yam3x-switch__icon {
   color: var(--_yam3x-switch-color-icon-selected);
 }
-.yam3x-switch[data-focus-visible]:not([data-disabled]) .yam3x-switch__thumb::before {
-  outline: 3px solid var(--_yam3x-switch-color-focus-indicator);
-  outline-offset: 2px;
-  animation: yam3x-switch-focus-ring 500ms;
+.yam3x-switch[data-focus-visible]:not([data-disabled]) .yam3x-switch__track {
+  outline: var(--_yam3x-switch-focus-indicator-thickness) solid
+    var(--_yam3x-switch-color-focus-indicator);
+  outline-offset: var(--_yam3x-switch-focus-indicator-offset);
 }
 .yam3x-switch:is([data-active], [data-touch-active]):not([data-disabled]) .yam3x-switch__thumb {
-  --_yam3x-switch-thumb-offset: 0px;
   width: var(--_yam3x-switch-handle-size-pressed);
   height: var(--_yam3x-switch-handle-size-pressed);
+  transition: none;
 }
 .yam3x-switch:is([data-active], [data-touch-active]):not([data-disabled])
   .yam3x-switch__thumb::before {
@@ -434,10 +434,6 @@ onBeforeUnmount(() => {
 }
 .yam3x-switch[data-state='checked']:is([data-active], [data-touch-active]):not([data-disabled])
   .yam3x-switch__thumb {
-  --_yam3x-switch-thumb-offset: calc(
-    var(--_yam3x-switch-track-width) - var(--_yam3x-switch-handle-size-pressed) -
-      var(--_yam3x-switch-track-outline-width)
-  );
   background: var(--_yam3x-switch-color-handle-hover-selected);
 }
 .yam3x-switch[data-state='checked']:is([data-active], [data-touch-active]):not([data-disabled])
@@ -461,9 +457,6 @@ onBeforeUnmount(() => {
 .yam3x-switch[data-state='checked']:is([data-active], [data-touch-active]):not([data-disabled])
   .yam3x-switch__icon {
   color: var(--_yam3x-switch-color-icon-selected);
-}
-.yam3x-switch:dir(rtl) .yam3x-switch__thumb {
-  transform: translate(calc(-1 * var(--_yam3x-switch-thumb-offset)), -50%);
 }
 .yam3x-switch[data-disabled] {
   cursor: not-allowed;
@@ -504,11 +497,7 @@ onBeforeUnmount(() => {
 .yam3x-switch[data-disabled][data-state='checked'] .yam3x-switch__icon {
   opacity: var(--_yam3x-switch-opacity-disabled-content);
 }
-.yam3x-switch[data-disabled][data-state='unchecked'] .yam3x-switch__thumb {
-  --_yam3x-switch-thumb-offset: calc(
-    var(--_yam3x-switch-track-outline-width) + var(--_yam3x-switch-handle-size-pressed) -
-      var(--_yam3x-switch-handle-size-with-icon)
-  );
+.yam3x-switch[data-disabled][data-state='unchecked']:not([data-icons='both']) .yam3x-switch__thumb {
   width: var(--_yam3x-switch-handle-size-unselected);
   height: var(--_yam3x-switch-handle-size-unselected);
 }
@@ -519,21 +508,11 @@ onBeforeUnmount(() => {
 .yam3x-switch[data-disabled] .yam3x-switch__thumb::before {
   background-color: transparent;
 }
-@keyframes yam3x-switch-focus-ring {
-  0%,
-  100% {
-    outline-width: 3px;
-  }
-  50% {
-    outline-width: 6px;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .yam3x-switch__track,
   .yam3x-switch__thumb,
   .yam3x-switch__thumb::before {
     transition: none;
-    animation: none;
   }
 }
 @media (forced-colors: active) {
@@ -572,9 +551,8 @@ onBeforeUnmount(() => {
     background: Canvas;
     color: GrayText;
   }
-  .yam3x-switch[data-focus-visible] .yam3x-switch__thumb {
-    outline: 3px solid Highlight;
-    outline-offset: 2px;
+  .yam3x-switch[data-focus-visible]:not([data-disabled]) .yam3x-switch__track {
+    outline-color: Highlight;
   }
   .yam3x-switch__thumb::before {
     display: none;

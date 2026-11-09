@@ -55,10 +55,30 @@ test('switch examples render Material on, off, icon, and disabled states', async
   await expect(disabledIcon).toHaveCount(1)
   await expect(disabledIcon).toHaveCSS('color', await roleColor(page, 'surface-container-highest'))
   await expect(disabledIcon).toHaveCSS('opacity', '0.38')
+  const disabledThumb = disabled.locator('.yam3x-switch__thumb')
+  await expect(disabledThumb).toHaveCSS('width', '24px')
+  await expect(disabledThumb).toHaveCSS('height', '24px')
   // switch.a11y.target
   const target = await off.boundingBox()
   expect(target?.width).toBeGreaterThanOrEqual(48)
   expect(target?.height).toBeGreaterThanOrEqual(48)
+
+  // switch.geometry.handle-centers
+  await on.click()
+  await expect(onInput).toHaveAttribute('aria-checked', 'false')
+  await expect(onThumb).toHaveCSS('width', '16px')
+  await expect
+    .poll(() =>
+      onThumb.evaluate((thumb) => {
+        const track = thumb.parentElement!.getBoundingClientRect()
+        const handle = thumb.getBoundingClientRect()
+        return {
+          x: Math.round(handle.left + handle.width / 2 - track.left),
+          y: Math.round(handle.top + handle.height / 2 - track.top),
+        }
+      }),
+    )
+    .toEqual({ x: 16, y: 16 })
 })
 
 test('custom thumb content receives checked state and replaces built-in icons', async ({
@@ -123,6 +143,11 @@ test('switch hover, focus, and press feedback preserve the selected value until 
   await expect(input).toHaveAttribute('aria-checked', 'false')
 
   await input.focus()
+  // switch.geometry.focus
+  await expect(track).toHaveCSS('outline-width', '3px')
+  await expect(track).toHaveCSS('outline-style', 'solid')
+  await expect(track).toHaveCSS('outline-offset', '2px')
+  await expect(track).toHaveCSS('outline-color', await roleColor(page, 'secondary'))
   // switch.behavior.keyboard
   await page.keyboard.down('Space')
   await expect(root).toHaveAttribute('data-active', '')
@@ -176,7 +201,7 @@ test('descriptions, disabled states, dark colors, RTL, forced colors, and reduce
   await page.keyboard.press('Tab')
   await expect(notifications).toBeFocused()
   // switch.a11y.focus
-  await expect(notificationControl.locator('.yam3x-switch__thumb')).toHaveCSS(
+  await expect(notificationControl.locator('.yam3x-switch__track')).toHaveCSS(
     'outline-style',
     'solid',
   )
