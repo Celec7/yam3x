@@ -54,6 +54,12 @@ let resizeObserver: ResizeObserver | undefined
 let animationFrame = 0
 let resizeFrame = 0
 let interactionIndex: number | undefined
+let mouseDragPointer: number | null = null
+let mouseDragStartX = 0
+let mouseDragLastX = 0
+let mouseDragMoved = false
+let suppressNextClick = false
+const mouseDragging = ref(false)
 type MeasuredItem = { element: HTMLElement; index: number; rect: DOMRect }
 
 const isVertical = computed(() => props.layout === 'full-screen')
@@ -327,6 +333,54 @@ function onItemClick(item: CarouselItem, index: number, event: MouseEvent): void
   }
   if (item.href || item.actionable) emit('activate', item, index, event)
 }
+function onTrackPointerDown(event: PointerEvent): void {
+  if (
+    isVertical.value ||
+    event.pointerType !== 'mouse' ||
+    event.button !== 0 ||
+    !event.isPrimary ||
+    !track.value
+  )
+    return
+  mouseDragPointer = event.pointerId
+  mouseDragStartX = event.clientX
+  mouseDragLastX = event.clientX
+  mouseDragMoved = false
+  window.addEventListener('pointermove', onTrackPointerMove)
+  window.addEventListener('pointerup', onTrackPointerUp)
+  window.addEventListener('pointercancel', onTrackPointerUp)
+}
+function onTrackPointerMove(event: PointerEvent): void {
+  if (mouseDragPointer !== event.pointerId || !track.value) return
+  if (!mouseDragMoved && Math.abs(event.clientX - mouseDragStartX) < 5) return
+  if (!mouseDragMoved) {
+    mouseDragMoved = true
+    mouseDragging.value = true
+    window.getSelection()?.removeAllRanges()
+  }
+  event.preventDefault()
+  track.value.scrollLeft -= event.clientX - mouseDragLastX
+  mouseDragLastX = event.clientX
+}
+function onTrackPointerUp(event: PointerEvent): void {
+  if (mouseDragPointer !== event.pointerId) return
+  mouseDragPointer = null
+  mouseDragging.value = false
+  window.removeEventListener('pointermove', onTrackPointerMove)
+  window.removeEventListener('pointerup', onTrackPointerUp)
+  window.removeEventListener('pointercancel', onTrackPointerUp)
+  if (!mouseDragMoved) return
+  suppressNextClick = true
+  window.setTimeout(() => {
+    suppressNextClick = false
+  }, 0)
+}
+function onTrackClickCapture(event: MouseEvent): void {
+  if (!suppressNextClick) return
+  suppressNextClick = false
+  event.preventDefault()
+  event.stopImmediatePropagation()
+}
 function onScroll(): void {
   if (animationFrame) cancelAnimationFrame(animationFrame)
   animationFrame = requestAnimationFrame(() => {
@@ -501,6 +555,9 @@ onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   if (animationFrame) cancelAnimationFrame(animationFrame)
   if (resizeFrame) cancelAnimationFrame(resizeFrame)
+  window.removeEventListener('pointermove', onTrackPointerMove)
+  window.removeEventListener('pointerup', onTrackPointerUp)
+  window.removeEventListener('pointercancel', onTrackPointerUp)
 })
 </script>
 
@@ -516,8 +573,11 @@ onBeforeUnmount(() => {
     <div
       ref="track"
       class="yam3x-carousel__track"
+      :class="{ 'yam3x-carousel__track--dragging': mouseDragging }"
       :style="trackStyle"
       @scroll.passive="onScroll"
+      @pointerdown="onTrackPointerDown"
+      @click.capture="onTrackClickCapture"
     >
       <component
         :is="item.href ? 'a' : item.actionable ? 'button' : 'div'"
@@ -582,8 +642,23 @@ onBeforeUnmount(() => {
 .yam3x-carousel__track::-webkit-scrollbar {
   display: none;
 }
+.yam3x-carousel:not(.yam3x-carousel--full-screen) .yam3x-carousel__track {
+  cursor: grab;
+}
+.yam3x-carousel__track--dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+  user-select: none;
+}
+.yam3x-carousel__track--dragging .yam3x-carousel__item {
+  cursor: grabbing;
+}
 .yam3x-carousel--snap .yam3x-carousel__track {
   scroll-snap-type: x mandatory;
+}
+.yam3x-carousel--snap .yam3x-carousel__track--dragging {
+  scroll-snap-type: none;
 }
 .yam3x-carousel__item {
   --yam3x-state-layer-color: var(--_yam3x-carousel-on-surface);

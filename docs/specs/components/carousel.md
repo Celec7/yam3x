@@ -18,6 +18,7 @@ A carousel presents a scrollable collection of visual items that move partly on 
 
 - On a vertically scrolling page, provide a way to reach every item without horizontal scrolling, such as a page-level “Show all” action. Keep that action outside the carousel. Full-screen carousels are exempt. See [Carousel accessibility: browsing all items](https://m3.material.io/components/carousel/accessibility).
 - Give the container a clear label and each item an accessible name that includes its position and the total item count. Focus enters at the first item; Tab or arrow keys move among items; Up or Down leaves a horizontal carousel for adjacent page content. Space or Enter activates an actionable item. See [Carousel accessibility: keyboard navigation and labeling](https://m3.material.io/components/carousel/accessibility).
+- `carousel.gesture.web`: Horizontal carousels scroll with native touch/trackpad input and with a primary-button mouse drag. A drag suppresses item activation; a click without movement still activates the item. Snap layouts return to the nearest snap position after the drag. Full-screen vertical carousels keep native vertical scrolling and do not use horizontal mouse drag.
 - Under reduced motion, remove parallax and expanding item sizes, let content reach the window edge, and keep the Hero preview visible. See [Carousel accessibility: reduced motion](https://m3.material.io/components/carousel/accessibility).
 
 ## Project decisions

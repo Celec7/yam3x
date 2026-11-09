@@ -49,6 +49,7 @@
 - Compact docked Toolbars distribute equal space between actions while keeping the 16px minimum outer padding, instead of adding extra edge spacing.
 - Slider value indicators use the official 14px/20px label metrics with 400 weight and 0.5px tracking.
 - Foundation typography tracking now matches the Material baseline and emphasized roles for Display Large, Title Medium, Body Medium, and their emphasized variants. The global focus fallback uses the shared 3px/2px focus-indicator tokens, and strong focus now keeps the ring visible for pointer focus.
+- Horizontal carousels now support primary-button mouse dragging with click suppression after a drag; touch and trackpad scrolling remain native.
 - FAB menu close buttons now scale their icon from the closed FAB size to the official 20px close icon. Pill-stack items use the `secondary` focus ring and their elevation tokens: level 0 at rest, level 4 on hover, and level 3 on focus and press.
 - FABs now draw the 3px `secondary` focus indicator with the official outer offset, including Extended FAB and toggle FABs. Lowered FABs use the token-defined level 1 elevation at rest, focus, and press, and level 2 on hover.
 - Search bar action targets keep the official 48px size, 4px container inset, and zero gap between adjacent trailing actions instead of inheriting action margins. The focused back target and input text now align to the same 4px/48px measurements as the unfocused bar, and contained bar width and margin changes use the fast spatial spring.

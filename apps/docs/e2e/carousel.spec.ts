@@ -30,6 +30,26 @@ test('all six carousel layouts render slides and use their documented snap defau
   }
 })
 
+test('mouse drag scrolls the horizontal carousel without activating an item', async ({ page }) => {
+  const carousel = page.getByRole('group', { name: 'Featured places' })
+  const track = carousel.locator('.yam3x-carousel__track')
+  const bounds = await track.boundingBox()
+  expect(bounds).not.toBeNull()
+  await page.mouse.move(bounds!.x + bounds!.width * 0.72, bounds!.y + bounds!.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(bounds!.x + bounds!.width * 0.28, bounds!.y + bounds!.height / 2, {
+    steps: 10,
+  })
+  await page.mouse.up()
+  await expect.poll(() => track.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+  await expect(page.locator('.carousel-demo__activation')).toHaveCount(0)
+
+  const city = carousel.locator('[data-carousel-index="2"]')
+  await city.scrollIntoViewIfNeeded()
+  await city.click()
+  await expect(page.locator('.carousel-demo__activation')).toContainText('City at dusk')
+})
+
 test('carousel item colors and focus feedback follow Material component mappings', async ({
   page,
 }) => {
