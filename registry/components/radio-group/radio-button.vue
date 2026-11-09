@@ -144,8 +144,8 @@ function onLabelPointerDown(event: PointerEvent): void {
   --_yam3x-radio-icon-size: 20px;
   --_yam3x-radio-state-layer-size: 40px;
   --_yam3x-radio-target-size: 48px;
-  --_yam3x-radio-focus-ring-width: 2px;
-  --_yam3x-radio-focus-ring-offset: 4px;
+  --_yam3x-radio-focus-ring-size: 44px;
+  --_yam3x-radio-focus-ring-width: 3px;
   --_yam3x-radio-label-gap: calc(4px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-radio-description-offset: calc(-4px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-radio-description-padding: calc(8px * var(--md-sys-density-spacing-scale, 1));
@@ -259,9 +259,18 @@ function onLabelPointerDown(event: PointerEvent): void {
     transparent
   );
 }
-.yam3x-radio-button__input:focus-visible + .yam3x-radio-button__state {
-  outline: var(--_yam3x-radio-focus-ring-width) solid var(--_yam3x-radio-focus-ring-color);
-  outline-offset: var(--_yam3x-radio-focus-ring-offset);
+.yam3x-radio-button__target::before {
+  position: absolute;
+  inline-size: var(--_yam3x-radio-focus-ring-size);
+  block-size: var(--_yam3x-radio-focus-ring-size);
+  border: var(--_yam3x-radio-focus-ring-width) solid var(--_yam3x-radio-focus-ring-color);
+  border-radius: 50%;
+  opacity: 0;
+  content: '';
+  pointer-events: none;
+}
+.yam3x-radio-button__target:has(.yam3x-radio-button__input:focus-visible)::before {
+  opacity: 1;
 }
 .yam3x-radio-button__target:not([aria-disabled='true']) {
   --yam3x-state-layer-color: var(--_yam3x-radio-hover-unselected-state-layer-color);
@@ -299,10 +308,6 @@ function onLabelPointerDown(event: PointerEvent): void {
 .yam3x-radio-button__label:hover .yam3x-radio-button__state::after {
   opacity: var(--_yam3x-radio-hover-state-layer-opacity);
 }
-.yam3x-radio-button__target:has(.yam3x-radio-button__input:focus-visible)
-  .yam3x-radio-button__state::after {
-  opacity: var(--_yam3x-radio-focus-state-layer-opacity);
-}
 .yam3x-radio-button__target:active .yam3x-radio-button__state::after,
 .yam3x-radio-button__target[data-yam3x-pressed] .yam3x-radio-button__state::after,
 .yam3x-radio-button__label:active .yam3x-radio-button__state::after {
@@ -316,8 +321,8 @@ function onLabelPointerDown(event: PointerEvent): void {
   opacity: 0;
 }
 @media (forced-colors: active) {
-  .yam3x-radio-button__input:focus-visible + .yam3x-radio-button__state {
-    outline-color: Highlight;
+  .yam3x-radio-button__target:has(.yam3x-radio-button__input:focus-visible)::before {
+    border-color: Highlight;
   }
   .yam3x-radio-button[data-disabled] .yam3x-radio-button__state,
   .yam3x-radio-button:has(.yam3x-radio-button__input:disabled) .yam3x-radio-button__state {

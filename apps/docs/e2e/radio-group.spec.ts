@@ -516,12 +516,15 @@ test('keyboard focus and reduced motion remain visible in forced colors', async 
   await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' })
   const radio = page.getByRole('radio', { name: 'Callisto' })
   await radio.focus()
-  const state = radio.locator('xpath=..').locator('.yam3x-radio-button__state')
+  const target = radio.locator('xpath=..')
+  const state = target.locator('.yam3x-radio-button__state')
 
-  await expect(state).toHaveCSS('outline-style', 'solid')
-  expect(await state.evaluate((element) => getComputedStyle(element).outlineColor)).not.toBe(
-    'rgba(0, 0, 0, 0)',
-  )
+  await expect
+    .poll(() => target.evaluate((element) => getComputedStyle(element, '::before').opacity))
+    .toBe('1')
+  expect(
+    await target.evaluate((element) => getComputedStyle(element, '::before').borderColor),
+  ).not.toBe('rgba(0, 0, 0, 0)')
   const transitionDuration = await state.evaluate(
     (element) => getComputedStyle(element, '::after').transitionDuration,
   )

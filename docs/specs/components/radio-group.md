@@ -24,5 +24,6 @@ Radio buttons let people choose one option from a visible set. See [Radio button
 ## Project decisions
 
 - The public group API remains nullable so callers can represent a state with no meaningful default. This follows the Accessibility allowance; examples and product interfaces should follow the Guidelines recommendation to preselect an option when appropriate.
-- The group wrapper, group label and description, per-option supporting description, invalid state, and secondary focus outline are project extensions around the Material radio control.
+- The group wrapper, group label and description, per-option supporting description, invalid state, and secondary focus ring are project extensions around the Material radio control.
 - Component styles consume local `--_yam3x-radio-*` aliases that map to shared System color, type, motion, and state-opacity tokens. The 20 dp icon, 40 dp state layer, 48 dp target, and selected/unselected state-layer roles follow the component specification; option typography uses the shared body-large role by project choice.
+- Project-defined: Keyboard focus uses a 44 px circular `secondary` ring with a 3 px stroke, centered in the 48 px target. This follows Material Web's focus-ring mechanics and the official focus-state figure. The 40 px state layer remains for hover and pressed feedback.

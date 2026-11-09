@@ -30,6 +30,7 @@
 - Focusing a filled FormField no longer shifts its label or content horizontally.
 - Floating FormField labels use the populated 16px line box and center on the outlined border at the scaled 12px type size.
 - Checkbox keyboard focus uses the Material Web focus-ring treatment: a 44px circular `secondary` ring with a 3px stroke instead of an outline around the 18px box.
+- Radio buttons use the same 44px circular focus ring and keep the 40px state layer for hover and pressed feedback.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.
