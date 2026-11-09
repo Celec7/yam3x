@@ -162,10 +162,23 @@
     transparent
   );
 }
-.yam3x-snackbar__action:focus-visible,
+.yam3x-snackbar__action:focus-visible {
+  outline: var(--_yam3x-snackbar-focus-ring-width) solid var(--_yam3x-snackbar-focus-ring-color);
+  outline-offset: var(--_yam3x-snackbar-focus-ring-offset);
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-snackbar-action-color) var(--_yam3x-snackbar-interaction-state-layer-opacity),
+    transparent
+  );
+}
 .yam3x-snackbar__close:focus-visible {
   outline: var(--_yam3x-snackbar-focus-ring-width) solid var(--_yam3x-snackbar-focus-ring-color);
   outline-offset: var(--_yam3x-snackbar-focus-ring-offset);
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-snackbar-close-icon-color) var(--_yam3x-snackbar-interaction-state-layer-opacity),
+    transparent
+  );
 }
 .yam3x-snackbar-enter-active {
   transition: opacity var(--_yam3x-snackbar-enter-effects-motion);

@@ -35,6 +35,7 @@
 - Time pickers place the dial/input toggle in the bottom action row with the keyboard icon, use the 3px `secondary` focus indicator on selectors and period options, and focus input fields with a 2px `primary` outline and `primary-container` fill. One-digit input stays editable until the second digit is typed and is padded on blur.
 - Basic dialogs size to their content between 280px and 560px instead of always filling the maximum width. The project close button uses a 40px state layer and an inset 3px `secondary` focus ring so the indicator stays visible inside the container.
 - Secondary tabs span the full selected tab width with their 2px active indicator; the 2px side insets remain specific to Primary tabs.
+- Snackbar action and close controls add the official 10% focus state layer alongside the 3px focus ring; hover remains 8%.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.

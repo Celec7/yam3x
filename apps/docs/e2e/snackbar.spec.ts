@@ -220,8 +220,21 @@ test('honors RTL, light/dark color roles, reduced motion, and forced colors', as
 
   await page.locator('html').evaluate((element) => element.setAttribute('dir', 'rtl'))
   await page.getByRole('button', { name: 'Plain snackbar' }).focus()
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Alt+g')
-  await expect(snackbar.locator('[data-snackbar-action]')).toBeFocused()
+  const action = snackbar.locator('[data-snackbar-action]')
+  await expect(action).toBeFocused()
+  await expect(action).toHaveCSS('outline-width', '3px')
+  await expect(action).toHaveCSS('outline-offset', '2px')
+  await expect
+    .poll(() => action.evaluate((element) => getComputedStyle(element).backgroundColor))
+    .toMatch(/\/ 0\.1\)$/)
+  await page.keyboard.press('Tab')
+  const close = snackbar.locator('[data-snackbar-close]')
+  await expect(close).toBeFocused()
+  await expect
+    .poll(() => close.evaluate((element) => getComputedStyle(element).backgroundColor))
+    .toMatch(/\/ 0\.1\)$/)
   const rtlGeometry = await snackbar.evaluate((element) => {
     const message = element.querySelector('.yam3x-snackbar__message')!.getBoundingClientRect()
     const action = element.querySelector('[data-snackbar-action]')!.getBoundingClientRect()
