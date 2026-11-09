@@ -463,11 +463,11 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
   --_yam3x-slider-focus-thickness: var(--yam3x-focus-ring-thickness, 3px);
   --_yam3x-slider-motion-handle: var(--md-sys-motion-spring-fast-spatial);
   --_yam3x-slider-handle-shape: var(--md-sys-shape-corner-full);
-  --_yam3x-slider-value-font-family: var(--md-sys-typescale-body-medium-font-family);
-  --_yam3x-slider-value-font-size: var(--md-sys-typescale-body-medium-font-size);
-  --_yam3x-slider-value-font-weight: var(--md-sys-typescale-body-medium-font-weight);
-  --_yam3x-slider-value-line-height: var(--md-sys-typescale-body-medium-line-height);
-  --_yam3x-slider-value-tracking: var(--md-sys-typescale-body-medium-tracking);
+  --_yam3x-slider-value-font-family: var(--md-sys-typescale-label-large-font-family);
+  --_yam3x-slider-value-font-size: var(--md-sys-typescale-label-large-font-size);
+  --_yam3x-slider-value-font-weight: var(--md-sys-typescale-body-large-font-weight);
+  --_yam3x-slider-value-line-height: var(--md-sys-typescale-label-large-line-height);
+  --_yam3x-slider-value-tracking: var(--md-sys-typescale-body-large-tracking);
   --_yam3x-slider-track-height-extra-small: 16px;
   --_yam3x-slider-track-height-small: 24px;
   --_yam3x-slider-track-height-medium: 40px;

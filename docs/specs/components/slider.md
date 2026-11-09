@@ -18,6 +18,7 @@ Sliders let people choose and adjust a value along a range. This guide adopts Ma
 
 - `slider.a11y.keyboard`: Give the slider an accessible name matching its label and expose its current value. Tab reaches the handle; arrow keys adjust it, and Home and End select the minimum and maximum. See [Sliders accessibility](https://m3.material.io/components/sliders/accessibility).
 - `slider.state.focused-handle`: Shrink the handle to 2dp while focused; retain a visible focus indicator. See the focused state in [Sliders specifications](https://m3.material.io/components/sliders/specs) and the interaction guidance in [Sliders accessibility](https://m3.material.io/components/sliders/accessibility).
+- The value indicator label combines Label Large font, size, and line height with Body Large weight and tracking: 14px/20px, weight 400, 0.5px tracking.
 - `slider.state.disabled-stops`: Keep disabled stop indicators legible against both active and inactive tracks using their corresponding foreground roles and disabled opacity. See the disabled state and stop-indicator tokens in [Sliders specifications](https://m3.material.io/components/sliders/specs).
 - Preserve visible keyboard focus and communicate the value through both the control and its accessible value semantics. See [Sliders accessibility](https://m3.material.io/components/sliders/accessibility).
 
