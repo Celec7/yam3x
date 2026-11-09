@@ -73,7 +73,7 @@ const controlRequired = computed(() => controlRequiredState.value)
 const characterCount = ref(0)
 const characterLimit = ref<number | null>(null)
 const labelFloats = computed(
-  () => props.floatLabel === 'always' || focused.value || populated.value || invalid.value,
+  () => props.floatLabel === 'always' || focused.value || populated.value,
 )
 const supportingText = computed(() =>
   invalid.value
@@ -684,12 +684,12 @@ onBeforeUnmount(() => {
   color: var(--_yam3x-form-field-invalid-color);
 }
 .yam3x-form-field__prefix {
-  margin-inline-end: calc(12px * var(--_yam3x-form-field-density-spacing-scale, 1));
-  margin-inline-start: calc(-4px * var(--_yam3x-form-field-density-spacing-scale, 1));
+  margin-block: calc(-4px * var(--_yam3x-form-field-density-spacing-scale, 1));
+  margin-inline-end: calc(16px * var(--_yam3x-form-field-density-spacing-scale, 1));
 }
 .yam3x-form-field__suffix {
-  margin-inline-start: calc(8px * var(--_yam3x-form-field-density-spacing-scale, 1));
-  margin-inline-end: calc(-4px * var(--_yam3x-form-field-density-spacing-scale, 1));
+  margin-block: calc(-4px * var(--_yam3x-form-field-density-spacing-scale, 1));
+  margin-inline-start: calc(16px * var(--_yam3x-form-field-density-spacing-scale, 1));
 }
 .yam3x-form-field__prefix-text,
 .yam3x-form-field__suffix-text {
@@ -781,23 +781,20 @@ onBeforeUnmount(() => {
   transition: border-color var(--_yam3x-form-field-motion-effects);
 }
 .yam3x-form-field--filled .yam3x-form-field__container {
-  align-items: end;
-  padding-block: calc(8px * var(--_yam3x-form-field-density-spacing-scale, 1));
+  align-items: center;
+  padding-block: calc(6px * var(--_yam3x-form-field-density-spacing-scale, 1));
   border: 0;
   border-bottom: 1px solid var(--_yam3x-form-field-filled-indicator-color);
   border-start-start-radius: var(--_yam3x-form-field-container-shape);
   border-start-end-radius: var(--_yam3x-form-field-container-shape);
   background: var(--_yam3x-form-field-container-color);
 }
-.yam3x-form-field--filled .yam3x-form-field__control {
-  padding-top: calc(16px * var(--_yam3x-form-field-density-spacing-scale, 1));
-}
 .yam3x-form-field--filled .yam3x-form-field__label {
-  top: 8px;
-  transform: none;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .yam3x-form-field--filled .yam3x-form-field__label--floating {
-  top: 5px;
+  top: 8px;
   transform: scale(var(--_yam3x-form-field-label-scale));
 }
 .yam3x-form-field--focused .yam3x-form-field__label {
@@ -810,9 +807,6 @@ onBeforeUnmount(() => {
 .yam3x-form-field--focused.yam3x-form-field--filled .yam3x-form-field__container {
   border-bottom-color: var(--_yam3x-form-field-focused-outline-color);
   border-bottom-width: 3px;
-}
-.yam3x-form-field--focused.yam3x-form-field--filled .yam3x-form-field__container {
-  padding-inline: calc(15px * var(--_yam3x-form-field-density-spacing-scale, 1));
 }
 .yam3x-form-field--invalid .yam3x-form-field__container,
 .yam3x-form-field--invalid .yam3x-form-field__outline {
@@ -894,9 +888,11 @@ onBeforeUnmount(() => {
   );
 }
 .yam3x-form-field--disabled.yam3x-form-field--outlined .yam3x-form-field__container,
-.yam3x-form-field--disabled.yam3x-form-field--filled .yam3x-form-field__container,
 .yam3x-form-field--disabled.yam3x-form-field--outlined .yam3x-form-field__outline {
   border-color: color-mix(in srgb, var(--_yam3x-form-field-on-surface) 12%, transparent);
+}
+.yam3x-form-field--disabled.yam3x-form-field--filled .yam3x-form-field__container {
+  border-color: color-mix(in srgb, var(--_yam3x-form-field-on-surface) 38%, transparent);
 }
 .yam3x-form-field--disabled.yam3x-form-field--outlined .yam3x-form-field__container {
   background: transparent;

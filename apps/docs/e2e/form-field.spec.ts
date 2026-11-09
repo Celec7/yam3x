@@ -79,6 +79,8 @@ test('FormField exposes native validation errors and replaces the hint', async (
   const input = field.locator('input')
   await page.getByRole('button', { name: 'Submit' }).click()
   await expect(field).toHaveClass(/yam3x-form-field--invalid/)
+  await input.blur()
+  await expect(field).not.toHaveClass(/yam3x-form-field--floating/)
   await expect(input).toHaveAttribute('aria-invalid', 'true')
   await expect(input).toHaveAttribute('aria-describedby', /yam3x-form-field-error/)
   await expect(field.locator('.yam3x-form-field__error')).toBeVisible()
@@ -89,8 +91,76 @@ test('FormField exposes native validation errors and replaces the hint', async (
   await expect(field.locator('.yam3x-form-field__hint')).toHaveCount(0)
   await input.fill('person@example.com')
   await expect(field).not.toHaveClass(/yam3x-form-field--invalid/)
+  await expect(field).toHaveClass(/yam3x-form-field--floating/)
   await expect(input).not.toHaveAttribute('aria-invalid', 'true')
   await expect(input).toHaveAttribute('aria-describedby', /yam3x-form-field-hint/)
+})
+
+test('filled FormField centers its label and icons and keeps the 56px container with actions', async ({
+  page,
+}) => {
+  // form-field.geometry.anatomy
+  await page.goto('/components/form-field')
+  const field = page.locator('.form-field-demo__main-field')
+  await selectM3Option(page, page.getByLabel('Appearance'), 'filled')
+  const input = field.locator('input')
+  const container = field.locator('.yam3x-form-field__container')
+
+  const empty = await field.evaluate((element) => {
+    const box = element
+      .querySelector<HTMLElement>('.yam3x-form-field__container')!
+      .getBoundingClientRect()
+    const label = element
+      .querySelector<HTMLElement>('.yam3x-form-field__label')!
+      .getBoundingClientRect()
+    const input = element.querySelector<HTMLInputElement>('input')!.getBoundingClientRect()
+    const prefix = element
+      .querySelector<HTMLElement>('.yam3x-form-field__prefix')!
+      .getBoundingClientRect()
+    return {
+      height: box.height,
+      center: (box.top + box.bottom) / 2,
+      labelCenter: (label.top + label.bottom) / 2,
+      inputCenter: (input.top + input.bottom) / 2,
+      prefixStart: prefix.left - box.left,
+    }
+  })
+  expect(empty.height).toBe(56)
+  expect(Math.abs(empty.labelCenter - empty.center)).toBeLessThan(1)
+  expect(Math.abs(empty.inputCenter - empty.center)).toBeLessThan(1)
+  expect(empty.prefixStart).toBe(12)
+
+  await input.fill('person@example.com')
+  const populated = await field.evaluate((element) => {
+    const box = element
+      .querySelector<HTMLElement>('.yam3x-form-field__container')!
+      .getBoundingClientRect()
+    const label = element
+      .querySelector<HTMLElement>('.yam3x-form-field__label')!
+      .getBoundingClientRect()
+    const input = element.querySelector<HTMLInputElement>('input')!.getBoundingClientRect()
+    const suffix = element
+      .querySelector<HTMLElement>('.yam3x-form-field__suffix')!
+      .getBoundingClientRect()
+    return {
+      height: box.height,
+      inputCenter: (input.top + input.bottom) / 2,
+      center: (box.top + box.bottom) / 2,
+      labelStart: label.left,
+      inputStart: input.left,
+      suffixEnd: box.right - suffix.right,
+    }
+  })
+  expect(populated.height).toBe(56)
+  expect(Math.abs(populated.inputCenter - populated.center)).toBeLessThan(2)
+  expect(populated.labelStart).toBe(populated.inputStart)
+  expect(populated.suffixEnd).toBe(12)
+
+  const beforeFocus = await input.boundingBox()
+  await input.focus()
+  const afterFocus = await input.boundingBox()
+  expect(afterFocus!.x).toBe(beforeFocus!.x)
+  await expect(container).toHaveCSS('border-bottom-width', '3px')
 })
 
 test('FormField variants, wrapping, RTL, focus, and reduced motion work on desktop', async ({
