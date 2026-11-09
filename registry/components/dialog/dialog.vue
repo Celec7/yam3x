@@ -295,7 +295,7 @@ defineExpose({ close: closeWithValue, returnValue })
 }
 .yam3x-dialog__content {
   display: flex;
-  width: min(var(--_yam3x-dialog-size-container-max-width), 100%);
+  width: fit-content;
   min-width: min(var(--_yam3x-dialog-size-container-min-width), 100%);
   max-width: min(var(--_yam3x-dialog-size-container-max-width), 100%);
   max-height: min(
@@ -373,6 +373,7 @@ defineExpose({ close: closeWithValue, returnValue })
   letter-spacing: var(--_yam3x-dialog-type-supporting-tracking);
 }
 .yam3x-dialog__close {
+  position: relative;
   grid-column: 2;
   grid-row: 1;
   display: grid;
@@ -386,14 +387,43 @@ defineExpose({ close: closeWithValue, returnValue })
   background: transparent;
   cursor: pointer;
 }
+.yam3x-dialog__close::before,
+.yam3x-dialog__close::after {
+  position: absolute;
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+}
+.yam3x-dialog__close::before {
+  border: 3px solid var(--_yam3x-dialog-color-secondary);
+  opacity: 0;
+}
+.yam3x-dialog__close::after {
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--_yam3x-dialog-motion-fade);
+}
+.yam3x-dialog__close:hover::after {
+  opacity: 0.08;
+}
+.yam3x-dialog__close:focus-visible {
+  outline: none;
+}
+.yam3x-dialog__close:focus-visible::before {
+  opacity: 1;
+}
+.yam3x-dialog__close:focus-visible::after,
+.yam3x-dialog__close:active::after {
+  opacity: 0.1;
+}
 .yam3x-dialog__close :deep(.yam3x-icon) {
+  position: relative;
+  z-index: 1;
   width: 24px;
   height: 24px;
   font-size: 24px;
-}
-.yam3x-dialog__close:focus-visible {
-  outline: 2px solid var(--_yam3x-dialog-color-secondary);
-  outline-offset: 2px;
 }
 .yam3x-dialog__body {
   min-height: 0;
@@ -443,8 +473,8 @@ defineExpose({ close: closeWithValue, returnValue })
   .yam3x-dialog__content {
     border: 1px solid CanvasText;
   }
-  .yam3x-dialog__close:focus-visible {
-    outline-color: Highlight;
+  .yam3x-dialog__close:focus-visible::before {
+    border-color: Highlight;
   }
 }
 </style>

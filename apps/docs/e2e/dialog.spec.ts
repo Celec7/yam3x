@@ -1,4 +1,16 @@
 import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+function roleColor(page: Page, role: string) {
+  return page.evaluate((name) => {
+    const hex = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--md-sys-color-${name}`)
+      .trim()
+      .slice(1)
+    const value = Number.parseInt(hex, 16)
+    return `rgb(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255})`
+  }, role)
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/components/dialog')
@@ -220,7 +232,13 @@ test('forced colors and reduced motion preserve the modal boundary and focus', a
   const close = page.getByRole('button', { name: 'Close delete dialog' })
 
   await expect(close).toBeFocused()
-  await expect(close).toHaveCSS('outline-style', 'solid')
+  const forcedRing = await close.evaluate((element) => {
+    const style = getComputedStyle(element, '::before')
+    return { style: style.borderStyle, color: style.borderColor, opacity: style.opacity }
+  })
+  expect(forcedRing.style).toBe('solid')
+  expect(forcedRing.color).not.toBe('rgba(0, 0, 0, 0)')
+  expect(forcedRing.opacity).toBe('1')
   await expect(content).toHaveCSS('border-top-style', 'solid')
   const transformDuration = await content.evaluate((element) =>
     Math.max(
@@ -245,6 +263,9 @@ test('matches dialog spacing, omits an empty body, centers the icon, and fades w
   await expect(title).toHaveCSS('padding-top', '0px')
   await expect(dialog.locator('.yam3x-dialog__actions')).toHaveCSS('margin-top', '24px')
   await expect(dialog.locator('.yam3x-button--text')).toHaveCount(2)
+  const basicBox = await dialog.boundingBox()
+  expect(basicBox!.width).toBeGreaterThanOrEqual(280)
+  expect(basicBox!.width).toBeLessThan(560)
   await expect(dialog).toHaveCSS('transform', 'none')
   await expect(dialog).toHaveCSS('transition-property', 'opacity')
   await page.keyboard.press('Escape')
@@ -255,6 +276,18 @@ test('matches dialog spacing, omits an empty body, centers the icon, and fades w
   const iconDialog = page.getByRole('alertdialog', { name: 'Delete workspace?' })
   const icon = iconDialog.locator('.yam3x-dialog__icon')
   await expect(icon).toHaveCSS('justify-content', 'center')
+  await iconDialog.getByRole('button', { name: 'Cancel', exact: true }).focus()
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  const close = iconDialog.getByRole('button', { name: /Close/ })
+  await expect(close).toBeFocused()
+  const ring = await close.evaluate((element) => {
+    const style = getComputedStyle(element, '::before')
+    return { width: style.borderWidth, color: style.borderColor, opacity: style.opacity }
+  })
+  expect(ring.width).toBe('3px')
+  expect(ring.opacity).toBe('1')
+  expect(ring.color).toBe(await roleColor(page, 'secondary'))
 })
 
 test('keeps a floating label inside the scrollport and lets a teleported select receive pointer input', async ({
