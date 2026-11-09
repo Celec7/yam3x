@@ -178,6 +178,7 @@ export interface DatePickerMessages {
   previousYear: string
   nextYear: string
   confirm: string
+  save: string
   cancel: string
   close: string
   clear: string

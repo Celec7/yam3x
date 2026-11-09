@@ -65,6 +65,7 @@ export default {
     previousYear: '上一年',
     nextYear: '下一年',
     confirm: '确定',
+    save: '保存',
     cancel: '取消',
     close: '关闭',
     clear: '清除',

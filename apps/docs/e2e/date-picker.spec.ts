@@ -135,6 +135,22 @@ test.describe('Date picker', () => {
     )
 
     expect(gaps.every((gap) => gap >= 8)).toBe(true)
+
+    const rangeInput = fields.first().locator('input')
+    const rangeMetrics = await rangeInput.evaluate((element) => {
+      const style = getComputedStyle(element)
+      const rect = element.getBoundingClientRect()
+      const lineHeight = Number.parseFloat(style.lineHeight)
+      return {
+        paddingTop: style.paddingTop,
+        paddingBottom: style.paddingBottom,
+        textCenter: rect.top + Number.parseFloat(style.paddingTop) + lineHeight / 2,
+        fieldCenter: rect.top + rect.height / 2,
+      }
+    })
+    expect(rangeMetrics.paddingTop).toBe('16px')
+    expect(rangeMetrics.paddingBottom).toBe('16px')
+    expect(Math.abs(rangeMetrics.textCenter - rangeMetrics.fieldCenter)).toBeLessThan(1)
   })
 
   test('modal range calendar scrolls through months and keeps cross-month keyboard focus', async ({
@@ -1017,8 +1033,15 @@ test.describe('Date picker', () => {
 
     await page.setViewportSize({ width: 390, height: 844 })
     const close = dialog.getByRole('button', { name: 'Close' })
+    const save = dialog.getByRole('button', { name: 'Save' })
     await expect(close).toBeVisible()
+    await expect(save).toBeVisible()
     await close.click()
+    await expect(dialog).toBeHidden()
+
+    await page.getByRole('button', { name: 'Event date' }).click()
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'Save' }).click()
     await expect(dialog).toBeHidden()
   })
 

@@ -54,6 +54,7 @@ const props = withDefaults(
     previousYearLabel?: string
     nextYearLabel?: string
     confirmLabel?: string
+    saveLabel?: string
     cancelLabel?: string
     closeLabel?: string
     clearLabel?: string
@@ -102,6 +103,7 @@ const { locale, messages } = useComponentLocale(
     previousYear: props.previousYearLabel,
     nextYear: props.nextYearLabel,
     confirm: props.confirmLabel,
+    save: props.saveLabel,
     cancel: props.cancelLabel,
     close: props.closeLabel,
     clear: props.clearLabel,
@@ -1084,6 +1086,14 @@ defineExpose({
               @click="cancel()"
             >
               <Icon name="close" />
+            </button>
+            <button
+              v-if="compactWindow"
+              class="yam3x-date-picker__modal-save"
+              type="button"
+              @click="confirm()"
+            >
+              {{ messages.save }}
             </button>
             <p class="yam3x-date-picker__headline">{{ messages.label }}</p>
             <p

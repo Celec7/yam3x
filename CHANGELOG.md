@@ -11,7 +11,7 @@
 
 ### Added
 
-- Date pickers accept `closeLabel` for the full-screen modal close action. `DatePickerMessages` gains a matching `close` message.
+- Date pickers accept `closeLabel` and `saveLabel` for the full-screen modal actions. `DatePickerMessages` gains matching `close` and `save` messages.
 
 ### Fixed
 
@@ -21,7 +21,8 @@
 - Date picker weekday headers use narrow one-character labels, while today uses a `primary` label and 1dp outline. Modal year options use the unselected `on-surface-variant` label role.
 - Hovering a selected date range endpoint keeps its primary fill and layers the state tint above it, instead of replacing the selected surface with a translucent hover circle.
 - Docked date fields draw a notched 3px focus outline without shifting layout or drawing a second ring inside the input.
-- Full-screen date picker modals expose a localized close button in the header.
+- Full-screen date picker modals expose localized close and Save actions in the header.
+- Docked range values use symmetric 16px block padding and center vertically in the 56px field.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.

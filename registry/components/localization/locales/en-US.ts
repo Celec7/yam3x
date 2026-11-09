@@ -69,6 +69,7 @@ export default {
     previousYear: 'Previous year',
     nextYear: 'Next year',
     confirm: 'OK',
+    save: 'Save',
     cancel: 'Cancel',
     close: 'Close',
     clear: 'Clear',
