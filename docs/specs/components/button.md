@@ -27,7 +27,7 @@ Buttons perform actions with a clear visual hierarchy from high emphasis to low 
 ### Labels and accessibility
 
 - `button.label.single-line`: Keep the visible label concise and fully visible on one line. Material recommends one to three words and sentence case. See [Buttons guidelines: label text](https://m3.material.io/components/buttons/guidelines) and [Buttons accessibility: 200% text size](https://m3.material.io/components/buttons/accessibility).
-- `button.a11y.visible-focus`: Keep keyboard focus visible. See [Buttons accessibility: keyboard navigation](https://m3.material.io/components/buttons/accessibility).
+- `button.a11y.visible-focus`: Keep keyboard focus visible with the shared 3dp `secondary` indicator and a 2dp offset. See [Buttons accessibility: keyboard navigation](https://m3.material.io/components/buttons/accessibility).
 - Tab reaches a button, and Space or Enter activates it. The accessible label should match the visible label. See [Buttons accessibility: keyboard navigation and labeling](https://m3.material.io/components/buttons/accessibility).
 
 ## Project decisions

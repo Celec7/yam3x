@@ -342,6 +342,8 @@ test('button focus stays visible in forced colors and disabled controls remain i
   // button.a11y.visible-focus
   await button.focus()
   await expect(button).toHaveCSS('outline-style', 'solid')
+  await expect(button).toHaveCSS('outline-width', '3px')
+  await expect(button).toHaveCSS('outline-offset', '2px')
   const disabled = page.getByRole('button', { name: 'Submitting', exact: true })
   await expect(disabled).toHaveAttribute('aria-disabled', 'true')
   await expect(disabled).toHaveCSS('box-shadow', 'none')

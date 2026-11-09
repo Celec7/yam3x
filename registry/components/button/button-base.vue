@@ -319,6 +319,10 @@ function onClick(event: MouseEvent) {
   --_yam3x-button-outline-color: transparent;
   --_yam3x-button-container-color: var(--_yam3x-button-disabled-container-color);
 }
+.yam3x-button:focus-visible {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
 .yam3x-button--outlined:is(:disabled, [aria-disabled='true']) {
   --_yam3x-button-outline-color: var(--_yam3x-button-disabled-outline-color);
   --_yam3x-button-container-color: transparent;
