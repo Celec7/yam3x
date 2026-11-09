@@ -152,6 +152,22 @@ describe('dynamic theme foundations', () => {
     expect(tokens).toContain('--md-sys-state-focus-indicator-outer-offset: 2px;')
   })
 
+  it('exposes pointer capability flags from CSS media queries', () => {
+    const css = readFileSync(
+      resolve(process.cwd(), '../../registry/foundations/styles/pointer.css'),
+      'utf8',
+    )
+    expect(css).toContain('--yam3x-pointer-fine: 0;')
+    expect(css).toContain('--yam3x-any-pointer-fine: 0;')
+    expect(css).toContain('--yam3x-hover: 0;')
+    expect(css).toContain('@media (pointer: fine)')
+    expect(css).toContain('@media (any-pointer: fine)')
+    expect(css).toContain('@media (hover: hover)')
+    expect(css).toContain('--yam3x-pointer-fine: 1;')
+    expect(css).toContain('--yam3x-any-pointer-fine: 1;')
+    expect(css).toContain('--yam3x-hover: 1;')
+  })
+
   it('applies and resets density, focus, and expressive motion settings', () => {
     const theme = generateTheme('#6750A4')
     const target = document.createElement('div')

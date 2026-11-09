@@ -1,0 +1,67 @@
+/*
+ * Pointer capability flags.
+ *
+ * These flags describe the available input devices, not the modality of the
+ * current interaction. They are read-only inputs for component CSS. Use the
+ * primary pointer for layout sizing so hybrid devices remain stable; use the
+ * any-* flags only when a feature should be available whenever a precise
+ * pointer exists.
+ */
+:root {
+  --yam3x-pointer-none: 0;
+  --yam3x-pointer-coarse: 0;
+  --yam3x-pointer-fine: 0;
+  --yam3x-any-pointer-none: 0;
+  --yam3x-any-pointer-coarse: 0;
+  --yam3x-any-pointer-fine: 0;
+  --yam3x-hover: 0;
+  --yam3x-any-hover: 0;
+}
+
+@media (pointer: none) {
+  :root {
+    --yam3x-pointer-none: 1;
+  }
+}
+
+@media (pointer: coarse) {
+  :root {
+    --yam3x-pointer-coarse: 1;
+  }
+}
+
+@media (pointer: fine) {
+  :root {
+    --yam3x-pointer-fine: 1;
+  }
+}
+
+@media (any-pointer: none) {
+  :root {
+    --yam3x-any-pointer-none: 1;
+  }
+}
+
+@media (any-pointer: coarse) {
+  :root {
+    --yam3x-any-pointer-coarse: 1;
+  }
+}
+
+@media (any-pointer: fine) {
+  :root {
+    --yam3x-any-pointer-fine: 1;
+  }
+}
+
+@media (hover: hover) {
+  :root {
+    --yam3x-hover: 1;
+  }
+}
+
+@media (any-hover: hover) {
+  :root {
+    --yam3x-any-hover: 1;
+  }
+}

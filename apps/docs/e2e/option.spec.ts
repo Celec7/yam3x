@@ -26,6 +26,32 @@ test('Option composes labelled groups and controlled selectable items in an anch
   await expect(trigger).toBeFocused()
 })
 
+test('Option adapts its content inset to the primary pointer capability', async ({
+  page,
+  browser,
+  baseURL,
+}) => {
+  await page.goto('/components/option')
+  await page.getByRole('button', { name: 'Project view' }).click()
+  const fineOption = page.getByRole('option', { name: 'Recently opened' })
+  await expect(fineOption).toHaveCSS('padding-inline-start', '16px')
+  await expect(fineOption).toHaveCSS('padding-inline-end', '10px')
+  await expect(fineOption).toHaveCSS('gap', '12px')
+
+  const coarseContext = await browser.newContext({ hasTouch: true, baseURL })
+  try {
+    const coarsePage = await coarseContext.newPage()
+    await coarsePage.goto('/components/option')
+    await coarsePage.getByRole('button', { name: 'Project view' }).click()
+    const coarseOption = coarsePage.getByRole('option', { name: 'Recently opened' })
+    await expect(coarseOption).toHaveCSS('padding-inline-start', '12px')
+    await expect(coarseOption).toHaveCSS('padding-inline-end', '12px')
+    await expect(coarseOption).toHaveCSS('gap', '8px')
+  } finally {
+    await coarseContext.close()
+  }
+})
+
 test('Option keyboard focus and activation report intent without owning parent selection', async ({
   page,
 }) => {

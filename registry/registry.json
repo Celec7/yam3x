@@ -55,6 +55,7 @@
         { "source": "foundations/gestures/types.ts", "target": "src/lib/yam3x/gestures/types.ts" },
         { "source": "foundations/gestures/vue.ts", "target": "src/lib/yam3x/gestures/vue.ts" },
         { "source": "foundations/styles/base.css", "target": "src/styles/yam3x-base.css" },
+        { "source": "foundations/styles/pointer.css", "target": "src/styles/yam3x-pointer.css" },
         { "source": "foundations/styles/tokens.css", "target": "src/styles/yam3x-tokens.css" },
         { "source": "foundations/theme/apply.ts", "target": "src/lib/yam3x/theme/apply.ts" },
         {

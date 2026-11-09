@@ -61,6 +61,18 @@ The copied foundation stylesheet provides reusable spacing variables at 4, 8, 12
 
 These variables scale with the YAM3X density setting, including values used by application layouts. Check page gutters and content fit at the density used by your app. For design guidance, see [Spacing overview](https://m3.material.io/styles/spacing/overview), [spacing tokens](https://m3.material.io/styles/spacing/tokens), and [applying spacing](https://m3.material.io/styles/spacing/applying-spacing).
 
+## Pointer capability variables
+
+The copied foundation stylesheet sets read-only capability flags from CSS media queries:
+
+- `--yam3x-pointer-fine`, `--yam3x-pointer-coarse`, `--yam3x-pointer-none`
+- `--yam3x-any-pointer-fine`, `--yam3x-any-pointer-coarse`, `--yam3x-any-pointer-none`
+- `--yam3x-hover`, `--yam3x-any-hover`
+
+Each flag is `0` or `1`. Use the primary-pointer flags for layout sizing so hybrid devices do not resize when another pointer is present. Use an `any-*` flag only when a feature should be available whenever that capability exists. Prefer a direct media query for a simple rule; the flags are useful when composing a spacing calculation.
+
+These flags describe device capability, not which input is active. Keep hover-only appearance behind `@media (hover: hover) and (pointer: fine)`, and do not change layout on pointer movement.
+
 ## Application styles
 
 The foundation stylesheet also exposes semantic color, typography, shape, and spacing custom properties for application-owned CSS. Use them directly:

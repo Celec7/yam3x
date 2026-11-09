@@ -61,6 +61,18 @@ theme.dispose()
 
 这些变量会随 YAM3X 的 density 设置缩放，包括应用布局所用的值。请检查应用实际密度下的页面边距和内容空间。设计原则参阅[间距概览](https://m3.material.io/styles/spacing/overview)、[间距 token](https://m3.material.io/styles/spacing/tokens)和[间距应用指南](https://m3.material.io/styles/spacing/applying-spacing)。
 
+## 指针能力变量
+
+复制的基础样式表会通过 CSS 媒体查询设置只读的能力标志：
+
+- `--yam3x-pointer-fine`、`--yam3x-pointer-coarse`、`--yam3x-pointer-none`
+- `--yam3x-any-pointer-fine`、`--yam3x-any-pointer-coarse`、`--yam3x-any-pointer-none`
+- `--yam3x-hover`、`--yam3x-any-hover`
+
+每个标志的值为 `0` 或 `1`。布局尺寸应使用主指针标志，避免混合设备在存在其他指针时反复改变尺寸；只有当某项能力存在时功能就应可用时，才使用 `any-*` 标志。简单规则优先直接使用媒体查询；需要在间距计算中组合条件时再使用这些标志。
+
+这些标志描述设备能力，不描述当前正在使用的输入方式。仅悬停可用的外观应放在 `@media (hover: hover) and (pointer: fine)` 中，且不要在指针移动时改变布局。
+
 ## 应用样式
 
 基础样式表还提供语义化的颜色、排版、形状和间距 CSS 自定义属性，供应用自有 CSS 直接使用：

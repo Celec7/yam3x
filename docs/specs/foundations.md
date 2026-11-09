@@ -33,6 +33,11 @@ This guide collects Material 3 principles that apply across component families. 
 
 ### Input and gestures
 
+- Treat pointer capability as a CSS concern and the current input modality as a behavioral concern. Do not use JavaScript to drive layout on every pointer event.
+- Use the primary pointer for sizing decisions so a hybrid device does not resize its UI when a second pointer type is present. Use `any-pointer` only when a feature should be available whenever a precise pointer exists, such as a hint that a pointer can interact.
+- Gate hover-only appearance with `(hover: hover) and (pointer: fine)`. Do not apply hover treatments on devices that cannot hover.
+- The copied foundation stylesheet exposes read-only `--yam3x-pointer-*`, `--yam3x-any-pointer-*`, `--yam3x-hover`, and `--yam3x-any-hover` flags set to `0` or `1`. Prefer a direct media query for a simple rule; use the flags when composing a spacing calculation.
+- Keep visual size and interaction target separate. A precise pointer may use tighter spacing without shrinking the minimum target.
 - Treat pointer gestures as an enhancement, never the only way to complete an action. Every drag, swipe, or gesture-driven change keeps a keyboard or ordinary click/tap path. Follow the component guide for the exact alternatives.
 - On Web, preserve native touch and trackpad scrolling. Add primary-button mouse dragging only where direct manipulation is meaningful, such as the horizontal carousel; suppress the trailing click after a drag and keep click activation for movement below the drag threshold.
 - Pointer handling must not require touch: interactive controls accept primary mouse input, and focus, hover, and keyboard states remain available. Do not assume a coarse pointer to enable a core interaction.

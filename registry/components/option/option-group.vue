@@ -43,13 +43,14 @@ const labelId = computed(() => `yam3x-option-group-${generatedId}`)
   --_yam3x-option-spacing-scale: var(--md-sys-density-spacing-scale, 1);
   --_yam3x-option-line-height-scale: var(--md-sys-typescale-line-height-scale, 1.07);
   --_yam3x-option-height: var(--yam3x-option-height, 48px);
+  --_yam3x-option-pointer-fine: var(--yam3x-pointer-fine, 0);
   --_yam3x-option-padding-start: var(
     --yam3x-option-padding-start,
-    calc(12px * var(--_yam3x-option-spacing-scale))
+    calc((12px + 4px * var(--_yam3x-option-pointer-fine)) * var(--_yam3x-option-spacing-scale))
   );
   --_yam3x-option-padding-end: var(
     --yam3x-option-padding-end,
-    calc(12px * var(--_yam3x-option-spacing-scale))
+    calc((12px - 2px * var(--_yam3x-option-pointer-fine)) * var(--_yam3x-option-spacing-scale))
   );
   --_yam3x-option-color: var(--yam3x-option-color, var(--md-sys-color-on-surface-variant));
   --_yam3x-option-font-size: var(--yam3x-option-font-size, 14px);

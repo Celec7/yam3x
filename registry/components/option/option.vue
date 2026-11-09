@@ -191,10 +191,20 @@ function onKeydown(event: KeyboardEvent) {
   --_yam3x-option-spacing-scale: var(--md-sys-density-spacing-scale, 1);
   --_yam3x-option-container-scale: var(--md-sys-density-container-scale, 1);
   --_yam3x-option-line-height-scale: var(--md-sys-typescale-line-height-scale, 1.07);
-  --_yam3x-option-icon-label-space: var(--yam3x-option-icon-label-space, 8px);
+  --_yam3x-option-pointer-fine: var(--yam3x-pointer-fine, 0);
+  --_yam3x-option-icon-label-space: var(
+    --yam3x-option-icon-label-space,
+    calc(8px + 4px * var(--_yam3x-option-pointer-fine))
+  );
   --_yam3x-option-container-height: var(--yam3x-option-container-height, 44px);
-  --_yam3x-option-padding-start: var(--yam3x-option-padding-start, 12px);
-  --_yam3x-option-padding-end: var(--yam3x-option-padding-end, 12px);
+  --_yam3x-option-padding-start: var(
+    --yam3x-option-padding-start,
+    calc(12px + 4px * var(--_yam3x-option-pointer-fine))
+  );
+  --_yam3x-option-padding-end: var(
+    --yam3x-option-padding-end,
+    calc(12px - 2px * var(--_yam3x-option-pointer-fine))
+  );
   --_yam3x-option-shape: var(--yam3x-option-shape, var(--md-sys-shape-corner-extra-small, 4px));
   --_yam3x-option-color: var(--yam3x-option-color, var(--md-sys-color-on-surface));
   --_yam3x-option-label-text-font-size: var(--yam3x-option-label-text-font-size, 14px);
