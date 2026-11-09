@@ -55,7 +55,12 @@ test('standard sheet coexists with the page and cycles between named heights', a
     .toBeLessThan(1)
 
   const handle = sheet.getByRole('button', { name: 'Resize sheet' })
+  await page.keyboard.press('Tab')
   await handle.focus()
+  await expect(handle).toHaveCSS('outline-width', '3px')
+  await expect(handle).toHaveCSS('outline-offset', '2px')
+  await expect(sheet.locator('.yam3x-bottom-sheet__handle')).toHaveCSS('width', '32px')
+  await expect(sheet.locator('.yam3x-bottom-sheet__handle')).toHaveCSS('height', '4px')
   const tapTarget = (await handle.boundingBox())!
   await page.mouse.move(tapTarget.x + tapTarget.width / 2, tapTarget.y + tapTarget.height / 2)
   await page.mouse.down()
