@@ -22,6 +22,21 @@ test('plain tooltip labels an icon control with specified geometry and reading t
   await expect
     .poll(() => tooltip.evaluate((element) => element.getBoundingClientRect().height))
     .toBe(24)
+  const typeMetrics = await tooltip.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return {
+      fontSize: style.fontSize,
+      fontWeight: style.fontWeight,
+      lineHeight: style.lineHeight,
+      tracking: style.letterSpacing,
+    }
+  })
+  expect(typeMetrics).toEqual({
+    fontSize: '12px',
+    fontWeight: '400',
+    lineHeight: '16px',
+    tracking: '0.4px',
+  })
   const roleColors = await tooltip.evaluate((element) => {
     const probe = document.createElement('span')
     probe.style.backgroundColor = 'var(--md-sys-color-inverse-surface)'
