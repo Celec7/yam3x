@@ -42,21 +42,36 @@ const labelId = computed(() => `yam3x-option-group-${generatedId}`)
 .yam3x-option-group__label {
   --_yam3x-option-spacing-scale: var(--md-sys-density-spacing-scale, 1);
   --_yam3x-option-line-height-scale: var(--md-sys-typescale-line-height-scale, 1.07);
-  --_yam3x-option-height: var(--yam3x-option-height, 48px);
-  --_yam3x-option-pointer-fine: var(--yam3x-pointer-fine, 0);
+  --_yam3x-option-height: var(--yam3x-option-height, 32px);
   --_yam3x-option-padding-start: var(
     --yam3x-option-padding-start,
-    calc((12px + 4px * var(--_yam3x-option-pointer-fine)) * var(--_yam3x-option-spacing-scale))
+    calc(12px * var(--_yam3x-option-spacing-scale))
   );
   --_yam3x-option-padding-end: var(
     --yam3x-option-padding-end,
-    calc((12px - 2px * var(--_yam3x-option-pointer-fine)) * var(--_yam3x-option-spacing-scale))
+    calc(4px * var(--_yam3x-option-spacing-scale))
   );
   --_yam3x-option-color: var(--yam3x-option-color, var(--md-sys-color-on-surface-variant));
-  --_yam3x-option-font-size: var(--yam3x-option-font-size, 14px);
-  --_yam3x-option-font-weight: var(--yam3x-option-font-weight, 500);
-  --_yam3x-option-line-height: var(--yam3x-option-line-height, 20px);
-  --_yam3x-option-tracking: var(--yam3x-option-tracking, 0.1px);
+  --_yam3x-option-font-family: var(
+    --yam3x-option-font-family,
+    var(--md-sys-typescale-label-large-font-family, Roboto)
+  );
+  --_yam3x-option-font-size: var(
+    --yam3x-option-font-size,
+    var(--md-sys-typescale-label-large-font-size, 14px)
+  );
+  --_yam3x-option-font-weight: var(
+    --yam3x-option-font-weight,
+    var(--md-sys-typescale-label-large-font-weight, 500)
+  );
+  --_yam3x-option-line-height: var(
+    --yam3x-option-line-height,
+    var(--md-sys-typescale-label-large-line-height, 20px)
+  );
+  --_yam3x-option-tracking: var(
+    --yam3x-option-tracking,
+    var(--md-sys-typescale-label-large-tracking, 0.1px)
+  );
   --_yam3x-option-group-label-color: var(
     --yam3x-option-group-label-color,
     var(--_yam3x-option-color)
@@ -91,6 +106,7 @@ const labelId = computed(() => `yam3x-option-group-${generatedId}`)
   padding-inline-start: var(--_yam3x-option-padding-start);
   padding-inline-end: var(--_yam3x-option-padding-end);
   color: var(--_yam3x-option-group-label-color);
+  font-family: var(--_yam3x-option-font-family);
   font-size: var(--_yam3x-option-group-label-font-size);
   font-weight: var(--_yam3x-option-group-label-font-weight);
   line-height: calc(

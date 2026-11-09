@@ -137,6 +137,7 @@ function onKeydown(event: KeyboardEvent) {
     }"
     :hidden="!visible || undefined"
     :data-value="value"
+    data-yam3x-ripple-target=".yam3x-option__surface"
     role="option"
     :tabindex="disabled ? -1 : tabindex"
     :aria-label="label"
@@ -145,40 +146,42 @@ function onKeydown(event: KeyboardEvent) {
     @click="onClick"
     @keydown="onKeydown"
   >
-    <span
-      v-if="$slots.leading"
-      class="yam3x-option__leading"
-      ><slot name="leading"
-    /></span>
-    <span class="yam3x-option__label">
-      <slot>
-        <template
-          v-for="(part, index) in parts"
-          :key="index"
-        >
-          <mark
-            v-if="part.match"
-            class="yam3x-option__match"
-            >{{ part.text }}</mark
+    <span class="yam3x-option__surface">
+      <span
+        v-if="$slots.leading"
+        class="yam3x-option__leading"
+        ><slot name="leading"
+      /></span>
+      <span class="yam3x-option__label">
+        <slot>
+          <template
+            v-for="(part, index) in parts"
+            :key="index"
           >
-          <template v-else>{{ part.text }}</template>
-        </template>
-      </slot>
+            <mark
+              v-if="part.match"
+              class="yam3x-option__match"
+              >{{ part.text }}</mark
+            >
+            <template v-else>{{ part.text }}</template>
+          </template>
+        </slot>
+      </span>
+      <span
+        v-if="selected && !hideSelectionIndicator"
+        class="yam3x-option__indicator"
+        aria-hidden="true"
+      >
+        <slot name="selected-indicator">
+          <Icon name="check" />
+        </slot>
+      </span>
+      <span
+        v-if="$slots.trailing"
+        class="yam3x-option__trailing"
+        ><slot name="trailing"
+      /></span>
     </span>
-    <span
-      v-if="selected && !hideSelectionIndicator"
-      class="yam3x-option__indicator"
-      aria-hidden="true"
-    >
-      <slot name="selected-indicator">
-        <Icon name="check" />
-      </slot>
-    </span>
-    <span
-      v-if="$slots.trailing"
-      class="yam3x-option__trailing"
-      ><slot name="trailing"
-    /></span>
   </div>
 </template>
 
@@ -207,10 +210,26 @@ function onKeydown(event: KeyboardEvent) {
   );
   --_yam3x-option-shape: var(--yam3x-option-shape, var(--md-sys-shape-corner-extra-small, 4px));
   --_yam3x-option-color: var(--yam3x-option-color, var(--md-sys-color-on-surface));
-  --_yam3x-option-label-text-font-size: var(--yam3x-option-label-text-font-size, 14px);
-  --_yam3x-option-label-text-font-weight: var(--yam3x-option-label-text-font-weight, 500);
-  --_yam3x-option-label-text-line-height: var(--yam3x-option-label-text-line-height, 20px);
-  --_yam3x-option-label-text-tracking: var(--yam3x-option-label-text-tracking, 0.1px);
+  --_yam3x-option-label-text-font-family: var(
+    --yam3x-option-label-text-font-family,
+    var(--md-sys-typescale-label-large-font-family, Roboto)
+  );
+  --_yam3x-option-label-text-font-size: var(
+    --yam3x-option-label-text-font-size,
+    var(--md-sys-typescale-label-large-font-size, 14px)
+  );
+  --_yam3x-option-label-text-font-weight: var(
+    --yam3x-option-label-text-font-weight,
+    var(--md-sys-typescale-label-large-font-weight, 500)
+  );
+  --_yam3x-option-label-text-line-height: var(
+    --yam3x-option-label-text-line-height,
+    var(--md-sys-typescale-label-large-line-height, 20px)
+  );
+  --_yam3x-option-label-text-tracking: var(
+    --yam3x-option-label-text-tracking,
+    var(--md-sys-typescale-label-large-tracking, 0.1px)
+  );
   --_yam3x-option-container-hover-color: var(
     --yam3x-option-container-hover-color,
     var(--md-sys-color-on-surface)
@@ -219,8 +238,8 @@ function onKeydown(event: KeyboardEvent) {
     --yam3x-option-container-focus-color,
     var(--md-sys-color-on-surface)
   );
-  --_yam3x-option-focus-color: var(--md-sys-color-primary);
-  --_yam3x-option-focus-opacity: var(--md-sys-state-focus-opacity, 0.12);
+  --_yam3x-option-focus-color: var(--md-sys-color-secondary);
+  --_yam3x-option-focus-opacity: var(--md-sys-state-focus-opacity, 0.1);
   --_yam3x-option-ripple-color: var(--yam3x-option-ripple-color, var(--md-sys-color-on-surface));
   --_yam3x-option-icon-size: var(--yam3x-option-icon-size, 20px);
   --_yam3x-option-panel-text-highlight-container-color: var(
@@ -263,7 +282,6 @@ function onKeydown(event: KeyboardEvent) {
     --yam3x-option-last-child-shape,
     var(--md-sys-shape-corner-medium, 12px)
   );
-  --_yam3x-option-focus-ring-shape: var(--yam3x-option-focus-ring-shape, inherit);
   --_yam3x-option-disabled-color: var(
     --yam3x-option-disabled-color,
     var(--md-sys-color-on-surface)
@@ -275,19 +293,13 @@ function onKeydown(event: KeyboardEvent) {
   flex: none;
   align-items: center;
   box-sizing: border-box;
-  gap: calc(var(--_yam3x-option-icon-label-space) * var(--_yam3x-option-spacing-scale));
   min-inline-size: 0;
-  min-block-size: max(
-    48px,
-    calc(var(--_yam3x-option-container-height) * var(--_yam3x-option-container-scale))
-  );
-  padding-inline-start: calc(
-    var(--_yam3x-option-padding-start) * var(--_yam3x-option-spacing-scale)
-  );
-  padding-inline-end: calc(var(--_yam3x-option-padding-end) * var(--_yam3x-option-spacing-scale));
+  min-block-size: 48px;
+  padding-block: 2px;
   overflow: hidden;
   border-radius: var(--_yam3x-option-shape);
   color: var(--_yam3x-option-color);
+  font-family: var(--_yam3x-option-label-text-font-family);
   font-size: var(--_yam3x-option-label-text-font-size);
   font-weight: var(--_yam3x-option-label-text-font-weight);
   line-height: calc(
@@ -296,8 +308,51 @@ function onKeydown(event: KeyboardEvent) {
   letter-spacing: var(--_yam3x-option-label-text-tracking);
   cursor: pointer;
   outline: none;
+  transition: border-radius var(--md-sys-motion-spring-fast-spatial);
   --yam3x-state-layer-color: var(--_yam3x-option-container-hover-color);
   --yam3x-ripple-color: var(--_yam3x-option-ripple-color);
+}
+.yam3x-option__surface {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  box-sizing: border-box;
+  gap: calc(var(--_yam3x-option-icon-label-space) * var(--_yam3x-option-spacing-scale));
+  min-inline-size: 0;
+  min-block-size: calc(
+    var(--_yam3x-option-container-height) * var(--_yam3x-option-container-scale)
+  );
+  padding-inline-start: calc(
+    var(--_yam3x-option-padding-start) * var(--_yam3x-option-spacing-scale)
+  );
+  padding-inline-end: calc(var(--_yam3x-option-padding-end) * var(--_yam3x-option-spacing-scale));
+  overflow: hidden;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  transition: border-radius var(--md-sys-motion-spring-fast-spatial);
+}
+.yam3x-option__surface::before {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  box-sizing: border-box;
+  border: 3px solid transparent;
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+}
+.yam3x-option:focus-visible .yam3x-option__surface::before {
+  border-color: var(--_yam3x-option-focus-color);
+}
+.yam3x-option.yam3x-state-layer::after,
+.yam3x-option > .yam3x-ripple-container {
+  inset-block: 2px;
+}
+.yam3x-option > .yam3x-ripple-container {
+  border-radius: inherit;
 }
 .yam3x-option__label {
   flex: 1 1 auto;
@@ -330,10 +385,12 @@ function onKeydown(event: KeyboardEvent) {
 }
 .yam3x-option--selected {
   border-radius: var(--_yam3x-option-selected-shape);
-  background: var(--_yam3x-option-selected-container-color);
   color: var(--_yam3x-option-selected-color);
   --yam3x-state-layer-color: var(--_yam3x-option-selected-container-hover-color);
   --yam3x-ripple-color: var(--_yam3x-option-selected-ripple-color);
+}
+.yam3x-option--selected .yam3x-option__surface {
+  background: var(--_yam3x-option-selected-container-color);
 }
 .yam3x-option--first:not(.yam3x-option--last) {
   border-start-start-radius: var(--_yam3x-option-first-child-shape);
@@ -359,18 +416,12 @@ function onKeydown(event: KeyboardEvent) {
   --yam3x-state-layer-color: var(--_yam3x-option-container-hover-color);
 }
 .yam3x-option:not(.yam3x-option--disabled):not(.yam3x-option--selected):focus-visible {
-  outline: 2px solid var(--_yam3x-option-focus-color);
-  outline-offset: -2px;
-  border-radius: var(--_yam3x-option-focus-ring-shape);
   --yam3x-state-layer-color: var(--_yam3x-option-container-focus-color);
 }
 .yam3x-option.yam3x-option--selected:not(.yam3x-option--disabled):hover {
   --yam3x-state-layer-color: var(--_yam3x-option-selected-container-hover-color);
 }
 .yam3x-option.yam3x-option--selected:not(.yam3x-option--disabled):focus-visible {
-  outline: 2px solid var(--_yam3x-option-focus-color);
-  outline-offset: -2px;
-  border-radius: var(--_yam3x-option-focus-ring-shape);
   --yam3x-state-layer-color: var(--_yam3x-option-selected-container-focus-color);
 }
 .yam3x-option--active:not(.yam3x-option--disabled) {
@@ -392,11 +443,12 @@ function onKeydown(event: KeyboardEvent) {
   --yam3x-state-layer-color: transparent;
   --yam3x-ripple-color: transparent;
 }
-.yam3x-option--disabled.yam3x-option--selected {
+.yam3x-option--disabled.yam3x-option--selected .yam3x-option__surface {
   background: transparent;
 }
 @media (prefers-reduced-motion: reduce) {
-  .yam3x-option {
+  .yam3x-option,
+  .yam3x-option__surface {
     transition: none;
   }
 }
@@ -404,16 +456,17 @@ function onKeydown(event: KeyboardEvent) {
   .yam3x-option {
     color: MenuText;
   }
-  .yam3x-option--selected {
+  .yam3x-option--selected .yam3x-option__surface {
     outline: 2px solid SelectedItem;
+    background: SelectedItem;
     color: SelectedItemText;
   }
   .yam3x-option--disabled {
     color: GrayText;
   }
-  .yam3x-option:focus-visible,
-  .yam3x-option--active {
-    outline: 2px solid Highlight;
+  .yam3x-option:focus-visible .yam3x-option__surface::before,
+  .yam3x-option--active .yam3x-option__surface::before {
+    border-color: Highlight;
   }
 }
 </style>

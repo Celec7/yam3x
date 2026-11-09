@@ -34,9 +34,12 @@ test('Option adapts its content inset to the primary pointer capability', async 
   await page.goto('/components/option')
   await page.getByRole('button', { name: 'Project view' }).click()
   const fineOption = page.getByRole('option', { name: 'Recently opened' })
-  await expect(fineOption).toHaveCSS('padding-inline-start', '16px')
-  await expect(fineOption).toHaveCSS('padding-inline-end', '10px')
-  await expect(fineOption).toHaveCSS('gap', '12px')
+  const fineSurface = fineOption.locator('.yam3x-option__surface')
+  await expect(fineOption).toHaveCSS('min-height', '48px')
+  await expect(fineSurface).toHaveCSS('min-height', '44px')
+  await expect(fineSurface).toHaveCSS('padding-inline-start', '16px')
+  await expect(fineSurface).toHaveCSS('padding-inline-end', '10px')
+  await expect(fineSurface).toHaveCSS('gap', '12px')
 
   const coarseContext = await browser.newContext({ hasTouch: true, baseURL })
   try {
@@ -44,9 +47,10 @@ test('Option adapts its content inset to the primary pointer capability', async 
     await coarsePage.goto('/components/option')
     await coarsePage.getByRole('button', { name: 'Project view' }).click()
     const coarseOption = coarsePage.getByRole('option', { name: 'Recently opened' })
-    await expect(coarseOption).toHaveCSS('padding-inline-start', '12px')
-    await expect(coarseOption).toHaveCSS('padding-inline-end', '12px')
-    await expect(coarseOption).toHaveCSS('gap', '8px')
+    const coarseSurface = coarseOption.locator('.yam3x-option__surface')
+    await expect(coarseSurface).toHaveCSS('padding-inline-start', '12px')
+    await expect(coarseSurface).toHaveCSS('padding-inline-end', '12px')
+    await expect(coarseSurface).toHaveCSS('gap', '8px')
   } finally {
     await coarseContext.close()
   }
@@ -125,21 +129,39 @@ test('Option selection styling, text highlighting, states, and CSS hooks affect 
     )
 
   const optionHooks = [
-    ['--yam3x-option-container-height', '64px', selected, 'min-height', '64px'],
+    [
+      '--yam3x-option-container-height',
+      '64px',
+      selected.locator('.yam3x-option__surface'),
+      'min-height',
+      '64px',
+    ],
     ['--yam3x-option-color', 'rgb(10, 11, 12)', enabled, 'color', 'rgb(10, 11, 12)'],
     ['--yam3x-option-selected-color', 'rgb(20, 21, 22)', selected, 'color', 'rgb(20, 21, 22)'],
     [
       '--yam3x-option-selected-container-color',
       'rgb(30, 31, 32)',
-      selected,
+      selected.locator('.yam3x-option__surface'),
       'background-color',
       'rgb(30, 31, 32)',
     ],
     ['--yam3x-option-shape', '8px', enabled, 'border-top-left-radius', '8px'],
     ['--yam3x-option-selected-shape', '18px', selected, 'border-top-left-radius', '18px'],
     ['--yam3x-option-first-child-shape', '16px', selected, 'border-top-left-radius', '16px'],
-    ['--yam3x-option-padding-start', '21px', enabled, 'padding-inline-start', '21px'],
-    ['--yam3x-option-padding-end', '22px', enabled, 'padding-inline-end', '22px'],
+    [
+      '--yam3x-option-padding-start',
+      '21px',
+      enabled.locator('.yam3x-option__surface'),
+      'padding-inline-start',
+      '21px',
+    ],
+    [
+      '--yam3x-option-padding-end',
+      '22px',
+      enabled.locator('.yam3x-option__surface'),
+      'padding-inline-end',
+      '22px',
+    ],
     [
       '--yam3x-option-icon-size',
       '28px',
@@ -291,6 +313,9 @@ test('Option remaining state, group, panel-bound, and sizing hooks affect render
   expect(panelBox).not.toBeNull()
   expect(Math.abs(panelBox!.width - 210)).toBeLessThanOrEqual(1)
   await expect(panel).toHaveCSS('max-height', '120px')
+  await expect(groupLabel).toHaveCSS('min-height', '32px')
+  await expect(groupLabel).toHaveCSS('padding-inline-start', '12px')
+  await expect(groupLabel).toHaveCSS('padding-inline-end', '4px')
 
   const setHook = (name: string, value: string) =>
     root.evaluate(
@@ -310,12 +335,24 @@ test('Option remaining state, group, panel-bound, and sizing hooks affect render
   await setHook('--yam3x-option-container-focus-color', 'rgb(20, 30, 40)')
   await enabled.evaluate((element) => (element as HTMLElement).focus({ focusVisible: true }))
   expect(await stateLayer(enabled)).toBe('rgb(20, 30, 40)')
-  await setHook('--yam3x-option-focus-ring-shape', '14px')
-  await expect(enabled).toHaveCSS('border-top-left-radius', '14px')
+  const focusRing = await enabled.locator('.yam3x-option__surface').evaluate((element) => {
+    const ring = getComputedStyle(element, '::before')
+    const root = element.parentElement as HTMLElement
+    return {
+      width: ring.borderTopWidth,
+      color: ring.borderTopColor,
+      rootRadius: getComputedStyle(root).borderTopLeftRadius,
+      surfaceRadius: getComputedStyle(element).borderTopLeftRadius,
+    }
+  })
+  expect(focusRing.width).toBe('3px')
+  expect(focusRing.color).not.toBe('rgba(0, 0, 0, 0)')
+  expect(focusRing.rootRadius).toBe('4px')
+  expect(focusRing.surfaceRadius).toBe('4px')
   await setHook('--yam3x-option-last-child-shape', '19px')
   await expect(disabled).toHaveCSS('border-bottom-left-radius', '19px')
   await setHook('--yam3x-option-icon-label-space', '13px')
-  await expect(first).toHaveCSS('gap', '13px')
+  await expect(first.locator('.yam3x-option__surface')).toHaveCSS('gap', '13px')
 
   await setHook('--yam3x-option-disabled-color', 'rgb(40, 50, 60)')
   await setHook('--yam3x-option-disabled-opacity', '50%')

@@ -63,7 +63,7 @@ The component ref exposes the `panel` element and a reactive `positioned` flag. 
 
 ## Behavior and accessibility
 
-The parent control commits or rejects selection and manages focus and arrow-key navigation. Options default to `tabindex="-1"`. OptionPanel positions around the anchor, flips within the viewport, and closes on outside pointer input. Keep each option's touch target at least 48 × 48px; avoid nested controls or another independent action within a row.
+The parent control commits or rejects selection and manages focus and arrow-key navigation. Options default to `tabindex="-1"`. OptionPanel positions around the anchor, flips within the viewport, and closes on outside pointer input. Keep each option's touch target at least 48 × 48px. The visible row is 44px high inside that target; avoid nested controls or another independent action within a row.
 
 ## Styling
 
@@ -71,13 +71,13 @@ These common project override hooks apply on the corresponding root; defaults ma
 
 | Area        | Example hooks                                                                                                               |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Option row  | `--yam3x-option-container-height`, `--yam3x-option-shape`, `--yam3x-option-selected-container-color`                        |
+| Option row  | `--yam3x-option-container-height` (visual row height), `--yam3x-option-shape`, `--yam3x-option-selected-container-color`    |
 | Option text | `--yam3x-option-color`, `--yam3x-option-label-text-font-size`                                                               |
 | Group       | `--yam3x-option-group-label-color`, `--yam3x-option-group-divider-color`                                                    |
 | Panel       | `--yam3x-option-panel-container-color`, `--yam3x-option-panel-container-shape`, `--yam3x-option-panel-container-max-height` |
 | Status      | `--yam3x-option-panel-loading-color`, `--yam3x-option-panel-text-highlight-color`                                           |
 
-The temporary panel defaults to the System `surface-container-low` role and inherits row and group values. Select trigger hooks are documented on the [Select page](/components/select#styling).
+The temporary panel defaults to the System `surface-container-low` role and inherits row and group values. A fine primary pointer uses 16px start / 10px end and a 12px icon gap; a coarse primary pointer uses 12px / 12px and 8px. The visible row is 44px high inside a 48px interaction target. Select trigger hooks are documented on the [Select page](/components/select#styling).
 
 ## Material references
 

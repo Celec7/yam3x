@@ -63,7 +63,7 @@ const order = ref('recent')
 
 ## 行为与无障碍
 
-父控件负责提交或拒绝选择，并管理焦点和方向键导航。选项默认使用 `tabindex="-1"`。OptionPanel 围绕锚点定位，在视口内翻转，并在外部指针操作时关闭。每个选项的触控目标至少为 48 × 48px；不要在一行中嵌套控件或加入第二个独立操作。
+父控件负责提交或拒绝选择，并管理焦点和方向键导航。选项默认使用 `tabindex="-1"`。OptionPanel 围绕锚点定位，在视口内翻转，并在外部指针操作时关闭。每个选项的触控目标至少为 48 × 48px；可见行高为 44px。不要在一行中嵌套控件或加入第二个独立操作。
 
 ## 样式
 
@@ -71,13 +71,13 @@ const order = ref('recent')
 
 | 区域        | 示例属性                                                                                                                    |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Option 行   | `--yam3x-option-container-height`、`--yam3x-option-shape`、`--yam3x-option-selected-container-color`                        |
+| Option 行   | `--yam3x-option-container-height`（可见行高）、`--yam3x-option-shape`、`--yam3x-option-selected-container-color`            |
 | Option 文字 | `--yam3x-option-color`、`--yam3x-option-label-text-font-size`                                                               |
 | 分组        | `--yam3x-option-group-label-color`、`--yam3x-option-group-divider-color`                                                    |
 | 面板        | `--yam3x-option-panel-container-color`、`--yam3x-option-panel-container-shape`、`--yam3x-option-panel-container-max-height` |
 | 状态        | `--yam3x-option-panel-loading-color`、`--yam3x-option-panel-text-highlight-color`                                           |
 
-临时面板默认使用 System `surface-container-low` 角色，并继承选项行与分组的值。Select 触发器的覆盖项见 [Select 页面](/zh/components/select#样式)。
+临时面板默认使用 System `surface-container-low` 角色，并继承选项行与分组的值。主指针为精确指针时使用 16px 起始 / 10px 结束内缩和 12px 图标间距；主指针为粗指针时使用 12px / 12px 和 8px。可见行高为 44px，交互目标为 48px。Select 触发器的覆盖项见 [Select 页面](/zh/components/select#样式)。
 
 ## Material 参考
 

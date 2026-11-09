@@ -313,7 +313,7 @@ defineExpose({
   --_yam3x-option-panel-container-max-height: var(--yam3x-option-panel-container-max-height, 280px);
   --_yam3x-option-panel-container-padding-block: var(
     --yam3x-option-panel-container-padding-block,
-    calc(4px * var(--_yam3x-option-spacing-scale))
+    calc(2px * var(--_yam3x-option-spacing-scale))
   );
   --_yam3x-option-panel-container-padding-inline: var(
     --yam3x-option-panel-container-padding-inline,
@@ -330,8 +330,7 @@ defineExpose({
   --_yam3x-option-panel-container-text-color: var(--md-sys-color-on-surface);
   --_yam3x-option-panel-container-elevation: var(
     --yam3x-option-panel-container-elevation,
-    0 4px 8px 3px rgb(0 0 0 / 15%),
-    0 1px 3px rgb(0 0 0 / 30%)
+    var(--md-sys-elevation-level2)
   );
   --_yam3x-option-panel-divider-spacing: var(
     --yam3x-option-panel-divider-spacing,
