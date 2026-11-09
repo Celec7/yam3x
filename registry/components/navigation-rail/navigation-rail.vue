@@ -465,10 +465,7 @@ watch(
   --_yam3x-navigation-rail-inline-padding: 20px;
   --_yam3x-navigation-rail-menu-item-space: 16px;
   --_yam3x-navigation-rail-menu-inset: 4px;
-  --_yam3x-navigation-rail-menu-inset-expanded: calc(
-    var(--_yam3x-navigation-rail-menu-inset) - var(--_yam3x-navigation-rail-inline-padding) +
-      var(--_yam3x-navigation-rail-item-inset-horizontal)
-  );
+  --_yam3x-navigation-rail-menu-inset-expanded: var(--_yam3x-navigation-rail-inline-padding);
   --_yam3x-navigation-rail-header-item-space: 40px;
   --_yam3x-navigation-rail-destination-space: 4px;
   --_yam3x-navigation-rail-destination-space-expanded: 0px;
@@ -591,6 +588,9 @@ watch(
     0px - var(--_yam3x-navigation-rail-inline-padding) *
       var(--_yam3x-navigation-rail-density-spacing)
   );
+}
+.yam3x-navigation-rail--expanded .yam3x-navigation-rail__nav {
+  margin-inline: 0;
 }
 .yam3x-navigation-rail__nav--with-header {
   margin-block-start: calc(

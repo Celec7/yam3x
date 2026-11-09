@@ -45,6 +45,7 @@
 - Opening the trailing menu makes the Split button segment fully rounded, including square-styled Split buttons, while the leading segment keeps its shape.
 - Connected Button Groups round only their inner corners on hover, focus, and selection; square outer corners stay square. The scrollport reserves space for the full focus ring so first and last controls no longer clip it.
 - Selected Navigation Bar labels keep the Label Medium weight from the official token set instead of switching to bold.
+- Expanded Navigation Rails keep the 20px surface inset before destination rows, placing the active indicator 36px from the rail edge and aligning menu and destination icon axes.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.

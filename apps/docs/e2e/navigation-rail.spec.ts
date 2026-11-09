@@ -73,7 +73,7 @@ test('menu expansion reveals secondary destinations and makes the whole row targ
     return { fab: fab.left - surface.left, indicator: indicator.left - surface.left }
   })
   expect(leadingInsets.fab).toBe(20)
-  expect(leadingInsets.indicator).toBe(16)
+  expect(leadingInsets.indicator).toBe(36)
   const headerGap = await rail.evaluate((element) => {
     const fab = element.querySelector('.yam3x-navigation-rail__fab')!.getBoundingClientRect()
     const first = element.querySelector('.yam3x-navigation-rail__item')!.getBoundingClientRect()
@@ -99,7 +99,7 @@ test('menu expansion reveals secondary destinations and makes the whole row targ
       paddingInlineEnd: contentStyle.paddingInlineEnd,
     }
   })
-  expect(geometry.hit).toBe(219)
+  expect(geometry.hit).toBe(179)
   expect(geometry.hit).toBeGreaterThan(geometry.pill + 15)
   expect(geometry.height).toBe(56)
   expect(geometry.paddingInlineStart).toBe('16px')
