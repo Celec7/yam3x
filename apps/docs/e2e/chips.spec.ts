@@ -156,6 +156,11 @@ test('input chip examples add, edit, deduplicate, and remove values', async ({ p
   // input-chip.a11y.remove-name
   const remove = group.getByRole('button', { name: 'Remove JavaScript', exact: true })
   await expect(main).toBeVisible()
+  const removeTarget = await remove.evaluate((element) => ({
+    width: getComputedStyle(element).width,
+    targetHeight: getComputedStyle(element, '::before').height,
+  }))
+  expect(removeTarget).toEqual({ width: '48px', targetHeight: '48px' })
   await remove.click()
   await expect(main).toHaveCount(0)
   await expect(page.getByText(/Current value: .*Material, Vue/)).toBeVisible()
