@@ -206,6 +206,10 @@ provide(segmentedButtonGroupKey, {
     --yam3x-focus-ring-color,
     var(--_yam3x-segmented-button-color-secondary)
   );
+  --_yam3x-segmented-button-focus-ring-size: calc(
+    var(--_yam3x-segmented-button-container-height) + 10px
+  );
+  --_yam3x-segmented-button-focus-ring-radius: 8px;
 
   /* Classic outlined component mappings. */
   --_yam3x-segmented-button-density-step: 0;
@@ -434,8 +438,31 @@ provide(segmentedButtonGroupKey, {
 }
 .yam3x-segmented-button__segment:focus-visible:not(:disabled) {
   z-index: 1;
-  outline: 3px solid var(--_yam3x-segmented-button-focus-indicator-color);
-  outline-offset: 2px;
+  outline: none;
+}
+.yam3x-segmented-button__segment:focus-visible:not(:disabled)::before {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  right: calc(0px - var(--_yam3x-segmented-button-outline-width) - 4px);
+  left: calc(0px - var(--_yam3x-segmented-button-outline-width) - 4px);
+  height: var(--_yam3x-segmented-button-focus-ring-size);
+  content: '';
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  border: 3px solid var(--_yam3x-segmented-button-focus-indicator-color);
+  border-radius: var(--_yam3x-segmented-button-focus-ring-radius);
+  pointer-events: none;
+}
+.yam3x-segmented-button__segments
+  > .yam3x-segmented-button__segment:first-child:focus-visible::before {
+  border-start-start-radius: var(--_yam3x-segmented-button-outer-shape);
+  border-end-start-radius: var(--_yam3x-segmented-button-outer-shape);
+}
+.yam3x-segmented-button__segments
+  > .yam3x-segmented-button__segment:last-child:focus-visible::before {
+  border-start-end-radius: var(--_yam3x-segmented-button-outer-shape);
+  border-end-end-radius: var(--_yam3x-segmented-button-outer-shape);
 }
 .yam3x-segmented-button__segment:focus-visible:not(:disabled) {
   --yam3x-state-layer-color: var(--_yam3x-segmented-button-unselected-container-focus-color);
@@ -539,8 +566,8 @@ provide(segmentedButtonGroupKey, {
   .yam3x-segmented-button__segment:disabled .yam3x-segmented-button__icon {
     color: GrayText;
   }
-  .yam3x-segmented-button__segment:focus-visible:not(:disabled) {
-    outline-color: Highlight;
+  .yam3x-segmented-button__segment:focus-visible:not(:disabled)::before {
+    border-color: Highlight;
   }
 }
 </style>

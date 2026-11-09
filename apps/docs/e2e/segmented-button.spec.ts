@@ -28,10 +28,29 @@ test('segmented button rows render composed segments with the classic geometry',
   const grid = group.getByRole('radio', { name: 'Grid' })
   await grid.focus()
   const focusIndicator = await grid.evaluate((element) => {
-    const style = getComputedStyle(element)
-    return { thickness: style.outlineWidth, offset: style.outlineOffset }
+    const ring = getComputedStyle(element, '::before')
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--md-sys-color-secondary)'
+    document.body.append(probe)
+    const color = getComputedStyle(probe).color
+    probe.remove()
+    return {
+      outline: getComputedStyle(element).outlineStyle,
+      thickness: ring.borderWidth,
+      color: ring.borderColor,
+      height: ring.height,
+      radius: ring.borderTopLeftRadius,
+      expectedColor: color,
+    }
   })
-  expect(focusIndicator).toEqual({ thickness: '3px', offset: '2px' })
+  expect(focusIndicator).toEqual({
+    outline: 'none',
+    thickness: '3px',
+    color: focusIndicator.expectedColor,
+    height: '50px',
+    radius: '8px',
+    expectedColor: focusIndicator.expectedColor,
+  })
   // segmented-button.legacy.selection-modes
   await expect(
     page
