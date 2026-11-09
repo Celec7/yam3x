@@ -65,6 +65,7 @@ const options: AutocompleteOption[] = [
 | `modelValue`, `v-model`                                             | `string`                                                                     | `''`                     | 当前可编辑文本。                                                                   |
 | `selected`, `v-model:selected`                                      | `string \| null`                                                             | `null`                   | 已提交建议项的值。                                                                 |
 | `label`                                                             | `string`                                                                     | 必填                     | 可见字段标签和可访问名称。                                                         |
+| `hint`、`error`                                                     | `string`                                                                     | `''`                     | 辅助文本；`error` 会替换提示、标记字段无效，并通过 alert 播报。                    |
 | `filter`                                                            | `contains \| starts-with \| ends-with \| none \| (option, query) => boolean` | `contains`               | 默认不区分大小写。                                                                 |
 | `caseSensitive`, `autoActivate`, `openOnFocus`                      | `boolean`                                                                    | `false`, `false`, `true` | 控制过滤大小写、初始活动项和聚焦展开。自动活动不会提交选项。                       |
 | `required`, `selectionRequired`                                     | `boolean`                                                                    | `false`                  | 分别表示原生非空验证和必须从建议项中选择。                                         |
@@ -91,7 +92,7 @@ Standard 变体使用 `surface-container-low` 弹出面板，选中项使用 `te
 
 ## 样式
 
-支持的 CSS 覆盖项为 `--yam3x-autocomplete-popup-min-width`、`--yam3x-autocomplete-popup-max-width`、`--yam3x-autocomplete-popup-max-height`、`--yam3x-autocomplete-popup-padding-block`、`--yam3x-autocomplete-popup-padding-inline`、`--yam3x-autocomplete-popup-shape`、`--yam3x-autocomplete-popup-elevation`、`--yam3x-autocomplete-option-container-height`、`--yam3x-autocomplete-option-shape`、`--yam3x-autocomplete-option-first-child-shape`、`--yam3x-autocomplete-option-last-child-shape`、`--yam3x-autocomplete-option-selected-shape` 和 `--yam3x-autocomplete-option-label-text-font-size`。在 Autocomplete 根元素上设置这些属性。主题颜色由当前 System token 和 `variant` 控制。
+支持的 CSS 覆盖项为 `--yam3x-autocomplete-popup-min-width`、`--yam3x-autocomplete-popup-max-width`、`--yam3x-autocomplete-popup-max-height`、`--yam3x-autocomplete-popup-padding-block`、`--yam3x-autocomplete-popup-padding-inline`、`--yam3x-autocomplete-popup-shape`、`--yam3x-autocomplete-popup-elevation`、`--yam3x-autocomplete-option-container-height`、`--yam3x-autocomplete-option-shape`、`--yam3x-autocomplete-option-first-child-shape`、`--yam3x-autocomplete-option-last-child-shape`、`--yam3x-autocomplete-option-selected-shape` 和 `--yam3x-autocomplete-option-label-text-font-size`。在 Autocomplete 根元素上设置这些属性。`--yam3x-autocomplete-option-container-height` 控制建议项的可见表面高度；交互目标仍保持 48px。主题颜色由当前 System token 和 `variant` 控制。
 
 ## Material 参考
 

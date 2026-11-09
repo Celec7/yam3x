@@ -371,6 +371,32 @@ test('Autocomplete reacts to live option updates and native disabled/read-only s
   await expect(indicatorHost.locator('.yam3x-autocomplete__check')).toHaveCount(0)
 })
 
+test('Autocomplete connects hint and error supporting text to the input', async ({ page }) => {
+  await page.goto('/components/autocomplete')
+  const input = page.getByRole('combobox', { name: 'Fruit' })
+  const hintId = await input.getAttribute('aria-describedby')
+  expect(hintId).toBeTruthy()
+  await expect(page.locator(`#${hintId}`)).toHaveText('Type to filter the fruit list.')
+  await page.getByText('Validation and custom input examples', { exact: true }).click()
+
+  const invalid = page.getByRole('combobox', { name: 'Invalid fruit' })
+  await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+  const errorId = await invalid.getAttribute('aria-describedby')
+  expect(errorId).toBeTruthy()
+  await expect(page.locator(`#${errorId}`)).toContainText('Choose a listed fruit.')
+  await expect(page.locator(`#${errorId}`)).toHaveAttribute('role', 'alert')
+  const colors = await page.locator('.yam3x-autocomplete--invalid').evaluate((element) => {
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--md-sys-color-error)'
+    element.append(probe)
+    const error = getComputedStyle(probe).color
+    probe.remove()
+    const field = element.querySelector<HTMLElement>('.yam3x-autocomplete__field')!
+    return { error, border: getComputedStyle(field).borderTopColor }
+  })
+  expect(colors.border).toBe(colors.error)
+})
+
 test('Autocomplete uses theme roles, mirrors RTL placement, flips above, and honors motion/forced colors', async ({
   page,
 }) => {
@@ -392,7 +418,6 @@ test('Autocomplete uses theme roles, mirrors RTL placement, flips above, and hon
     await input.press('Enter')
     const colors = await page.evaluate(() => {
       const option = document.querySelector<HTMLElement>('.yam3x-autocomplete__option--selected')!
-      const actual = getComputedStyle(option)
       const content = getComputedStyle(
         option.querySelector<HTMLElement>('.yam3x-autocomplete__option-content')!,
       )
@@ -420,7 +445,7 @@ test('Autocomplete uses theme roles, mirrors RTL placement, flips above, and hon
         )
       }
       const foreground = content.color
-      const background = actual.backgroundColor
+      const background = getComputedStyle(option, '::before').backgroundColor
       const first = luminance(foreground),
         second = luminance(background)
       return {
@@ -470,7 +495,13 @@ test('Autocomplete uses theme roles, mirrors RTL placement, flips above, and hon
   await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
   const activeOption = popup.locator('.yam3x-autocomplete__option--active')
   await expect(activeOption).toHaveCSS('transition-property', 'none')
-  await expect(activeOption).toHaveCSS('outline-style', 'solid')
+  const activeRing = await activeOption
+    .locator('.yam3x-autocomplete__option-content')
+    .evaluate((element) => {
+      const ring = getComputedStyle(element, '::before')
+      return { style: ring.borderTopStyle, width: ring.borderTopWidth }
+    })
+  expect(activeRing).toEqual({ style: 'solid', width: '3px' })
 })
 
 test('Autocomplete maps standard and vibrant menu colors from the active theme', async ({
@@ -534,7 +565,7 @@ test('Autocomplete maps standard and vibrant menu colors from the active theme',
     const colors = await page.evaluate(() => {
       const option = document.querySelector<HTMLElement>('.yam3x-autocomplete__option--selected')!
       return {
-        background: getComputedStyle(option).backgroundColor,
+        background: getComputedStyle(option, '::before').backgroundColor,
         foreground: getComputedStyle(
           option.querySelector<HTMLElement>('.yam3x-autocomplete__option-content')!,
         ).color,
@@ -600,7 +631,8 @@ test('Autocomplete exposes documented geometry and shape CSS overrides', async (
 
   const apple = page.getByRole('option', { name: 'Apple' })
   const apricot = page.getByRole('option', { name: 'Apricot' })
-  await expect(apple).toHaveCSS('height', '60px')
+  await expect(apple).toHaveCSS('height', '64px')
+  await expect(apple.locator('.yam3x-autocomplete__option-content')).toHaveCSS('min-height', '60px')
   await expect(apple.locator('.yam3x-autocomplete__option-content')).toHaveCSS('font-size', '18px')
   await expect(apricot).toHaveCSS('border-start-start-radius', '4px')
   await expect(apple).toHaveCSS('border-start-start-radius', '14px')

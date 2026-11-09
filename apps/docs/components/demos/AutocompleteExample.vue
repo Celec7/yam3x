@@ -29,6 +29,8 @@ const customFilterQuery = ref('')
 const dynamicAppleDisabled = ref(false)
 const indicatorQuery = ref('')
 const indicatorSelection = ref<string | null>(null)
+const invalidQuery = ref('apple')
+const invalidSelected = ref<string | null>(null)
 const events = ref<string[]>([])
 const fruitResultsLabel = (count: number) =>
   t(`${count} fruits available`, `有 ${count} 种水果可选`)
@@ -77,6 +79,7 @@ function toggleDynamicApple() {
       :variant="variant"
       :options="selection"
       :label="t('Fruit', '水果')"
+      :hint="t('Type to filter the fruit list.', '输入以筛选水果列表。')"
       :placeholder="t('Start typing', '开始输入')"
       @query="recordEvent('query')"
       @beforeselect="recordEvent('beforeselect')"
@@ -212,6 +215,13 @@ function toggleDynamicApple() {
         :options="selection"
         :label="t('Hidden selection indicator', '隐藏选中指示器')"
         hide-selection-indicator
+      />
+      <Autocomplete
+        v-model="invalidQuery"
+        v-model:selected="invalidSelected"
+        :options="selection"
+        :label="t('Invalid fruit', '无效水果')"
+        :error="t('Choose a listed fruit.', '请选择列表中的水果。')"
       />
       <Autocomplete
         :options="selection"

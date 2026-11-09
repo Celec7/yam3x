@@ -24,6 +24,8 @@ const props = withDefaults(
     virtual?: boolean | VirtualListOptions
     options: AutocompleteOption[]
     label: string
+    hint?: string
+    error?: string
     locale?: string
     id?: string
     placeholder?: string
@@ -51,6 +53,8 @@ const props = withDefaults(
   {
     virtual: false,
     placeholder: '',
+    hint: '',
+    error: '',
     disabled: false,
     readonly: false,
     required: false,
@@ -126,6 +130,8 @@ const popup = ref<HTMLElement | null>(null)
 const generatedId = useId()
 const inputId = computed(() => props.id ?? `yam3x-autocomplete-${generatedId}`)
 const listboxId = computed(() => `${inputId.value}-listbox`)
+const subscriptId = computed(() => `${inputId.value}-subscript`)
+const hasSubscript = computed(() => Boolean(props.error || props.hint))
 const open = ref(false)
 const layerZ = ref<number>()
 let layer: OverlayLayer | undefined
@@ -514,6 +520,8 @@ const inputProps = computed(() => ({
   'aria-activedescendant':
     open.value && !props.loading && activeOption.value ? optionId(activeOption.value) : undefined,
   'aria-required': props.selectionRequired || undefined,
+  'aria-invalid': props.error ? true : undefined,
+  'aria-describedby': hasSubscript.value ? subscriptId.value : undefined,
   onInput,
   onFocus,
   onBlur,
@@ -665,6 +673,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     :class="{
       'yam3x-autocomplete--open': open,
       'yam3x-autocomplete--disabled': disabled,
+      'yam3x-autocomplete--invalid': props.error,
       'yam3x-autocomplete--vibrant': props.variant === 'vibrant',
     }"
   >
@@ -716,6 +725,19 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
         /></slot>
       </button>
     </div>
+    <p
+      v-if="hasSubscript"
+      :id="subscriptId"
+      class="yam3x-autocomplete__subscript"
+      :class="{ 'yam3x-autocomplete__subscript--error': props.error }"
+      :role="props.error ? 'alert' : undefined"
+    >
+      <Icon
+        v-if="props.error"
+        name="error"
+        aria-hidden="true"
+      /><span>{{ props.error || props.hint }}</span>
+    </p>
     <div
       class="yam3x-autocomplete__live"
       role="status"
@@ -842,6 +864,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     --yam3x-autocomplete-option-container-height,
     44px
   );
+  --_yam3x-autocomplete-option-pointer-fine: var(--yam3x-pointer-fine, 0);
   --_yam3x-autocomplete-option-first-child-shape: var(
     --yam3x-autocomplete-option-first-child-shape,
     var(--_yam3x-autocomplete-sys-shape-corner-medium, 12px)
@@ -850,9 +873,25 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     --_yam3x-autocomplete-sys-shape-corner-extra-small,
     4px
   );
+  --_yam3x-autocomplete-option-label-text-font-family: var(
+    --yam3x-autocomplete-option-label-text-font-family,
+    var(--md-sys-typescale-label-large-font-family, Roboto)
+  );
   --_yam3x-autocomplete-option-label-text-font-size: var(
     --yam3x-autocomplete-option-label-text-font-size,
-    14px
+    var(--md-sys-typescale-label-large-font-size, 14px)
+  );
+  --_yam3x-autocomplete-option-label-text-font-weight: var(
+    --yam3x-autocomplete-option-label-text-font-weight,
+    var(--md-sys-typescale-label-large-font-weight, 500)
+  );
+  --_yam3x-autocomplete-option-label-text-line-height: var(
+    --yam3x-autocomplete-option-label-text-line-height,
+    var(--md-sys-typescale-label-large-line-height, 20px)
+  );
+  --_yam3x-autocomplete-option-label-text-tracking: var(
+    --yam3x-autocomplete-option-label-text-tracking,
+    var(--md-sys-typescale-label-large-tracking, 0.1px)
   );
   --_yam3x-autocomplete-option-last-child-shape: var(
     --yam3x-autocomplete-option-last-child-shape,
@@ -864,8 +903,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   );
   --_yam3x-autocomplete-popup-elevation: var(
     --yam3x-autocomplete-popup-elevation,
-    0 4px 8px 3px rgb(0 0 0 / 15%),
-    0 1px 3px rgb(0 0 0 / 30%)
+    var(--md-sys-elevation-level2)
   );
   --_yam3x-autocomplete-popup-max-height: var(--yam3x-autocomplete-popup-max-height, 280px);
   --_yam3x-autocomplete-popup-max-width: var(--yam3x-autocomplete-popup-max-width, 280px);
@@ -901,6 +939,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   --_yam3x-autocomplete-sys-color-tertiary-container: var(--md-sys-color-tertiary-container);
   --_yam3x-autocomplete-sys-color-tertiary: var(--md-sys-color-tertiary);
   --_yam3x-autocomplete-sys-density-spacing-scale: var(--md-sys-density-spacing-scale);
+  --_yam3x-autocomplete-sys-density-container-scale: var(--md-sys-density-container-scale);
   --_yam3x-autocomplete-sys-motion-spring-fast-effects: var(--md-sys-motion-spring-fast-effects);
   --_yam3x-autocomplete-sys-motion-spring-fast-spatial: var(--md-sys-motion-spring-fast-spatial);
   --_yam3x-autocomplete-sys-shape-corner-extra-small: var(--md-sys-shape-corner-extra-small);
@@ -922,6 +961,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   --_yam3x-autocomplete-option-container-focus-color: var(
     --_yam3x-autocomplete-sys-color-on-surface
   );
+  --_yam3x-autocomplete-option-focus-color: var(--md-sys-color-secondary);
   --_yam3x-autocomplete-option-selected-container-hover-color: var(
     --_yam3x-autocomplete-option-selected-color
   );
@@ -976,10 +1016,52 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   min-block-size: 56px;
   border: 1px solid var(--_yam3x-autocomplete-sys-color-outline);
   border-radius: var(--_yam3x-autocomplete-sys-shape-corner-extra-small, 4px);
-  background: var(--_yam3x-autocomplete-sys-color-surface);
+  background: transparent;
+}
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-autocomplete__field:hover:not(:focus-within) {
+    border-color: var(--_yam3x-autocomplete-sys-color-on-surface);
+  }
 }
 .yam3x-autocomplete__field:focus-within {
-  border: 2px solid var(--_yam3x-autocomplete-sys-color-primary);
+  border-color: var(--_yam3x-autocomplete-sys-color-primary);
+  outline: 3px solid var(--_yam3x-autocomplete-sys-color-primary);
+  outline-offset: -3px;
+}
+.yam3x-autocomplete:focus-within .yam3x-autocomplete__label {
+  color: var(--_yam3x-autocomplete-sys-color-primary);
+}
+.yam3x-autocomplete--invalid .yam3x-autocomplete__label {
+  color: var(--md-sys-color-error);
+}
+.yam3x-autocomplete--invalid .yam3x-autocomplete__field {
+  border-color: var(--md-sys-color-error);
+}
+.yam3x-autocomplete--invalid .yam3x-autocomplete__field:focus-within {
+  border-color: var(--md-sys-color-error);
+  outline-color: var(--md-sys-color-error);
+}
+.yam3x-autocomplete__subscript {
+  display: flex;
+  align-items: center;
+  gap: calc(4px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1));
+  margin: 0;
+  padding-inline: calc(16px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1));
+  color: var(--_yam3x-autocomplete-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-body-small-font-family);
+  font-size: var(--md-sys-typescale-body-small-font-size);
+  font-weight: var(--md-sys-typescale-body-small-font-weight);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  letter-spacing: var(--md-sys-typescale-body-small-tracking);
+}
+.yam3x-autocomplete__subscript--error {
+  color: var(--md-sys-color-error);
+}
+.yam3x-autocomplete__subscript :is(svg, .yam3x-icon) {
+  flex: none;
+  inline-size: 16px;
+  block-size: 16px;
+  font-size: 16px;
 }
 .yam3x-autocomplete__input {
   box-sizing: border-box;
@@ -1016,8 +1098,8 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   background: color-mix(in srgb, currentColor 8%, transparent);
 }
 .yam3x-autocomplete__trailing:focus-visible {
-  outline: 2px solid var(--_yam3x-autocomplete-sys-color-primary);
-  outline-offset: -2px;
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: -3px;
 }
 .yam3x-autocomplete__trailing:disabled {
   cursor: default;
@@ -1119,8 +1201,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   box-sizing: border-box;
   isolation: isolate;
   min-block-size: 48px;
-  block-size: max(48px, var(--_yam3x-autocomplete-option-container-height));
-  padding: 0;
+  padding-block: 2px;
   border-radius: var(
     --_yam3x-autocomplete-option-shape,
     var(--_yam3x-autocomplete-sys-shape-corner-extra-small, 4px)
@@ -1130,13 +1211,17 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   cursor: pointer;
   outline: none;
   --yam3x-state-layer-color: var(--_yam3x-autocomplete-option-container-hover-color);
-  transition:
-    border-radius
-      var(
-        --_yam3x-autocomplete-sys-motion-spring-fast-effects,
-        150ms cubic-bezier(0.31, 0.94, 0.34, 1)
-      ),
-    background-color var(--_yam3x-autocomplete-sys-motion-spring-fast-effects);
+  transition: border-radius var(--_yam3x-autocomplete-sys-motion-spring-fast-spatial);
+}
+.yam3x-autocomplete__option::before {
+  position: absolute;
+  z-index: 0;
+  inset-block: 2px;
+  inset-inline: 0;
+  border-radius: inherit;
+  background: transparent;
+  content: '';
+  pointer-events: none;
 }
 .yam3x-autocomplete__option--first:not(:where(.yam3x-autocomplete__option--last)) {
   border-start-start-radius: var(--_yam3x-autocomplete-option-first-child-shape);
@@ -1160,9 +1245,11 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     --_yam3x-autocomplete-option-selected-shape,
     var(--_yam3x-autocomplete-sys-shape-corner-medium, 12px)
   );
-  background: var(--_yam3x-autocomplete-option-selected-container-color);
   --yam3x-state-layer-color: var(--_yam3x-autocomplete-option-selected-container-hover-color);
   --yam3x-ripple-color: var(--_yam3x-autocomplete-option-selected-ripple-color);
+}
+.yam3x-autocomplete__option--selected::before {
+  background: var(--_yam3x-autocomplete-option-selected-container-color);
 }
 .yam3x-autocomplete__option--selected:hover {
   --yam3x-state-layer-color: var(--_yam3x-autocomplete-option-selected-container-hover-color);
@@ -1179,27 +1266,58 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   align-items: center;
   gap: var(
     --_yam3x-autocomplete-option-icon-label-space,
-    calc(8px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1))
+    calc(
+      (8px + 4px * var(--_yam3x-autocomplete-option-pointer-fine)) *
+        var(--_yam3x-autocomplete-sys-density-spacing-scale, 1)
+    )
   );
   box-sizing: border-box;
+  flex: 1 1 auto;
   min-inline-size: 0;
-  min-block-size: 100%;
+  min-block-size: calc(
+    var(--_yam3x-autocomplete-option-container-height) *
+      var(--_yam3x-autocomplete-sys-density-container-scale, 1)
+  );
   padding-inline-start: var(
     --_yam3x-autocomplete-option-padding-start,
-    calc(12px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1))
+    calc(
+      (12px + 4px * var(--_yam3x-autocomplete-option-pointer-fine)) *
+        var(--_yam3x-autocomplete-sys-density-spacing-scale, 1)
+    )
   );
   padding-inline-end: var(
     --_yam3x-autocomplete-option-padding-end,
-    calc(12px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1))
+    calc(
+      (12px - 2px * var(--_yam3x-autocomplete-option-pointer-fine)) *
+        var(--_yam3x-autocomplete-sys-density-spacing-scale, 1)
+    )
   );
+  border-radius: inherit;
+  background: transparent;
   color: var(--_yam3x-autocomplete-option-color);
-  font-size: var(--_yam3x-autocomplete-option-label-text-font-size, 14px);
-  font-weight: var(--_yam3x-autocomplete-option-label-text-font-weight, 500);
+  font-family: var(--_yam3x-autocomplete-option-label-text-font-family);
+  font-size: var(--_yam3x-autocomplete-option-label-text-font-size);
+  font-weight: var(--_yam3x-autocomplete-option-label-text-font-weight);
   line-height: calc(
-    (var(--_yam3x-autocomplete-option-label-text-line-height, 20px)) *
+    (var(--_yam3x-autocomplete-option-label-text-line-height)) *
       var(--_yam3x-autocomplete-sys-typescale-line-height-scale, 1.07)
   );
-  letter-spacing: var(--_yam3x-autocomplete-option-label-text-tracking, 0.1px);
+  letter-spacing: var(--_yam3x-autocomplete-option-label-text-tracking);
+  transition: border-radius var(--_yam3x-autocomplete-sys-motion-spring-fast-spatial);
+}
+.yam3x-autocomplete__option-content::before {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  box-sizing: border-box;
+  border: 3px solid transparent;
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+}
+.yam3x-autocomplete__option:focus-visible .yam3x-autocomplete__option-content::before,
+.yam3x-autocomplete__option--active-focus .yam3x-autocomplete__option-content::before {
+  border-color: var(--_yam3x-autocomplete-option-focus-color);
 }
 .yam3x-autocomplete__option-content > svg {
   flex: none;
@@ -1304,6 +1422,10 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
 .yam3x-autocomplete__option--disabled {
   cursor: default;
 }
+.yam3x-autocomplete__option.yam3x-state-layer::after,
+.yam3x-autocomplete__option .yam3x-ripple-container {
+  inset-block: 2px;
+}
 .yam3x-autocomplete__option .yam3x-ripple-container {
   z-index: 1;
 }
@@ -1352,11 +1474,15 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     background: Canvas;
     color: CanvasText;
   }
-  .yam3x-autocomplete__option--active {
-    outline: 2px solid Highlight;
+  .yam3x-autocomplete__option--selected::before {
+    background: SelectedItem;
   }
-  .yam3x-autocomplete__option--selected {
-    outline: 2px solid SelectedItem;
+  .yam3x-autocomplete__option--selected .yam3x-autocomplete__option-content {
+    color: SelectedItemText;
+  }
+  .yam3x-autocomplete__option:focus-visible .yam3x-autocomplete__option-content::before,
+  .yam3x-autocomplete__option--active-focus .yam3x-autocomplete__option-content::before {
+    border-color: Highlight;
   }
   .yam3x-autocomplete--disabled {
     opacity: 1;
