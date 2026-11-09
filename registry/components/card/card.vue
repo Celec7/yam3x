@@ -101,6 +101,7 @@ function activate(event: MouseEvent) {
   --_yam3x-card-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-card-motion: var(--md-sys-motion-spring-fast-effects);
   --_yam3x-card-on-surface: var(--md-sys-color-on-surface);
+  --_yam3x-card-focus-indicator: var(--md-sys-color-secondary);
   --_yam3x-card-outline-variant: var(--md-sys-color-outline-variant);
   --_yam3x-card-outline: var(--md-sys-color-outline);
   --_yam3x-card-surface: var(--md-sys-color-surface);
@@ -325,6 +326,10 @@ function activate(event: MouseEvent) {
   color: var(--_yam3x-card-pressed-text);
   box-shadow: var(--_yam3x-card-pressed-elevation);
   --md-sys-state-pressed-opacity: var(--_yam3x-card-pressed-opacity);
+}
+.yam3x-card--actionable:focus-visible {
+  outline: 3px solid var(--_yam3x-card-focus-indicator);
+  outline-offset: 2px;
 }
 .yam3x-card--outlined.yam3x-card--actionable:hover:not(:disabled, [aria-disabled='true']) {
   border-color: var(--_yam3x-card-hover-outline);

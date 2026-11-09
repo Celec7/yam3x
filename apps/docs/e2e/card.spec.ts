@@ -28,6 +28,8 @@ test('passive cards stay inert while actionable cards expose pointer and keyboar
   // card.a11y.visible-focus
   await actionable.focus()
   await expect(actionable).toHaveCSS('outline-style', 'solid')
+  await expect(actionable).toHaveCSS('outline-width', '3px')
+  await expect(actionable).toHaveCSS('outline-offset', '2px')
   await page.keyboard.press('Space')
   await expect(page.getByText('Card opened 1 ', { exact: true })).toBeVisible()
   await page.keyboard.press('Enter')

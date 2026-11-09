@@ -16,7 +16,7 @@ A card groups related content and actions about one subject. Material cards may 
 
 - `card.behavior.actionable`: An actionable card uses button or link semantics with a clear name and responds to pointer and keyboard activation. See [Cards accessibility: interaction](https://m3.material.io/components/cards/accessibility).
 - Make the whole card actionable only when it represents one clear action; do not combine a whole-card action with nested controls. See [Cards guidelines: actionable cards](https://m3.material.io/components/cards/guidelines).
-- `card.a11y.visible-focus`: Only actionable cards receive a focus stop and interaction feedback. Controls inside a passive card remain independently reachable. See [Cards accessibility: interaction](https://m3.material.io/components/cards/accessibility).
+- `card.a11y.visible-focus`: Only actionable cards receive a focus stop and interaction feedback. Use the 3dp `secondary` focus indicator with a 2dp offset from the token selector. Controls inside a passive card remain independently reachable. See [Cards accessibility: interaction](https://m3.material.io/components/cards/accessibility).
 - Hide decorative media from assistive technology and provide appropriate text alternatives for informative media. See [Cards accessibility: media](https://m3.material.io/components/cards/accessibility).
 - Use the state treatment shown for hover, focus, press, drag, and disabled states in the [Cards state specifications](https://m3.material.io/components/cards/specs).
 
