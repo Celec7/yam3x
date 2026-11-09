@@ -100,7 +100,7 @@ test('short Space presses retain the minimum pressed feedback duration', async (
 test('checkbox maps geometry and selected colors through Component tokens', async ({ page }) => {
   const checkbox = page.getByRole('checkbox', { name: 'Receive product updates' })
   const root = checkbox.locator('xpath=ancestor::div[contains(@class,"yam3x-checkbox")]')
-  const box = root.locator('.yam3x-checkbox__box')
+  const control = checkbox.locator('xpath=..')
 
   await expect(checkbox).toBeChecked()
   const mappedStyles = await root.evaluate((element) => {
@@ -143,12 +143,20 @@ test('checkbox maps geometry and selected colors through Component tokens', asyn
   expect(mappedStyles.labelColor).toBe(mappedStyles.systemLabel)
 
   await checkbox.focus()
-  const focusStyles = await box.evaluate((element) => {
-    const style = getComputedStyle(element)
-    return { width: style.outlineWidth, offset: style.outlineOffset }
+  const focusStyles = await control.evaluate((element) => {
+    const style = getComputedStyle(element, '::before')
+    const rect = element.getBoundingClientRect()
+    return {
+      opacity: style.opacity,
+      width: style.width,
+      borderWidth: style.borderWidth,
+      target: rect.width,
+    }
   })
-  expect(focusStyles.width).toBe('2px')
-  expect(focusStyles.offset).toBe('4px')
+  expect(focusStyles.opacity).toBe('1')
+  expect(focusStyles.width).toBe('44px')
+  expect(focusStyles.borderWidth).toBe('3px')
+  expect(focusStyles.target).toBe(48)
 })
 
 test('required checkbox participates in FormData, constraint validation, and form reset', async ({
@@ -229,12 +237,14 @@ test('focus, forced colors, and reduced motion preserve a visible checkbox state
   const checkbox = page.getByRole('checkbox', { name: 'Accept the terms of use' })
   await checkbox.focus()
   const root = checkbox.locator('xpath=ancestor::div[contains(@class,"yam3x-checkbox")]')
-  const box = root.locator('.yam3x-checkbox__box')
+  const control = checkbox.locator('xpath=..')
 
-  await expect(box).toHaveCSS('outline-style', 'solid')
-  expect(await box.evaluate((element) => getComputedStyle(element).outlineColor)).not.toBe(
-    'rgba(0, 0, 0, 0)',
-  )
+  await expect
+    .poll(() => control.evaluate((element) => getComputedStyle(element, '::before').opacity))
+    .toBe('1')
+  expect(
+    await control.evaluate((element) => getComputedStyle(element, '::before').borderColor),
+  ).not.toBe('rgba(0, 0, 0, 0)')
   const transitionDuration = await root.locator('.yam3x-checkbox__background').evaluate((element) =>
     Math.max(
       ...getComputedStyle(element)

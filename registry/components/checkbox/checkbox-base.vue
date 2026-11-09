@@ -214,8 +214,8 @@ function onReset(): void {
   --_yam3x-checkbox-pressed-opacity: var(--md-sys-state-pressed-opacity);
   --_yam3x-checkbox-interaction-color: var(--md-sys-color-on-surface);
   --_yam3x-checkbox-focus-indicator: var(--md-sys-color-secondary);
-  --_yam3x-checkbox-focus-outline-width: 2px;
-  --_yam3x-checkbox-focus-outline-offset: 4px;
+  --_yam3x-checkbox-focus-ring-size: 44px;
+  --_yam3x-checkbox-focus-outline-width: 3px;
   --_yam3x-checkbox-motion-spatial: var(--md-sys-motion-spring-fast-spatial);
   --_yam3x-checkbox-motion-effects: var(--md-sys-motion-spring-fast-effects);
   --_yam3x-checkbox-label-font: var(--md-sys-typescale-body-large-font);
@@ -350,19 +350,25 @@ function onReset(): void {
   border-radius: 50%;
   background: var(--_yam3x-checkbox-interaction-color);
 }
+.yam3x-checkbox__control::before {
+  position: absolute;
+  inline-size: var(--_yam3x-checkbox-focus-ring-size);
+  block-size: var(--_yam3x-checkbox-focus-ring-size);
+  border: var(--_yam3x-checkbox-focus-outline-width) solid var(--_yam3x-checkbox-focus-indicator);
+  border-radius: 50%;
+  opacity: 0;
+  content: '';
+  pointer-events: none;
+}
 .yam3x-checkbox__control:hover:not([aria-disabled='true'])::after {
   opacity: var(--_yam3x-checkbox-hover-opacity);
 }
-.yam3x-checkbox__control:has(.yam3x-checkbox__input:focus-visible)::after {
-  opacity: var(--_yam3x-checkbox-focus-opacity);
+.yam3x-checkbox__control:has(.yam3x-checkbox__input:focus-visible)::before {
+  opacity: 1;
 }
 .yam3x-checkbox__control:active:not([aria-disabled='true'])::after,
 .yam3x-checkbox__control[data-yam3x-pressed]::after {
   opacity: var(--_yam3x-checkbox-pressed-opacity);
-}
-.yam3x-checkbox__input:focus-visible + .yam3x-checkbox__state .yam3x-checkbox__box {
-  outline: var(--_yam3x-checkbox-focus-outline-width) solid var(--_yam3x-checkbox-focus-indicator);
-  outline-offset: var(--_yam3x-checkbox-focus-outline-offset);
 }
 .yam3x-checkbox:is([data-state='checked'], [data-state='indeterminate']):not(
     .yam3x-checkbox--invalid
@@ -447,8 +453,8 @@ function onReset(): void {
   .yam3x-checkbox__control::after {
     display: none;
   }
-  .yam3x-checkbox__input:focus-visible + .yam3x-checkbox__state .yam3x-checkbox__box {
-    outline-color: Highlight;
+  .yam3x-checkbox__control:has(.yam3x-checkbox__input:focus-visible)::before {
+    border-color: Highlight;
   }
 }
 </style>
