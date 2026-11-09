@@ -65,7 +65,7 @@ const frequency = ref('daily')
 </template>
 ```
 
-多选时使用数组 model，切换选项时弹层保持打开。相关选项应使用 `OptionGroup` 标签分组；选项面板在内容超出时滚动。
+多选时使用数组 model，切换选项时弹层保持打开。相关选项应使用 `OptionGroup` 标签分组；选项面板在内容超出时滚动。弹出面板打开时，已接受的值仍使用 on-surface 文本角色，只有尾部箭头使用 primary。
 
 ## API
 

@@ -65,7 +65,7 @@ const frequency = ref('daily')
 </template>
 ```
 
-Use an array model for multiple selection; the popup stays open as options are toggled. Group related options with labeled `OptionGroup`s. The option panel scrolls when its content overflows.
+Use an array model for multiple selection; the popup stays open as options are toggled. Group related options with labeled `OptionGroup`s. The option panel scrolls when its content overflows. The accepted value keeps the on-surface text role while the popup is open; only the trailing arrow uses primary.
 
 ## API
 

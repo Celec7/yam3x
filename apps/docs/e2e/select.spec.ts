@@ -416,6 +416,35 @@ test('Select applies its component-level shape, icon, and disabled color values'
   )
 })
 
+test('Select keeps accepted value text on-surface while the open arrow uses primary', async ({
+  page,
+}) => {
+  await page.goto('/components/select')
+  const field = page.locator('.select-demo .yam3x-select').first()
+  await field.getByRole('combobox').click()
+  const colors = await field.evaluate((element) => {
+    const value = element.querySelector<HTMLElement>('.yam3x-select__value')!
+    const arrow = element.querySelector<HTMLElement>('.yam3x-select__arrow')!
+    const resolve = (token: string) => {
+      const probe = document.createElement('span')
+      probe.style.color = `var(${token})`
+      element.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    }
+    return {
+      value: getComputedStyle(value).color,
+      arrow: getComputedStyle(arrow).color,
+      primary: resolve('--md-sys-color-primary'),
+      onSurface: resolve('--md-sys-color-on-surface'),
+    }
+  })
+  expect(colors.value).toBe(colors.onSurface)
+  expect(colors.arrow).toBe(colors.primary)
+  expect(colors.value).not.toBe(colors.arrow)
+})
+
 test('Select honors reduced motion and keeps focus visible in forced colors', async ({ page }) => {
   await page.goto('/components/select')
   await page.emulateMedia({ reducedMotion: 'reduce' })

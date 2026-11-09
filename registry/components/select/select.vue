@@ -972,7 +972,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   --_yam3x-select-trigger-gap: calc(12px * var(--_yam3x-select-spacing-scale));
   --_yam3x-select-focus-color: var(--md-sys-color-primary);
   --_yam3x-select-icon-size: var(--yam3x-select-icon-size, 24px);
-  --_yam3x-select-open-color: var(--md-sys-color-primary);
+  --_yam3x-select-open-color: var(--yam3x-select-open-color, var(--md-sys-color-primary));
   --_yam3x-select-panel-max-width: var(--yam3x-select-panel-max-width, 100vw);
   --_yam3x-select-disabled-color: var(
     --yam3x-select-disabled-color,
@@ -1010,7 +1010,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
 .yam3x-select--chips {
   align-items: center;
   gap: var(--_yam3x-select-chip-gap);
-  padding-block: var(--_yam3x-select-chip-gap);
+  padding-block: calc(var(--_yam3x-select-chip-gap) + 4px) var(--_yam3x-select-chip-gap);
 }
 .yam3x-select__chips {
   display: flex;
@@ -1018,9 +1018,6 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   flex-wrap: wrap;
   min-inline-size: 0;
   gap: var(--_yam3x-select-chip-gap);
-}
-.yam3x-select--chips .yam3x-select__chips > .yam3x-input-chip {
-  margin-block: var(--_yam3x-select-chip-gap);
 }
 .yam3x-select.yam3x-select--chips .yam3x-select__trigger {
   flex: 0 0 auto;
@@ -1057,8 +1054,8 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
 }
 .yam3x-select.yam3x-select--searchable
   .yam3x-select__search:focus-visible:not(.yam3x-form-field__control *) {
-  outline: 2px solid var(--_yam3x-select-focus-color);
-  outline-offset: -2px;
+  outline: 3px solid var(--_yam3x-select-focus-color);
+  outline-offset: -3px;
   border-radius: inherit;
 }
 .yam3x-select__options--searchable .yam3x-option-group:not(:has(.yam3x-option:not([hidden]))) {
@@ -1068,8 +1065,8 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   cursor: default;
 }
 .yam3x-select__trigger:focus-visible:not(.yam3x-form-field__control *) {
-  outline: 2px solid var(--_yam3x-select-focus-color);
-  outline-offset: -2px;
+  outline: 3px solid var(--_yam3x-select-focus-color);
+  outline-offset: -3px;
   border-radius: inherit;
 }
 .yam3x-select__value {
@@ -1114,7 +1111,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
   flex-direction: column;
   gap: 0;
 }
-.yam3x-select--open .yam3x-select__trigger:not(:disabled) {
+.yam3x-select--open .yam3x-select__arrow {
   color: var(--_yam3x-select-open-color);
 }
 .yam3x-select--disabled {
