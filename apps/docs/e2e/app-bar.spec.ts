@@ -108,6 +108,38 @@ test('Search label maintains at least 3:1 contrast in light and dark themes', as
   expect(await contrast()).toBeGreaterThanOrEqual(3)
 })
 
+test('the scrolled Small bar uses the surface-container role', async ({ page }) => {
+  const bar = page.getByTestId('app-bar')
+  const scroll = page.getByTestId('app-bar-scroll')
+  const roleColor = async (role: string) =>
+    page.evaluate((name) => {
+      const probe = document.createElement('span')
+      probe.style.color = `var(--md-sys-color-${name})`
+      document.body.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    }, role)
+  const surface = await roleColor('surface')
+  const surfaceContainer = await roleColor('surface-container')
+  const variant = page.getByRole('combobox', { name: 'App bar type' })
+
+  for (const value of ['small']) {
+    await selectM3Option(page, variant, value)
+    await expect(bar).toHaveCSS('background-color', surface)
+    await scroll.evaluate((element) => {
+      element.scrollTop = 80
+    })
+    await expect(bar).toHaveAttribute('data-scrolled', 'true')
+    await expect(bar).toHaveCSS('background-color', surfaceContainer)
+    await scroll.evaluate((element) => {
+      element.scrollTop = 0
+    })
+    await expect(bar).not.toHaveAttribute('data-scrolled')
+    await expect(bar).toHaveCSS('background-color', surface)
+  }
+})
+
 test('app bar fills the full-width page shell supplied by the consumer', async ({ page }) => {
   const geometry = await page.locator('.app-bar-demo__frame').evaluate((frame) => {
     const shell = document.createElement('div')
