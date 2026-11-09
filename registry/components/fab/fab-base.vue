@@ -226,7 +226,7 @@ const componentStyle = computed<Record<string, string>>(() => {
     'icon-color': `var(--md-sys-color-${contentRole})`,
     'container-color': `var(--md-sys-color-${containerRole})`,
     'container-elevation': 'var(--md-sys-elevation-level3)',
-    'lowered-container-elevation': 'var(--md-sys-elevation-level2)',
+    'lowered-container-elevation': 'var(--md-sys-elevation-level1)',
     'disabled-container-color': 'var(--md-sys-color-on-surface)',
     'disabled-container-opacity': '10%',
     'disabled-icon-color': 'var(--md-sys-color-on-surface)',
@@ -240,19 +240,19 @@ const componentStyle = computed<Record<string, string>>(() => {
     'hover-state-layer-color': `var(--md-sys-color-${contentRole})`,
     'hover-state-layer-opacity': 'var(--md-sys-state-hover-opacity)',
     'hover-container-elevation': 'var(--md-sys-elevation-level4)',
-    'lowered-hover-container-elevation': 'var(--md-sys-elevation-level3)',
+    'lowered-hover-container-elevation': 'var(--md-sys-elevation-level2)',
     'focus-icon-color': `var(--md-sys-color-${contentRole})`,
     'focus-label-text-color': `var(--md-sys-color-${contentRole})`,
     'focus-state-layer-color': `var(--md-sys-color-${contentRole})`,
     'focus-state-layer-opacity': 'var(--md-sys-state-focus-opacity)',
     'focus-container-elevation': 'var(--md-sys-elevation-level3)',
-    'lowered-focus-container-elevation': 'var(--md-sys-elevation-level2)',
+    'lowered-focus-container-elevation': 'var(--md-sys-elevation-level1)',
     'pressed-icon-color': `var(--md-sys-color-${contentRole})`,
     'pressed-label-text-color': `var(--md-sys-color-${contentRole})`,
     'pressed-state-layer-color': `var(--md-sys-color-${contentRole})`,
     'pressed-state-layer-opacity': 'var(--md-sys-state-pressed-opacity)',
     'pressed-container-elevation': 'var(--md-sys-elevation-level3)',
-    'lowered-pressed-container-elevation': 'var(--md-sys-elevation-level2)',
+    'lowered-pressed-container-elevation': 'var(--md-sys-elevation-level1)',
   }
   const variantPrefix = `--yam3x-${props.variant}-${componentPrefix}-`
   for (const property of variantProperties) {
@@ -328,6 +328,9 @@ function onClick(event: MouseEvent) {
   --_yam3x-fab-line-height-scale: var(--md-sys-typescale-line-height-scale, 1.07);
   --_yam3x-fab-fast-effects: var(--md-sys-motion-spring-fast-effects);
   --_yam3x-fab-default-effects: var(--md-sys-motion-spring-default-effects);
+  --_yam3x-fab-focus-indicator-color: var(--md-sys-color-secondary);
+  --_yam3x-fab-focus-indicator-thickness: 3px;
+  --_yam3x-fab-focus-indicator-offset: 2px;
 
   display: inline-flex;
   min-width: calc(var(--_yam3x-fab-container-height) * var(--_yam3x-fab-container-scale));
@@ -438,6 +441,8 @@ function onClick(event: MouseEvent) {
     :disabled,
     [aria-disabled='true']
   ) {
+  outline: var(--_yam3x-fab-focus-indicator-thickness) solid var(--_yam3x-fab-focus-indicator-color);
+  outline-offset: var(--_yam3x-fab-focus-indicator-offset);
   box-shadow: var(--_yam3x-fab-focus-container-elevation);
   --yam3x-state-layer-color: var(--_yam3x-fab-focus-state-layer-color);
   color: var(--_yam3x-fab-focus-label-text-color);
@@ -543,8 +548,8 @@ function onClick(event: MouseEvent) {
   }
 
   :is(.yam3x-floating-action-button, .yam3x-extended-fab):focus-visible {
-    outline: 3px solid Highlight;
-    outline-offset: 3px;
+    outline-color: Highlight;
+    outline-offset: var(--_yam3x-fab-focus-indicator-offset);
   }
 }
 </style>

@@ -63,6 +63,16 @@ test('FAB honors size, shape, variant, elevation, and hover-state CSS properties
     .toBe('0.2')
 })
 
+test('lowered FAB uses the level-one elevation token', async ({ page }) => {
+  const fab = page.locator('#fab-example-create')
+  await fab.evaluate((element) => {
+    const style = (element.parentElement as HTMLElement).style
+    style.setProperty('--md-sys-elevation-level1', '0 0 0 3px rgb(9, 8, 7)')
+    element.classList.add('yam3x-floating-action-button--lowered')
+  })
+  await expect(fab).toHaveCSS('box-shadow', 'rgb(9, 8, 7) 0px 0px 0px 3px')
+})
+
 test('FAB demo shows the default, medium, and large icon-only sizes', async ({ page }) => {
   for (const [id, size, height, icon] of [
     ['fab-example-default', 'default', '56px', '24px'],
@@ -105,6 +115,32 @@ test('Extended FAB geometry and typography follow the three expressive size role
         return Number.parseFloat(lineHeight) * (lineHeight.endsWith('rem') ? rootFontSize : 1)
       }),
     ).toBe(tokenLineHeight)
+  }
+})
+
+test('FAB and Extended FAB expose the secondary focus indicator', async ({ page }) => {
+  const secondary = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-secondary').trim(),
+  )
+  const expectedColor = await page.evaluate((color) => {
+    const probe = document.createElement('span')
+    probe.style.color = color
+    document.body.append(probe)
+    const resolved = getComputedStyle(probe).color
+    probe.remove()
+    return resolved
+  }, secondary)
+  for (const [path, selector] of [
+    ['/components/fab', '#fab-example-create'],
+    ['/components/extended-fab', '#extended-fab-example-medium'],
+  ] as const) {
+    await page.goto(path)
+    const fab = page.locator(selector)
+    await fab.focus()
+    await expect(fab).toHaveCSS('outline-width', '3px')
+    await expect(fab).toHaveCSS('outline-style', 'solid')
+    await expect(fab).toHaveCSS('outline-color', expectedColor)
+    await expect(fab).toHaveCSS('outline-offset', '2px')
   }
 })
 
