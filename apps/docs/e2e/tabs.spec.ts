@@ -77,6 +77,18 @@ test('secondary, scrollable, after header, and pagination retain the active pane
   await selectM3Option(page, page.getByRole('combobox', { name: 'Tab type' }), 'secondary')
   await expect(tabs.locator('.yam3x-tabs__strip')).toHaveCSS('height', '48px')
   await expect(tabs.locator('.yam3x-tabs__indicator')).toHaveCSS('height', '2px')
+  await expect
+    .poll(() =>
+      tabs.evaluate((element) => {
+        const indicator = element.querySelector('.yam3x-tabs__indicator')!.getBoundingClientRect()
+        const selected = element.querySelector('[aria-selected="true"]')!.getBoundingClientRect()
+        return {
+          left: Math.round(indicator.left - selected.left),
+          right: Math.round(indicator.right - selected.right),
+        }
+      }),
+    )
+    .toEqual({ left: 0, right: 0 })
   await selectM3Option(page, page.getByRole('combobox', { name: 'Tab layout' }), 'auto')
   await selectM3Option(page, page.getByRole('combobox', { name: 'Tab count' }), '7')
   await expect(tabs).toHaveClass(/yam3x-tabs--scrollable/)

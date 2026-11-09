@@ -479,7 +479,7 @@ watch(
   --_yam3x-tabs-tab-padding-inline: 12px;
   --_yam3x-tabs-icon-size: 24px;
   --_yam3x-tabs-badge-overlap: 6px;
-  --_yam3x-tabs-indicator-inset: 2px;
+  --_yam3x-tabs-indicator-inset: 0px;
   --_yam3x-tabs-indicator-min-width: 24px;
   --_yam3x-tabs-indicator-primary-height: var(--yam3x-tabs-primary-active-indicator-thickness, 3px);
   --_yam3x-tabs-indicator-secondary-height: 2px;
@@ -723,6 +723,9 @@ watch(
   transition:
     left var(--_yam3x-tabs-motion-duration) var(--_yam3x-tabs-motion-easing),
     right var(--_yam3x-tabs-motion-duration) var(--_yam3x-tabs-motion-easing);
+}
+.yam3x-tabs--primary {
+  --_yam3x-tabs-indicator-inset: 2px;
 }
 .yam3x-tabs--primary .yam3x-tabs__indicator {
   block-size: var(--_yam3x-tabs-indicator-primary-height);
