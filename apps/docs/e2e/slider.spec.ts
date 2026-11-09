@@ -70,6 +70,117 @@ test('range exposes independent handles and maintains ordered values', async ({ 
   await expect(page.locator('.slider-demo output')).toHaveText('75–75')
 })
 
+test('vertical stop indicators stay centered on the track', async ({ page }) => {
+  await page.getByRole('checkbox', { name: 'Show stops' }).check()
+  await selectM3Option(page, page.getByRole('combobox', { name: 'Slider orientation' }), 'vertical')
+  const slider = page.getByTestId('slider').first()
+  const geometry = await slider.evaluate((element) => {
+    const track = element.querySelector('.yam3x-slider__track')!.getBoundingClientRect()
+    const markers = [
+      ...element.querySelectorAll('.yam3x-slider__tick'),
+      ...element.querySelectorAll('.yam3x-slider__end-stop'),
+    ]
+      .map((tick) => tick.getBoundingClientRect())
+      .sort((left, right) => left.top - right.top)
+    const thumb = element.querySelector('.yam3x-slider__thumb')!.getBoundingClientRect()
+    return {
+      trackCenter: track.x + track.width / 2,
+      thumbCenter: thumb.y + thumb.height / 2,
+      markerCenters: markers.map((tick) => tick.x + tick.width / 2),
+      markerRows: markers.map((tick) => tick.y + tick.height / 2),
+      gaps: markers.slice(1).map((tick, index) => tick.top - markers[index]!.top),
+    }
+  })
+  for (const center of geometry.markerCenters)
+    expect(Math.abs(geometry.trackCenter - center)).toBeLessThanOrEqual(0.5)
+  const smallestGap = Math.min(...geometry.gaps)
+  const largestGap = Math.max(...geometry.gaps)
+  for (const gap of geometry.gaps) {
+    expect(gap === largestGap || Math.abs(gap - smallestGap) <= 0.5).toBe(true)
+  }
+  expect(largestGap).toBeLessThanOrEqual(smallestGap * 2 + 0.5)
+  expect(geometry.markerRows.some((row) => Math.abs(row - geometry.thumbCenter) <= 2)).toBe(false)
+  const nearestToHandle = Math.min(
+    ...geometry.markerRows.map((row) => Math.abs(row - geometry.thumbCenter)),
+  )
+  expect(Math.abs(nearestToHandle - smallestGap)).toBeLessThanOrEqual(0.5)
+})
+
+test('stops use the end-cap span and the end stop replaces the last tick', async ({ page }) => {
+  await page.getByRole('checkbox', { name: 'Show stops' }).check()
+  await selectM3Option(page, page.getByRole('combobox', { name: 'Slider size' }), 'large')
+  const slider = page.getByTestId('slider').first()
+  const input = page.getByRole('slider', { name: 'Value' })
+  await input.focus()
+  await input.press('Home')
+  for (let index = 0; index < 3; index += 1) await input.press('ArrowRight')
+  await expect(input).toHaveValue('30')
+  const geometry = await slider.evaluate((element) => {
+    const track = element.querySelector('.yam3x-slider__track')!.getBoundingClientRect()
+    const tickRows = [...element.querySelectorAll('.yam3x-slider__tick')].map((tick) => {
+      const box = tick.getBoundingClientRect()
+      return box.x + box.width / 2
+    })
+    const end = element.querySelector('.yam3x-slider__end-stop')!.getBoundingClientRect()
+    const thumb = element.querySelector('.yam3x-slider__thumb')!.getBoundingClientRect()
+    const radius = Number.parseFloat(
+      getComputedStyle(element.querySelector('.yam3x-slider__inactive--after')!)
+        .borderTopRightRadius,
+    )
+    return {
+      trackLeft: track.left,
+      trackWidth: track.width,
+      radius,
+      tickRows,
+      endCenter: end.x + end.width / 2,
+      thumbCenter: thumb.x + thumb.width / 2,
+    }
+  })
+  const expected =
+    geometry.trackLeft + geometry.radius + (geometry.trackWidth - geometry.radius * 2) * 0.3
+  expect(Math.abs(geometry.thumbCenter - expected)).toBeLessThanOrEqual(0.5)
+  expect(
+    Math.abs(geometry.endCenter - (geometry.trackLeft + geometry.trackWidth - geometry.radius)),
+  ).toBeLessThanOrEqual(0.5)
+  expect(geometry.tickRows).toHaveLength(9)
+  const stopValues = [0, 10, 20, 40, 50, 60, 70, 80, 90]
+  for (const [index, value] of stopValues.entries()) {
+    const center =
+      geometry.trackLeft +
+      geometry.radius +
+      (geometry.trackWidth - geometry.radius * 2) * (value / 100)
+    expect(Math.abs(geometry.tickRows[index]! - center)).toBeLessThanOrEqual(0.5)
+  }
+  await input.press('Home')
+  const minimum = await slider.evaluate((element) => {
+    const track = element.querySelector('.yam3x-slider__track')!.getBoundingClientRect()
+    const thumb = element.querySelector('.yam3x-slider__thumb')!.getBoundingClientRect()
+    const tick = element.querySelector('.yam3x-slider__tick')!.getBoundingClientRect()
+    return {
+      trackLeft: track.left,
+      radius: parseFloat(
+        getComputedStyle(element.querySelector('.yam3x-slider__inactive--after')!)
+          .borderTopRightRadius,
+      ),
+      thumbCenter: thumb.left + thumb.width / 2,
+      firstTickCenter: tick.left + tick.width / 2,
+    }
+  })
+  expect(Math.abs(minimum.thumbCenter - minimum.trackLeft)).toBeLessThanOrEqual(0.5)
+  expect(
+    Math.abs(minimum.firstTickCenter - (minimum.trackLeft + minimum.radius)),
+  ).toBeLessThanOrEqual(0.5)
+})
+
+test('centered and range sliders keep an end stop at each inactive end', async ({ page }) => {
+  await page.getByRole('checkbox', { name: 'Show stops' }).check()
+  const slider = page.getByTestId('slider').first()
+  await selectM3Option(page, page.getByRole('combobox', { name: 'Slider mode' }), 'centered')
+  await expect(slider.locator('.yam3x-slider__end-stop')).toHaveCount(2)
+  await selectM3Option(page, page.getByRole('combobox', { name: 'Slider mode' }), 'range')
+  await expect(slider.locator('.yam3x-slider__end-stop')).toHaveCount(2)
+})
+
 test('stops snap, labels show on focus, and disabled blocks input', async ({ page }) => {
   await page.getByRole('checkbox', { name: 'Show stops' }).check()
   const slider = page.getByTestId('slider')
@@ -124,7 +235,7 @@ test('focus and disabled stop indicators use their component state tokens', asyn
   await slider.evaluate((element) => {
     const style = (element as HTMLElement).style
     style.setProperty('--md-sys-color-on-surface', 'rgb(10, 20, 30)')
-    style.setProperty('--md-sys-color-on-primary', 'rgb(40, 50, 60)')
+    style.setProperty('--md-sys-color-inverse-on-surface', 'rgb(40, 50, 60)')
   })
   const input = page.getByRole('slider', { name: 'Value' })
   await input.focus()
@@ -164,8 +275,7 @@ test('end anchor and focus remain visible in both themes and forced colors', asy
       .locator('html')
       .evaluate((element, enabled) => element.classList.toggle('dark', enabled), dark)
     const colors = await slider.evaluate((element) => ({
-      anchor: getComputedStyle(element.querySelector('.yam3x-slider__tick:last-of-type')!)
-        .backgroundColor,
+      anchor: getComputedStyle(element.querySelector('.yam3x-slider__end-stop')!).backgroundColor,
       background: getComputedStyle(element.closest('.yam3x-demo')!).backgroundColor,
     }))
     expect(contrast(colors.anchor, colors.background)).toBeGreaterThanOrEqual(3)

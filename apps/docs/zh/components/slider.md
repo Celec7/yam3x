@@ -57,7 +57,7 @@ const price = ref<[number, number]>([25, 75])
 | `orientation`                           | `horizontal`      | `horizontal` 或 `vertical`。Material 建议区间滑块采用横向，并建议避免纵向区间滑块，因为双滑块会增加认知负担，用户通常也预期滑块为横向。组件仍支持两种方向。 |
 | `min` / `max` / `step`                  | `0` / `100` / `1` | 数值边界与步长。`RangeSlider` 默认值为 `[min, max]`。                                                                                                       |
 | `Slider center`                         | 边界中点          | 项目拓展：居中模式的轨道起点。                                                                                                                              |
-| `stops`                                 | `false`           | `step > 1` 时显示内部停靠点；仅在边界仍连接未填充轨道时显示端点标记。数值始终按 `step` 吸附。                                                               |
+| `stops`                                 | `false`           | `step > 1` 时显示停靠点；未填充轨道末端使用独立端点标记，居中与范围滑块在每一侧可见的未填充端各显示一个。数值始终按 `step` 吸附。                           |
 | `labelled`                              | `false`           | 交互时显示当前值。                                                                                                                                          |
 | `disabled`                              | `false`           | 禁用交互与表单提交。                                                                                                                                        |
 | `label`                                 | —                 | 无障碍名称；对 `RangeSlider` 来说是组名称。                                                                                                                 |

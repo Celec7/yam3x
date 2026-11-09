@@ -129,33 +129,64 @@ const endHasHandle = computed(
   () => variant.value !== 'centered' || lowerFraction.value >= centerFraction.value,
 )
 const pct = (value: number) => `${(value * 100).toFixed(5)}%`
-const tickPosition = (value: number) => {
-  if (value === bounds.value[0]) return 'var(--_yam3x-slider-end-radius)'
-  if (value === bounds.value[1]) return 'calc(100% - var(--_yam3x-slider-end-radius))'
-  return pct(sliderFraction(value, ...bounds.value))
+const stopsActive = computed(() => props.stops && step.value > 1)
+const capPosition = (fraction: number) =>
+  `calc(${pct(fraction)} + var(--_yam3x-slider-end-radius) * ${(1 - 2 * fraction).toFixed(5)})`
+const boundaryPosition = (fraction: number) =>
+  stopsActive.value && fraction > 0 && fraction < 1 ? capPosition(fraction) : pct(fraction)
+const thumbPosition = (fraction: number) => {
+  const inset = 'var(--_yam3x-slider-track-inset)'
+  const base = `calc(${inset} + (100% - ${inset} - ${inset}) * ${fraction.toFixed(5)})`
+  if (!stopsActive.value || fraction <= 0 || fraction >= 1) return base
+  return `calc(${inset} + (100% - ${inset} - ${inset}) * ${fraction.toFixed(5)} + var(--_yam3x-slider-end-radius) * ${(1 - 2 * fraction).toFixed(5)})`
 }
-const trackStyle = computed(() => ({
-  '--_yam3x-slider-before-size': `max(0px, calc(${pct(activeStart.value)} - ${startHasHandle.value ? 'var(--_yam3x-slider-handle-spacing)' : '0px'}))`,
-  '--_yam3x-slider-active-offset': `calc(${pct(activeStart.value)} + ${startHasHandle.value ? 'var(--_yam3x-slider-handle-spacing)' : '0px'})`,
-  '--_yam3x-slider-active-size': `max(0px, calc(${pct(activeEnd.value - activeStart.value)} - ${startHasHandle.value ? 'var(--_yam3x-slider-handle-spacing)' : '0px'} - ${endHasHandle.value ? 'var(--_yam3x-slider-handle-spacing)' : '0px'}))`,
-  '--_yam3x-slider-after-offset': `calc(${pct(activeEnd.value)} + ${endHasHandle.value ? 'var(--_yam3x-slider-handle-spacing)' : '0px'})`,
-  '--_yam3x-slider-after-size': `max(0px, calc(${pct(1 - activeEnd.value)} - ${endHasHandle.value ? 'var(--_yam3x-slider-handle-spacing)' : '0px'}))`,
-}))
-const tickValues = computed(() => {
-  const [min, max] = bounds.value
-  const result = new Set<number>()
-  if (activeStart.value > 0) result.add(min)
-  if (activeEnd.value < 1) result.add(max)
-  if (variant.value === 'centered') result.add(center.value)
-  if (props.stops && step.value > 1) {
-    const interiorCount = Math.max(0, Math.ceil((max - min) / step.value) - 1)
-    for (let i = 1; i <= interiorCount; i += 1) {
-      const value = min + i * step.value
-      if (value < max) result.add(Number(value.toFixed(10)))
-    }
+const endStopPosition = (side: 'start' | 'end') => capPosition(side === 'start' ? 0 : 1)
+const trackStyle = computed(() => {
+  const gap = 'var(--_yam3x-slider-handle-spacing)'
+  const startPosition = startHasHandle.value
+    ? boundaryPosition(activeStart.value)
+    : variant.value === 'standard'
+      ? '0%'
+      : boundaryPosition(activeStart.value)
+  const endPosition = boundaryPosition(activeEnd.value)
+  const activeOffset = startHasHandle.value ? `calc(${startPosition} + ${gap})` : startPosition
+  return {
+    '--_yam3x-slider-before-size': `max(0px, calc(${startPosition} - ${startHasHandle.value ? gap : '0px'}))`,
+    '--_yam3x-slider-active-offset': activeOffset,
+    '--_yam3x-slider-active-size': `max(0px, calc(${endPosition} - ${activeOffset} - ${endHasHandle.value ? gap : '0px'}))`,
+    '--_yam3x-slider-after-offset': endHasHandle.value
+      ? `calc(${endPosition} + ${gap})`
+      : endPosition,
+    '--_yam3x-slider-after-size': `max(0px, calc(100% - ${endHasHandle.value ? `calc(${endPosition} + ${gap})` : endPosition}))`,
   }
-  return [...result].sort((a, b) => a - b)
 })
+const tickValues = computed(() => {
+  if (!stopsActive.value) return []
+  const [min, max] = bounds.value
+  const count = Math.floor((max - min) / step.value + 1e-9)
+  const result: number[] = []
+  for (let index = 0; index <= count; index += 1)
+    result.push(Number((min + index * step.value).toFixed(10)))
+  if (result.length > 1) result.pop()
+  if (variant.value !== 'standard' && result.length) result.shift()
+  const activeValues = variant.value === 'range' ? values.value : [values.value[0]]
+  return result.filter(
+    (value) =>
+      !activeValues.some(
+        (current) =>
+          Math.abs(current - value) < 1e-9 &&
+          sliderFraction(current, min, max) > 0 &&
+          sliderFraction(current, min, max) < 1,
+      ),
+  )
+})
+const endStops = computed(() => {
+  const result: Array<'start' | 'end'> = []
+  if (activeStart.value > 0) result.push('start')
+  if (activeEnd.value < 1) result.push('end')
+  return result
+})
+const tickPosition = (value: number) => capPosition(sliderFraction(value, ...bounds.value))
 const iconVisible = computed(
   () =>
     !!slots.default &&
@@ -374,6 +405,12 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
       <span class="yam3x-slider__active" />
       <span class="yam3x-slider__inactive yam3x-slider__inactive--after" />
       <span
+        v-for="side in endStops"
+        :key="side"
+        class="yam3x-slider__end-stop"
+        :style="{ '--_yam3x-slider-stop-position': endStopPosition(side) }"
+      />
+      <span
         v-for="tick in tickValues"
         :key="tick"
         class="yam3x-slider__tick"
@@ -382,7 +419,7 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
             tick >= bounds[0] + activeStart * (bounds[1] - bounds[0]) &&
             tick <= bounds[0] + activeEnd * (bounds[1] - bounds[0]),
         }"
-        :style="{ '--_yam3x-slider-tick-position': tickPosition(tick) }"
+        :style="{ '--_yam3x-slider-stop-position': tickPosition(tick) }"
       />
       <span
         v-if="iconVisible"
@@ -398,7 +435,10 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
       class="yam3x-slider__thumb"
       :class="{ 'yam3x-slider__thumb--pressed': activePointer !== null && activeHandle === index }"
       :data-index="index"
-      :style="{ '--_yam3x-slider-thumb-fraction': index === 0 ? lowerFraction : upperFraction }"
+      :style="{
+        '--_yam3x-slider-thumb-position':
+          index === 0 ? thumbPosition(lowerFraction) : thumbPosition(upperFraction),
+      }"
       @mouseenter="activeLabel = index"
       @mouseleave="activeLabel = null"
     >
@@ -457,7 +497,7 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
   --_yam3x-slider-color-value-container: var(--md-sys-color-inverse-surface);
   --_yam3x-slider-color-value-label: var(--md-sys-color-inverse-on-surface);
   --_yam3x-slider-color-disabled: var(--md-sys-color-on-surface);
-  --_yam3x-slider-color-disabled-stop-active: var(--md-sys-color-on-primary, white);
+  --_yam3x-slider-color-disabled-stop-active: var(--md-sys-color-inverse-on-surface);
   --_yam3x-slider-color-disabled-stop-inactive: var(--md-sys-color-on-surface);
   --_yam3x-slider-color-focus: var(--md-sys-color-secondary);
   --_yam3x-slider-focus-thickness: var(--yam3x-focus-ring-thickness, 3px);
@@ -510,7 +550,7 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
   --_yam3x-slider-track-height: var(--_yam3x-slider-track-height-extra-small);
   --_yam3x-slider-handle-length: var(--_yam3x-slider-handle-height-extra-small);
   --_yam3x-slider-track-radius: var(--_yam3x-slider-track-shape-extra-small);
-  --_yam3x-slider-inner-radius: 3px;
+  --_yam3x-slider-inner-radius: 2px;
   --_yam3x-slider-end-radius: var(--_yam3x-slider-track-radius);
   position: relative;
   display: inline-block;
@@ -600,8 +640,27 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
 .yam3x-slider__active {
   inset-inline-start: var(--_yam3x-slider-active-offset);
   inline-size: var(--_yam3x-slider-active-size);
-  border-radius: var(--_yam3x-slider-track-radius);
+  border-radius: var(--_yam3x-slider-inner-radius);
   background: var(--_yam3x-slider-color-active-track);
+}
+.yam3x-slider--standard .yam3x-slider__active {
+  border-radius: var(--_yam3x-slider-end-radius) var(--_yam3x-slider-inner-radius)
+    var(--_yam3x-slider-inner-radius) var(--_yam3x-slider-end-radius);
+}
+[dir='rtl'] .yam3x-slider__inactive--before,
+[dir='rtl'].yam3x-slider .yam3x-slider__inactive--before {
+  border-radius: var(--_yam3x-slider-inner-radius) var(--_yam3x-slider-end-radius)
+    var(--_yam3x-slider-end-radius) var(--_yam3x-slider-inner-radius);
+}
+[dir='rtl'] .yam3x-slider__inactive--after,
+[dir='rtl'].yam3x-slider .yam3x-slider__inactive--after {
+  border-radius: var(--_yam3x-slider-end-radius) var(--_yam3x-slider-inner-radius)
+    var(--_yam3x-slider-inner-radius) var(--_yam3x-slider-end-radius);
+}
+[dir='rtl'] .yam3x-slider--standard .yam3x-slider__active,
+[dir='rtl'].yam3x-slider--standard .yam3x-slider__active {
+  border-radius: var(--_yam3x-slider-inner-radius) var(--_yam3x-slider-end-radius)
+    var(--_yam3x-slider-end-radius) var(--_yam3x-slider-inner-radius);
 }
 .yam3x-slider--vertical .yam3x-slider__inactive,
 .yam3x-slider--vertical .yam3x-slider__active {
@@ -624,39 +683,44 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
 .yam3x-slider--vertical .yam3x-slider__active {
   inset-block-end: var(--_yam3x-slider-active-offset);
   block-size: var(--_yam3x-slider-active-size);
+  border-radius: var(--_yam3x-slider-inner-radius);
 }
-.yam3x-slider__tick {
+.yam3x-slider--vertical.yam3x-slider--standard .yam3x-slider__active {
+  border-radius: var(--_yam3x-slider-inner-radius) var(--_yam3x-slider-inner-radius)
+    var(--_yam3x-slider-end-radius) var(--_yam3x-slider-end-radius);
+}
+.yam3x-slider__tick,
+.yam3x-slider__end-stop {
   position: absolute;
   z-index: 1;
   inline-size: var(--_yam3x-slider-stop-size);
   block-size: var(--_yam3x-slider-stop-size);
-  inset-inline-start: var(--_yam3x-slider-tick-position);
+  inset-inline-start: var(--_yam3x-slider-stop-position);
   inset-block-start: 50%;
   transform: translate(-50%, -50%);
   border-radius: var(--_yam3x-slider-stop-shape);
   background: var(--_yam3x-slider-color-stop-inactive);
 }
 [dir='rtl'] .yam3x-slider__tick,
-[dir='rtl'].yam3x-slider .yam3x-slider__tick {
+[dir='rtl'].yam3x-slider .yam3x-slider__tick,
+[dir='rtl'] .yam3x-slider__end-stop,
+[dir='rtl'].yam3x-slider .yam3x-slider__end-stop {
   transform: translate(50%, -50%);
 }
 .yam3x-slider__tick--active {
   background: var(--_yam3x-slider-color-stop-active);
 }
-.yam3x-slider--vertical .yam3x-slider__tick {
+.yam3x-slider--vertical .yam3x-slider__tick,
+.yam3x-slider--vertical .yam3x-slider__end-stop {
   inset-inline-start: 50%;
   inset-block-start: auto;
-  inset-block-end: var(--_yam3x-slider-tick-position);
-  transform: translate(50%, 50%);
+  inset-block-end: var(--_yam3x-slider-stop-position);
+  transform: translate(-50%, 50%);
 }
 .yam3x-slider__thumb {
   position: absolute;
   z-index: 2;
-  inset-inline-start: calc(
-    var(--_yam3x-slider-track-inset) +
-      (100% - var(--_yam3x-slider-track-inset) - var(--_yam3x-slider-track-inset)) *
-      var(--_yam3x-slider-thumb-fraction)
-  );
+  inset-inline-start: var(--_yam3x-slider-thumb-position);
   inset-block-start: 50%;
   inline-size: var(--_yam3x-slider-touch-target-size);
   block-size: max(var(--_yam3x-slider-touch-target-size), var(--_yam3x-slider-handle-length));
@@ -666,7 +730,7 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
   transform: translate(-50%, -50%);
 }
 .yam3x-slider__thumb {
-  --_yam3x-slider-thumb-fraction: 0;
+  --_yam3x-slider-thumb-position: 0%;
 }
 [dir='rtl'] .yam3x-slider__thumb,
 [dir='rtl'].yam3x-slider .yam3x-slider__thumb {
@@ -746,11 +810,7 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
 .yam3x-slider--vertical .yam3x-slider__thumb {
   inset-inline-start: 50%;
   inset-block-start: auto;
-  inset-block-end: calc(
-    var(--_yam3x-slider-track-inset) +
-      (100% - var(--_yam3x-slider-track-inset) - var(--_yam3x-slider-track-inset)) *
-      var(--_yam3x-slider-thumb-fraction)
-  );
+  inset-block-end: var(--_yam3x-slider-thumb-position);
   inline-size: max(var(--_yam3x-slider-touch-target-size), var(--_yam3x-slider-handle-length));
   block-size: var(--_yam3x-slider-touch-target-size);
   transform: translate(-50%, 50%);
@@ -805,7 +865,8 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
   background: var(--_yam3x-slider-color-disabled-stop-active);
   opacity: var(--_yam3x-slider-disabled-stop-opacity);
 }
-.yam3x-slider--disabled .yam3x-slider__tick:not(.yam3x-slider__tick--active) {
+.yam3x-slider--disabled .yam3x-slider__tick:not(.yam3x-slider__tick--active),
+.yam3x-slider--disabled .yam3x-slider__end-stop {
   background: var(--_yam3x-slider-color-disabled-stop-inactive);
   opacity: var(--_yam3x-slider-disabled-stop-opacity);
 }
@@ -823,7 +884,8 @@ onBeforeUnmount(() => formElement?.removeEventListener('reset', onReset))
   .yam3x-slider__handle {
     background: Highlight;
   }
-  .yam3x-slider__tick {
+  .yam3x-slider__tick,
+  .yam3x-slider__end-stop {
     background: CanvasText;
   }
   .yam3x-slider__tick--active {
