@@ -42,6 +42,7 @@
 - Segmented button focus now surrounds the 40px visual segment with the official 3px `secondary` ring and 2px gap, instead of the larger 48px touch target.
 - Buttons use the Material 2px focus-ring offset instead of the shared 3px offset.
 - Selected round icon buttons use their size's square corner instead of an oversized radius; selected square toggles still become fully rounded.
+- Opening the trailing menu makes the Split button segment fully rounded, including square-styled Split buttons, while the leading segment keeps its shape.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.

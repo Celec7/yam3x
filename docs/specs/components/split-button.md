@@ -17,4 +17,4 @@ A split button pairs one primary action with a separate control that opens relat
 ## Project decisions
 
 - Project-defined: The Vue component composes the project's Menu for its standard popup and permits custom popup content. The custom popup slot is rendered in a positioning context matching the trailing control; its content owns final placement and interactions and follows the accessibility guidance for its semantics. Prefer the built-in `items` path for menus; custom menu content must implement the menu keyboard and focus pattern.
-- Project-defined: Square outer corners are an additional shape option; the official configuration lists sizes and color styles, not shape variants.
+- Project-defined: Square outer corners are an additional shape option; the official configuration lists sizes and color styles, not shape variants. Opening the trailing menu makes that segment fully rounded, matching the official checked trailing shape, while the leading segment keeps its square outer corners.
