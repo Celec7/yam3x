@@ -41,6 +41,44 @@ test('five expressive sizes and three widths preserve their target geometry', as
   expect(parseFloat(hitTarget.height)).toBeGreaterThanOrEqual(48)
 })
 
+test('focus ring and toggle selection use the official shape mapping', async ({ page }) => {
+  const search = page.getByRole('button', { name: 'Search', exact: true })
+  await search.focus()
+  const focusRingColor = await page.evaluate(() => {
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--md-sys-color-secondary)'
+    document.body.append(probe)
+    const color = getComputedStyle(probe).color
+    probe.remove()
+    return color
+  })
+  await expect(search).toHaveCSS('outline-width', '3px')
+  await expect(search).toHaveCSS('outline-offset', '2px')
+  await expect(search).toHaveCSS('outline-color', focusRingColor)
+
+  const shapes = [
+    { size: 'extra-small', square: 12, full: 16 },
+    { size: 'small', square: 12, full: 20 },
+    { size: 'medium', square: 16, full: 28 },
+    { size: 'large', square: 28, full: 48 },
+    { size: 'extra-large', square: 28, full: 68 },
+  ]
+  for (const { size, square, full } of shapes) {
+    const round = page.getByRole('button', { name: `Toggle ${size} round`, exact: true })
+    const squareButton = page.getByRole('button', {
+      name: `Toggle ${size} square`,
+      exact: true,
+    })
+    await expect(squareButton).toHaveCSS('border-radius', `${square}px`)
+    await round.click()
+    await expect(round).toHaveAttribute('aria-pressed', 'true')
+    await expect(round).toHaveCSS('border-radius', `${square}px`)
+    await squareButton.click()
+    await expect(squareButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(squareButton).toHaveCSS('border-radius', `${full}px`)
+  }
+})
+
 test('expanded round target follows the icon button corner shape', async ({ page }) => {
   const button = page.getByRole('button', { name: 'Add item, extra-small default', exact: true })
   await button.evaluate((element) => {

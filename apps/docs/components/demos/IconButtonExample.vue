@@ -124,4 +124,41 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
       >
     </div>
   </div>
+  <div class="yam3x-demo">
+    <div
+      v-for="size in iconButtonSizes"
+      :key="`toggle-${size}`"
+      class="yam3x-demo__row"
+    >
+      <span>{{ size }}</span>
+      <IconToggleButton
+        :id="`icon-button-${size}-round-toggle`"
+        :size="size"
+        shape="round"
+        :aria-label="t(`Toggle ${size} round`, `切换 ${size} 圆形`)"
+      >
+        <Icon name="favorite" />
+        <template #selected-icon>
+          <Icon
+            name="favorite"
+            filled
+          />
+        </template>
+      </IconToggleButton>
+      <IconToggleButton
+        :id="`icon-button-${size}-square-toggle`"
+        :size="size"
+        shape="square"
+        :aria-label="t(`Toggle ${size} square`, `切换 ${size} 方形`)"
+      >
+        <Icon name="favorite" />
+        <template #selected-icon>
+          <Icon
+            name="favorite"
+            filled
+          />
+        </template>
+      </IconToggleButton>
+    </div>
+  </div>
 </template>

@@ -69,7 +69,7 @@ const favorite = ref(false)
 
 ## 行为与无障碍
 
-`IconButton` 执行操作，`IconToggleButton` 保存二态选择。radio toggle 再次激活时保持选中。普通图标按钮应使用实心图标。toggle 未选中时使用描边图标，选中时通过 `#selected-icon` 提供对应的实心图标；如果没有实心版本，则将图标字重加粗至 semibold，必要时使用 bold。请提供 `aria-label` 或其他稳定的无障碍名称，不能只依靠提示。Web 中的纯图标操作应在 hover 与 focus 时组合使用[提示](/zh/components/tooltip)。导航请使用 `href` 并保留原生链接行为。
+`IconButton` 执行操作，`IconToggleButton` 保存二态选择。radio toggle 再次激活时保持选中。普通图标按钮应使用实心图标。toggle 未选中时使用描边图标，选中时通过 `#selected-icon` 提供对应的实心图标；如果没有实心版本，则将图标字重加粗至 semibold，必要时使用 bold。选中的圆形 toggle 使用该尺寸的方形圆角，选中的方形 toggle 变为完整圆形。请提供 `aria-label` 或其他稳定的无障碍名称，不能只依靠提示。Web 中的纯图标操作应在 hover 与 focus 时组合使用[提示](/zh/components/tooltip)。导航请使用 `href` 并保留原生链接行为。
 
 ## 样式
 

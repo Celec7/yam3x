@@ -215,7 +215,7 @@ function onClick(event: MouseEvent) {
   --_yam3x-icon-button-icon-size: 20px;
   --_yam3x-icon-button-shape-round: 16px;
   --_yam3x-icon-button-shape-square: 12px;
-  --_yam3x-icon-button-selected-shape-round: 12px;
+  --_yam3x-icon-button-selected-shape-round: var(--_yam3x-icon-button-shape-square);
   --_yam3x-icon-button-selected-shape-square: 16px;
   --_yam3x-icon-button-shape-pressed-morph: 8px;
   --_yam3x-icon-button-narrow-leading-space: 4px;
@@ -231,7 +231,7 @@ function onClick(event: MouseEvent) {
   --_yam3x-icon-button-icon-size: 24px;
   --_yam3x-icon-button-shape-round: 20px;
   --_yam3x-icon-button-shape-square: 12px;
-  --_yam3x-icon-button-selected-shape-round: 16px;
+  --_yam3x-icon-button-selected-shape-round: var(--_yam3x-icon-button-shape-square);
   --_yam3x-icon-button-selected-shape-square: 20px;
   --_yam3x-icon-button-shape-pressed-morph: 8px;
   --_yam3x-icon-button-narrow-leading-space: 4px;
@@ -247,7 +247,7 @@ function onClick(event: MouseEvent) {
   --_yam3x-icon-button-icon-size: 24px;
   --_yam3x-icon-button-shape-round: 28px;
   --_yam3x-icon-button-shape-square: 16px;
-  --_yam3x-icon-button-selected-shape-round: 24px;
+  --_yam3x-icon-button-selected-shape-round: var(--_yam3x-icon-button-shape-square);
   --_yam3x-icon-button-selected-shape-square: 28px;
   --_yam3x-icon-button-shape-pressed-morph: 12px;
   --_yam3x-icon-button-narrow-leading-space: 12px;
@@ -263,7 +263,7 @@ function onClick(event: MouseEvent) {
   --_yam3x-icon-button-icon-size: 32px;
   --_yam3x-icon-button-shape-round: 48px;
   --_yam3x-icon-button-shape-square: 28px;
-  --_yam3x-icon-button-selected-shape-round: 40px;
+  --_yam3x-icon-button-selected-shape-round: var(--_yam3x-icon-button-shape-square);
   --_yam3x-icon-button-selected-shape-square: 48px;
   --_yam3x-icon-button-shape-pressed-morph: 16px;
   --_yam3x-icon-button-narrow-leading-space: 16px;
@@ -279,7 +279,7 @@ function onClick(event: MouseEvent) {
   --_yam3x-icon-button-icon-size: 40px;
   --_yam3x-icon-button-shape-round: 68px;
   --_yam3x-icon-button-shape-square: 28px;
-  --_yam3x-icon-button-selected-shape-round: 56px;
+  --_yam3x-icon-button-selected-shape-round: var(--_yam3x-icon-button-shape-square);
   --_yam3x-icon-button-selected-shape-square: 68px;
   --_yam3x-icon-button-shape-pressed-morph: 16px;
   --_yam3x-icon-button-narrow-leading-space: 32px;

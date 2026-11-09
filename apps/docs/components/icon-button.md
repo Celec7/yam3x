@@ -69,7 +69,7 @@ const favorite = ref(false)
 
 ## Behavior and accessibility
 
-`IconButton` performs an action; `IconToggleButton` holds binary selection. A radio toggle stays selected when activated again. Use a filled icon for a default button. For toggles, provide an outlined icon by default and its filled version through `#selected-icon`; if no filled icon exists, increase its weight to semibold or bold. Provide `aria-label` or another stable accessible name; a tooltip must not be the only name. On Web, compose [Tooltip](/components/tooltip) for icon-only actions on hover and focus. Use `href` for navigation and preserve native link behavior.
+`IconButton` performs an action; `IconToggleButton` holds binary selection. A radio toggle stays selected when activated again. Use a filled icon for a default button. For toggles, provide an outlined icon by default and its filled version through `#selected-icon`; if no filled icon exists, increase its weight to semibold or bold. A selected round toggle adopts the size's square corner, while a selected square toggle becomes fully rounded. Provide `aria-label` or another stable accessible name; a tooltip must not be the only name. On Web, compose [Tooltip](/components/tooltip) for icon-only actions on hover and focus. Use `href` for navigation and preserve native link behavior.
 
 ## Styling
 
