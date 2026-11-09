@@ -18,9 +18,9 @@ Record reference availability separately: Compose and Android Views may each be 
 
 ### 1. Classify and gather sources
 
-Identify the official component or foundation page, its Expressive or baseline status, and the available platform implementations. For a project extension, identify the related Material guidance and state that the component is an extension.
+Identify the official component or foundation page, its Expressive or baseline status, and the available platform implementations. For a project extension, identify the related Material guidance, search Compose Material 3 for the closest primitive or composition, and state that the component is an extension. Record the analog or record that none exists.
 
-Output: component class, exact official source links, and reference availability.
+Output: component class, exact official source links, reference availability, and the Compose analog for an extension.
 
 Gate: no design work starts from a platform implementation alone.
 
@@ -39,6 +39,7 @@ Build a capability matrix before choosing props, events, slots, or models:
 - What does the design require?
 - What does Compose Expressive expose?
 - What does Android Views Expressive add or clarify?
+- Which Compose Material 3 primitive or composition is the closest analog, and which visual and state decisions does it own?
 - What Web mechanics does Material Web or the browser require?
 - Which parts are platform-specific and should not become Vue API?
 

@@ -8,6 +8,8 @@ In a few sentences, explain the component's design purpose and the scope adopted
 
 State its design lineage: **Expressive**, **M3 baseline**, or **project extension**. Lineage comes from the applicable official design source, not from the current implementation. API and implementation references belong to the delivery record, not this guide.
 
+For a project extension, name the closest official Material primitive or composition, including its Compose Material 3 analog when one exists, or state explicitly that none exists. This establishes the reference lineage; it does not promote the analog to an official component.
+
 ## Design target
 
 Describe the adopted design in direct, actionable language, grouped under only the applicable topics, such as usage and selection, appearance and states, or interaction and accessibility. Paraphrase the official guidance rather than copying passages. Preserve whether Material requires, recommends, or permits a behavior. Place the exact official page link beside each source-backed requirement. When a figure or recording establishes geometry, state, shape, or motion, cite it and state the visual fact it establishes.
@@ -16,7 +18,7 @@ Prefix a criterion with a stable ID only when an automated test verifies it. Use
 
 ## Project decisions
 
-Include this section only when the official Expressive guidance leaves a consequential detail open or the project deliberately extends the design. Label each choice as project-defined and briefly give its reason. Secondary libraries may inform investigation, but they are not the source of an official Material requirement.
+Include this section only when the official Expressive guidance leaves a consequential detail open or the project deliberately extends the design. Label each choice as project-defined and briefly give its reason. Record consequential divergences from the closest official primitive or composition here. Secondary libraries may inform investigation, but they are not the source of an official Material requirement.
 
 ## Content boundaries
 
