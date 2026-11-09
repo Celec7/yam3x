@@ -187,6 +187,7 @@ test('flat and wavy variants and circular progress retain dimensions and reduced
   await expect(linear).toHaveClass(/yam3x-linear-progress--wavy/)
   await expect(linear).toHaveCSS('height', '10px')
   await expect(circular).toHaveClass(/yam3x-circular-progress--wavy/)
+  await expect(circular).toHaveCSS('width', '48px')
   await expect(circular.locator('path.yam3x-circular-progress__track')).not.toHaveCSS(
     'stroke',
     'rgba(0, 0, 0, 0)',
