@@ -422,7 +422,10 @@ onBeforeUnmount(() => {
 .yam3x-switch:is([data-active], [data-touch-active]):not([data-disabled]) .yam3x-switch__thumb {
   width: var(--_yam3x-switch-handle-size-pressed);
   height: var(--_yam3x-switch-handle-size-pressed);
-  transition: none;
+  transition:
+    background-color 100ms linear,
+    width 100ms linear,
+    height 100ms linear;
 }
 .yam3x-switch:is([data-active], [data-touch-active]):not([data-disabled])
   .yam3x-switch__thumb::before {
