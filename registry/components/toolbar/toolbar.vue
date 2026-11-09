@@ -204,7 +204,7 @@ function onKeydown(event: KeyboardEvent) {
   display: flex;
   width: 100%;
   max-width: none;
-  justify-content: space-evenly;
+  justify-content: space-between;
   border-radius: var(--_yam3x-toolbar-square-shape);
 }
 .yam3x-toolbar--vertical {

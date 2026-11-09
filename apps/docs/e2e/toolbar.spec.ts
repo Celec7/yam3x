@@ -305,13 +305,21 @@ test('both layouts fit a compact viewport without clipping their essential contr
     const geometry = await toolbar.evaluate((element) => {
       const container = element.closest('.toolbar-demo__stage')!.getBoundingClientRect()
       const toolbar = element.getBoundingClientRect()
-      const controls = [...element.querySelectorAll('button')].map((button) =>
-        button.getBoundingClientRect(),
-      )
+      const buttons = [...element.querySelectorAll('button')]
+      const controls = buttons.map((button) => button.getBoundingClientRect())
       return {
         container: [container.left, container.right],
         toolbar: [toolbar.left, toolbar.right],
         controls: controls.map((rect) => [rect.left, rect.right]),
+        targets: buttons.map((button) => {
+          const rect = button.getBoundingClientRect()
+          const targetWidth =
+            Number.parseFloat(getComputedStyle(button, '::before').width) || rect.width
+          return [
+            rect.left + (rect.width - targetWidth) / 2,
+            rect.left + (rect.width + targetWidth) / 2,
+          ]
+        }),
       }
     })
     expect(geometry.toolbar[0]).toBeGreaterThanOrEqual(geometry.container[0])
@@ -319,6 +327,14 @@ test('both layouts fit a compact viewport without clipping their essential contr
     for (const [left, right] of geometry.controls) {
       expect(left).toBeGreaterThanOrEqual(geometry.toolbar[0])
       expect(right).toBeLessThanOrEqual(geometry.toolbar[1])
+    }
+    if (layout === 'docked') {
+      const gaps = geometry.targets
+        .slice(1)
+        .map((target, index) => target[0]! - geometry.targets[index]![1]!)
+      expect(geometry.targets[0]![0]! - geometry.toolbar[0]!).toBeCloseTo(16, 0)
+      expect(geometry.toolbar[1]! - geometry.targets.at(-1)![1]!).toBeCloseTo(16, 0)
+      expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThanOrEqual(0.5)
     }
   }
 })
