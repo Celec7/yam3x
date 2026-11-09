@@ -47,6 +47,34 @@ test('connected groups keep visible inner corners through selection and press', 
     .toBe(20)
 })
 
+test('group edge focus rings stay inside the scrollport', async ({ page }) => {
+  await page.goto('/components/button-group')
+  const group = page.getByRole('radiogroup', { name: 'View mode' })
+  for (const name of ['List', 'Map']) {
+    const button = group.getByRole('radio', { name })
+    await button.focus()
+    const geometry = await button.evaluate((element) => {
+      const buttonStyle = getComputedStyle(element)
+      const group = element.closest<HTMLElement>('.yam3x-button-group')!
+      const box = element.getBoundingClientRect()
+      const groupBox = group.getBoundingClientRect()
+      return {
+        reach:
+          Number.parseFloat(buttonStyle.outlineWidth) +
+          Number.parseFloat(buttonStyle.outlineOffset),
+        start: box.left - groupBox.left,
+        end: groupBox.right - box.right,
+        top: box.top - groupBox.top,
+        bottom: groupBox.bottom - box.bottom,
+      }
+    })
+    expect(geometry.start).toBeGreaterThanOrEqual(geometry.reach)
+    expect(geometry.end).toBeGreaterThanOrEqual(geometry.reach)
+    expect(geometry.top).toBeGreaterThanOrEqual(geometry.reach)
+    expect(geometry.bottom).toBeGreaterThanOrEqual(geometry.reach)
+  }
+})
+
 test('group spacing and corners follow size and shape, including icon options', async ({
   page,
 }) => {
@@ -79,14 +107,26 @@ test('group spacing and corners follow size and shape, including icon options', 
 
   await page.getByRole('combobox', { name: 'Button group shape' }).click()
   await page.getByRole('option', { name: 'Square' }).click()
-  await connected.getByRole('radio', { name: 'Grid' }).click()
+  const list = connected.getByRole('radio', { name: 'List' })
+  const grid = connected.getByRole('radio', { name: 'Grid' })
+  await list.click()
   await expect
-    .poll(() =>
-      connected
-        .getByRole('radio', { name: 'List' })
-        .evaluate((button) => getComputedStyle(button).borderTopLeftRadius),
-    )
+    .poll(() => list.evaluate((button) => getComputedStyle(button).borderTopLeftRadius))
     .toBe('20px')
+  await expect
+    .poll(() => list.evaluate((button) => getComputedStyle(button).borderTopRightRadius))
+    .toBe('68px')
+
+  await grid.hover()
+  await expect
+    .poll(() => grid.evaluate((button) => getComputedStyle(button).borderTopLeftRadius))
+    .toBe('68px')
+  await page.mouse.move(0, 0)
+  await grid.focus()
+  await page.keyboard.press('Shift')
+  await expect
+    .poll(() => grid.evaluate((button) => getComputedStyle(button).borderTopLeftRadius))
+    .toBe('68px')
 
   await page.getByRole('combobox', { name: 'Icon group variant' }).click()
   await page.getByRole('option', { name: 'Connected' }).click()

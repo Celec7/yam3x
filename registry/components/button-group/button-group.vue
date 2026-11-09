@@ -175,13 +175,16 @@ function measureOverflow(): void {
   }
 
   const items = orderedItems()
-  const available = host.clientWidth
+  const style = getComputedStyle(host)
+  const inlinePadding =
+    (Number.parseFloat(style.paddingInlineStart) || 0) +
+    (Number.parseFloat(style.paddingInlineEnd) || 0)
+  const available = host.clientWidth - inlinePadding
   if (!available || !items.length) {
     setOverflowedValues([])
     return
   }
 
-  const style = getComputedStyle(host)
   const gap = Number.parseFloat(style.columnGap) || 0
   const widths = items.map((item) => {
     if (!item.element.hasAttribute('data-overflowed')) {
@@ -463,12 +466,15 @@ onBeforeUnmount(() => {
     1.001 100%
   );
   --_yam3x-button-group-overflow-indicator-width: 48px;
+  --_yam3x-button-group-focus-ring-reach: calc(3px + 2px);
+  padding: var(--_yam3x-button-group-focus-ring-reach);
+  margin: calc(-1 * var(--_yam3x-button-group-focus-ring-reach));
   display: inline-flex;
   align-items: center;
   justify-content: var(--_yam3x-button-group-justify, flex-start);
   gap: var(--_yam3x-button-group-gap);
   width: fit-content;
-  max-inline-size: 100%;
+  max-inline-size: calc(100% + var(--_yam3x-button-group-focus-ring-reach) * 2);
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
@@ -505,8 +511,11 @@ onBeforeUnmount(() => {
     var(--yam3x-connected-button-group-spacing, var(--_yam3x-button-group-connected-between-space))
   );
   gap: var(--_yam3x-button-group-gap);
-  width: 100%;
-  max-inline-size: min(100%, 720px);
+  width: calc(100% + var(--_yam3x-button-group-focus-ring-reach) * 2);
+  max-inline-size: min(
+    calc(100% + var(--_yam3x-button-group-focus-ring-reach) * 2),
+    calc(720px + var(--_yam3x-button-group-focus-ring-reach) * 2)
+  );
   min-width: 0;
 }
 
@@ -541,7 +550,16 @@ onBeforeUnmount(() => {
       :is(.yam3x-button, .yam3x-icon-button):is([aria-pressed='true'], [aria-checked='true'])
   ) {
   --_yam3x-button-group-current-inner-corner: var(--_yam3x-button-group-full-corner);
-  --_yam3x-button-group-current-outer-corner: var(--_yam3x-button-group-full-corner);
+}
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-button-group--connected
+    :deep(.yam3x-button-group__item :is(.yam3x-button, .yam3x-icon-button):hover) {
+    --_yam3x-button-group-current-inner-corner: var(--_yam3x-button-group-full-corner);
+  }
+}
+.yam3x-button-group--connected
+  :deep(.yam3x-button-group__item :is(.yam3x-button, .yam3x-icon-button):focus-visible) {
+  --_yam3x-button-group-current-inner-corner: var(--_yam3x-button-group-full-corner);
 }
 
 .yam3x-button-group--connected
