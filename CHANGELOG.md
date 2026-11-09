@@ -25,7 +25,7 @@
 - Docked range values use symmetric 16px block padding and center vertically in the 56px field.
 - Data tables apply On Surface to static column headings explicitly, so ambient table styles cannot replace the project heading role.
 - Compact Navigation Bar items reserve 8px between the icon row and label, keeping 4px clearance below the 32px active indicator.
-- Filled FormFields center empty labels, values, and icons in the 56px field; icon slots no longer raise the container height. Leading and trailing icons use 12px edge padding and 16px text spacing.
+- Filled FormFields center empty labels and icons in the 56px field and place the value row below the floating label with the official 8px bottom padding. Icon slots no longer raise the container height; leading and trailing icons use 12px edge padding and 16px text spacing.
 - Empty invalid FormFields keep the label centered until focus or content floats it. Filled disabled active indicators use the 38% on-surface role instead of the outlined 12% stroke.
 - Focusing a filled FormField no longer shifts its label or content horizontally.
 - Floating FormField labels use the populated 16px line box and center on the outlined border at the scaled 12px type size.

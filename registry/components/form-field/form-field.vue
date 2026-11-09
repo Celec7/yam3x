@@ -790,6 +790,10 @@ onBeforeUnmount(() => {
   border-start-end-radius: var(--_yam3x-form-field-container-shape);
   background: var(--_yam3x-form-field-container-color);
 }
+.yam3x-form-field--filled .yam3x-form-field__control {
+  align-self: flex-end;
+  margin-block-end: calc(-1px * var(--_yam3x-form-field-density-spacing-scale, 1));
+}
 .yam3x-form-field--filled .yam3x-form-field__label {
   top: 50%;
   transform: translateY(-50%);

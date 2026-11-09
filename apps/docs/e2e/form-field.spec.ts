@@ -114,7 +114,6 @@ test('filled FormField centers its label and icons and keeps the 56px container 
     const label = element
       .querySelector<HTMLElement>('.yam3x-form-field__label')!
       .getBoundingClientRect()
-    const input = element.querySelector<HTMLInputElement>('input')!.getBoundingClientRect()
     const prefix = element
       .querySelector<HTMLElement>('.yam3x-form-field__prefix')!
       .getBoundingClientRect()
@@ -122,17 +121,22 @@ test('filled FormField centers its label and icons and keeps the 56px container 
       height: box.height,
       center: (box.top + box.bottom) / 2,
       labelCenter: (label.top + label.bottom) / 2,
-      inputCenter: (input.top + input.bottom) / 2,
       prefixStart: prefix.left - box.left,
     }
   })
   expect(empty.height).toBe(56)
   expect(Math.abs(empty.labelCenter - empty.center)).toBeLessThan(1)
-  expect(Math.abs(empty.inputCenter - empty.center)).toBeLessThan(1)
   expect(empty.prefixStart).toBe(12)
 
   await input.fill('person@example.com')
   await expect(field).toHaveClass(/yam3x-form-field--floating/)
+  await expect
+    .poll(() =>
+      field
+        .locator('.yam3x-form-field__label')
+        .evaluate((element) => element.getBoundingClientRect().height),
+    )
+    .toBeLessThan(16.5)
   const populated = await field.evaluate((element) => {
     const box = element
       .querySelector<HTMLElement>('.yam3x-form-field__container')!
@@ -146,18 +150,23 @@ test('filled FormField centers its label and icons and keeps the 56px container 
       .getBoundingClientRect()
     return {
       height: box.height,
-      inputCenter: (input.top + input.bottom) / 2,
-      center: (box.top + box.bottom) / 2,
+      labelTop: label.top - box.top,
+      labelBottom: label.bottom,
       labelStart: label.left,
       labelHeight: label.height,
+      inputTop: input.top,
+      inputBottom: input.bottom,
+      fieldBottom: box.bottom,
       inputStart: input.left,
       suffixEnd: box.right - suffix.right,
     }
   })
   expect(populated.height).toBe(56)
-  expect(Math.abs(populated.inputCenter - populated.center)).toBeLessThan(2)
-  expect(populated.labelStart).toBe(populated.inputStart)
+  expect(populated.labelTop).toBe(8)
   expect(Math.abs(populated.labelHeight - 16)).toBeLessThan(1)
+  expect(populated.inputTop - populated.labelBottom).toBeGreaterThanOrEqual(-0.5)
+  expect(populated.fieldBottom - populated.inputBottom).toBe(8)
+  expect(populated.labelStart).toBe(populated.inputStart)
   expect(populated.suffixEnd).toBe(12)
 
   const beforeFocus = await input.boundingBox()
