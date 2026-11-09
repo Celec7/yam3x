@@ -38,6 +38,7 @@
 - Snackbar action and close controls add the official 10% focus state layer alongside the 3px focus ring; hover remains 8%.
 - Actionable cards use the official 3px `secondary` focus indicator with a 2px offset instead of the shared 3px offset.
 - Badges keep the official 11px label metrics for one- to three-character counts; only four-character labels use the compact 10px metrics required to stay within the 16×34px maximum container.
+- Modal side sheets are now detached from the window by the official 16px margin on the top, trailing, and bottom edges and use a 16px corner radius; standard sheets stay attached.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.

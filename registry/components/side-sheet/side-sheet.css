@@ -1,5 +1,14 @@
 .yam3x-side-sheet-layout {
+  --_yam3x-side-sheet-detached-margin: 16px;
   min-block-size: 100%;
+}
+.yam3x-side-sheet-layout .yam3x-drawer__panel--overlay.yam3x-drawer__panel--end {
+  inset-block: var(--_yam3x-side-sheet-detached-margin);
+  inset-inline-end: var(--_yam3x-side-sheet-detached-margin);
+  block-size: auto;
+  max-inline-size: calc(100% - var(--_yam3x-side-sheet-detached-margin));
+  overflow: hidden;
+  border-radius: var(--md-sys-shape-corner-large, 16px);
 }
 .yam3x-side-sheet {
   --_yam3x-side-sheet-color-on-surface-variant: var(--md-sys-color-on-surface-variant);

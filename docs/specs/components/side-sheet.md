@@ -16,5 +16,6 @@ A side sheet presents optional contextual information or actions beside primary 
 ## Project decisions
 
 - Project-defined: Use modal presentation on compact layouts and standard presentation when both regions can remain usable. The consuming layout owns the final presentation choice.
+- Modal sheets are detached from the window by the official 16dp margin on the top, trailing, and bottom edges and use a 16dp corner radius. Standard sheets remain attached to the edge.
 - Project-defined: The component defaults to a 400px width, matching the official maximum-width measurement, while the token selector's docked width is 256dp. Consumers can size the component with `width` and `maxWidth`.
 - Project-defined: The shared density spacing scale adjusts measured spacing values. The header keeps a 64px minimum height; the action row uses an 8dp gap for multiple slotted actions; keyboard focus uses a 3px secondary-color outline with a 2px offset.

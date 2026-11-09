@@ -70,6 +70,21 @@ test('modal SideSheet exposes one named dialog and keeps focus inside until dism
   await expect(page.locator('[role="dialog"]')).toHaveCount(1)
   await expect(dialog).toHaveJSProperty('tagName', 'ASIDE')
   await expect(dialog.locator('.yam3x-side-sheet')).not.toHaveAttribute('role', 'dialog')
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) => {
+        const frame = element.closest('.yam3x-drawer')!.getBoundingClientRect()
+        const rect = element.getBoundingClientRect()
+        const style = getComputedStyle(element)
+        return {
+          top: Math.round(rect.top - frame.top),
+          right: Math.round(frame.right - rect.right),
+          bottom: Math.round(frame.bottom - rect.bottom),
+          radius: style.borderRadius,
+        }
+      }),
+    )
+    .toEqual({ top: 16, right: 16, bottom: 16, radius: '16px' })
   const close = dialog.getByRole('button', { name: 'Close page settings' })
   await expect(close).toBeFocused()
   await page.keyboard.press('Shift+Tab')
