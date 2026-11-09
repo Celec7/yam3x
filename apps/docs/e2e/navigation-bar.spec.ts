@@ -148,7 +148,7 @@ test('selected navigation colors follow semantic roles in both themes', async ({
     const active = await colors(current)
     expect(active.icon).toBe(await colorForRole(page, 'on-secondary-container'))
     expect(active.label).toBe(await colorForRole(page, 'secondary'))
-    expect(active.labelWeight).toBe('700')
+    expect(active.labelWeight).toBe('500')
     expect(active.indicator).toBe(await colorForRole(page, 'secondary-container'))
     const inactiveColors = await colors(inactive)
     expect(inactiveColors.icon).toBe(await colorForRole(page, 'on-surface-variant'))

@@ -73,7 +73,6 @@ provide(navigationBarContextKey, { modelValue, activate })
   --_yam3x-navigation-bar-label-font-size: var(--md-sys-typescale-label-medium-font-size);
   --_yam3x-navigation-bar-label-line-height: var(--md-sys-typescale-label-medium-line-height-small);
   --_yam3x-navigation-bar-label-font-weight: var(--md-sys-typescale-label-medium-font-weight);
-  --_yam3x-navigation-bar-active-label-font-weight: 700;
   --_yam3x-navigation-bar-compact-item-gap: 8px;
   --_yam3x-navigation-bar-horizontal-item-gap: 4px;
   --_yam3x-navigation-bar-compact-indicator-width: 56px;
@@ -193,11 +192,6 @@ provide(navigationBarContextKey, { modelValue, activate })
   .yam3x-navigation-bar__item[aria-current='page']
   .yam3x-navigation-bar__label {
   color: var(--_yam3x-navigation-bar-active-label-color);
-}
-.yam3x-navigation-bar
-  .yam3x-navigation-bar__item[aria-current='page']
-  .yam3x-navigation-bar__label {
-  font-weight: var(--_yam3x-navigation-bar-active-label-font-weight);
 }
 .yam3x-navigation-bar
   .yam3x-navigation-bar__item[aria-current='page']
