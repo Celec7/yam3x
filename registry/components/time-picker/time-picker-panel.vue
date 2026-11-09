@@ -56,6 +56,7 @@ const props = defineProps<{
   setMode: (mode: string) => void
   setPeriod: (period: 'AM' | 'PM') => void
   setInputPart: (part: 'hour' | 'minute' | 'second', value: string) => void
+  finishInputPart: (part: 'hour' | 'minute' | 'second') => void
   hourAllowed: (value: number) => boolean
   tickAllowed: (value: number) => boolean
 }>()
@@ -204,6 +205,9 @@ function dialItemLabel(value: number): string {
                       :aria-invalid="invalid"
                       :aria-describedby="error ? errorId : undefined"
                       @input="setInputPart(field.part, ($event.target as HTMLInputElement).value)"
+                      @focus="($event.target as HTMLInputElement).select()"
+                      @click="($event.target as HTMLInputElement).select()"
+                      @blur="finishInputPart(field.part)"
                     />
                     <span class="yam3x-time-picker__input-label">{{ field.label }}</span>
                   </label>
@@ -276,18 +280,6 @@ function dialItemLabel(value: number): string {
             </div>
           </div>
         </div>
-        <button
-          v-if="showModeToggle !== false && !useInputOnly && !hideModeToggle"
-          type="button"
-          class="yam3x-time-picker__mode-toggle"
-          :aria-label="mode === 'input' ? useDialLabel : modeToggleLabel"
-          :title="mode === 'input' ? useDialLabel : modeToggleLabel"
-          @pointerdown="onModeTogglePointerDown"
-          @pointerup="onModeTogglePointerUp"
-          @click="onModeToggleClick"
-        >
-          <Icon :name="mode === 'input' ? 'schedule' : 'dialpad'" />
-        </button>
       </div>
     </header>
     <div
@@ -350,6 +342,18 @@ function dialItemLabel(value: number): string {
       v-if="showActions !== false"
       class="yam3x-time-picker__actions"
     >
+      <button
+        v-if="showModeToggle !== false && !useInputOnly && !hideModeToggle"
+        type="button"
+        class="yam3x-time-picker__mode-toggle"
+        :aria-label="mode === 'input' ? useDialLabel : modeToggleLabel"
+        :title="mode === 'input' ? useDialLabel : modeToggleLabel"
+        @pointerdown="onModeTogglePointerDown"
+        @pointerup="onModeTogglePointerUp"
+        @click="onModeToggleClick"
+      >
+        <Icon :name="mode === 'input' ? 'schedule' : 'keyboard'" />
+      </button>
       <button
         type="button"
         class="yam3x-time-picker__action"

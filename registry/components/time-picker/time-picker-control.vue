@@ -66,6 +66,7 @@ const activeView = ref<TimePickerView>('hour')
 const initial = props.modelValue ?? { hour: new Date().getHours(), minute: 0 }
 const draft = ref<TimeParts>({ ...initial, second: initial.second ?? 0 })
 const inputText = ref({ hour: '', minute: '', second: '' })
+const editingPart = ref<'hour' | 'minute' | 'second' | null>(null)
 const validationMessage = computed(() =>
   validationIssue.value === null
     ? ''
@@ -212,6 +213,7 @@ const panelProps = computed(() => ({
   setMode,
   setPeriod,
   setInputPart,
+  finishInputPart,
   hourAllowed,
   tickAllowed,
 }))
@@ -452,6 +454,7 @@ function selectorKeydown(event: KeyboardEvent, kind: TimePickerView): void {
 
 function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
   pendingFormat.value = format.value
+  editingPart.value = part
   inputText.value[part] = raw
   const number = Number(raw)
   const valid =
@@ -489,17 +492,25 @@ function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
   }
   validationIssue.value = null
   draft.value = next
-  syncInputText()
   publish()
 }
 
-function syncInputText(): void {
+function finishInputPart(part: 'hour' | 'minute' | 'second'): void {
+  if (editingPart.value === part) editingPart.value = null
+  const raw = inputText.value[part]
+  if (validationIssue.value === null && /^\d{1,2}$/.test(raw))
+    inputText.value[part] = raw.padStart(2, '0')
+}
+
+function syncInputText(preservePart: 'hour' | 'minute' | 'second' | null = null): void {
   const hour = format.value === '12' ? displayedHour.value : draft.value.hour
-  inputText.value = {
+  const next = {
     hour: String(hour).padStart(2, '0'),
     minute: String(draft.value.minute).padStart(2, '0'),
     second: String(draft.value.second ?? 0).padStart(2, '0'),
   }
+  if (preservePart) next[preservePart] = inputText.value[preservePart]
+  inputText.value = next
 }
 
 function setView(view: string): void {
@@ -516,6 +527,8 @@ function setMode(mode: string): void {
     return
   }
   if (mode === 'dial' || mode === 'input') {
+    editingPart.value = null
+    syncInputText()
     currentMode.value = mode
     emit('update:mode', mode)
     activeView.value = 'hour'
@@ -553,7 +566,7 @@ watch(
 )
 watch(
   () => [draft.value.hour, draft.value.minute, draft.value.second, format.value] as const,
-  () => syncInputText(),
+  () => syncInputText(editingPart.value),
   { immediate: true },
 )
 watch(format, async () => {
@@ -668,6 +681,7 @@ onBeforeUnmount(() => {
   --_yam3x-time-picker-color-primary: var(--md-sys-color-primary);
   --_yam3x-time-picker-color-primary-container: var(--md-sys-color-primary-container);
   --_yam3x-time-picker-color-scrim: var(--md-sys-color-scrim);
+  --_yam3x-time-picker-color-secondary: var(--md-sys-color-secondary);
   --_yam3x-time-picker-color-surface-container-high: var(--md-sys-color-surface-container-high);
   --_yam3x-time-picker-color-surface-container-highest: var(
     --md-sys-color-surface-container-highest
@@ -814,6 +828,7 @@ onBeforeUnmount(() => {
   color: var(--_yam3x-time-picker-color-on-surface-variant);
   font-size: 20px;
   cursor: pointer;
+  margin-inline-end: auto;
 }
 /* Keep the dial in a fixed-size layout slot while the selected unit changes. */
 .yam3x-time-picker__dial-wrap {
@@ -980,7 +995,7 @@ onBeforeUnmount(() => {
 }
 .yam3x-time-picker__input-slot input:focus {
   outline: 2px solid var(--_yam3x-time-picker-color-primary);
-  outline-offset: 2px;
+  outline-offset: 0;
   background: var(--_yam3x-time-picker-color-primary-container);
 }
 .yam3x-time-picker__separator {
@@ -1042,11 +1057,14 @@ onBeforeUnmount(() => {
   cursor: default;
 }
 .yam3x-time-picker button:focus-visible,
+.yam3x-time-picker__surface button:focus-visible {
+  outline: 3px solid var(--_yam3x-time-picker-color-secondary);
+  outline-offset: 2px;
+}
 .yam3x-time-picker input:focus-visible,
-.yam3x-time-picker__surface button:focus-visible,
 .yam3x-time-picker__surface input:focus-visible {
   outline: 2px solid var(--_yam3x-time-picker-color-primary);
-  outline-offset: 2px;
+  outline-offset: 0;
 }
 .yam3x-time-picker__surface.is-horizontal .yam3x-time-picker__content {
   grid-template-columns: auto auto;
@@ -1222,12 +1240,6 @@ html.yam3x-time-picker-scroll-lock {
     var(--_yam3x-time-picker-color-primary-container)
   );
 }
-.yam3x-time-picker__selector:focus-visible {
-  outline-color: var(
-    --_yam3x-time-picker-input-field-selected-focus-state-layer-color,
-    var(--_yam3x-time-picker-color-primary)
-  );
-}
 .yam3x-time-picker__input-slot input:hover:not(:focus) {
   background: color-mix(
     in srgb,
@@ -1367,11 +1379,6 @@ html.yam3x-time-picker-scroll-lock {
   flex: 0 0 216px;
   margin: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1)) 0 0;
 }
-.yam3x-time-picker__surface.is-horizontal .yam3x-time-picker__mode-toggle {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-end: 0;
-}
 .yam3x-time-picker__surface.is-horizontal .yam3x-time-picker__dial-wrap {
   margin-block-start: 0;
   margin-inline-start: var(
@@ -1486,18 +1493,6 @@ html.yam3x-time-picker-scroll-lock {
 }
 .yam3x-time-picker__surface.is-input-only .yam3x-time-picker__actions {
   padding-block-start: 0;
-}
-.yam3x-time-picker__selector[aria-pressed='true']:focus-visible {
-  outline-color: var(
-    --_yam3x-time-picker-input-field-selected-focus-state-layer-color,
-    var(--_yam3x-time-picker-color-primary)
-  );
-}
-.yam3x-time-picker__selector:not([aria-pressed='true']):focus-visible {
-  outline-color: var(
-    --_yam3x-time-picker-input-field-unselected-focus-state-layer-color,
-    var(--_yam3x-time-picker-color-primary)
-  );
 }
 .yam3x-time-picker__time-selectors {
   display: flex;
@@ -1658,49 +1653,20 @@ html.yam3x-time-picker-scroll-lock {
   );
 }
 .yam3x-time-picker__input-slot input:focus:not([aria-invalid='true']) {
-  background: color-mix(
-    in srgb,
-    var(
-        --_yam3x-time-picker-input-field-selected-focus-state-layer-color,
-        var(--_yam3x-time-picker-color-on-primary-container)
-      )
-      12%,
-    var(
-      --_yam3x-time-picker-input-field-selected-container-color,
-      var(--_yam3x-time-picker-color-primary-container)
-    )
+  background: var(
+    --_yam3x-time-picker-input-field-selected-container-color,
+    var(--_yam3x-time-picker-color-primary-container)
   );
   color: var(
     --_yam3x-time-picker-input-field-label-selected-color,
     var(--_yam3x-time-picker-color-on-primary-container)
   );
 }
-.yam3x-time-picker__input-slot input:focus:not([aria-invalid='true']):hover {
-  background: color-mix(
-    in srgb,
-    var(
-        --_yam3x-time-picker-input-field-selected-hover-state-layer-color,
-        var(--_yam3x-time-picker-color-on-primary-container)
-      )
-      8%,
-    var(
-      --_yam3x-time-picker-input-field-selected-container-color,
-      var(--_yam3x-time-picker-color-primary-container)
-    )
-  );
-}
+.yam3x-time-picker__input-slot input:focus:not([aria-invalid='true']):hover,
 .yam3x-time-picker__input-slot input:focus:not([aria-invalid='true']):active {
-  background: color-mix(
-    in srgb,
-    var(
-        --_yam3x-time-picker-input-field-selected-pressed-state-layer-color,
-        var(--_yam3x-time-picker-color-on-primary-container)
-      )
-      12%,
-    var(
-      --_yam3x-time-picker-input-field-selected-container-color,
-      var(--_yam3x-time-picker-color-primary-container)
-    )
+  background: var(
+    --_yam3x-time-picker-input-field-selected-container-color,
+    var(--_yam3x-time-picker-color-primary-container)
   );
 }
 .yam3x-time-picker__input-slot input[aria-invalid='true'] {
@@ -1947,5 +1913,9 @@ html.yam3x-time-picker-scroll-lock {
 }
 .yam3x-time-picker__surface--inline .yam3x-time-picker__content {
   min-width: 0;
+}
+.yam3x-time-picker__period button:focus-visible {
+  outline: 3px solid var(--_yam3x-time-picker-color-secondary);
+  outline-offset: 2px;
 }
 </style>

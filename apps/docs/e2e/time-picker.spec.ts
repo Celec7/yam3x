@@ -1,5 +1,17 @@
 import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { selectM3Option } from './test-utils'
+
+function roleColor(page: Page, role: string) {
+  return page.evaluate((name) => {
+    const hex = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--md-sys-color-${name}`)
+      .trim()
+      .slice(1)
+    const value = Number.parseInt(hex, 16)
+    return `rgb(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255})`
+  }, role)
+}
 
 test.describe('Time picker', () => {
   test.beforeEach(async ({ page }) => {
@@ -31,6 +43,19 @@ test.describe('Time picker', () => {
     expect(minuteBox!.height).toBe(80)
     await expect(dialog.getByRole('radiogroup', { name: 'AM or PM' })).toHaveCount(0)
     await expect(dialog.getByRole('button', { name: '20 hours of 24' })).toBeEnabled()
+    // switch.a11y.focus and input-mode toggle placement
+    const modeToggle = dialog.getByRole('button', { name: 'Enter time manually' })
+    await expect(
+      dialog.locator('.yam3x-time-picker__actions .yam3x-time-picker__mode-toggle'),
+    ).toHaveCount(1)
+    const toggleBox = await modeToggle.boundingBox()
+    const cancelBox = await dialog.getByRole('button', { name: 'Cancel' }).boundingBox()
+    expect(toggleBox!.x).toBeLessThan(cancelBox!.x)
+    await page.keyboard.press('Tab')
+    await expect(minuteSelector).toBeFocused()
+    await expect(minuteSelector).toHaveCSS('outline-width', '3px')
+    await expect(minuteSelector).toHaveCSS('outline-offset', '2px')
+    await expect(minuteSelector).toHaveCSS('outline-color', await roleColor(page, 'secondary'))
     await dialog.getByRole('button', { name: '20 hours of 24' }).click()
     await dialog.getByRole('button', { name: '00 minutes of 60' }).click()
     await dialog.getByRole('button', { name: 'OK' }).click()
@@ -106,14 +131,48 @@ test.describe('Time picker', () => {
     expect(hourBox!.height).toBe(80)
     expect(periodBox!.width).toBe(52)
     expect(periodBox!.height).toBe(80)
+    await dialog.locator('.yam3x-time-picker__selector[aria-label="Second"]').focus()
+    await page.keyboard.press('Tab')
+    const selectedPeriod = period.getByRole('radio', { name: 'PM' })
+    await expect(selectedPeriod).toBeFocused()
+    await expect(selectedPeriod).toHaveCSS('outline-width', '3px')
+    await expect(selectedPeriod).toHaveCSS('outline-color', await roleColor(page, 'secondary'))
     await dialog.getByRole('button', { name: 'Enter time manually' }).click()
     await expect(period.getByRole('radio', { name: 'PM' })).toHaveAttribute('aria-checked', 'true')
-    await dialog.getByRole('textbox', { name: 'Hour' }).fill('01')
+    const hourInput = dialog.getByRole('textbox', { name: 'Hour' })
+    await hourInput.focus()
+    await expect(hourInput).toHaveCSS('outline-width', '2px')
+    await expect(hourInput).toHaveCSS('outline-offset', '0px')
+    await expect(hourInput).toHaveCSS('outline-color', await roleColor(page, 'primary'))
+    await expect(hourInput).toHaveCSS(
+      'background-color',
+      await roleColor(page, 'primary-container'),
+    )
+    await hourInput.fill('01')
     await dialog.getByRole('textbox', { name: 'Minute' }).fill('08')
     await dialog.getByRole('textbox', { name: 'Second' }).fill('09')
     await expect(dialog.getByRole('textbox', { name: 'Second' })).toHaveValue('09')
     await dialog.getByRole('button', { name: 'OK' }).click()
     await expect(page.getByText(/Last submitted: 01:08:09 PM/)).toBeVisible()
+  })
+
+  test('keeps a one-digit input editable until the second digit is entered', async ({ page }) => {
+    await page.goto('/components/time-picker')
+    await selectM3Option(page, page.getByLabel('Time format'), '24')
+    const trigger = page.getByRole('button', { name: /Reminder time/ })
+    await trigger.click()
+    const dialog = page.getByRole('dialog', { name: 'Reminder time' })
+    await dialog.getByRole('button', { name: 'Enter time manually' }).click()
+    const hour = dialog.getByRole('textbox', { name: 'Hour' })
+    await hour.fill('')
+    await hour.pressSequentially('1')
+    await expect(hour).toHaveValue('1')
+    await hour.pressSequentially('1')
+    await expect(hour).toHaveValue('11')
+    await dialog.getByRole('textbox', { name: 'Minute' }).focus()
+    await expect(hour).toHaveValue('11')
+    await dialog.getByRole('button', { name: 'OK' }).click()
+    await expect(trigger).toContainText('11:00')
   })
 
   test('fills both AM/PM segments evenly in composable controls', async ({ page }) => {

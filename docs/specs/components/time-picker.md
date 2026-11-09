@@ -10,6 +10,7 @@ Time pickers help people select a specific time. This guide adopts Material's di
 - Use the dial dimensions, target areas, selected states, and colors shown in [Time picker specifications](https://m3.material.io/components/time-pickers/specs). Adapt orientation or use input mode when the dial does not fit; avoid scrolling the picker.
 - Use `on-surface` for the enlarged time values and `on-surface-variant` for the Hour/Minute supporting labels, as shown by the Input token selector.
 - Place Hour/Minute labels below the enlarged input fields, as shown in [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines).
+- Place the dial/input mode toggle at the leading edge of the bottom action row. In input mode, focus the selected field with a 2dp `primary` outline at the field edge and a `primary-container` fill. Give the selectors and period options the 3dp `secondary` focus indicator with a 2dp offset.
 - `time-picker.color.roles`: Use the surface and selected-state color roles shown in [Time picker specifications](https://m3.material.io/components/time-pickers/specs).
 - Follow the 12-hour and 24-hour dial arrangements in [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines). Let locale or time-format settings determine which presentation is used.
 - Use the enter/exit transition for the modal picker and the transition between dial and input modes. Honor reduced-motion preferences. See [Time picker guidelines: behavior](https://m3.material.io/components/time-pickers/guidelines).
@@ -44,5 +45,6 @@ The official Input token selector names its component tokens under `md.comp.time
 - Project-defined: For the 24-hour dial, follow the guideline's explicit even-hours-inner and odd-hours-outer rule; its example image appears to show 0–11 on the outer ring and 12–23 on the inner ring instead.
 - Project-defined: Automatic layout uses a 684px minimum width and 480px minimum height for the horizontal dial, and a 596px minimum height for the vertical dial. These cutoffs keep the 256px dial, surrounding content, and 24px container padding visible without scrolling.
 - Project-defined: Use a fade-and-scale transition between hour, minute, and second dial faces; Material does not specify this transition.
+- Project-defined: Preserve a one-digit raw value while its field is focused, then pad it on blur. This keeps two-digit entry such as `11` possible while still committing the parsed number on every valid keystroke.
 - Project-defined: Keep CSS implementation aliases private. The Vue props and slots are the supported customization surface; incidental CSS properties are not consumer overrides.
 - Project-defined (**time-picker.behavior.locale-draft**): Changing language preserves the active mode and provisional time. Keep invalid automatic-hour-cycle input in its editing cycle until correction or dismissal so a language change cannot reinterpret the draft or enable confirmation.

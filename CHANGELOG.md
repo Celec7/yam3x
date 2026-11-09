@@ -32,6 +32,7 @@
 - Checkbox keyboard focus uses the Material Web focus-ring treatment: a 44px circular `secondary` ring with a 3px stroke instead of an outline around the 18px box.
 - Radio buttons use the same 44px circular focus ring and keep the 40px state layer for hover and pressed feedback.
 - Switch focus now surrounds the 52px track with the 3px `secondary` indicator, unselected handles center at 16px from the track edge, icon handles stay 24px when disabled, and the pressed handle size grows over a 100ms linear transition.
+- Time pickers place the dial/input toggle in the bottom action row with the keyboard icon, use the 3px `secondary` focus indicator on selectors and period options, and focus input fields with a 2px `primary` outline and `primary-container` fill. One-digit input stays editable until the second digit is typed and is padded on blur.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.
