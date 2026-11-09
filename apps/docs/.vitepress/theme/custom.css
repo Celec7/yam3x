@@ -36,6 +36,13 @@
 }
 
 .vp-doc .yam3x-state-layer:focus-visible {
-  outline: 3px solid var(--md-sys-color-secondary);
-  outline-offset: 3px;
+  outline: var(--md-sys-state-focus-indicator-thickness, 3px) solid var(--md-sys-color-secondary);
+  outline-offset: var(--md-sys-state-focus-indicator-outer-offset, 2px);
+}
+
+/* VitePress removes the ring for pointer focus. The strong-focus demo overrides that
+   so the theme setting is observable on pointer-focused controls. */
+[data-yam3x-focus-visibility='always'] button:focus:not(:focus-visible) {
+  outline: var(--md-sys-state-focus-indicator-thickness, 3px) solid var(--md-sys-color-secondary) !important;
+  outline-offset: var(--md-sys-state-focus-indicator-outer-offset, 2px) !important;
 }

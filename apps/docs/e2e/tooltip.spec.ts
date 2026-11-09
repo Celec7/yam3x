@@ -205,7 +205,7 @@ test('transient rich tooltip exposes tooltip semantics and its subhead and body 
   expect(typeMetrics.content.fontSize).toBe('14px')
   expect(typeMetrics.content.fontWeight).toBe('400')
   expect(typeMetrics.content.lineHeight).toBeCloseTo(typeMetrics.content.expectedLineHeight, 2)
-  expect(typeMetrics.content.tracking).toBe('0.25px')
+  expect(typeMetrics.content.tracking).toBe('0.2px')
   const roleColors = await tooltip.evaluate((element) => {
     const probe = document.createElement('span')
     probe.style.backgroundColor = 'var(--md-sys-color-surface-container)'

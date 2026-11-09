@@ -28,7 +28,7 @@ test('initials, icon, and image content stay passive and fit the default square'
   await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('font-size', '16px')
   await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('font-weight', '500')
   await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('line-height', '24px')
-  await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('letter-spacing', '0.15px')
+  await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('letter-spacing', '0.2px')
 
   // avatar.extension.accessible-name
   await expect(avatars.nth(1)).toHaveAttribute('role', 'img')

@@ -182,7 +182,7 @@ test('honors RTL, light/dark color roles, reduced motion, and forced colors', as
   await page.getByRole('button', { name: 'Snackbar with action' }).click()
   const snackbar = page.getByRole('status')
   await expect(snackbar.locator('.yam3x-snackbar__message')).toHaveCSS('font-weight', '400')
-  await expect(snackbar.locator('.yam3x-snackbar__message')).toHaveCSS('letter-spacing', '0.25px')
+  await expect(snackbar.locator('.yam3x-snackbar__message')).toHaveCSS('letter-spacing', '0.2px')
   await expect(snackbar.locator('[data-snackbar-action]')).toHaveCSS('font-weight', '500')
   await expect(snackbar).toHaveCSS('column-gap', '0px')
   await expect(snackbar.locator('[data-snackbar-action]')).toHaveCSS('min-width', '64px')

@@ -12,7 +12,7 @@
 import ThemeExample from '../../components/demos/ThemeExample.vue'
 </script>
 
-`generateTheme` 使用 Material Color Utilities（MCU）2025 配色规范，根据六位十六进制源颜色生成浅色和深色方案。支持 `expressive`、`vibrant`、`tonal-spot` 和 `neutral` 四种变体，以及标准/中/高对比度。默认源色为 `#6750a4`，项目默认变体为 `tonal-spot`。初始 CSS 颜色令牌也由同一套 MCU 配置生成；VitePress 只提供图片选择界面，不另行定义颜色方案。`applyTheme` 写入参考调色板和语义颜色角色，并可配置密度、动效和强焦点指示器。默认动效方案为 `expressive`；需要较少过冲时可设置为 `standard`。
+`generateTheme` 使用 Material Color Utilities（MCU）2025 配色规范，根据六位十六进制源颜色生成浅色和深色方案。支持 `expressive`、`vibrant`、`tonal-spot` 和 `neutral` 四种变体，以及标准/中/高对比度。默认源色为 `#6750a4`，项目默认变体为 `tonal-spot`。初始 CSS 颜色令牌也由同一套 MCU 配置生成；VitePress 只提供图片选择界面，不另行定义颜色方案。`applyTheme` 写入参考调色板和语义颜色角色，并可配置密度、动效和强焦点指示器。强焦点模式还会在指针焦点上显示共享焦点环，而不只限于 `:focus-visible`。默认动效方案为 `expressive`；需要较少过冲时可设置为 `standard`。
 
 `density` 接受 `0`、`-1` 或 `-2`。紧凑设置会把组件间距缩放至 87.5% 或 75%，并缩小已接入的容器尺寸。字号与 48px 最小交互目标保持不变。密度档位和缩放比例是项目决策。
 

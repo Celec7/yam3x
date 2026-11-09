@@ -31,6 +31,13 @@ This guide collects Material 3 principles that apply across component families. 
 - Adapt structure and components to content, available space, user preferences, changing windows, and input methods. Use Feed for peer content, List-detail for parent-child content, and Supporting pane when secondary content only makes sense with the primary area. Material's Supporting pane example moves secondary content below the primary area at compact and medium sizes and beside it at expanded size. Consider resizing, selectively revealing information, reflowing, or changing presentation rather than only shrinking one composition. See [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design) and the [canonical layout examples](https://m3.material.io/foundations/layout/canonical-examples/overview).
 - Use leading and trailing relationships that follow writing direction. Preserve a meaningful reading and focus order when the visual arrangement changes. See [Layout overview](https://m3.material.io/foundations/layout/layout-overview/overview) and [Bidirectionality and RTL](https://m3.material.io/foundations/layout/bidirectionality-rtl).
 
+### Input and gestures
+
+- Treat pointer gestures as an enhancement, never the only way to complete an action. Every drag, swipe, or gesture-driven change keeps a keyboard or ordinary click/tap path. Follow the component guide for the exact alternatives.
+- On Web, preserve native touch and trackpad scrolling. Add primary-button mouse dragging only where direct manipulation is meaningful, such as the horizontal carousel; suppress the trailing click after a drag and keep click activation for movement below the drag threshold.
+- Pointer handling must not require touch: interactive controls accept primary mouse input, and focus, hover, and keyboard states remain available. Do not assume a coarse pointer to enable a core interaction.
+- Android predictive-back and edge-swipe behaviors are platform gestures. A Web implementation provides close buttons, scrim dismissal, Escape, and focus restoration instead of emulating the Android system gesture unless the product explicitly owns that gesture.
+
 ### Appearance and interaction
 
 - Use semantic theme roles for color, typography, shape, and motion. Follow each component's M3 source for which roles and configurations apply; do not impose one shape, size, or color mapping on every component.

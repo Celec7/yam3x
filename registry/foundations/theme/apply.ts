@@ -34,6 +34,8 @@ export function applyTheme(
     '--yam3x-focus-ring-visibility',
     options.strongFocus ? 'visible' : 'hidden',
   )
+  if (options.strongFocus) target.dataset.yam3xFocusVisibility = 'always'
+  else delete target.dataset.yam3xFocusVisibility
   target.style.setProperty(
     '--yam3x-scrollbar-thumb-color',
     colorTokens['--md-ref-palette-neutral60']!,

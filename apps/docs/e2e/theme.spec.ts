@@ -48,7 +48,12 @@ test('theme guide applies variants and settings, follows system mode, and report
   await page.getByLabel('Strong focus indicator').check()
   await expect(target).toHaveCSS('--md-sys-density-scale', '-2')
   await expect(target).toHaveCSS('--yam3x-focus-ring-visibility', 'visible')
+  await expect(target).toHaveAttribute('data-yam3x-focus-visibility', 'always')
   await expect(target).toHaveCSS('--md-sys-motion-spring-fast-spatial', /^350ms /)
+  const primaryAction = target.getByRole('button', { name: 'Primary action' })
+  await primaryAction.click()
+  await expect(primaryAction).toHaveCSS('outline-width', '3px')
+  await expect(primaryAction).toHaveCSS('outline-offset', '2px')
   await expect(page.getByTestId('theme-changes')).toContainText('Theme change events: 4')
 
   await selectM3Option(page, page.getByLabel('Color scheme'), 'system')

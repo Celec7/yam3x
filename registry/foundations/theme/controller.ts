@@ -25,6 +25,7 @@ export function createThemeController(
   const body = document.body
   const previousStyle = target.getAttribute('style')
   const previousTheme = target.getAttribute('data-theme')
+  const previousFocusVisibility = target.getAttribute('data-yam3x-focus-visibility')
   const previousBodyStyle = body?.getAttribute('style') ?? null
   const previousRootStyle = document.documentElement.getAttribute('style')
   const media =
@@ -107,6 +108,8 @@ export function createThemeController(
       else target.setAttribute('style', previousStyle)
       if (previousTheme === null) target.removeAttribute('data-theme')
       else target.setAttribute('data-theme', previousTheme)
+      if (previousFocusVisibility === null) target.removeAttribute('data-yam3x-focus-visibility')
+      else target.setAttribute('data-yam3x-focus-visibility', previousFocusVisibility)
       if (rootTarget && target !== body && body) {
         if (previousBodyStyle === null) body.removeAttribute('style')
         else body.setAttribute('style', previousBodyStyle)

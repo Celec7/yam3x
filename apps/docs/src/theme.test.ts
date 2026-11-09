@@ -123,6 +123,35 @@ describe('dynamic theme foundations', () => {
     expect(generatedCss).toContain(`--md-sys-color-primary: ${dark['--md-sys-color-primary']};`)
   })
 
+  it('keeps baseline and emphasized type tracking on the Material scale', () => {
+    const css = readFileSync(
+      resolve(process.cwd(), '../../registry/foundations/styles/tokens.css'),
+      'utf8',
+    )
+    expect(css).toContain('--md-sys-typescale-display-large-tracking: -0.0125rem;')
+    expect(css).toContain('--md-sys-typescale-title-medium-tracking: 0.0125rem;')
+    expect(css).toContain('--md-sys-typescale-body-medium-tracking: 0.0125rem;')
+    expect(css).toContain('--md-sys-typescale-emphasized-display-large-tracking: 0;')
+    expect(css).toContain('--md-sys-typescale-emphasized-title-medium-tracking: 0.009375rem;')
+    expect(css).toContain('--md-sys-typescale-emphasized-body-large-tracking: 0.009375rem;')
+    expect(css).toContain('--md-sys-typescale-emphasized-body-medium-tracking: 0.015625rem;')
+  })
+
+  it('uses the shared focus indicator tokens for the global focus fallback', () => {
+    const css = readFileSync(
+      resolve(process.cwd(), '../../registry/foundations/styles/base.css'),
+      'utf8',
+    )
+    expect(css).toContain('var(--md-sys-state-focus-indicator-thickness, 3px)')
+    expect(css).toContain('var(--md-sys-state-focus-indicator-outer-offset, 2px)')
+    const tokens = readFileSync(
+      resolve(process.cwd(), '../../registry/foundations/styles/tokens.css'),
+      'utf8',
+    )
+    expect(tokens).toContain('--md-sys-state-focus-indicator-thickness: 3px;')
+    expect(tokens).toContain('--md-sys-state-focus-indicator-outer-offset: 2px;')
+  })
+
   it('applies and resets density, focus, and expressive motion settings', () => {
     const theme = generateTheme('#6750A4')
     const target = document.createElement('div')
@@ -130,6 +159,7 @@ describe('dynamic theme foundations', () => {
     applyTheme(theme, target, 'dark', { density: -2, motion: 'expressive', strongFocus: true })
     expect(target.style.getPropertyValue('--md-sys-density-scale')).toBe('-2')
     expect(target.style.getPropertyValue('--yam3x-focus-ring-visibility')).toBe('visible')
+    expect(target.dataset.yam3xFocusVisibility).toBe('always')
     expect(target.style.getPropertyValue('--md-sys-motion-spring-fast-spatial')).toBe(
       '350ms cubic-bezier(0.42, 1.67, 0.21, 0.9)',
     )
@@ -143,6 +173,7 @@ describe('dynamic theme foundations', () => {
     applyTheme(theme, target, 'light')
     expect(target.style.getPropertyValue('--md-sys-density-scale')).toBe('0')
     expect(target.style.getPropertyValue('--yam3x-focus-ring-visibility')).toBe('hidden')
+    expect(target.dataset.yam3xFocusVisibility).toBeUndefined()
     expect(target.style.getPropertyValue('--md-sys-motion-spring-fast-spatial')).toBe(
       '350ms cubic-bezier(0.42, 1.67, 0.21, 0.9)',
     )

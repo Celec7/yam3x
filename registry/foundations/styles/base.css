@@ -33,8 +33,8 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid var(--md-sys-color-secondary);
-  outline-offset: 3px;
+  outline: var(--md-sys-state-focus-indicator-thickness, 3px) solid var(--md-sys-color-secondary);
+  outline-offset: var(--md-sys-state-focus-indicator-outer-offset, 2px);
 }
 
 ::selection {
