@@ -331,6 +331,46 @@ test('Search bar uses the shared hover state layer, press ripple, and visible fo
   await expect(bar).toHaveCSS('outline-style', 'solid')
 })
 
+test('Search bar keeps the official 48px targets, edge padding, and zero trailing gap', async ({
+  page,
+}) => {
+  const root = page.getByTestId('search')
+  const field = page.getByRole('searchbox', { name: 'Search messages' })
+  const read = () =>
+    root.evaluate((element) => {
+      const box = (selector: string) => {
+        const rect = element.querySelector(selector)?.getBoundingClientRect()
+        return rect && { left: rect.left, right: rect.right, width: rect.width }
+      }
+      const bar = box('.yam3x-search__bar')!
+      const leading = box('.yam3x-search__leading')!
+      const input = box('.yam3x-search__input')!
+      const trailing = [...element.querySelectorAll('.yam3x-search__trailing > *')].map((action) =>
+        action.getBoundingClientRect(),
+      )
+      return {
+        bar,
+        leading,
+        input,
+        trailing,
+      }
+    })
+  const unfocused = await read()
+  expect(unfocused.leading.left - unfocused.bar.left).toBeCloseTo(4, 0)
+  expect(unfocused.leading.width).toBeCloseTo(48, 0)
+  expect(unfocused.input.left - unfocused.bar.left).toBeCloseTo(56, 0)
+  expect(unfocused.trailing).toHaveLength(2)
+  expect(unfocused.trailing[0]!.width).toBeCloseTo(48, 0)
+  expect(unfocused.trailing[1]!.left - unfocused.trailing[0]!.right).toBeCloseTo(0, 0)
+  expect(unfocused.bar.right - unfocused.trailing[1]!.right).toBeCloseTo(4, 0)
+
+  await field.focus()
+  const focused = await read()
+  expect(focused.leading.left - focused.bar.left).toBeCloseTo(4, 0)
+  expect(focused.leading.width).toBeCloseTo(48, 0)
+  expect(focused.input.left - focused.bar.left).toBeCloseTo(56, 0)
+})
+
 test('Search exit animates out, becomes inert immediately, and can reverse when reopened', async ({
   page,
 }) => {

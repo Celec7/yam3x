@@ -758,8 +758,8 @@ defineExpose({ close, clear, focus: focusSearchbox })
   margin-inline-start: var(--_yam3x-search-inline-margin);
   margin-inline-end: 0;
   transition:
-    width var(--_yam3x-search-motion-default-spatial),
-    margin var(--_yam3x-search-motion-default-spatial);
+    width var(--_yam3x-search-motion-fast-spatial),
+    margin var(--_yam3x-search-motion-fast-spatial);
 }
 .yam3x-search__bar {
   box-sizing: border-box;
@@ -795,11 +795,14 @@ defineExpose({ close, clear, focus: focusSearchbox })
 }
 .yam3x-search__leading {
   min-width: 48px;
-  padding-inline: var(--_yam3x-search-bar-leading-space);
+  padding-inline: 0;
 }
 .yam3x-search__trailing {
   gap: var(--_yam3x-search-bar-actions-gap);
   color: var(--_yam3x-search-bar-trailing-icon-color);
+}
+.yam3x-search__trailing :deep(> *) {
+  margin-inline: 0;
 }
 .yam3x-search__clear {
   min-width: 48px;
@@ -1035,8 +1038,8 @@ defineExpose({ close, clear, focus: focusSearchbox })
   );
   margin: var(--_yam3x-search-spacing-8) 0;
   transition:
-    width var(--_yam3x-search-motion-default-spatial),
-    inset-inline-start var(--_yam3x-search-motion-default-spatial);
+    width var(--_yam3x-search-motion-fast-spatial),
+    inset-inline-start var(--_yam3x-search-motion-fast-spatial);
 }
 .yam3x-search--open-fullscreen .yam3x-search__view--fullscreen {
   padding-block-start: calc(
