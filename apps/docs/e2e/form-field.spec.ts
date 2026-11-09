@@ -100,6 +100,7 @@ test('filled FormField centers its label and icons and keeps the 56px container 
   page,
 }) => {
   // form-field.geometry.anatomy
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/components/form-field')
   const field = page.locator('.form-field-demo__main-field')
   await selectM3Option(page, page.getByLabel('Appearance'), 'filled')
@@ -131,6 +132,7 @@ test('filled FormField centers its label and icons and keeps the 56px container 
   expect(empty.prefixStart).toBe(12)
 
   await input.fill('person@example.com')
+  await expect(field).toHaveClass(/yam3x-form-field--floating/)
   const populated = await field.evaluate((element) => {
     const box = element
       .querySelector<HTMLElement>('.yam3x-form-field__container')!
@@ -147,6 +149,7 @@ test('filled FormField centers its label and icons and keeps the 56px container 
       inputCenter: (input.top + input.bottom) / 2,
       center: (box.top + box.bottom) / 2,
       labelStart: label.left,
+      labelHeight: label.height,
       inputStart: input.left,
       suffixEnd: box.right - suffix.right,
     }
@@ -154,6 +157,7 @@ test('filled FormField centers its label and icons and keeps the 56px container 
   expect(populated.height).toBe(56)
   expect(Math.abs(populated.inputCenter - populated.center)).toBeLessThan(2)
   expect(populated.labelStart).toBe(populated.inputStart)
+  expect(Math.abs(populated.labelHeight - 16)).toBeLessThan(1)
   expect(populated.suffixEnd).toBe(12)
 
   const beforeFocus = await input.boundingBox()
@@ -169,6 +173,23 @@ test('FormField variants, wrapping, RTL, focus, and reduced motion work on deskt
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto('/components/form-field')
   const field = page.locator('.form-field-demo .yam3x-form-field').first()
+  await field.locator('input').fill('person@example.com')
+  await expect(field).toHaveClass(/yam3x-form-field--floating/)
+  await page.waitForTimeout(400)
+  const floatingLabel = await field.evaluate((element) => {
+    const label = element
+      .querySelector<HTMLElement>('.yam3x-form-field__label')!
+      .getBoundingClientRect()
+    const outline = element
+      .querySelector<HTMLElement>('.yam3x-form-field__outline')!
+      .getBoundingClientRect()
+    return {
+      height: label.height,
+      centerOffset: (label.top + label.bottom - 2 * outline.top) / 2,
+    }
+  })
+  expect(Math.abs(floatingLabel.height - 16)).toBeLessThan(1)
+  expect(Math.abs(floatingLabel.centerOffset)).toBeLessThan(1)
   await selectM3Option(page, page.getByLabel('Appearance'), 'filled')
   await expect(field).toHaveClass(/yam3x-form-field--filled/)
   await expect(field.locator('.yam3x-form-field__container')).toHaveCSS(
@@ -187,8 +208,6 @@ test('FormField variants, wrapping, RTL, focus, and reduced motion work on deskt
   expect(labelBox).not.toBeNull()
   expect(labelBox!.x + labelBox!.width).toBeLessThanOrEqual(prefixBox!.x - 16)
   // form-field.geometry.anatomy: floating labels retain their leading inset in RTL.
-  await field.locator('input').fill('person@example.com')
-  await expect(field).toHaveClass(/yam3x-form-field--floating/)
   await expect
     .poll(() =>
       field.locator('.yam3x-form-field__label').evaluate((element) => {

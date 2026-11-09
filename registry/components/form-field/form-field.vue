@@ -663,7 +663,8 @@ onBeforeUnmount(() => {
   color: transparent;
 }
 .yam3x-form-field__label--floating {
-  top: 0;
+  top: 3px;
+  line-height: calc(16px / 0.75);
   transform: translateY(-50%) scale(var(--_yam3x-form-field-label-scale));
 }
 .yam3x-form-field:dir(rtl) .yam3x-form-field__label {
