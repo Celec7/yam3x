@@ -87,7 +87,7 @@ function measureLabel() {
   })
   badgeSize.value = hasContent ? 'large' : 'small'
   const text = content?.textContent?.replace(/\s/g, '') ?? ''
-  longLabel.value = text.length > 2
+  longLabel.value = text.length > 3
 }
 
 function placementFor(value: BadgePosition, rtl: boolean) {

@@ -78,6 +78,22 @@ test('badge variant follows dynamically rendered default slot content', async ({
   await content.evaluate((element) => element.append(document.createTextNode('7')))
   await expect(dot).toHaveClass(/yam3x-badge--large/)
   await expect(dot).toHaveText('7')
+  await content.evaluate((element) => {
+    element.textContent = '123'
+  })
+  await expect(dot).not.toHaveAttribute('data-long-label')
+  await expect(dot).toHaveCSS('font-size', '11px')
+  await expect
+    .poll(() => dot.evaluate((element) => element.getBoundingClientRect().width))
+    .toBeLessThanOrEqual(34)
+  await content.evaluate((element) => {
+    element.textContent = '999+'
+  })
+  await expect(dot).toHaveAttribute('data-long-label')
+  await expect(dot).toHaveCSS('font-size', '10px')
+  await content.evaluate((element) => {
+    element.textContent = '7'
+  })
 
   await content.evaluate((element) => element.replaceChildren(document.createTextNode('  ')))
   await expect(dot).toHaveClass(/yam3x-badge--small/)

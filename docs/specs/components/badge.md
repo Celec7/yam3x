@@ -22,3 +22,4 @@ Badges show a notification, count, or short status associated with an icon or na
 
 - Project-defined: The Vue component supports additional logical placements for non-navigation layouts; a Material-mapped navigation or icon badge still uses the official upper-trailing placement.
 - Project-defined API behavior: the Vue component derives the official small-dot or large-text variant from whether the default slot renders content. This follows Compose's content-shaped API while adapting it to Vue slots.
+- Project-defined: One- to three-character labels use the official 11/16/500/0.5 label metrics. Four-character labels use 10/16/500/0.1 so the container stays within the official 16×34dp maximum with the 4dp inline padding; Web font metrics otherwise exceed the maximum width.
