@@ -18,6 +18,15 @@ test('sorts the full local collection before paging, restores source order, and 
   const budget = table.getByRole('columnheader', { name: 'Budget', exact: true })
   await expect(table).toHaveAttribute('aria-rowcount', '8')
   await expect(local.getByRole('grid')).toHaveCount(0)
+  const statusHeader = table
+    .locator('.yam3x-data-table__header')
+    .filter({ hasText: 'Status' })
+    .first()
+  expect(await statusHeader.evaluate((element) => getComputedStyle(element).color)).toBe(
+    await local.evaluate(
+      (element) => getComputedStyle(element.querySelector('.yam3x-data-table')!).color,
+    ),
+  )
   await budget.getByRole('button', { name: 'Budget', exact: true }).focus()
   await page.keyboard.press('Enter')
   await expect(budget).toHaveAttribute('aria-sort', 'ascending')

@@ -179,7 +179,7 @@ test('navigation item geometry maps the official compact and horizontal token va
   const label = selected.locator('.yam3x-navigation-bar__label')
   await expect(indicator).toHaveCSS('width', '56px')
   await expect(indicator).toHaveCSS('height', '32px')
-  await expect(selected).toHaveCSS('row-gap', '6px')
+  await expect(selected).toHaveCSS('row-gap', '8px')
   await expect(label).toHaveCSS('font-size', '12px')
 
   await page.setViewportSize({ width: 1046, height: 844 })

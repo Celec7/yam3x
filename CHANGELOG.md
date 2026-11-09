@@ -23,6 +23,8 @@
 - Docked date fields draw a notched 3px focus outline without shifting layout or drawing a second ring inside the input.
 - Full-screen date picker modals expose localized close and Save actions in the header.
 - Docked range values use symmetric 16px block padding and center vertically in the 56px field.
+- Data tables apply On Surface to static column headings explicitly, so ambient table styles cannot replace the project heading role.
+- Compact Navigation Bar items reserve 8px between the icon row and label, keeping 4px clearance below the 32px active indicator.
 - Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
 - Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
 - Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.

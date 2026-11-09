@@ -74,7 +74,7 @@ provide(navigationBarContextKey, { modelValue, activate })
   --_yam3x-navigation-bar-label-line-height: var(--md-sys-typescale-label-medium-line-height-small);
   --_yam3x-navigation-bar-label-font-weight: var(--md-sys-typescale-label-medium-font-weight);
   --_yam3x-navigation-bar-active-label-font-weight: 700;
-  --_yam3x-navigation-bar-compact-item-gap: 6px;
+  --_yam3x-navigation-bar-compact-item-gap: 8px;
   --_yam3x-navigation-bar-horizontal-item-gap: 4px;
   --_yam3x-navigation-bar-compact-indicator-width: 56px;
   --_yam3x-navigation-bar-compact-indicator-height: 32px;

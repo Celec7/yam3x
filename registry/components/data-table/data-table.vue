@@ -773,6 +773,7 @@ function onRecover(event: MouseEvent, action: () => void) {
   letter-spacing: var(--_yam3x-data-table-caption-tracking);
 }
 .yam3x-data-table__header {
+  color: var(--_yam3x-data-table-color);
   font-family: var(--_yam3x-data-table-header-font);
   font-size: var(--_yam3x-data-table-header-size);
   font-weight: var(--_yam3x-data-table-header-weight);
