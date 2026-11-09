@@ -16,8 +16,21 @@ test('opens a named modal drawer, focuses the first destination, and provides an
   await expect(dialog).toHaveAttribute('aria-modal', 'true')
   await expect(navigation).toBeVisible()
   await expect(dialog.getByRole('button', { name: 'Close navigation' })).toBeVisible()
-  await expect(navigation.getByRole('link', { name: /Inbox/ })).toBeFocused()
+  const selected = navigation.getByRole('link', { name: /Inbox/ })
+  await expect(selected).toBeFocused()
   await expect(navigation.getByRole('group', { name: 'Mail' })).toBeVisible()
+  const geometry = await selected.evaluate((element) => {
+    const rect = element.getBoundingClientRect()
+    const icon = element.querySelector('.yam3x-icon')!.getBoundingClientRect()
+    return {
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      radius: getComputedStyle(element).borderRadius,
+      icon: Math.round(icon.width),
+    }
+  })
+  expect(geometry).toEqual({ width: 336, height: 56, radius: '28px', icon: 24 })
+  await expect.poll(async () => Math.round((await dialog.boundingBox())!.width)).toBe(360)
 })
 
 test('closes after destination selection and leaves route and page focus to the application', async ({
