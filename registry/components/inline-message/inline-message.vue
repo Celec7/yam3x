@@ -147,6 +147,7 @@ function onDismiss() {
   --_yam3x-inline-message-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-inline-message-gap: calc(12px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-inline-message-content-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-inline-message-icon-offset: 2px;
   --_yam3x-inline-message-body-font: var(--md-sys-typescale-body-medium-font-family);
   --_yam3x-inline-message-body-size: var(--md-sys-typescale-body-medium-font-size);
   --_yam3x-inline-message-body-weight: var(--md-sys-typescale-body-medium-font-weight);
@@ -175,7 +176,7 @@ function onDismiss() {
 .yam3x-inline-message__icon {
   display: flex;
   flex: none;
-  padding-block: 2px;
+  padding-block: var(--_yam3x-inline-message-icon-offset);
 }
 .yam3x-inline-message__content {
   flex: 1;

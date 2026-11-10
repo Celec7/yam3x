@@ -45,6 +45,7 @@ test('pairs error foreground and background roles in both themes', async ({ page
       const action = getComputedStyle(
         element.querySelector('.yam3x-inline-message__actions button')!,
       )
+      const icon = getComputedStyle(element.querySelector('.yam3x-inline-message__icon')!)
       const result = {
         actualBackground: actual.backgroundColor,
         expectedBackground: expected.backgroundColor,
@@ -52,6 +53,7 @@ test('pairs error foreground and background roles in both themes', async ({ page
         expectedColor: expected.color,
         closeColor: close.color,
         actionColor: action.color,
+        iconOffset: icon.paddingBlockStart,
       }
       sample.remove()
       return result
@@ -60,6 +62,7 @@ test('pairs error foreground and background roles in both themes', async ({ page
     expect(colors.actualColor).toBe(colors.expectedColor)
     expect(colors.closeColor).toBe(colors.expectedColor)
     expect(colors.actionColor).toBe(colors.expectedColor)
+    expect(colors.iconOffset).toBe('2px')
   }
 })
 

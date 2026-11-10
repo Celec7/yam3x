@@ -65,7 +65,7 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 ## 样式
 
-支持覆盖 `--yam3x-inline-message-container-color`、`--yam3x-inline-message-content-color` 和 `--yam3x-inline-message-shape`。请同时覆盖配对的前景与背景色以保持对比度。消息随内容增高，宽度跟随所在区域。
+支持覆盖 `--yam3x-inline-message-container-color`、`--yam3x-inline-message-content-color` 和 `--yam3x-inline-message-shape`。请同时覆盖配对的前景与背景色以保持对比度。消息随内容增高，宽度跟随所在区域。前置图标使用固定的 2px 垂直光学偏移，不随密度缩放。启用的 Text Button 操作和关闭 IconButton 继承消息前景色；filled、tonal、outlined 和 elevated 操作保留各自的颜色角色。
 
 ## Material 参考
 

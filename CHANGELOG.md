@@ -18,6 +18,7 @@
 
 ### Fixed
 
+- Inline messages record their fixed 2px leading-icon optical offset and which Button variants inherit the message foreground.
 - Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
 - Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
 - Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
@@ -100,6 +101,7 @@ Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/bad
 
 ### Fixed
 
+- Inline messages record their fixed 2px leading-icon optical offset and which Button variants inherit the message foreground.
 - Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
 - Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
 - Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
@@ -145,6 +147,7 @@ When updating an existing app, merge the new `src/styles/yam3x-tokens.css` and r
 
 ### Fixed
 
+- Inline messages record their fixed 2px leading-icon optical offset and which Button variants inherit the message foreground.
 - Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
 - Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
 - Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.

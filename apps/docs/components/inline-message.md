@@ -65,7 +65,7 @@ Information, success, and caution use Surface Container / On Surface; their text
 
 ## Styling
 
-Supported overrides: `--yam3x-inline-message-container-color`, `--yam3x-inline-message-content-color`, and `--yam3x-inline-message-shape`. Override color pairs together to preserve contrast. The message grows with content and inherits its containing region's width.
+Supported overrides: `--yam3x-inline-message-container-color`, `--yam3x-inline-message-content-color`, and `--yam3x-inline-message-shape`. Override color pairs together to preserve contrast. The message grows with content and inherits its containing region's width. The leading symbol uses a fixed 2px optical block offset rather than density-scaled spacing. Enabled Text Button actions and the dismiss IconButton inherit the message foreground; filled, tonal, outlined, and elevated actions keep their own color roles.
 
 ## Material references
 
