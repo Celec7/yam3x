@@ -131,6 +131,18 @@ registerIcon('home', 'rounded', {
 
 ## API
 
+### Exports
+
+| Export           | Kind      | Use                                                         |
+| ---------------- | --------- | ----------------------------------------------------------- |
+| `Icon`           | Component | Renders a Material Symbols glyph or a registered SVG.       |
+| `registerIcon`   | Function  | Registers a self-hosted SVG by name, variant, and fill set. |
+| `SvgIconInfo`    | Type      | One fill set entry: `{ viewBox, path }`.                    |
+| `SvgIconFillSet` | Type      | Outlined and filled paths for one registered icon.          |
+| `IconVariant`    | Type      | `outlined`, `rounded`, or `sharp`.                          |
+| `IconWeight`     | Type      | Material Symbols weight axis from 100 through 700.          |
+| `IconGrade`      | Type      | Grade axis: `auto`, `low`, `medium`, or `high`.             |
+
 ### Props
 
 | Prop             | Type                                            | Default    | Description                                                                                                                                                                                                        |

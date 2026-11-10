@@ -15,6 +15,7 @@ const variant = ref<'standard' | 'vibrant'>('standard')
 const shape = ref<'auto' | 'rounded' | 'square'>('auto')
 const elevation = ref<'auto' | 'on' | 'off'>('auto')
 const vertical = ref(false)
+const rtl = ref(false)
 const lastAction = ref('')
 const standardActionColor = computed(() =>
   variant.value === 'vibrant'
@@ -103,8 +104,15 @@ const standardActionColor = computed(() =>
         :label="t('Vertical', '纵向')"
         :disabled="layout === 'docked'"
       />
+      <Checkbox
+        v-model="rtl"
+        :label="t('Right-to-left (RTL)', '从右到左 (RTL)')"
+      />
     </div>
-    <div class="toolbar-demo__stage">
+    <div
+      class="toolbar-demo__stage"
+      :dir="rtl ? 'rtl' : 'ltr'"
+    >
       <Toolbar
         data-testid="toolbar"
         :aria-label="t('Article actions', '文章操作')"

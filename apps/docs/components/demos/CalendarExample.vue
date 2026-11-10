@@ -19,58 +19,34 @@ function offsetDate(days: number): string {
 }
 
 const date = ref<string | null>(offsetDate(0))
-const restrictedStart = offsetDate(0)
-const restrictedMin = offsetDate(5)
-const restrictedMax = offsetDate(15)
-const unavailableDate = offsetDate(10)
-const rangeStart = ref<string | null>(null)
-const rangeEnd = ref<string | null>(null)
 </script>
 
 <template>
-  <div class="calendar-demo">
-    <label class="calendar-demo__label">{{ t('Standalone calendar', '独立日历') }}</label>
+  <div
+    class="calendar-basic"
+    data-testid="calendar-basic"
+  >
     <Calendar
       v-model="date"
       :locale="localeTag"
       :is-special-date="(value) => value.endsWith('-15')"
     />
-    <p>{{ t('Current selection:', '当前选择：') }} {{ date || t('None selected', '未选择') }}</p>
-    <Calendar
-      v-model:range-start="rangeStart"
-      v-model:range-end="rangeEnd"
-      selection="range"
-      :label="t('Date range', '日期范围')"
-      :start-at="date"
-      :locale="localeTag"
-    />
-    <p>
-      {{ t('Date range:', '日期范围：') }} {{ rangeStart || t('Start date', '开始日期') }} →
-      {{ rangeEnd || t('End date', '结束日期') }}
+    <p class="calendar-basic__value">
+      {{ t('Current selection:', '当前选择：') }} {{ date || t('None selected', '未选择') }}
     </p>
-    <Calendar
-      :label="t('Restricted dates', '受限日期')"
-      :start-at="restrictedStart"
-      :min-date="restrictedMin"
-      :max-date="restrictedMax"
-      :locale="localeTag"
-      :is-date-selectable="(value) => value !== unavailableDate"
-      :is-special-date="(value) => value.endsWith('-15')"
-    />
   </div>
 </template>
 
 <style scoped>
-.calendar-demo {
+.calendar-basic {
   display: grid;
   justify-items: start;
   gap: 12px;
+  min-inline-size: 0;
 }
-.calendar-demo__label {
-  font-weight: 600;
-}
-.calendar-demo p {
+.calendar-basic__value {
   margin: 0;
   color: var(--vp-c-text-2);
+  font-variant-numeric: tabular-nums;
 }
 </style>

@@ -100,7 +100,7 @@ function onPanelClosed(): void {
         <div class="option-dialog__actions">
           <Button
             variant="text"
-            @click="close"
+            @click="close()"
             >{{ t('Apply filters', '应用筛选') }}</Button
           >
         </div>

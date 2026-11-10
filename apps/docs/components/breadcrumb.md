@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import BreadcrumbExample from './demos/BreadcrumbExample.vue'
+import BreadcrumbOverflowExample from './demos/BreadcrumbOverflowExample.vue'
 </script>
 
 # Breadcrumb
 
-Breadcrumb shows the current page and its parent locations as a navigable path. This project extension uses ordinary links and leaves routing to the application.
+Breadcrumb shows the current page and its parent locations as a navigable path. Links keep their native browser behavior, and routing remains with the application.
 
-## Interactive example
+Breadcrumb is a project extension. Material 3 does not define a dedicated Breadcrumb component or visual contract; the closest Compose Material 3 composition is a `Row` of text and icon buttons. Web semantics follow the [WAI-ARIA breadcrumb pattern](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/). Color, type, shape, focus, and spacing are project mappings of shared Material roles.
+
+## Examples
+
+### Path and item states
 
 <div class="vp-raw yam3x-doc-demo-theme"><BreadcrumbExample /></div>
 
@@ -16,13 +21,29 @@ Breadcrumb shows the current page and its parent locations as a navigable path. 
 
 :::
 
+The first trail keeps every ancestor as a link and marks the last item as the current page. The second trail shows an icon-only home link, a disabled destination, a non-link current page, and a text separator. The checkbox switches between horizontal scrolling and wrapping.
+
+### Overflow and RTL
+
+<div class="vp-raw yam3x-doc-demo-theme"><BreadcrumbOverflowExample /></div>
+
+::: details View demo source
+
+<<< ./demos/BreadcrumbOverflowExample.vue{vue}
+
+:::
+
+A long trail stays inside its frame: without wrapping, the path scrolls horizontally; with wrapping, it grows to multiple lines. Breadcrumb has no collapse menu, so keep the hierarchy meaningful or shorten labels at the application level. The direction control mirrors the separator and scroll direction.
+
 ## Use in your app
+
+After [installation](/guide/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">
-import { Breadcrumb } from './components/yam3x/breadcrumb'
+import { Breadcrumb, type BreadcrumbItemData } from './components/yam3x/breadcrumb'
 
-const items = [
+const items: BreadcrumbItemData[] = [
   { label: 'Home', href: '/' },
   { label: 'Products', href: '/products' },
   { label: 'Details' },
@@ -30,33 +51,125 @@ const items = [
 </script>
 
 <template>
-  <Breadcrumb :items="items" />
+  <Breadcrumb
+    :items="items"
+    aria-label="Page path"
+  />
 </template>
 ```
 
-## API
+The final item is the current page by default. Set `currentIndex` when the current page is not last, or to `-1` when no item should be marked current. Keep `label` as the accessible name even when a slot replaces the visible content.
 
-Breadcrumb navigation can inherit [LocaleProvider](/components/localization)'s `actions` messages. Optional `locale` overrides the language, defaulting to the provider then `en-US`. Existing label overrides take precedence.
+::: details Icons, separators, and icon-only items
 
-| Prop             | Type                                                                 | Default      | Description                                                                                                  |
-| ---------------- | -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
-| `items`          | `{ label, href?, target?, rel?, download?, disabled?, iconOnly? }[]` | `[]`         | Breadcrumb items in hierarchy order.                                                                         |
-| `currentIndex`   | `number`                                                             | Last item    | Current-page index; `-1` means no item is marked as the current page.                                        |
-| `ariaLabel`      | `string`                                                             | `Breadcrumb` | Name of the navigation landmark.                                                                             |
-| `ariaLabelledby` | `string`                                                             | —            | ID of the visible heading; takes precedence over `ariaLabel` when set.                                       |
-| `wrap`           | `boolean`                                                            | `false`      | Wraps path items. When disabled, only the path container scrolls horizontally; the page width does not grow. |
+```vue
+<template>
+  <Breadcrumb
+    :items="[
+      { label: 'Home', href: '/', iconOnly: true },
+      { label: 'Library', href: '/library' },
+      { label: 'Report' },
+    ]"
+    aria-label="Library path"
+  >
+    <template #icon="{ index }">
+      <Icon
+        v-if="index === 0"
+        name="home"
+      />
+    </template>
+    <template #separator>/</template>
+  </Breadcrumb>
+</template>
+```
 
-Use `#item({ item, index, current })` to replace the visible label, `#icon` for a leading icon, and `#separator({ index })` to replace the separator. Set `iconOnly` to `true` when an item contains only an icon; `label` remains its accessible name.
+`iconOnly` hides the visible label while keeping `label` as the accessible name. A separator inserted through the slot is still decorative and is not announced.
+
+:::
 
 ## Behavior and accessibility
 
-Links retain the browser’s native Tab, Enter, context-menu, copy-link, and modifier-key behavior. By default, the final item is the current page. When it has an `href`, it remains a link with `aria-current="page"` and uses the on-surface color; without an `href`, it is rendered as current-page text. Non-link ancestors use on-surface-variant and do not imply a pointer cursor.
+### Navigation semantics
 
-Each item has a 40px visual pill inside a minimum 48px interaction target. Hover, focus, and pressed feedback comes from one shared state layer; focus is a 3px secondary ring with a 2px outer offset. Labels and separators use a 1px optical adjustment so their ink shares the visual center.
+- The component renders a labeled `nav` containing an ordered list. Each item is a list item, and separators are decorative.
+- Items with `href` and no `disabled` are native links. Set `ariaLabelledby` to reuse a visible heading instead of the default label; it takes precedence over `ariaLabel`.
+- The current item receives `aria-current="page"`. A current link keeps its `href` and pointer cursor; a current item without `href` renders as text.
+- A disabled item renders without a link and exposes `aria-disabled="true"`. It is not focusable.
+- `target`, `rel`, and `download` forward only with `href`. Navigation stays native unless the application handles it.
+
+### Keyboard and focus
+
+- Links keep the browser's Tab, Enter, context-menu, copy-link, and modifier-key behavior.
+- Hover, focus, and press share one state layer. Focus uses a 3 px Secondary ring with a 2 px outer offset.
+- Icon-only items keep a full-size focus target and their accessible name.
+
+### Narrow layouts
+
+- Without `wrap`, the path list scrolls horizontally inside the component. The page itself must not grow.
+- With `wrap`, items move to new lines and the list stops scrolling. Labels can ellipsize, so keep the accessibility label complete.
+- There is no automatic collapse or “more” menu. Preserve the important ancestors and shorten visible labels in the application if the trail must fit a fixed width.
+
+### RTL and current page
+
+- Separator icons rotate for right-to-left layouts, and before/after scroll direction follows the writing direction.
+- The current item uses On Surface whether or not it is a link; linked ancestors use Primary and non-link ancestors use On Surface Variant.
+- Disabled items use an On Surface mix with the documented opacity and lose the pointer cursor.
+
+## API
+
+### Exports
+
+| Export               | Description                                      |
+| -------------------- | ------------------------------------------------ |
+| `Breadcrumb`         | Labeled navigation trail with native links.      |
+| `BreadcrumbItemData` | Item schema for labels, destinations, and state. |
+
+### Props and models
+
+Built-in navigation text inherits [LocaleProvider](/components/localization)'s `actions.breadcrumb` label. `ariaLabel` overrides it, and `ariaLabelledby` takes precedence over both.
+
+| Prop             | Default                | Use                                                                      |
+| ---------------- | ---------------------- | ------------------------------------------------------------------------ |
+| `items`          | `[]`                   | Items in hierarchy order.                                                |
+| `currentIndex`   | Last item              | Zero-based current item. An out-of-range value marks no item as current. |
+| `ariaLabel`      | Localized `Breadcrumb` | Accessible name of the navigation landmark.                              |
+| `ariaLabelledby` | Undefined              | ID of a visible label or heading; takes precedence over `ariaLabel`.     |
+| `wrap`           | `false`                | Wraps items instead of scrolling the path horizontally.                  |
+| `locale`         | Provider, then `en-US` | Language of the default navigation label.                                |
+
+`BreadcrumbItemData`:
+
+| Field      | Type                | Use                                                                         |
+| ---------- | ------------------- | --------------------------------------------------------------------------- |
+| `label`    | `string`            | Visible text and accessible name; required.                                 |
+| `href`     | `string`            | Destination. The item renders as a link only when present and not disabled. |
+| `target`   | `string`            | Native link target, forwarded with `href`.                                  |
+| `rel`      | `string`            | Native link relationship, forwarded with `href`.                            |
+| `download` | `string \| boolean` | Native download attribute, forwarded with `href`.                           |
+| `disabled` | `boolean`           | Renders static disabled text and removes link behavior.                     |
+| `iconOnly` | `boolean`           | Visually hides the label while keeping `label` as the accessible name.      |
+
+### Events
+
+Breadcrumb emits no events. Use native link navigation or handle router navigation around the component.
+
+### Slots
+
+| Slot        | Scope                      | Use                                     |
+| ----------- | -------------------------- | --------------------------------------- |
+| `item`      | `{ item, index, current }` | Replaces the visible label content.     |
+| `icon`      | `{ item, index, current }` | Adds a decorative leading icon.         |
+| `separator` | `{ index }`                | Replaces the default chevron separator. |
+
+### Methods
+
+Breadcrumb exposes no instance methods.
 
 ## Styling
 
-Set these project-defined custom properties on the Breadcrumb root. Label typography maps to the System Label Large role; colors, spacing density, and state-layer opacity follow shared System tokens by default. `--yam3x-breadcrumb-item-container-height` controls the visual pill height; the interaction target remains at least 48px through `--md-sys-touch-target-size`.
+Breadcrumb exposes project-defined custom properties on the root. Label typography maps to the System Label Large role, and colors, density, and state-layer opacity use shared System tokens by default.
+
+::: details Custom properties
 
 | Area                      | Supported properties                                                                                                                                                                                                   |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -66,6 +179,10 @@ Set these project-defined custom properties on the Breadcrumb root. Label typogr
 | Colors and disabled state | `--yam3x-breadcrumb-item-label-color`, `--yam3x-breadcrumb-item-icon-color`, `--yam3x-breadcrumb-item-last-color`, `--yam3x-breadcrumb-item-disabled-color`, `--yam3x-breadcrumb-item-disabled-opacity`                |
 | State layer colors        | `--yam3x-breadcrumb-item-label-state-layer-color`, `--yam3x-breadcrumb-item-icon-state-layer-color`                                                                                                                    |
 
+:::
+
+The visual pill is 40 px high by default inside an interaction target of at least 48 px. `--yam3x-breadcrumb-item-container-height` changes the pill height; the target keeps its minimum from `--md-sys-touch-target-size`.
+
 ## Material references
 
-[Applying type](https://m3.material.io/styles/typography/applying-type) · [Color system](https://m3.material.io/styles/color/the-color-system) · [WAI-ARIA Breadcrumb pattern](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
+[WAI-ARIA Breadcrumb pattern](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/) · [Applying type](https://m3.material.io/styles/typography/applying-type) · [Color system](https://m3.material.io/styles/color/the-color-system)

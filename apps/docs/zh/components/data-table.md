@@ -291,6 +291,23 @@ async function onChange(query: DataTableQuery) {
 
 内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的共享配置。显式 `locale` 和 `messages` 优先；未配置 provider 时默认使用 `en-US`。
 
+### 导出
+
+| 导出                    | 类型 | 用途                                                            |
+| ----------------------- | ---- | --------------------------------------------------------------- |
+| `DataTable`             | 组件 | 渲染表格、查询控件、选择与分页。                                |
+| `DataTableColumn`       | 类型 | 声明列、取值函数、格式化与筛选。                                |
+| `DataTableCell`         | 类型 | 单元格插槽作用域：行、列、值与行索引。                          |
+| `DataTableColumnFilter` | 类型 | 列筛选选项与可选的自定义匹配。                                  |
+| `DataTableFilterOption` | 类型 | 一个稳定筛选键及其可见标签。                                    |
+| `DataTableFilters`      | 类型 | 已接受的列 ID 到所选筛选键的映射。                              |
+| `DataTableKey`          | 类型 | 稳定的字符串或数字行标识。                                      |
+| `DataTableMessages`     | 类型 | 内置文案的部分覆盖。                                            |
+| `DataTableQuery`        | 类型 | 完整的排序、筛选、页码与每页数量请求。                          |
+| `DataTableSelection`    | 类型 | 选择事件中的已选、变更与来源键。                                |
+| `DataTableSort`         | 类型 | 排序列与升序/降序方向。                                         |
+| `DataTableValue`        | 类型 | 可比较的单元格值：文本、数字、布尔值、Date、null 或 undefined。 |
+
 ### 属性与模型
 
 | 属性与模型         | 默认值                        | 用途                                                                       |

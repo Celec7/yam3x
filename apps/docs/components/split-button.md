@@ -37,42 +37,6 @@ Disable the leading action, the menu, or both. The primary action keeps native b
 
 :::
 
-## Use in your app
-
-Import the copied component from `./components/yam3x/split-button`:
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { SplitButton, type MenuItem } from './components/yam3x/split-button'
-
-const open = ref(false)
-const items: MenuItem[] = [
-  { value: 'document', label: 'Save document', type: 'radio', group: 'format' },
-  { value: 'image', label: 'Export as image', type: 'radio', group: 'format' },
-]
-
-function save(): void {
-  console.log('Saved')
-}
-</script>
-
-<template>
-  <SplitButton
-    v-model:open="open"
-    label="Save"
-    :items="items"
-    menu-label="Save options"
-    group-label="Save actions"
-    @click="save"
-  />
-</template>
-```
-
-Provide concise primary-action text with `label` or the default slot, and use `#icon` for an icon. Generated menu and trailing-button names can inherit [LocaleProvider](/components/localization)'s `actions` messages; `locale` overrides the language, defaulting to the provider then `en-US`, and label props take precedence.
-
-## Advanced
-
 ### Composition
 
 Use the composition API when the caller needs direct control of the two buttons or popup. `SplitButtonLayout` provides the shared variant, size, shape, and spacing; its `#leading` and `#trailing` slots hold independently implemented controls. Spacing defaults to the 2px Material value and can be overridden with `spacing`. `SplitButtonTrailingButton` exposes its expanded state through `v-model:checked`. The layout does not own menu state or content.
@@ -146,6 +110,40 @@ Use `#popup` when the trailing button should open other content such as a card. 
 <<< ./demos/SplitButtonPopupExample.vue{vue}
 
 :::
+
+## Use in your app
+
+Import the copied component from `./components/yam3x/split-button`:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SplitButton, type MenuItem } from './components/yam3x/split-button'
+
+const open = ref(false)
+const items: MenuItem[] = [
+  { value: 'document', label: 'Save document', type: 'radio', group: 'format' },
+  { value: 'image', label: 'Export as image', type: 'radio', group: 'format' },
+]
+
+function save(): void {
+  console.log('Saved')
+}
+</script>
+
+<template>
+  <SplitButton
+    v-model:open="open"
+    label="Save"
+    :items="items"
+    menu-label="Save options"
+    group-label="Save actions"
+    @click="save"
+  />
+</template>
+```
+
+Provide concise primary-action text with `label` or the default slot, and use `#icon` for an icon. Generated menu and trailing-button names can inherit [LocaleProvider](/components/localization)'s `actions` messages; `locale` overrides the language, defaulting to the provider then `en-US`, and label props take precedence.
 
 ## Behavior and accessibility
 

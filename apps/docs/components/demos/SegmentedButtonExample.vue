@@ -1,37 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Checkbox } from '@registry/components/checkbox'
-import SegmentedButton from '@registry/components/segmented-button/segmented-button.vue'
-import MultiChoiceSegmentedButtonRow from '@registry/components/segmented-button/multi-choice-segmented-button-row.vue'
-import SingleChoiceSegmentedButtonRow from '@registry/components/segmented-button/single-choice-segmented-button-row.vue'
+import {
+  SegmentedButton,
+  SingleChoiceSegmentedButtonRow,
+} from '@registry/components/segmented-button'
 import { Icon } from '@registry/components/icon'
-import type { SegmentedButtonChangeDetail } from '@registry/components/segmented-button/segmented-button.types'
+import type { SegmentedButtonChangeDetail } from '@registry/components/segmented-button'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
 
 const view = ref<string | null>('list')
-const filters = ref(['recent'])
-const disableFilters = ref(false)
 const lastViewChange = ref('')
 const viewLabels = {
   list: t('List', '列表'),
   grid: t('Grid', '网格'),
   map: t('Map', '地图'),
 }
-const filterLabels = {
-  recent: t('Recent', '最近'),
-  saved: t('Saved', '收藏'),
-  shared: t('Shared', '共享'),
-}
 
 function onViewChange({ previousValue, value }: SegmentedButtonChangeDetail<string | null>): void {
-  lastViewChange.value = `${viewLabels[previousValue as keyof typeof viewLabels] ?? '—'} → ${viewLabels[value as keyof typeof viewLabels] ?? '—'}`
+  const previous = viewLabels[previousValue as keyof typeof viewLabels] ?? '—'
+  const next = viewLabels[value as keyof typeof viewLabels] ?? '—'
+  lastViewChange.value = `${previous} → ${next}`
 }
 </script>
 
 <template>
-  <div class="yam3x-demo yam3x-demo__stack">
+  <section
+    class="yam3x-demo yam3x-demo__stack"
+    data-testid="segmented-single"
+  >
     <form
       data-testid="segmented-form"
       @submit.prevent
@@ -71,42 +69,9 @@ function onViewChange({ previousValue, value }: SegmentedButtonChangeDetail<stri
     >
       {{ lastViewChange || t('No selection change yet', '尚未更改选择') }}
     </p>
-    <form
-      data-testid="filter-form"
-      @submit.prevent
-    >
-      <MultiChoiceSegmentedButtonRow
-        v-model="filters"
-        :aria-label="t('Content filters', '内容筛选')"
-        name="filter"
-        :density="2"
-        :disabled="disableFilters"
-      >
-        <SegmentedButton value="recent">{{ t('Recent', '最近') }}</SegmentedButton>
-        <SegmentedButton value="saved">{{ t('Saved', '收藏') }}</SegmentedButton>
-        <SegmentedButton value="shared">{{ t('Shared', '共享') }}</SegmentedButton>
-      </MultiChoiceSegmentedButtonRow>
-    </form>
-    <Checkbox
-      v-model="disableFilters"
-      class="segmented-demo__checkbox"
-      :label="t('Disable multi-select group', '禁用多选组')"
-    />
     <p class="yam3x-demo__status">
       {{ t('Current view:', '当前显示：') }}
       {{ view ? viewLabels[view as keyof typeof viewLabels] : t('None', '无') }}
     </p>
-    <p class="yam3x-demo__status">
-      {{ t('Current filters:', '当前筛选：') }}
-      {{ filters.map((filter) => filterLabels[filter as keyof typeof filterLabels]).join(', ') }}
-    </p>
-  </div>
+  </section>
 </template>
-
-<style scoped>
-.segmented-demo__checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-</style>

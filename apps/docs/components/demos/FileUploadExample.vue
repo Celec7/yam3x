@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, shallowRef, ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import {
   FileUpload,
   type FileUploadContext,
-  type FileUploadResult,
   type FileUploadItem,
+  type FileUploadResult,
 } from '@registry/components/file-upload'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
 import { useDemoLocale } from './use-demo-locale'
-const { locale, t } = useDemoLocale()
-const fieldLocale = computed(() => (locale.value === 'zh' ? 'zh-CN' : 'en-US'))
+
+const { localeTag, t } = useDemoLocale()
 const disabled = ref(false)
 const droppable = ref(true)
 const items = shallowRef<Array<Readonly<FileUploadItem>>>([])
@@ -19,21 +19,24 @@ interface Request {
   resolve: (result: FileUploadResult) => void
 }
 const requests = shallowRef<Request[]>([])
+
 function upload(context: FileUploadContext): Promise<FileUploadResult> {
   return new Promise((resolve) => {
     requests.value = [...requests.value, { context, resolve }]
     context.signal.addEventListener(
       'abort',
-      () => finish(context.id, { status: 'error', message: 'Canceled' }),
+      () => finish(context.id, { status: 'error', message: t('Canceled', '已取消') }),
       { once: true },
     )
   })
 }
+
 function finish(id: string, result: FileUploadResult) {
   const request = requests.value.find((entry) => entry.context.id === id)
   requests.value = requests.value.filter((entry) => entry.context.id !== id)
   request?.resolve(result)
 }
+
 function reject(id: string) {
   finish(id, {
     status: 'error',
@@ -43,7 +46,10 @@ function reject(id: string) {
 </script>
 
 <template>
-  <div class="file-upload-demo">
+  <section
+    class="file-upload-demo"
+    data-testid="file-upload-transfers"
+  >
     <p>
       {{
         t(
@@ -72,7 +78,7 @@ function reject(id: string) {
       :upload="upload"
       :disabled="disabled"
       :droppable="droppable"
-      :locale="fieldLocale"
+      :locale="localeTag"
       @change="items = $event"
     />
     <div
@@ -124,13 +130,14 @@ function reject(id: string) {
       {{ t('Completed:', '已完成：') }}
       {{ items.filter((item) => item.status === 'completed').length }}
     </p>
-  </div>
+  </section>
 </template>
 
 <style scoped>
 .file-upload-demo {
   display: grid;
   gap: 24px;
+  min-inline-size: 0;
 }
 .file-upload-demo p {
   margin: 0;

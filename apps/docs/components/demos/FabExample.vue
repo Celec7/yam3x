@@ -1,87 +1,85 @@
 <script setup lang="ts">
-import FloatingActionButton from '@registry/components/fab/floating-action-button.vue'
+import { FloatingActionButton } from '@registry/components/fab'
 import { Icon } from '@registry/components/icon'
 import { Tooltip } from '@registry/components/tooltip'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
+
+const colorVariants = [
+  { value: 'primary-container', en: 'Primary container', zh: '主色容器' },
+  { value: 'secondary-container', en: 'Secondary container', zh: '次色容器' },
+  { value: 'tertiary-container', en: 'Tertiary container', zh: '第三色容器' },
+  { value: 'primary', en: 'Primary', zh: '主色' },
+  { value: 'secondary', en: 'Secondary', zh: '次色' },
+  { value: 'tertiary', en: 'Tertiary', zh: '第三色' },
+] as const
 </script>
 
 <template>
-  <div class="yam3x-demo">
-    <p>{{ t('Icon-only FAB sizes', '纯图标 FAB 尺寸') }}</p>
-    <div class="fab-demo__sizes">
+  <section
+    class="yam3x-demo yam3x-demo__stack"
+    data-testid="fab-sizes"
+  >
+    <div class="yam3x-demo__row fab-example__row">
       <FloatingActionButton
         id="fab-example-default"
         size="default"
         :aria-label="t('Create project', '创建项目')"
       >
-        <Icon name="add" />
+        <Icon
+          name="add"
+          filled
+        />
       </FloatingActionButton>
       <Tooltip for="fab-example-default">{{ t('Create project', '创建项目') }}</Tooltip>
+
       <FloatingActionButton
         id="fab-example-create"
         size="medium"
         :aria-label="t('Create project', '创建项目')"
       >
-        <Icon name="add" />
+        <Icon
+          name="add"
+          filled
+        />
       </FloatingActionButton>
       <Tooltip for="fab-example-create">{{ t('Create project', '创建项目') }}</Tooltip>
+
       <FloatingActionButton
         id="fab-example-large"
         size="large"
         variant="tertiary-container"
         :aria-label="t('Create project', '创建项目')"
       >
-        <Icon name="add" />
+        <Icon
+          name="add"
+          filled
+        />
       </FloatingActionButton>
       <Tooltip for="fab-example-large">{{ t('Create project', '创建项目') }}</Tooltip>
     </div>
-    <p>
-      {{
-        t(
-          'These are alternate sizes for one primary action. Use one FAB per screen.',
-          '这些是同一主要操作的不同尺寸。每个屏幕只使用一个 FAB。',
-        )
-      }}
-    </p>
-    <details class="fab-demo__compat">
-      <summary>{{ t('Compatibility example: unavailable FAB', '兼容示例：不可用的 FAB') }}</summary>
-      <p>
-        {{
-          t(
-            'Compatibility only. Material recommends omitting a FAB while its action is unavailable.',
-            '仅用于兼容既有流程。Material 建议操作不可用时省略 FAB。',
-          )
-        }}
-      </p>
+
+    <div class="yam3x-demo__row fab-example__row">
       <FloatingActionButton
-        id="fab-example-unavailable"
-        disabled
-        disabled-interactive
-        :aria-label="t('Cannot create project; sign in first', '无法创建项目；请先登录')"
+        v-for="color in colorVariants"
+        :id="`fab-example-variant-${color.value}`"
+        :key="color.value"
+        :variant="color.value"
+        :aria-label="`${t('Create project', '创建项目')}, ${t(color.en, color.zh)}`"
       >
-        <template #icon><Icon name="add" /></template>
+        <Icon
+          name="add"
+          filled
+        />
       </FloatingActionButton>
-      <Tooltip for="fab-example-unavailable">{{
-        t('Sign in to create a project.', '登录后即可创建项目。')
-      }}</Tooltip>
-    </details>
-  </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-.fab-demo__sizes {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+.fab-example__row {
   gap: 24px;
-  padding: 16px 8px;
-}
-.fab-demo__compat {
-  margin-block-start: 24px;
-}
-.fab-demo__compat > p {
-  max-width: 48rem;
+  padding-block: 8px;
 }
 </style>

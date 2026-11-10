@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ActionLocalizationExample from './ActionLocalizationExample.vue'
-import { SnackbarProvider } from '@registry/components/snackbar'
 import { ref } from 'vue'
+import { SnackbarProvider } from '@registry/components/snackbar'
+import ActionLocalizationExample from './ActionLocalizationExample.vue'
 import { useDemoLocale } from './use-demo-locale'
 import { LocaleProvider } from '@registry/components/localization'
 import { Autocomplete } from '@registry/components/autocomplete'

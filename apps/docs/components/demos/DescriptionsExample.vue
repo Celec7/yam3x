@@ -78,7 +78,7 @@ const items = computed<DescriptionItem[]>(() =>
     </LocaleProvider>
   </section>
 </template>
-<style>
+<style scoped>
 .descriptions-demo {
   display: grid;
   gap: 24px;

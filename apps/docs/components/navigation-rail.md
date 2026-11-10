@@ -1,12 +1,31 @@
 <script setup lang="ts">
+import NavigationRailBasicExample from './demos/NavigationRailBasicExample.vue'
 import NavigationRailExample from './demos/NavigationRailExample.vue'
 </script>
 
 # Navigation rail
 
-Navigation rails place top-level destinations along a window edge. Their collapsed or expanded form should fit the layout and make the current destination easy to identify.
+Navigation rails place top-level destinations along a window edge. `NavigationRail` is a Material 3 Expressive navigation rail. It keeps the current destination visible and supports a collapsed 96 px layout, an expanded layout, and a modal expansion for compact layouts.
 
-## Interactive example
+Use a rail at medium and expanded widths when the app can reserve a vertical edge for navigation. Material recommends three to seven destinations and at most one optional floating action button; these are design guidelines, not runtime limits. At compact widths, use a [navigation bar](/components/navigation-bar) instead.
+
+## Examples
+
+### Basic
+
+The basic rail starts collapsed, marks the current destination, shows a badge on Activity, disables Archive, and places a small action button in the `fab` slot. `show-menu` is off, so the rail stays in its collapsed layout. The selected destination is the model value; selecting another destination updates it.
+
+<div class="vp-raw yam3x-doc-demo-theme"><NavigationRailBasicExample /></div>
+
+::: details View demo source
+
+<<< ./demos/NavigationRailBasicExample.vue{vue}
+
+:::
+
+### Expansion, modal presentation, and adaptive layout
+
+The interactive demo exposes mode, presentation, destination alignment, and a hidden-when-collapsed layout with an external menu trigger. Expand the rail to reveal the secondary destination and the extended FAB, or switch to `modal` to check focus containment and scrim dismissal. The event log reports selection events in order.
 
 <div class="vp-raw yam3x-doc-demo-theme"><NavigationRailExample /></div>
 
@@ -18,16 +37,20 @@ Navigation rails place top-level destinations along a window edge. Their collaps
 
 ## Use in your app
 
+After [installation](/guide/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { NavigationRail } from './components/yam3x/navigation-rail'
-import Icon from './components/yam3x/icon/icon.vue'
+import { NavigationRail, type NavigationRailItem } from './components/yam3x/navigation-rail'
+import { Icon } from './components/yam3x/icon'
+
 const current = ref('home')
-const items = [
-  { value: 'home', label: 'Home', href: '/', icon: 'home' },
-  { value: 'search', label: 'Search', href: '/search', icon: 'search' },
-  { value: 'saved', label: 'Saved', href: '/saved', icon: 'bookmark' },
+const items: NavigationRailItem[] = [
+  { value: 'home', label: 'Home', href: '/' },
+  { value: 'search', label: 'Search', href: '/search', badge: 3, badgeLabel: '3 new results' },
+  { value: 'saved', label: 'Saved', href: '/saved' },
+  { value: 'settings', label: 'Settings', href: '/settings', secondary: true },
 ]
 </script>
 
@@ -36,28 +59,177 @@ const items = [
     v-model="current"
     label="Main navigation"
     :items="items"
+    divider
   >
-    <template #icon="{ item }"><Icon :name="item.icon" /></template>
+    <template #icon="{ item }"><Icon :name="item.value" /></template>
     <template #selected-icon="{ item }"
       ><Icon
-        :name="item.icon"
+        :name="item.value"
         filled
     /></template>
   </NavigationRail>
 </template>
 ```
 
-## API
+`:items` owns labels, links, badges, and disabled state; `v-model` owns the current destination. The rail renders anchors, so normal link navigation, modifier-key clicks, `target`, `rel`, and `download` keep their native behavior.
 
-This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
+::: details Expansion, a FAB, and an external trigger
 
-Each `items` entry needs `value`, `label`, and `href`; optional properties include `ariaLabel`, `disabled`, `disabledInteractive`, `secondary`, `badge`, `badgeLabel`, and native link attributes. Material recommends three to seven destinations and allows one optional FAB; this is guidance, not a runtime limit. `v-model` identifies the current destination. `mode` can be `collapsed`, `expanded`, or `auto`; control the menu’s expanded state with `v-model:expanded`. `mode` supplies the initial expansion behavior: `collapsed` starts collapsed, `expanded` starts expanded, and `auto` starts collapsed below 960px or expanded at and above 960px. A value supplied by `v-model:expanded` takes precedence. Without a bound value, using the built-in menu stores a manual choice, so `auto` no longer changes the expanded state when the viewport crosses the breakpoint. The rail remains hidden below 960px in `auto` mode; compose Navigation Bar at compact widths. With a bound model, set it to `undefined` to return control to `mode`. `presentation` can be `standard` or `modal`, and `alignment` positions destinations at the top or center. `divider` displays a divider on the content side. `hideWhenCollapsed` supports an immersive layout controlled by an external menu; the app must provide an accessible external trigger. Expanded width is capped at 360px.
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { NavigationRail, type NavigationRailItem } from './components/yam3x/navigation-rail'
+import { Button } from './components/yam3x/button'
 
-`mode` defaults to `collapsed`. `showMenu` defaults to `true`; `menuLabel` and `closeLabel` override the built-in expand and collapse button names.
+const current = ref('home')
+const expanded = ref<boolean | undefined>(undefined)
+const items: NavigationRailItem[] = [
+  { value: 'home', label: 'Home', href: '/' },
+  { value: 'settings', label: 'Settings', href: '/settings', secondary: true },
+]
+</script>
+
+<template>
+  <Button
+    type="button"
+    :aria-expanded="!!expanded"
+    aria-controls="main-rail"
+    @click="expanded = !expanded"
+  >
+    {{ expanded ? 'Close navigation' : 'Open navigation' }}
+  </Button>
+  <NavigationRail
+    id="main-rail"
+    v-model="current"
+    v-model:expanded="expanded"
+    label="Main navigation"
+    :items="items"
+    presentation="modal"
+    hide-when-collapsed
+  >
+    <template #fab="{ expanded: isExpanded }">
+      <Button
+        :aria-label="isExpanded ? 'Create new content' : 'Create'"
+        @click="create()"
+      >
+        Create
+      </Button>
+    </template>
+  </NavigationRail>
+</template>
+```
+
+:::
+
+With `hide-when-collapsed`, the rail is hidden until the external trigger sets `expanded`. The trigger must be an accessible control with `aria-expanded` and `aria-controls`; closing the modal returns focus to it.
 
 ## Behavior and accessibility
 
-Use `#icon`, `#selected-icon`, and `#badge` for destination icons and badges. When the icon family supports both, use outlined icons for inactive destinations and a filled icon for the selected destination. `#menu-icon` and `#close-icon` replace the built-in menu icons. `#fab` receives the expanded state and can show an extended FAB when expanded. Give the group a `label`, and use `ariaLabel` to clarify ambiguous destination names. Arrow keys and Tab move focus; Space/Enter activate. Selection events are cancellable `beforeinput`, model update, `input`, `change`, and `navigate`, in that order.
+### Selection and events
+
+- `mode` starts the rail in `collapsed`, `expanded`, or `auto` form. `auto` uses the 960 px breakpoint: collapsed below it and expanded at or above it.
+- `v-model:expanded` takes precedence over `mode`. Without a bound value, using the built-in menu stores a manual choice, so a later breakpoint change no longer expands or collapses the rail. Set the bound model to `undefined` to return control to `mode`.
+- A missing or disabled current value falls back to the first enabled destination, and the model is updated to match.
+- `secondary` destinations appear only while expanded, unless one of them is current.
+- Selection emits cancellable `beforeinput`, updates the model, then emits `input`, `change`, and `navigate` in that order. Call `preventDefault()` on `beforeinput` to block the change.
+- Clicking a destination inside a modal rail closes the modal.
+
+### Keyboard and focus
+
+- Each destination is a link and a Tab stop unless it is disabled or currently hidden. Arrow Down and Arrow Up move through enabled destinations and wrap; Home and End move to the first and last.
+- Space activates a focused destination. Enter follows native link behavior. A disabled destination is skipped by arrow navigation.
+- `disabled` removes the link target and sets `aria-disabled`. `disabledInteractive` keeps the link focusable so assistive technology can read it while still blocking activation.
+- In `modal` presentation, the surface is a labeled dialog, the scrim is present, body scrolling is locked, Tab wraps inside the surface, and Escape or scrim activation closes it. Focus moves to the menu button, the FAB, the first destination, or the surface when no focusable content exists.
+
+### Expansion and modal presentation
+
+- `presentation="standard"` expands within the layout. `presentation="modal"` adds a scrim and dialog semantics while expanded.
+- Expanded width is capped at 360 px. When the destinations overflow a short rail, the navigation list scrolls while the menu button and FAB stay available.
+- The menu button exposes `aria-expanded` and controls the destination region. `menuLabel` and `closeLabel` override the built-in names.
+
+### Responsive and RTL
+
+- In `auto` mode the rail is hidden below 960 px instead of shrinking; provide a navigation bar for that range and do not render both as the same navigation landmark at once.
+- The collapsed rail keeps 96 px and the expanded rail 220 px in the default sizing. Destinations and the FAB use logical insets, so RTL mirrors the rail to the other edge without changing vertical arrow behavior.
+- Enlarged text increases destination height and wraps labels instead of clipping them.
+
+### State ownership
+
+The page owns the current destination, any external expanded state, navigation targets, and the compact-width alternative. The rail owns the transient modal layer, focus containment, and the expanded width. `mode` is a starting policy, not a second persistent state; when you bind `expanded`, the page decides when to reset it.
+
+## API
+
+Built-in text can inherit [LocaleProvider](/components/localization)'s `actions` namespace. An explicit `locale`, `menuLabel`, or `closeLabel` takes precedence; without a provider, the locale defaults to `en-US`.
+
+### Exports
+
+| Export                                     | Kind      | Use                                 |
+| ------------------------------------------ | --------- | ----------------------------------- |
+| `NavigationRail`                           | Component | Vertical top-level navigation.      |
+| `NavigationRailItem`, `NavigationRailMode` | Type      | Destination schema and mode values. |
+
+### Props and models
+
+| Prop and model                  | Type                                  | Default                         | Use                                                           |
+| ------------------------------- | ------------------------------------- | ------------------------------- | ------------------------------------------------------------- |
+| `items`                         | `NavigationRailItem[]`                | Required                        | Destinations in display order.                                |
+| `label`                         | `string`                              | Required                        | Accessible name of the navigation landmark and modal dialog.  |
+| `modelValue` / `v-model`        | `string`                              | `''`                            | Current destination value.                                    |
+| `expanded` / `v-model:expanded` | `boolean \| undefined`                | `undefined`                     | Controlled expansion; takes precedence over `mode`.           |
+| `mode`                          | `'collapsed' \| 'expanded' \| 'auto'` | `'collapsed'`                   | Initial expansion policy.                                     |
+| `presentation`                  | `'standard' \| 'modal'`               | `'standard'`                    | In-layout or modal expansion.                                 |
+| `hideWhenCollapsed`             | `boolean`                             | `false`                         | Hides the rail while collapsed; requires an external trigger. |
+| `alignment`                     | `'top' \| 'center'`                   | `'top'`                         | Places destinations at the block start or center.             |
+| `divider`                       | `boolean`                             | `false`                         | Draws a divider on the content side.                          |
+| `showMenu`                      | `boolean`                             | `true`                          | Shows the built-in expand and collapse button.                |
+| `menuLabel`                     | `string`                              | Localized `Expand navigation`   | Accessible name of the collapsed menu button.                 |
+| `closeLabel`                    | `string`                              | Localized `Collapse navigation` | Accessible name of the expanded menu button.                  |
+| `locale`                        | `string`                              | Provider, then `en-US`          | Language of built-in interface text.                          |
+
+### Item schema
+
+| Field                       | Type                 | Use                                                                      |
+| --------------------------- | -------------------- | ------------------------------------------------------------------------ |
+| `value`                     | `string`             | Required unique destination value used by the model and events.          |
+| `label`                     | `string`             | Required visible and accessible destination text.                        |
+| `href`                      | `string`             | Required link target.                                                    |
+| `ariaLabel`                 | `string`             | Overrides the accessible name when the visible label is ambiguous.       |
+| `disabled`                  | `boolean`            | Blocks activation and removes the link from Tab order.                   |
+| `disabledInteractive`       | `boolean`            | Keeps a disabled destination focusable for discovery.                    |
+| `secondary`                 | `boolean`            | Shows the destination only while expanded, unless it is current.         |
+| `badge`                     | `string \| number`   | Trailing badge text; values longer than four characters are abbreviated. |
+| `badgeLabel`                | `string`             | Screen-reader description referenced by `aria-describedby`.              |
+| `target`, `rel`, `download` | Native anchor values | Forwarded to the link when it is enabled.                                |
+
+### Events
+
+| Event         | Payload              | Use                                                              |
+| ------------- | -------------------- | ---------------------------------------------------------------- |
+| `beforeinput` | `(item, event)`      | Cancellable before the current destination changes.              |
+| `input`       | `(item, event)`      | The model has changed.                                           |
+| `change`      | `(item, event)`      | The current destination change completed.                        |
+| `navigate`    | `(item, MouseEvent)` | A destination was activated; cancel the native click if routing. |
+
+### Slots
+
+| Slot            | Scope                | Use                                                              |
+| --------------- | -------------------- | ---------------------------------------------------------------- |
+| `icon`          | `{ item, selected }` | Destination icon. Use the outlined form when available.          |
+| `selected-icon` | `{ item }`           | Replaces the icon of the current destination, typically filled.  |
+| `badge`         | `{ item, selected }` | Replaces badge content.                                          |
+| `fab`           | `{ expanded }`       | Optional action above the destinations, such as an extended FAB. |
+| `menu-icon`     | —                    | Replaces the collapsed menu glyph.                               |
+| `close-icon`    | —                    | Replaces the expanded close glyph.                               |
+
+### Methods
+
+`NavigationRail` exposes no methods. Control expansion through `v-model:expanded` and selection through `v-model`.
+
+## Styling
+
+The rail has no public project CSS custom properties. It maps Material color and type roles internally: Surface Container for the rail, Secondary Container and On Secondary Container for the current indicator, On Surface Variant for inactive content, and Error and On Error for badges. Style the slotted icon and FAB content directly; the rail does not recolor them.
+
+The collapsed indicator is 56 × 32 px and becomes a 56 px row while expanded. State layers stay inside the indicator, and the badge is clamped to the rail edge. Text scaling increases vertical room rather than truncating labels.
 
 ## Material references
 

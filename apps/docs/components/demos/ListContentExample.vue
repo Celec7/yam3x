@@ -67,6 +67,7 @@ const showDraggedState = ref(false)
               t('Last active: yesterday', '上次活动：昨天')
             }}</template>
           </ListItem>
+          <ListItem>{{ t('Renamed group', '已重命名分组') }}</ListItem>
         </List>
       </section>
       <section>

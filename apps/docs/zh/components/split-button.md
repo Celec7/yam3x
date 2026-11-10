@@ -37,42 +37,6 @@ Split button 用于在主操作旁增加一组操作菜单。它通过隐藏额�
 
 :::
 
-## 在应用中导入
-
-从 `./components/yam3x/split-button` 导入已复制的组件：
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { SplitButton, type MenuItem } from './components/yam3x/split-button'
-
-const open = ref(false)
-const items: MenuItem[] = [
-  { value: 'document', label: '保存文档', type: 'radio', group: 'format' },
-  { value: 'image', label: '导出为图片', type: 'radio', group: 'format' },
-]
-
-function save(): void {
-  console.log('已保存')
-}
-</script>
-
-<template>
-  <SplitButton
-    v-model:open="open"
-    label="保存"
-    :items="items"
-    menu-label="保存选项"
-    group-label="保存操作"
-    @click="save"
-  />
-</template>
-```
-
-用 `label` 或默认插槽提供简短的主操作文字，图标使用 `#icon`。生成的菜单名称与尾随按钮名称可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 文案；`locale` 可覆盖语言，默认使用 provider，再回退到 `en-US`，标签属性优先。
-
-## 高级
-
 ### 组合
 
 需要直接控制两个按钮或弹层时，使用组合式 API。`SplitButtonLayout` 提供共同的 variant、size、shape 和间距；通过 `#leading` 与 `#trailing` 插槽分别组合两个控件。间距默认采用 Material 的 2px，可用 `spacing` 覆盖。`SplitButtonTrailingButton` 通过 `v-model:checked` 暴露展开状态。布局本身不管理菜单状态或内容。
@@ -146,6 +110,40 @@ function save(): void {
 <<< ../../components/demos/SplitButtonPopupExample.vue{vue}
 
 :::
+
+## 在应用中导入
+
+从 `./components/yam3x/split-button` 导入已复制的组件：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SplitButton, type MenuItem } from './components/yam3x/split-button'
+
+const open = ref(false)
+const items: MenuItem[] = [
+  { value: 'document', label: '保存文档', type: 'radio', group: 'format' },
+  { value: 'image', label: '导出为图片', type: 'radio', group: 'format' },
+]
+
+function save(): void {
+  console.log('已保存')
+}
+</script>
+
+<template>
+  <SplitButton
+    v-model:open="open"
+    label="保存"
+    :items="items"
+    menu-label="保存选项"
+    group-label="保存操作"
+    @click="save"
+  />
+</template>
+```
+
+用 `label` 或默认插槽提供简短的主操作文字，图标使用 `#icon`。生成的菜单名称与尾随按钮名称可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 文案；`locale` 可覆盖语言，默认使用 provider，再回退到 `en-US`，标签属性优先。
 
 ## 行为与无障碍
 

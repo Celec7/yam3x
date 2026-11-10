@@ -10,11 +10,7 @@ const contained = ref(false)
 </script>
 
 <template>
-  <div class="yam3x-demo yam3x-demo__stack loading-demo">
-    <Checkbox
-      v-model="contained"
-      :label="t('Use container', '使用容器')"
-    />
+  <div class="yam3x-demo loading-demo">
     <div class="loading-demo__stage">
       <LoadingIndicator
         data-testid="loading-indicator"
@@ -22,11 +18,15 @@ const contained = ref(false)
         :variant="contained ? 'contained' : 'uncontained'"
       />
     </div>
-    <p>
+    <Checkbox
+      v-model="contained"
+      :label="t('Use container', '使用容器')"
+    />
+    <p class="loading-demo__note">
       {{
         t(
-          'Use a loading indicator for brief tasks with unknown progress. For waits expected to exceed 5 seconds, prefer a progress indicator.',
-          '短时间且进度未知的任务可使用加载指示器。预计等待超过 5 秒时，优先使用进度指示器。',
+          'The indicator is uncontained by default. The container adds a surface without changing the accessible name or the indeterminate value.',
+          '指示器默认无容器。容器会增加背景表面，但不会改变无障碍名称或不确定状态。',
         )
       }}
     </p>
@@ -34,12 +34,19 @@ const contained = ref(false)
 </template>
 
 <style scoped>
+.loading-demo {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
 .loading-demo__stage {
   display: grid;
-  min-height: 112px;
+  inline-size: 100%;
+  min-block-size: 112px;
   place-items: center;
 }
-.loading-demo p {
+.loading-demo__note {
   margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
 }
 </style>

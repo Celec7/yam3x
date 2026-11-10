@@ -5,7 +5,7 @@ import { Option } from '@registry/components/option'
 import { DatePicker, DateRangePicker, type DateRangeValue } from '@registry/components/date-picker'
 import { useDemoLocale } from './use-demo-locale'
 
-const { t } = useDemoLocale()
+const { localeTag, t } = useDemoLocale()
 
 const mode = ref<'auto' | 'docked' | 'modal'>('auto')
 const selection = ref<'single' | 'range'>('single')
@@ -25,10 +25,14 @@ function offsetDate(days: number): string {
 
 const date = ref<string | null>(offsetDate(2))
 const range = ref<DateRangeValue>({ start: offsetDate(3), end: offsetDate(8) })
+const invalid = ref('')
 </script>
 
 <template>
-  <section class="date-picker-example">
+  <section
+    class="date-picker-example"
+    data-testid="date-picker-example"
+  >
     <div class="date-picker-example__settings">
       <label
         >{{ t('Mode', '形态') }}
@@ -55,28 +59,34 @@ const range = ref<DateRangeValue>({ start: offsetDate(3), end: offsetDate(8) })
       v-if="selection === 'single'"
       v-model="date"
       :mode="mode"
+      :locale="localeTag"
       :min-date="offsetDate(0)"
       :max-date="offsetDate(730)"
       :label="t('Event date', '活动日期')"
       placeholder="YYYY-MM-DD"
       :supporting-text="
         t(
-          'Dates follow the current locale. Enter YYYY-MM-DD or open the calendar to choose a date.',
-          '日期按当前语言显示；可输入 YYYY-MM-DD，或打开日历选择。',
+          'Dates follow the current locale. Enter a date such as 2026-10-11 or open the calendar.',
+          '日期按当前语言显示；可输入如 2026-10-11 的日期，或打开日历选择。',
         )
       "
       clearable
+      @change="invalid = ''"
+      @invalid="invalid = $event"
     />
     <DateRangePicker
       v-else
       v-model="range"
       :mode="mode"
+      :locale="localeTag"
       :label="t('Booking dates', '预订日期')"
       :start-date-label="t('Start date', '开始日期')"
       :end-date-label="t('End date', '结束日期')"
       :supporting-text="
         t('Choose a start date, then choose an end date.', '先选开始日期，再选结束日期。')
       "
+      @change="invalid = ''"
+      @invalid="invalid = $event"
     />
     <p
       class="date-picker-example__value"
@@ -87,6 +97,21 @@ const range = ref<DateRangeValue>({ start: offsetDate(3), end: offsetDate(8) })
         selection === 'single'
           ? date || t('None selected', '未选择')
           : `${range.start || t('None selected', '未选择')} – ${range.end || t('None selected', '未选择')}`
+      }}
+    </p>
+    <p
+      v-if="invalid"
+      class="date-picker-example__invalid"
+      role="status"
+    >
+      {{ t('Last rejected entry:', '最近被拒绝的输入：') }} {{ invalid }}
+    </p>
+    <p class="date-picker-example__hint">
+      {{
+        t(
+          'Modal selections stay provisional until OK; Cancel, Escape, or the scrim discards them. Docked fields commit typed dates on Enter or blur.',
+          '模态选择在点击“确定”前保持临时状态；取消、Escape 或点击遮罩会放弃。停靠式字段在按 Enter 或失焦时提交输入的日期。',
+        )
       }}
     </p>
   </section>
@@ -113,8 +138,17 @@ const range = ref<DateRangeValue>({ start: offsetDate(3), end: offsetDate(8) })
   gap: 8px;
   align-items: center;
 }
-.date-picker-example__value {
+.date-picker-example__value,
+.date-picker-example__invalid,
+.date-picker-example__hint {
   margin: 0;
   color: var(--md-sys-color-on-surface-variant);
+}
+.date-picker-example__invalid {
+  color: var(--md-sys-color-error);
+}
+.date-picker-example__hint {
+  max-inline-size: 64ch;
+  font-size: 14px;
 }
 </style>

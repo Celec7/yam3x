@@ -6,9 +6,11 @@ import { Slider } from '@registry/components/slider'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { SplitPane, type SplitPaneOrientation } from '@registry/components/split-pane'
+import { useDemoDirection } from './use-demo-direction'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
+const { dir, direction, toggle: toggleDirection } = useDemoDirection()
 
 const value = ref(66)
 const min = ref(20)
@@ -16,22 +18,33 @@ const max = ref(80)
 const orientation = ref<SplitPaneOrientation>('auto')
 const compactPane = ref<'primary' | 'supporting'>('primary')
 const disabled = ref(false)
-const rtl = ref(false)
 const showMain = ref(true)
 const showSupporting = ref(true)
 const changes = ref(0)
 const splitPane = ref<InstanceType<typeof SplitPane> | null>(null)
 const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.round(value.value)}%`)
+const valueText = computed(() =>
+  t(
+    `Main content ${Math.round(value.value)} percent, supporting content ${100 - Math.round(value.value)} percent`,
+    `主要内容占 ${Math.round(value.value)}%，辅助内容占 ${100 - Math.round(value.value)}%`,
+  ),
+)
+const rightToLeft = computed({
+  get: () => direction.value === 'rtl',
+  set: (checked: boolean) => {
+    if (checked !== (direction.value === 'rtl')) toggleDirection()
+  },
+})
 </script>
 
 <template>
   <div
     class="yam3x-demo split-pane-demo"
-    :dir="rtl ? 'rtl' : 'ltr'"
+    :dir="dir"
   >
     <div class="split-pane-demo__controls">
-      <label
-        >{{ t('Orientation', '方向') }}
+      <label>
+        {{ t('Orientation', '方向') }}
         <Select
           v-model="orientation"
           :aria-label="t('Split pane orientation', '分栏方向')"
@@ -50,8 +63,10 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
           />
         </Select>
       </label>
-      <label
-        >{{ t('Start pane', '起始窗格') }} <output>{{ valueLabel }}</output>
+      <label class="split-pane-demo__slider">
+        <span
+          >{{ t('Start pane', '起始窗格') }}: <output>{{ valueLabel }}</output></span
+        >
         <Slider
           v-model="value"
           :min="0"
@@ -60,8 +75,8 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
         />
       </label>
       <Checkbox
-        v-model="rtl"
-        :label="t('Right-to-left (RTL)', '从右到左 (RTL)')"
+        v-model="rightToLeft"
+        :label="t('RTL', '从右到左 (RTL)')"
       />
       <Checkbox
         v-model="disabled"
@@ -104,9 +119,11 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
         v-model:compact-pane="compactPane"
         :min="min"
         :max="max"
+        :step="1"
         :detents="[25, 50, 66, 75]"
         :orientation="orientation"
         :label="t('Main content', '主要内容')"
+        :value-text="valueText"
         :disabled="disabled"
         @change="changes++"
       >
@@ -119,24 +136,24 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
             <p>
               {{
                 t(
-                  'The main region of a supporting pane handles the page’s primary task. Drag the divider to adjust space; when it has keyboard focus, use the arrow keys.',
-                  '辅助窗格的主区域承载页面的主要任务。拖动中间分隔器可调整两侧空间；键盘焦点位于分隔器时，也能用方向键调整。',
+                  'The main region handles the page’s primary task. Drag the divider, or focus it and use the arrow keys.',
+                  '主区域承载页面的主要任务。拖动分隔器，或将焦点移到分隔器后使用方向键。',
                 )
               }}
             </p>
             <p>
               {{
                 t(
-                  'At compact widths, auto mode presents one pane at a time. Use the controls to switch between primary and supporting content; wider windows show both side by side.',
-                  '紧凑宽度下，auto 模式一次呈现一个窗格。可使用控件切换主要内容与辅助内容；较宽窗口会并排显示两者。',
+                  'Below 600px, auto mode shows one pane at a time; use the compact buttons to switch. From 600px to 839px both panes stack, and at 840px or wider they sit side by side.',
+                  '小于 600px 时，auto 模式一次显示一个窗格；可用紧凑按钮切换。600px 到 839px 时两个窗格上下排列，840px 及以上并排显示。',
                 )
               }}
             </p>
             <p>
               {{
                 t(
-                  'The main content scrolls independently while the supporting region keeps its own scroll position.',
-                  '主内容可以独立滚动，辅助区域保持自己的滚动位置。',
+                  'Each pane scrolls independently, so the supporting region keeps its own position.',
+                  '每个窗格独立滚动，辅助区域会保留自己的滚动位置。',
                 )
               }}
             </p>
@@ -151,15 +168,15 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
             <p>
               {{
                 t(
-                  'Provide courses, comments, properties, or tools related to the current main content.',
-                  '提供与当前主内容相关的课程、评论、属性或工具。',
+                  'Keep courses, comments, properties, or tools related to the current main content here.',
+                  '这里放置与当前主内容相关的课程、评论、属性或工具。',
                 )
               }}
             </p>
             <p>
               {{
                 t(
-                  'Material recommends using a supporting pane as a secondary region, with the main content taking about two-thirds of the space.',
+                  'Material recommends a supporting pane as a secondary region, with the main content taking about two-thirds of the space.',
                   'Material 建议将辅助窗格作为次要区域，主内容通常占约三分之二。',
                 )
               }}
@@ -168,9 +185,11 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
         </template>
       </SplitPane>
     </div>
-    <output data-testid="split-pane-result"
-      >{{ t('Current ratio:', '当前比例：') }} {{ valueLabel }}；{{ t('changes:', '变更次数：') }}
-      {{ changes }}</output
+    <output
+      data-testid="split-pane-result"
+      class="split-pane-demo__result"
+      >{{ t('Current ratio:', '当前比例：') }} {{ valueLabel
+      }}{{ t(' · changes: ', ' · 变更次数：') }}{{ changes }}</output
     >
   </div>
 </template>
@@ -191,8 +210,11 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
   align-items: center;
   gap: 8px;
 }
-.split-pane-demo__controls :deep(.yam3x-slider) {
-  width: 140px;
+.split-pane-demo__slider {
+  flex-wrap: wrap;
+}
+.split-pane-demo__slider :deep(.yam3x-slider) {
+  inline-size: 140px;
 }
 .split-pane-demo__surface {
   inline-size: 100%;
@@ -219,7 +241,7 @@ const valueLabel = computed(() => `${Math.round(value.value)}% / ${100 - Math.ro
 .split-pane-demo__pane p {
   max-inline-size: 60ch;
 }
-.split-pane-demo output {
+.split-pane-demo__result {
   color: var(--md-sys-color-on-surface-variant);
 }
 </style>

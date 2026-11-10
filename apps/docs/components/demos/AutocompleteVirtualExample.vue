@@ -5,19 +5,23 @@ import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
 import { useDemoLocale } from './use-demo-locale'
 
-const { t, locale } = useDemoLocale()
+const { t, localeTag } = useDemoLocale()
 const query = ref('')
 const selected = ref<string | null>(null)
 const virtual = ref(true)
 const loading = ref(false)
 const zeroOverscan = ref(false)
-const sourceOptions = Array.from({ length: 10000 }, (_, index) => ({
-  value: `item-${index}`,
-  label: `Item ${index + 1}`,
-  disabled: index === 9998,
-}))
+const sourceOptions = computed(() =>
+  Array.from({ length: 10000 }, (_, index) => ({
+    value: `item-${index}`,
+    label: t(`Item ${index + 1}`, `项目 ${index + 1}`),
+    disabled: index === 9998,
+  })),
+)
 const hideLeading = ref(false)
-const options = computed(() => (hideLeading.value ? sourceOptions.slice(2) : sourceOptions))
+const options = computed(() =>
+  hideLeading.value ? sourceOptions.value.slice(2) : sourceOptions.value,
+)
 </script>
 
 <template>
@@ -33,7 +37,7 @@ const options = computed(() => (hideLeading.value ? sourceOptions.slice(2) : sou
         :options="options"
         :virtual="virtual ? { overscan: zeroOverscan ? 0 : 4 } : false"
         :loading="loading"
-        :locale="locale === 'zh' ? 'zh-CN' : 'en-US'"
+        :locale="localeTag"
         panel-class="autocomplete-virtual-demo__panel"
         name="suggestion"
       >

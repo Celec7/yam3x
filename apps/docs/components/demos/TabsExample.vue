@@ -16,6 +16,7 @@ const headerPosition = ref<'before' | 'after'>('before')
 const count = ref(3)
 const disablePagination = ref(false)
 const disableSwipe = ref(false)
+const rtl = ref(false)
 const selected = ref('videos')
 const labels = [
   t('Videos', '视频'),
@@ -120,48 +121,57 @@ function setCount(value: string | string[] | null) {
         v-model="disableSwipe"
         :label="t('Disable content swiping', '禁用内容滑动')"
       />
+      <Checkbox
+        v-model="rtl"
+        :label="t('Right-to-left (RTL)', '从右到左 (RTL)')"
+      />
     </div>
-    <Tabs
-      v-model="selected"
-      data-testid="tabs"
-      :label="t('Media categories', '媒体分类')"
-      :items="items"
-      :variant="variant"
-      :layout="layout"
-      :header-position="headerPosition"
-      :disable-pagination="disablePagination"
-      :disable-swipe="disableSwipe"
-      @update:model-value="onModelUpdate"
-      @select="onSelect"
+    <div
+      class="tabs-demo__stage"
+      :dir="rtl ? 'rtl' : 'ltr'"
     >
-      <template #tab-content="{ item, selected: isSelected }">
-        <span
-          class="tabs-demo__tab-content"
-          :class="{ 'tabs-demo__tab-content--primary': variant === 'primary' }"
-          :data-selected="isSelected"
-        >
+      <Tabs
+        v-model="selected"
+        data-testid="tabs"
+        :label="t('Media categories', '媒体分类')"
+        :items="items"
+        :variant="variant"
+        :layout="layout"
+        :header-position="headerPosition"
+        :disable-pagination="disablePagination"
+        :disable-swipe="disableSwipe"
+        @update:model-value="onModelUpdate"
+        @select="onSelect"
+      >
+        <template #tab-content="{ item, selected: isSelected }">
           <span
-            v-if="variant === 'primary'"
-            class="tabs-demo__tab-icon"
-            aria-hidden="true"
-            ><Icon :name="iconNames[item.value]"
-          /></span>
-          <span class="yam3x-tabs__label">{{ item.label }}</span>
-          <span
-            v-if="item.badge !== undefined"
-            class="yam3x-tabs__badge"
-            aria-hidden="true"
-            >{{ item.badge }}</span
+            class="tabs-demo__tab-content"
+            :class="{ 'tabs-demo__tab-content--primary': variant === 'primary' }"
+            :data-selected="isSelected"
           >
-        </span>
-      </template>
-      <template #panel="{ item }">
-        <div class="tabs-demo__panel">
-          {{ item.label }}{{ t(' content', '内容') }}
-          <Button type="button">{{ item.label }}{{ t(' actions', '操作') }}</Button>
-        </div>
-      </template>
-    </Tabs>
+            <span
+              v-if="variant === 'primary'"
+              class="tabs-demo__tab-icon"
+              aria-hidden="true"
+              ><Icon :name="iconNames[item.value]"
+            /></span>
+            <span class="yam3x-tabs__label">{{ item.label }}</span>
+            <span
+              v-if="item.badge !== undefined"
+              class="yam3x-tabs__badge"
+              aria-hidden="true"
+              >{{ item.badge }}</span
+            >
+          </span>
+        </template>
+        <template #panel="{ item }">
+          <div class="tabs-demo__panel">
+            {{ item.label }}{{ t(' content', '内容') }}
+            <Button type="button">{{ item.label }}{{ t(' actions', '操作') }}</Button>
+          </div>
+        </template>
+      </Tabs>
+    </div>
     <output
       data-testid="tabs-selection"
       aria-live="polite"

@@ -89,7 +89,7 @@ const minTime = { hour: 8, minute: 0 }
 const maxTime = { hour: 20, minute: 0 }
 function formatTime(value: TimeValue, includeSeconds = showSeconds.value): string {
   const date = new Date(2026, 0, 1, value.hour, value.minute, value.second ?? 0)
-  return date.toLocaleTimeString(locale.value, {
+  return date.toLocaleTimeString(localeTag.value, {
     hour: '2-digit',
     minute: '2-digit',
     ...(includeSeconds ? { second: '2-digit' } : {}),

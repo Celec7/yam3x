@@ -1,12 +1,32 @@
 <script setup lang="ts">
+import NumberFieldBasicExample from './demos/NumberFieldBasicExample.vue'
 import NumberFieldExample from './demos/NumberFieldExample.vue'
+import NumberFieldStatesExample from './demos/NumberFieldStatesExample.vue'
 </script>
 
 # Number field
 
-`NumberField` is a project extension for quantities and ordinary decimal values. It combines Material text-field presentation with localized editing and optional step controls. Use a text field for identifiers, phone numbers, or exact decimal arithmetic handled by your application.
+Text fields let users enter text into a UI. They typically appear in forms and dialogs.
 
-## Interactive example
+`NumberField` is a project extension for quantities and ordinary decimal values. It applies the Material text-field presentation and adds localized parsing, stepping, and commitment. Compose Material 3 has no number-field primitive; the closest composition is `OutlinedTextField` or `TextField` with trailing `IconButton`s. Use a plain [Form field](/components/form-field) or text field for identifiers, phone numbers, and exact decimal arithmetic that your application owns.
+
+## Examples
+
+### Basic
+
+The field keeps a committed number in `v-model`, enforces inclusive limits, and steps by the configured increment through the trailing actions or the keyboard.
+
+<div class="vp-raw yam3x-doc-demo-theme"><NumberFieldBasicExample /></div>
+
+::: details View demo source
+
+<<< ./demos/NumberFieldBasicExample.vue{vue}
+
+:::
+
+### Editing, validation, and form submission
+
+Typing changes the editing text without changing the model. Enter, blur, a step action, or native form submission commits a valid value. The demo blocks an invalid submission, keeps out-of-range input visible, and submits the unlocalized numeric string under `name`.
 
 <div class="vp-raw yam3x-doc-demo-theme"><NumberFieldExample /></div>
 
@@ -16,7 +36,23 @@ import NumberFieldExample from './demos/NumberFieldExample.vue'
 
 :::
 
+The controls switch the field between outlined and filled and hide the pointer step actions without removing keyboard stepping.
+
+### Locale formatting and states
+
+The gallery shows a German amount with prefix and suffix text, a decimal weight, a Chinese quantity, read-only and disabled fields, the filled variant, and a required field whose validation error appears in the field.
+
+<div class="vp-raw yam3x-doc-demo-theme"><NumberFieldStatesExample /></div>
+
+::: details View demo source
+
+<<< ./demos/NumberFieldStatesExample.vue{vue}
+
+:::
+
 ## Use in your app
+
+After [installation](/guide/installation), copy the Form field and Icon button dependencies with the component, then import it from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">
@@ -34,52 +70,167 @@ const weight = ref<number | null>(0.1)
     :min="0"
     :max="10"
     :step="0.1"
+    hint="Between 0 and 10 kilograms"
   >
     <template #suffix-text>kg</template>
   </NumberField>
 </template>
 ```
 
-## API
+`v-model` holds a finite number or `null`. `input` reports editing text while `change` reports a committed value, so keep validation in the application and bind the model for accepted values.
 
-Built-in messages, number formatting, and parsing can inherit [LocaleProvider](/components/localization). Explicit `locale` and the component’s string-valued `messages` take precedence; without a provider, the locale is `en-US`.
+::: details Messages, prefixes, and programmatic validation
 
-| Prop                               | Default            | Use                                                                                                                                                                        |
-| ---------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`                            | Required           | Visible field label.                                                                                                                                                       |
-| `id`, `name`, `form`               | —                  | Editor ID, submitted field name, and optional external form ID.                                                                                                            |
-| `locale`                           | Provider → `en-US` | Locale for digits, grouping, decimal separators, and formatting.                                                                                                           |
-| `min`, `max`                       | Unbounded          | Inclusive finite limits.                                                                                                                                                   |
-| `step`                             | `1`                | Positive finite increment; does not restrict directly typed values to a step grid.                                                                                         |
-| `required`, `disabled`, `readonly` | `false`            | Native field states; disabled and read-only fields cannot step.                                                                                                            |
-| `controls`                         | `true`             | Show the pointer step controls. Keyboard stepping remains available.                                                                                                       |
-| `variant`                          | `outlined`         | `outlined` or `filled`.                                                                                                                                                    |
-| `hint`, `error`                    | Empty / `false`    | Supporting text or an external error. A nonempty error string supplies the message; `true` uses the localized generic message.                                             |
-| `width`                            | `270px`            | Preferred width, limited by the parent.                                                                                                                                    |
-| `hideRequiredMarker`               | `false`            | Hide the visible asterisk; explain required markers in the form.                                                                                                           |
-| `messages`                         | English or Chinese | Override `valueMissing`, `badInput`, `rangeUnderflow`, `rangeOverflow`, `customError`, `increment`, and `decrement`. Other locales use English messages unless overridden. |
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { NumberField, type NumberFieldInvalidDetail } from './components/yam3x/number-field'
 
-`v-model` contains a finite `number` or `null`. `input(text)` reports editing text; `change(value)` reports a changed value proposed at commitment. `invalid({ reason, message })` reports a failed commitment or native validation. The reason is one of the first five message keys above. The component exports the related `NumberFieldMessages`, `NumberFieldInvalidReason`, and `NumberFieldInvalidDetail` types.
+const field = ref<InstanceType<typeof NumberField> | null>(null)
+const quantity = ref<number | null>(null)
+const error = ref('')
 
-The `#prefix-text` and `#suffix-text` slots add units or currency text and are automatically included in the editor's accessible description. `focus()`, `checkValidity()`, and `reportValidity()` are exposed on the component ref.
+function onInvalid(detail: NumberFieldInvalidDetail): void {
+  error.value = detail.message
+}
+</script>
 
-`class` and `style` apply to the field root. Other attributes, such as `placeholder`, `autocomplete`, and `aria-describedby`, reach the editor. Its type, value, numeric roles, and state attributes remain component-owned. Existing descriptions are preserved alongside the field's own descriptions.
+<template>
+  <form @submit.prevent>
+    <NumberField
+      ref="field"
+      v-model="quantity"
+      label="Quantity"
+      name="quantity"
+      required
+      :min="1"
+      :max="99"
+      :messages="{ valueMissing: 'Choose a quantity.' }"
+      :error="error"
+      @invalid="onInvalid"
+    >
+      <template #prefix-text>#</template>
+    </NumberField>
+    <button
+      type="button"
+      @click="field?.reportValidity()"
+    >
+      Check quantity
+    </button>
+  </form>
+</template>
+```
+
+`error` accepts a message string or `true` for the localized generic message. The `#prefix-text` and `#suffix-text` content joins the editor's accessible description.
+
+:::
 
 ## Behavior and accessibility
 
-Typing changes the editing text without changing `v-model`. Enter, blur, stepping, or a normal form submission commits a valid value. A temporary sign or trailing decimal separator remains editable; invalid text and values outside the limits remain visible instead of being silently clamped. Empty optional input commits `null`; empty required input is invalid.
+### Editing and commitment
 
-Up and Down step the value. Home and End select a supplied minimum or maximum; modified editing shortcuts remain native. The editor is the stepper's Tab stop. Pointer step controls return focus to it. Wheel scrolling does not change the value. A step that would cross a bound is unavailable; stepping an empty editor starts from zero and brings the first result into the allowed range.
+- Editing text is separate from the committed model. Temporary input such as a minus sign or a trailing decimal separator stays editable.
+- Enter, blur, a step action, or a normal form submission commits a valid value. Formatting happens at commitment, not on every keystroke.
+- Invalid text and out-of-range values remain visible; the field never silently clamps typed input.
+- Empty optional input commits `null`; empty required input is invalid.
+- An external model update replaces the editing text and clears displayed validation feedback.
+- `focus()`, `checkValidity()`, and `reportValidity()` are available on the component ref.
 
-Parsing accepts localized digits and separators and validates grouping. Formatting occurs at commitment, not on every keystroke. Scientific notation and arbitrary-precision decimals are outside this editor's scope. A locale change reformats a parseable pending edit without committing it; an external model update replaces the pending edit.
+### Constraints and step actions
 
-The native form receives an unlocalized numeric string under `name`, or an empty string for `null`. Invalid edits block normal validated submission even while the model still contains an earlier value. Use the form's normal submit action or `requestSubmit()` to commit pending edits before reading the submission. Reset restores the initial model value and clears displayed validation feedback. Disabled fields are omitted from form data.
+- `min` and `max` are inclusive finite limits; `step` is a positive increment but does not restrict directly typed values to a grid.
+- A step action adds or subtracts `step` from the current valid edit, or from the last committed value when the edit is invalid.
+- Stepping an empty editor starts from zero and brings the first result into the allowed range.
+- A step that would cross a bound is unavailable and its pointer action is disabled. Disabled and read-only fields cannot step.
+- Wheel scrolling never changes the value.
+
+### Locale and formatting
+
+- Parsing accepts localized digits, grouping, and decimal separators, and validates grouping. Scientific notation and arbitrary-precision decimals are outside this field's scope.
+- Built-in messages, number formatting, and parsing inherit [LocaleProvider](/components/localization). Explicit `locale` and `messages` take precedence; without a provider the locale is `en-US`.
+- A locale change reformats a parseable pending edit without committing it.
+- `input` reports editing text; `change` reports a committed value only when it differs from the previous one.
+- `invalid` reports `{ reason, message }`, where the reason is `valueMissing`, `badInput`, `rangeUnderflow`, `rangeOverflow`, or `customError`.
+
+### Keyboard and focus
+
+- Up and Down step the value. Home and End select a supplied minimum or maximum; modified editing shortcuts remain native.
+- Enter commits the current edit. The editor is the only Tab stop; pointer step actions use `tabindex="-1"` and return focus to the editor.
+- The editor exposes `role="spinbutton"`, `inputmode="decimal"`, and numeric `aria-valuenow`, `aria-valuetext`, `aria-valuemin`, and `aria-valuemax` values.
+
+### Forms
+
+- The native form receives an unlocalized numeric string under `name`, or an empty string for `null`. Disabled fields are omitted.
+- Invalid edits block normal validated submission even while the model still holds an earlier value. Use the form's submit action to commit a pending edit before reading the submission.
+- Reset restores the initial model value and clears displayed validation feedback; a prevented reset is honored.
+- `form` associates the editor and its hidden value input with a form outside the subtree.
+
+## API
+
+### Exports
+
+| Export                     | Kind      | Use                                                                                     |
+| -------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| `NumberField`              | Component | Localized numeric editor with optional step actions.                                    |
+| `NumberFieldMessages`      | Type      | Overrides for validation and step-action messages.                                      |
+| `NumberFieldInvalidReason` | Type      | `'valueMissing' \| 'badInput' \| 'rangeUnderflow' \| 'rangeOverflow' \| 'customError'`. |
+| `NumberFieldInvalidDetail` | Type      | `{ reason, message }` for the `invalid` event.                                          |
+
+### Props and models
+
+| Prop / model         | Type                           | Default            | Description                                                                                        |
+| -------------------- | ------------------------------ | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `v-model`            | `number \| null`               | `null`             | Committed finite number, or null for an empty optional field.                                      |
+| `label`              | `string`                       | Required           | Visible label and accessible name base.                                                            |
+| `id`                 | `string`                       | Generated          | Editor ID; also used by the field label.                                                           |
+| `name`               | `string`                       | —                  | Submitted field name.                                                                              |
+| `form`               | `string`                       | —                  | Associates the editor with a form by ID.                                                           |
+| `locale`             | `string`                       | Provider → `en-US` | Digits, grouping, decimal separators, and built-in messages.                                       |
+| `min` / `max`        | `number`                       | Unbounded          | Inclusive finite limits.                                                                           |
+| `step`               | `number`                       | `1`                | Positive increment for step actions and keyboard stepping.                                         |
+| `required`           | `boolean`                      | `false`            | Native required validation.                                                                        |
+| `disabled`           | `boolean`                      | `false`            | Disables editing, stepping, and form submission.                                                   |
+| `readonly`           | `boolean`                      | `false`            | Prevents editing and stepping while still submitting the value.                                    |
+| `controls`           | `boolean`                      | `true`             | Shows the pointer step actions; keyboard stepping remains.                                         |
+| `variant`            | `'outlined' \| 'filled'`       | `'outlined'`       | Text-field container style.                                                                        |
+| `hint`               | `string`                       | `''`               | Supporting text.                                                                                   |
+| `error`              | `string \| boolean`            | `false`            | Error text, or `true` for the localized generic message.                                           |
+| `width`              | `string`                       | Form field `270px` | Preferred width, limited by the parent.                                                            |
+| `hideRequiredMarker` | `boolean`                      | `false`            | Hides the visible required asterisk.                                                               |
+| `messages`           | `Partial<NumberFieldMessages>` | Locale messages    | Overrides `valueMissing`, `badInput`, range messages, `customError`, `increment`, and `decrement`. |
+
+### Events
+
+| Event     | Payload                    | Description                                                        |
+| --------- | -------------------------- | ------------------------------------------------------------------ |
+| `input`   | `string`                   | Editing text after each edit; it does not change the model yet.    |
+| `change`  | `number \| null`           | A committed value that differs from the previous one.              |
+| `invalid` | `NumberFieldInvalidDetail` | A failed commitment or native validation, with reason and message. |
+
+### Slots
+
+| Slot          | Description                                                           |
+| ------------- | --------------------------------------------------------------------- |
+| `prefix-text` | Currency or unit text before the editor; included in its description. |
+| `suffix-text` | Unit text after the editor; included in its description.              |
+
+### Methods
+
+Access these through a template ref.
+
+| Method             | Returns   | Description                                                          |
+| ------------------ | --------- | -------------------------------------------------------------------- |
+| `focus()`          | `void`    | Moves focus to the editor.                                           |
+| `checkValidity()`  | `boolean` | Synchronizes native validity with the current edit, then reports it. |
+| `reportValidity()` | `boolean` | Shows the native validation message when the edit is invalid.        |
+
+`class` and `style` apply to the field root. Other attributes, such as `placeholder`, `autocomplete`, and `aria-describedby`, reach the editor; its type, value, numeric roles, and state attributes remain component-owned. Existing descriptions are preserved alongside the field's own descriptions.
 
 ## Styling
 
-Use the supported [Form field styling hooks](/components/form-field#styling) on the Number field root. The input uses tabular digits. Labels, supporting text, and control spacing can grow with language height and enlarged text.
+Use the supported [Form field styling hooks](/components/form-field#styling) on the Number field root. The field adds its own block padding and step-action geometry; the editor uses tabular digits.
 
-The outlined field adds 4 px block padding to the Form field container and editor control. Filled adds 4 px container block padding and a 16 px top inset with no bottom inset on the control. Each step action reserves a 48 × 40 px minimum box with 4 px between actions; the default 56 px field resolves it to 48 × 48 px. The editor is the only Tab stop, while pointer step actions use `tabindex="-1"`.
+The outlined field adds 4px block padding to the Form field container and editor control. Filled adds 4px container block padding and a 16px top inset with no bottom inset on the control. Each step action reserves a 48 × 40px minimum box with 4px between actions; the default 56px field resolves it to 48 × 48px. Labels, supporting text, and control spacing grow with language height and enlarged text.
 
 ## Material references
 

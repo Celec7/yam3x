@@ -13,7 +13,10 @@ const selectionState = ref<CheckboxState>('indeterminate')
 </script>
 
 <template>
-  <div class="yam3x-demo yam3x-demo__stack">
+  <div
+    data-testid="checkbox-states"
+    class="yam3x-demo yam3x-demo__stack"
+  >
     <form
       id="checkbox-example-form"
       class="yam3x-demo__stack"

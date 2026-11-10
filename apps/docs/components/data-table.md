@@ -291,6 +291,23 @@ The table is fully controlled: it renders accepted state and proposes changes ra
 
 Built-in UI text can inherit shared [LocaleProvider](/components/localization) configuration. Explicit `locale` and `messages` take precedence; without a provider, the locale defaults to `en-US`.
 
+### Exports
+
+| Export                  | Kind      | Use                                                                     |
+| ----------------------- | --------- | ----------------------------------------------------------------------- |
+| `DataTable`             | Component | Renders the table, query controls, selection, and pagination.           |
+| `DataTableColumn`       | Type      | Declares a column, its value accessor, formatting, and filter.          |
+| `DataTableCell`         | Type      | Cell slot scope: row, column, value, and row index.                     |
+| `DataTableColumnFilter` | Type      | Column filter options and optional custom matching.                     |
+| `DataTableFilterOption` | Type      | One stable filter key with its visible label.                           |
+| `DataTableFilters`      | Type      | Accepted column IDs mapped to selected filter keys.                     |
+| `DataTableKey`          | Type      | Stable string or number row identity.                                   |
+| `DataTableMessages`     | Type      | Partial built-in text overrides.                                        |
+| `DataTableQuery`        | Type      | Complete sort, filter, page, and page-size request.                     |
+| `DataTableSelection`    | Type      | Selected, changed, and source keys for a selection event.               |
+| `DataTableSort`         | Type      | Sort column and ascending/descending direction.                         |
+| `DataTableValue`        | Type      | Comparable cell value: text, number, boolean, Date, null, or undefined. |
+
 ### Props and models
 
 | Prop and model     | Default                                | Use                                                                                                |

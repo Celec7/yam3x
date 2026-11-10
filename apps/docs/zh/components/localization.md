@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import LocalizationExample from '../../components/demos/LocalizationExample.vue'
 import LocalizationOverridesExample from '../../components/demos/LocalizationOverridesExample.vue'
-import ActionLocalizationExample from '../../components/demos/ActionLocalizationExample.vue'
 </script>
 
 # 本地化
@@ -35,18 +34,6 @@ import ActionLocalizationExample from '../../components/demos/ActionLocalization
 :::
 
 一个 provider 设置 `en-US` 并覆盖分页 `next` 文案。组件 `locale` 替换该实例的语言，组件 `messages` 条目则同时替换两者。省略的条目执行回退；空字符串表示显式覆盖。
-
-### 操作名称
-
-<div class="vp-raw yam3x-doc-demo-theme"><ActionLocalizationExample /></div>
-
-::: details 查看演示源码
-
-<<< ../../components/demos/ActionLocalizationExample.vue{vue}
-
-:::
-
-`actions` 命名空间为按钮、菜单触发器、Chip、徽章、面包屑、滑块、对话框和通知提供生成名称与无障碍标签。切换语言会更新这些名称，而不会重新启动打开的对话框编辑、Snackbar 超时或范围滑块焦点目标。
 
 ## 在应用中使用
 
@@ -134,25 +121,25 @@ provider 翻译内置界面文案，不翻译应用标签、记录数据、浏�
 
 ::: details 命名空间映射
 
-| 命名空间        | 覆盖内容                                                                                     |
-| --------------- | -------------------------------------------------------------------------------------------- |
-| `actions`       | 对话框、面板、菜单、Tabs、Chip、徽章、面包屑、滑块、表单和 Snackbar 的共享操作、生成名称与角色标签。 |
-| `select`        | Select 空列表文案。                                                                          |
-| `autocomplete`  | 结果数量、建议名称和必选选择文案。                                                          |
-| `optionPanel`   | 加载和无数据文案。                                                                           |
-| `datePicker`    | 字段、范围、导航、模式、操作和验证文案。                                                    |
-| `timePicker`    | 字段、模式、操作、对话框、表盘和验证文案。                                                  |
-| `dateInput`     | 日期、时间和日期时间组标签、验证及分段名称。                                                |
-| `calendar`      | 导航、周期和范围文案。                                                                       |
-| `numberField`   | 范围和步进文案；函数接收格式化边界或字段标签。                                              |
-| `pagination`    | 标签、翻页、每页数量、等待和范围文案。                                                      |
-| `form`          | 摘要、验证、提交、成功和失败文案。                                                          |
-| `fileUpload`    | 选择、队列、进度、操作、拒绝和摘要文案。                                                    |
-| `dataTable`     | 查询、选择、加载、空、错误和滚动文案。                                                      |
-| `treeView`      | 说明、展开、勾选、加载、失败和空状态文案。                                                  |
-| `treeSelect`    | 搜索、空和无结果文案。                                                                       |
-| `cascader`      | 搜索、空、无结果和层级文案。                                                                 |
-| `descriptions`  | 空和缺失值文案。                                                                             |
+| 命名空间       | 覆盖内容                                                                                             |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| `actions`      | 对话框、面板、菜单、Tabs、Chip、徽章、面包屑、滑块、表单和 Snackbar 的共享操作、生成名称与角色标签。 |
+| `select`       | Select 空列表文案。                                                                                  |
+| `autocomplete` | 结果数量、建议名称和必选选择文案。                                                                   |
+| `optionPanel`  | 加载和无数据文案。                                                                                   |
+| `datePicker`   | 字段、范围、导航、模式、操作和验证文案。                                                             |
+| `timePicker`   | 字段、模式、操作、对话框、表盘和验证文案。                                                           |
+| `dateInput`    | 日期、时间和日期时间组标签、验证及分段名称。                                                         |
+| `calendar`     | 导航、周期和范围文案。                                                                               |
+| `numberField`  | 范围和步进文案；函数接收格式化边界或字段标签。                                                       |
+| `pagination`   | 标签、翻页、每页数量、等待和范围文案。                                                               |
+| `form`         | 摘要、验证、提交、成功和失败文案。                                                                   |
+| `fileUpload`   | 选择、队列、进度、操作、拒绝和摘要文案。                                                             |
+| `dataTable`    | 查询、选择、加载、空、错误和滚动文案。                                                               |
+| `treeView`     | 说明、展开、勾选、加载、失败和空状态文案。                                                           |
+| `treeSelect`   | 搜索、空和无结果文案。                                                                               |
+| `cascader`     | 搜索、空、无结果和层级文案。                                                                         |
+| `descriptions` | 空和缺失值文案。                                                                                     |
 
 函数条目接收带类型的参数。例如 `numberField.rangeUnderflow(minimum)` 和 `rangeOverflow(maximum)` 接收格式化边界，`pagination.range(start, end, total)` 接收格式化数量。
 
@@ -162,23 +149,23 @@ provider 翻译内置界面文案，不翻译应用标签、记录数据、浏�
 
 ### 导出
 
-| 导出             | 说明                                        |
-| ---------------- | ------------------------------------------- |
-| `LocaleProvider` | 向后代提供语言和文案覆盖。                  |
+| 导出                                | 说明                             |
+| ----------------------------------- | -------------------------------- |
+| `LocaleProvider`                    | 向后代提供语言和文案覆盖。       |
 | `LocaleMessages`、`LocaleOverrides` | 完整命名空间契约和部分覆盖映射。 |
 
 ### 属性
 
-| 属性       | 类型             | 默认值                        | 用途                                                                                              |
-| ---------- | ---------------- | ----------------------------- | ------------------------------------------------------------------------------------------------- |
-| `locale`   | `string`         | 父 provider，再回退到 `en-US` | BCP 47 语言标记，用于选择内置文案及组件已有的语言敏感操作。                                        |
-| `messages` | `LocaleOverrides`| 继承的覆盖项                  | 以组件命名空间为键的部分对象；各命名空间接受部分文案覆盖。                                        |
+| 属性       | 类型              | 默认值                        | 用途                                                        |
+| ---------- | ----------------- | ----------------------------- | ----------------------------------------------------------- |
+| `locale`   | `string`          | 父 provider，再回退到 `en-US` | BCP 47 语言标记，用于选择内置文案及组件已有的语言敏感操作。 |
+| `messages` | `LocaleOverrides` | 继承的覆盖项                  | 以组件命名空间为键的部分对象；各命名空间接受部分文案覆盖。  |
 
 ### 插槽
 
-| 插槽      | 用途                                          |
-| --------- | --------------------------------------------- |
-| `default` | 直接渲染子内容，不增加 DOM 元素或外层包装。   |
+| 插槽      | 用途                                        |
+| --------- | ------------------------------------------- |
+| `default` | 直接渲染子内容，不增加 DOM 元素或外层包装。 |
 
 provider 没有模型、事件或公开方法。原有的组件文案类型导出继续可用。
 

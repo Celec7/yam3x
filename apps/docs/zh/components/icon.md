@@ -6,7 +6,7 @@ import IconExample from '../../components/demos/IconExample.vue'
 
 # Icon
 
-Icons are small symbols to easily identify actions and categories. `Icon` 是呈现 Material Symbols 连字和项目注册 SVG 的项目组件。
+图标是用于快速识别操作和类别的细小符号。`Icon` 是呈现 Material Symbols 连字和项目注册 SVG 的项目组件。
 
 图标应辅助附近内容或位于可访问控件内，不能代替控件名称。应用无法加载图标字体时，请注册 SVG。
 
@@ -28,7 +28,7 @@ Icons are small symbols to easily identify actions and categories. `Icon` 是呈
 
 ### 样式与填充轴
 
-Material Symbols are the new default, and are available in three styles: outlined, rounded, and sharp. Material Symbols have four adjustable stylistic variable font attributes called axes. `variant` 选择样式族；`filled`、`grade`、`weight` 和 `opticalSize` 分别设置填充、等级、字重和光学尺寸轴。
+Material Symbols 是新的默认图标集，提供 outlined、rounded 和 sharp 三种样式。Material Symbols 具有四个可调的风格可变字体属性，称为轴。`variant` 选择样式族；`filled`、`grade`、`weight` 和 `opticalSize` 分别设置填充、等级、字重和光学尺寸轴。
 
 <div class="vp-raw yam3x-doc-demo-theme">
   <IconAxesExample />
@@ -122,14 +122,26 @@ registerIcon('home', 'rounded', {
 
 - 图标默认是装饰内容，呈现 `role="img" aria-hidden="true"`。
 - 传入 `aria-label` 或 `aria-labelledby` 会暴露图像名称，并去掉 `aria-hidden`。
-- 图标不接收键盘或指针操作，也没有 `tabindex`；交互目标由父控件负责。Symbols of 24dp should have a target size of 48dp by default.
-- Use caution if icons are displayed without labels. Icon meaning should always be unambiguous and accessible for all users.
-- `weight` 接受 100 至 700；不支持的运行时值回退到 400。Don’t use the lightest weight for standard-size (24dp) icons. The minimum weight for this size should be 200.
-- `grade` 的 `auto` 跟随最近的 `data-theme` 或 `.dark` 主题目标，否则跟随系统配色方案。To match the apparent icon size, the default grade for a dark icon on a light background is 0, and -25 for a light icon on a dark background.
-- `opticalSize` 的有限值会裁剪到 20–48 范围；非有限值回退到 24。Optical sizes range from 20dp to 48dp.
+- 图标不接收键盘或指针操作，也没有 `tabindex`；交互目标由父控件负责。默认情况下，24dp 图标的交互目标应为 48dp。
+- 图标在没有标签时需谨慎使用。图标含义应始终明确，并对所有用户可访问。
+- `weight` 接受 100 至 700；不支持的运行时值回退到 400。不要为标准尺寸（24dp）图标使用最细字重。该尺寸的最小字重应为 200。
+- `grade` 的 `auto` 跟随最近的 `data-theme` 或 `.dark` 主题目标，否则跟随系统配色方案。为使图标的视觉尺寸一致，浅色背景上的深色图标默认 grade 为 0，深色背景上的浅色图标为 -25。
+- `opticalSize` 的有限值会裁剪到 20–48 范围；非有限值回退到 24。光学尺寸范围为 20dp 至 48dp。
 - 注册图标会通知已挂载实例，因此延迟注册和替换都能在不重新挂载的情况下更新已渲染路径。
 
 ## API
+
+### 导出
+
+| 导出             | 类型 | 用途                                            |
+| ---------------- | ---- | ----------------------------------------------- |
+| `Icon`           | 组件 | 渲染 Material Symbols 字形或已注册的 SVG。      |
+| `registerIcon`   | 函数 | 按名称、变体与填充集注册自托管 SVG。            |
+| `SvgIconInfo`    | 类型 | 一个填充集条目：`{ viewBox, path }`。           |
+| `SvgIconFillSet` | 类型 | 一个注册图标的描边与填充路径。                  |
+| `IconVariant`    | 类型 | `outlined`、`rounded` 或 `sharp`。              |
+| `IconWeight`     | 类型 | Material Symbols 字重轴，从 100 到 700。        |
+| `IconGrade`      | 类型 | 字重等级轴：`auto`、`low`、`medium` 或 `high`。 |
 
 ### 属性
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import Switch from '@registry/components/switch/switch.vue'
+import { Switch } from '@registry/components/switch'
 import Icon from '@registry/components/icon/icon.vue'
 import { useDemoLocale } from './use-demo-locale'
 
@@ -12,7 +12,10 @@ const sync = ref(true)
 </script>
 
 <template>
-  <div class="yam3x-demo yam3x-demo__stack">
+  <div
+    data-testid="switch-states"
+    class="yam3x-demo yam3x-demo__stack"
+  >
     <Switch
       v-model="notifications"
       :label="t('Notifications', '通知')"

@@ -25,6 +25,52 @@ Use it when the choices are long, ordered, or data-driven. For a short set of al
 
 The demo labels each scenario: single selection, multiple selection, a required field with its submit action, an externally associated form, custom trigger content, and the disabled and empty states. Submitting without a release status leaves the field invalid and shows the validation message inside the field.
 
+### Data-driven options
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectDataExample /></div>
+
+::: details View demo source
+
+<<< ./demos/SelectDataExample.vue{vue}
+
+:::
+
+Pass `:options="[{ value: 'daily', label: 'Daily digest' }, { value: 'weekly', label: 'Weekly digest', disabled: true }]"` to use a flat data catalog. `SelectOption` has a unique nonempty string `value`, a `label`, optional `disabled`, and optional initial `selected`. Import the type from the Select module; this mode does not require importing `Option`. Use the default slot for grouped or custom `Option` compositions instead.
+
+If metadata temporarily omits an accepted value, the trigger uses its raw value and native submission retains it. When the metadata arrives, the label updates without emitting a selection change. Clear the model explicitly when your application removes a choice permanently.
+
+### Searchable selection
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectSearchExample /></div>
+
+::: details View demo source
+
+<<< ./demos/SelectSearchExample.vue{vue}
+
+:::
+
+Set `searchable` to search data-driven or grouped slotted options. `v-model` retains accepted values while `v-model:query` holds filter text independently. The `filter` prop selects case-insensitive `contains`, `starts-with`, `ends-with`, `none`, or a custom `(option, query) => boolean`. Use `filter="none"` when the application supplies options based on the query; accepted values retain their form values while their metadata is absent.
+
+Typing, empty results, Escape, and leaving the field preserve accepted choices; acceptance or dismissal clears the query. Only text typed into the input filters the list, and the query input has no form name: native submission and `required` validation use accepted choices.
+
+Searchable mode is a project-defined composition: single and multiple selection keep input focus and expose the active option with `aria-activedescendant`. The multiple list exposes `aria-multiselectable`, and the input description names accepted values. Empty groups are hidden from filtered results.
+
+### Large catalogs
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectVirtualExample /></div>
+
+::: details View demo source
+
+<<< ./demos/SelectVirtualExample.vue{vue}
+
+:::
+
+Use `:options="options" virtual` for a large catalog. Import `VirtualListOptions` from the Select module to configure `estimateSize` (default `48` CSS pixels) and `overscan` (default `4` rows on each side), for example `:virtual="{ estimateSize: 64, overscan: 6 }"`. `overscan: 0` disables extra rows while retaining full viewport coverage, including popup padding. The estimate applies only before measurement and never fixes content height; visible rows are measured again when wrapping, fonts, or density change.
+
+Only nearby and active options mount; navigation and filtering still use the complete catalog. Distant keyboard targets mount and scroll into view, with option positions and totals representing the full filtered result. Selection, cancellable events, reset, and required validation keep their semantics. Virtualization requires data-driven `options` because unmounted slots cannot supply a complete catalog; a slotted-only configuration reports an error.
+
+Data insertions and removals retain the first visible record and its row-relative offset. If that record disappears, the window starts at the next surviving record in the previous order, then the preceding survivor; a wholly replaced collection returns to the beginning. Scroll boundaries still apply. Explicit keyboard and search navigation takes priority, and data updates do not scroll back to an unchanged offscreen focus target.
+
 ## Use in your app
 
 Run `pnpm dlx @celec7/yam3x@latest add select option form-field`, then compose the components:
@@ -82,54 +128,6 @@ Use an array model for multiple selection; the popup stays open as options are t
 ```
 
 :::
-
-## Advanced
-
-### Data-driven options
-
-<div class="vp-raw yam3x-doc-demo-theme"><SelectDataExample /></div>
-
-::: details View demo source
-
-<<< ./demos/SelectDataExample.vue{vue}
-
-:::
-
-Pass `:options="[{ value: 'daily', label: 'Daily digest' }, { value: 'weekly', label: 'Weekly digest', disabled: true }]"` to use a flat data catalog. `SelectOption` has a unique nonempty string `value`, a `label`, optional `disabled`, and optional initial `selected`. Import the type from the Select module; this mode does not require importing `Option`. Use the default slot for grouped or custom `Option` compositions instead.
-
-If metadata temporarily omits an accepted value, the trigger uses its raw value and native submission retains it. When the metadata arrives, the label updates without emitting a selection change. Clear the model explicitly when your application removes a choice permanently.
-
-### Searchable selection
-
-<div class="vp-raw yam3x-doc-demo-theme"><SelectSearchExample /></div>
-
-::: details View demo source
-
-<<< ./demos/SelectSearchExample.vue{vue}
-
-:::
-
-Set `searchable` to search data-driven or grouped slotted options. `v-model` retains accepted values while `v-model:query` holds filter text independently. The `filter` prop selects case-insensitive `contains`, `starts-with`, `ends-with`, `none`, or a custom `(option, query) => boolean`. Use `filter="none"` when the application supplies options based on the query; accepted values retain their form values while their metadata is absent.
-
-Typing, empty results, Escape, and leaving the field preserve accepted choices; acceptance or dismissal clears the query. Only text typed into the input filters the list, and the query input has no form name: native submission and `required` validation use accepted choices.
-
-Searchable mode is a project-defined composition: single and multiple selection keep input focus and expose the active option with `aria-activedescendant`. The multiple list exposes `aria-multiselectable`, and the input description names accepted values. Empty groups are hidden from filtered results.
-
-### Large catalogs
-
-<div class="vp-raw yam3x-doc-demo-theme"><SelectVirtualExample /></div>
-
-::: details View demo source
-
-<<< ./demos/SelectVirtualExample.vue{vue}
-
-:::
-
-Use `:options="options" virtual` for a large catalog. Import `VirtualListOptions` from the Select module to configure `estimateSize` (default `48` CSS pixels) and `overscan` (default `4` rows on each side), for example `:virtual="{ estimateSize: 64, overscan: 6 }"`. `overscan: 0` disables extra rows while retaining full viewport coverage, including popup padding. The estimate applies only before measurement and never fixes content height; visible rows are measured again when wrapping, fonts, or density change.
-
-Only nearby and active options mount; navigation and filtering still use the complete catalog. Distant keyboard targets mount and scroll into view, with option positions and totals representing the full filtered result. Selection, cancellable events, reset, and required validation keep their semantics. Virtualization requires data-driven `options` because unmounted slots cannot supply a complete catalog; a slotted-only configuration reports an error.
-
-Data insertions and removals retain the first visible record and its row-relative offset. If that record disappears, the window starts at the next surviving record in the previous order, then the preceding survivor; a wholly replaced collection returns to the beginning. Scroll boundaries still apply. Explicit keyboard and search navigation takes priority, and data updates do not scroll back to an unchanged offscreen focus target.
 
 ## Behavior and accessibility
 

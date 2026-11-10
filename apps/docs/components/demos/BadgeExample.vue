@@ -12,7 +12,10 @@ const unread = ref(true)
 </script>
 
 <template>
-  <div class="yam3x-demo">
+  <div
+    class="yam3x-demo badge-example"
+    data-testid="badge-anchored"
+  >
     <div class="yam3x-demo__row badge-example__row">
       <span class="badge-example__anchor">
         <IconButton
@@ -35,7 +38,11 @@ const unread = ref(true)
         >
           <Icon name="calendar_month" />
         </IconButton>
-        <Badge for="badge-example-updates">3</Badge>
+        <Badge
+          for="badge-example-updates"
+          :aria-label="t('3 unread updates', '3 条未读更新')"
+          >3</Badge
+        >
       </span>
       <span class="badge-example__anchor">
         <IconButton
@@ -44,7 +51,11 @@ const unread = ref(true)
         >
           <Icon name="warning" />
         </IconButton>
-        <Badge for="badge-example-alerts">999+</Badge>
+        <Badge
+          for="badge-example-alerts"
+          :aria-label="t('More than 999 alerts', '超过 999 条提醒')"
+          >999+</Badge
+        >
       </span>
       <Button @click="unread = !unread">{{
         unread
@@ -52,79 +63,14 @@ const unread = ref(true)
           : t('Restore unread badge', '恢复未读徽标')
       }}</Button>
     </div>
-    <div class="yam3x-demo__row badge-example__positions">
-      <Badge />
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-start"
-          :aria-label="t('Before', '前')"
-        /><Badge
-          for="badge-pos-start"
-          position="above-before"
-          >1</Badge
-        ></span
-      >
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-end"
-          :aria-label="t('After', '后')"
-        /><Badge
-          for="badge-pos-end"
-          position="below-after"
-          >2</Badge
-        ></span
-      >
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-top"
-          :aria-label="t('Above', '上方')"
-        /><Badge
-          for="badge-pos-top"
-          position="above"
-          >3</Badge
-        ></span
-      >
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-bottom"
-          :aria-label="t('Below', '下方')"
-        /><Badge
-          for="badge-pos-bottom"
-          position="below"
-          >4</Badge
-        ></span
-      >
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-below-before"
-          :aria-label="t('Below before', '下方前侧')"
-        /><Badge
-          for="badge-pos-below-before"
-          position="below-before"
-          >5</Badge
-        ></span
-      >
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-before"
-          :aria-label="t('Before', '前')"
-        /><Badge
-          for="badge-pos-before"
-          position="before"
-          >6</Badge
-        ></span
-      >
-      <span class="badge-example__anchor"
-        ><IconButton
-          id="badge-pos-after"
-          :aria-label="t('After', '后')"
-        /><Badge
-          for="badge-pos-after"
-          position="after"
-          >7</Badge
-        ></span
-      >
-    </div>
+    <p class="badge-example__note">
+      {{
+        t(
+          'The dot, counts, and the abbreviated 999+ value share one anchor behavior.',
+          '圆点、计数与缩写后的 999+ 共用同一套锚点行为。',
+        )
+      }}
+    </p>
   </div>
 </template>
 
@@ -133,7 +79,13 @@ const unread = ref(true)
   position: relative;
   display: inline-flex;
 }
-.badge-example__positions {
-  gap: 32px;
+.badge-example__row {
+  align-items: center;
+  gap: 24px;
+}
+.badge-example__note {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 14px;
 }
 </style>

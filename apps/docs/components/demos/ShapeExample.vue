@@ -14,9 +14,33 @@ const gallery = shapeNames
 
 <template>
   <div class="shape-demo">
-    <div class="shape-demo__controls">
-      <label
-        >{{ t('From shape', '起始形状') }}
+    <section class="shape-demo__basic">
+      <Shape
+        name="sunny"
+        aria-hidden="true"
+        data-testid="shape-basic"
+      />
+      <Shape
+        name="pill"
+        aria-hidden="true"
+        class="shape-demo__media"
+      >
+        <img
+          src="/avatar-example.svg"
+          alt=""
+        />
+      </Shape>
+      <Shape
+        name="soft-burst"
+        aria-hidden="true"
+        class="shape-demo__tinted"
+      />
+      <p>{{ t('Default shape, media mask, and custom fill', '默认形状、媒体遮罩与自定义填充') }}</p>
+    </section>
+
+    <section class="shape-demo__controls">
+      <label>
+        {{ t('From shape', '起始形状') }}
         <Select
           v-model="first"
           :aria-label="t('From shape', '起始形状')"
@@ -29,8 +53,8 @@ const gallery = shapeNames
           />
         </Select>
       </label>
-      <label
-        >{{ t('To shape', '目标形状') }}
+      <label>
+        {{ t('To shape', '目标形状') }}
         <Select
           v-model="second"
           :aria-label="t('To shape', '目标形状')"
@@ -59,11 +83,15 @@ const gallery = shapeNames
           src="/avatar-example.svg"
           alt=""
       /></Shape>
-    </div>
-    <div
+    </section>
+
+    <section
       class="shape-demo__gallery"
       :aria-label="t('35 Material decorative shapes', '35 种 Material 装饰形状')"
     >
+      <h4 class="shape-demo__gallery-title">
+        {{ t('All 35 names', '全部 35 个名称') }}
+      </h4>
       <div
         v-for="name in gallery"
         :key="name"
@@ -75,7 +103,7 @@ const gallery = shapeNames
         />
         <code>{{ name }}</code>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -83,6 +111,22 @@ const gallery = shapeNames
 .shape-demo {
   display: grid;
   gap: 28px;
+}
+.shape-demo__basic {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+.shape-demo__basic p {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.shape-demo__media {
+  --yam3x-shape-size: 72px;
+}
+.shape-demo__tinted {
+  --yam3x-shape-container-color: var(--md-sys-color-tertiary-container, #ffd8e4);
 }
 .shape-demo__controls {
   display: flex;
@@ -103,6 +147,10 @@ const gallery = shapeNames
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
   gap: 18px 12px;
+}
+.shape-demo__gallery-title {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 .shape-demo__item {
   display: grid;

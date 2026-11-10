@@ -25,6 +25,52 @@ Select 用于从弹出列表中选择一个或多个值。它是项目表单控�
 
 演示为每个场景加了标签：单选、多选、带提交操作的必选字段、关联外部表单、自定义触发器内容，以及禁用与空状态。未选择发布状态就提交时，字段保持无效状态，并在字段内显示校验信息。
 
+### 数据式选项
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectDataExample /></div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/SelectDataExample.vue{vue}
+
+:::
+
+传入 `:options="[{ value: 'daily', label: '每日摘要' }, { value: 'weekly', label: '每周摘要', disabled: true }]"` 可使用扁平数据目录。`SelectOption` 包含唯一且非空的字符串 `value`、`label`，以及可选的 `disabled` 和初始 `selected`。类型从 Select 模块导入；此模式下应用无需导入 `Option`。分组或自定义 Option 组合仍使用默认插槽。
+
+当元数据暂时不包含已接受值时，触发器显示原始值，原生提交仍保留它；元数据到达后更新标签，不发出选择变化。应用永久移除选择时，请显式清除模型。
+
+### 可搜索选择
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectSearchExample /></div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/SelectSearchExample.vue{vue}
+
+:::
+
+设置 `searchable` 可在数据式选项和分组插槽选项中搜索。`v-model` 保留已接受的值，`v-model:query` 独立保存筛选文字。`filter` 属性可选择不区分大小写的 `contains`、`starts-with`、`ends-with`、`none`，或自定义 `(option, query) => boolean`。由应用根据查询提供选项时使用 `filter="none"`；已选项信息暂缺时仍保留其表单值。
+
+输入、空结果、Escape 和焦点离开都不会清除已选项；接受选择或关闭列表时清空查询。只有输入框中的文字会筛选列表，且查询输入框本身没有表单名称：原生提交和 `required` 校验仍使用已接受的选择。
+
+可搜索模式是项目定义的组合：单选与多选均保持输入框焦点，以 `aria-activedescendant` 指向活动选项。多选列表暴露 `aria-multiselectable`，输入框的无障碍描述包含已接受的值。空分组不出现在筛选结果中。
+
+### 大型目录
+
+<div class="vp-raw yam3x-doc-demo-theme"><SelectVirtualExample /></div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/SelectVirtualExample.vue{vue}
+
+:::
+
+大型目录可设置 `:options="options" virtual`。`VirtualListOptions` 可从 Select 模块导入，提供 `estimateSize`（默认 `48` CSS 像素）与 `overscan`（每侧默认 `4` 行）。例如 `:virtual="{ estimateSize: 64, overscan: 6 }"`。`overscan: 0` 取消额外预渲染行，仍完整覆盖含弹层内边距的可见区域。估算值只用于尚未测量的行，不会固定内容高度；可见行会自动测量，并响应换行、字体和密度变化。
+
+窗口只挂载视口附近及活动选项，导航与筛选仍使用完整目录。键盘远距离跳转会挂载并滚动到目标；选项的无障碍位置与总数按完整筛选结果计算。选择、可取消事件、重置和必填校验保持相同语义。虚拟化需要数据式 `options`，因为已卸载的插槽无法提供完整目录；纯插槽调用会报告配置错误。
+
+数据插入或移除时，会保留首个可见记录及其行内偏移。若该记录被移除，窗口优先从原顺序中下一个存活记录的开头显示，其次回退到前一个存活记录；整批替换且没有存活记录时回到开头。滚动边界仍然生效。显式键盘导航与搜索跳转优先，数据更新不会强制滚回未变化的屏外焦点项。
+
 ## 在应用中导入
 
 先运行 `pnpm dlx @celec7/yam3x@latest add select option form-field`，然后组合使用：
@@ -82,54 +128,6 @@ const frequency = ref('daily')
 ```
 
 :::
-
-## 进阶用法
-
-### 数据式选项
-
-<div class="vp-raw yam3x-doc-demo-theme"><SelectDataExample /></div>
-
-::: details 查看演示源码
-
-<<< ../../components/demos/SelectDataExample.vue{vue}
-
-:::
-
-传入 `:options="[{ value: 'daily', label: '每日摘要' }, { value: 'weekly', label: '每周摘要', disabled: true }]"` 可使用扁平数据目录。`SelectOption` 包含唯一且非空的字符串 `value`、`label`，以及可选的 `disabled` 和初始 `selected`。类型从 Select 模块导入；此模式下应用无需导入 `Option`。分组或自定义 Option 组合仍使用默认插槽。
-
-当元数据暂时不包含已接受值时，触发器显示原始值，原生提交仍保留它；元数据到达后更新标签，不发出选择变化。应用永久移除选择时，请显式清除模型。
-
-### 可搜索选择
-
-<div class="vp-raw yam3x-doc-demo-theme"><SelectSearchExample /></div>
-
-::: details 查看演示源码
-
-<<< ../../components/demos/SelectSearchExample.vue{vue}
-
-:::
-
-设置 `searchable` 可在数据式选项和分组插槽选项中搜索。`v-model` 保留已接受的值，`v-model:query` 独立保存筛选文字。`filter` 属性可选择不区分大小写的 `contains`、`starts-with`、`ends-with`、`none`，或自定义 `(option, query) => boolean`。由应用根据查询提供选项时使用 `filter="none"`；已选项信息暂缺时仍保留其表单值。
-
-输入、空结果、Escape 和焦点离开都不会清除已选项；接受选择或关闭列表时清空查询。只有输入框中的文字会筛选列表，且查询输入框本身没有表单名称：原生提交和 `required` 校验仍使用已接受的选择。
-
-可搜索模式是项目定义的组合：单选与多选均保持输入框焦点，以 `aria-activedescendant` 指向活动选项。多选列表暴露 `aria-multiselectable`，输入框的无障碍描述包含已接受的值。空分组不出现在筛选结果中。
-
-### 大型目录
-
-<div class="vp-raw yam3x-doc-demo-theme"><SelectVirtualExample /></div>
-
-::: details 查看演示源码
-
-<<< ../../components/demos/SelectVirtualExample.vue{vue}
-
-:::
-
-大型目录可设置 `:options="options" virtual`。`VirtualListOptions` 可从 Select 模块导入，提供 `estimateSize`（默认 `48` CSS 像素）与 `overscan`（每侧默认 `4` 行）。例如 `:virtual="{ estimateSize: 64, overscan: 6 }"`。`overscan: 0` 取消额外预渲染行，仍完整覆盖含弹层内边距的可见区域。估算值只用于尚未测量的行，不会固定内容高度；可见行会自动测量，并响应换行、字体和密度变化。
-
-窗口只挂载视口附近及活动选项，导航与筛选仍使用完整目录。键盘远距离跳转会挂载并滚动到目标；选项的无障碍位置与总数按完整筛选结果计算。选择、可取消事件、重置和必填校验保持相同语义。虚拟化需要数据式 `options`，因为已卸载的插槽无法提供完整目录；纯插槽调用会报告配置错误。
-
-数据插入或移除时，会保留首个可见记录及其行内偏移。若该记录被移除，窗口优先从原顺序中下一个存活记录的开头显示，其次回退到前一个存活记录；整批替换且没有存活记录时回到开头。滚动边界仍然生效。显式键盘导航与搜索跳转优先，数据更新不会强制滚回未变化的屏外焦点项。
 
 ## 行为与无障碍
 

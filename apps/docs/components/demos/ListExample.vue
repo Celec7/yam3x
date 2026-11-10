@@ -10,16 +10,17 @@ import {
   ListAction,
   type ListVariant,
 } from '@registry/components/list'
+import { useDemoDirection } from './use-demo-direction'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
+const { dir, direction, toggle: toggleDirection } = useDemoDirection()
 const variant = ref<ListVariant>('segmented')
 const paneWidth = ref<'narrow' | 'wide'>('wide')
-const direction = ref<'ltr' | 'rtl'>('ltr')
 const rightToLeft = computed({
   get: () => direction.value === 'rtl',
   set: (value: boolean) => {
-    direction.value = value ? 'rtl' : 'ltr'
+    if (value !== (direction.value === 'rtl')) toggleDirection()
   },
 })
 const openFolder = ref(false)
@@ -31,7 +32,7 @@ const paneInlineSize = computed(() => (paneWidth.value === 'narrow' ? '360px' : 
 <template>
   <section
     class="yam3x-list-demo"
-    :dir="direction"
+    :dir="dir"
   >
     <div class="yam3x-list-demo__controls">
       <label

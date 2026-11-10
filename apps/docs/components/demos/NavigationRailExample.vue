@@ -24,6 +24,7 @@ const expanded = ref<boolean | undefined>(undefined)
 const presentation = ref<'standard' | 'modal'>('standard')
 const alignment = ref<'top' | 'center'>('top')
 const hideWhenCollapsed = ref(false)
+const rtl = ref(false)
 const selected = ref('home')
 const events = ref<string[]>([])
 const items: NavigationRailItem[] = [
@@ -106,6 +107,10 @@ function log(type: string) {
         v-model="hideWhenCollapsed"
         :label="t('Hide when collapsed', '收起时隐藏')"
       />
+      <Checkbox
+        v-model="rtl"
+        :label="t('Right-to-left (RTL)', '从右到左 (RTL)')"
+      />
     </div>
     <Button
       v-if="hideWhenCollapsed"
@@ -116,7 +121,10 @@ function log(type: string) {
       @click="expanded = !expanded"
       >{{ expanded ? t('Close navigation', '关闭导航') : t('Open navigation', '打开导航') }}</Button
     >
-    <div class="rail-demo__frame">
+    <div
+      class="rail-demo__frame"
+      :dir="rtl ? 'rtl' : 'ltr'"
+    >
       <NavigationRail
         id="external-navigation-rail"
         v-model="selected"

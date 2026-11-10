@@ -24,7 +24,10 @@ function submitDelivery(): void {
 </script>
 
 <template>
-  <div class="radio-group-demo">
+  <div
+    data-testid="radio-group-states"
+    class="radio-group-demo"
+  >
     <RadioGroup
       v-model="ringtone"
       :label="t('Ringtone', '铃声')"
@@ -36,10 +39,10 @@ function submitDelivery(): void {
       <RadioButton
         value="callisto"
         :description="t('Default ringtone', '默认铃声')"
-        >Callisto</RadioButton
+        >{{ t('Callisto', 'Callisto') }}</RadioButton
       >
-      <RadioButton value="ganymede">Ganymede</RadioButton>
-      <RadioButton value="luna">Luna</RadioButton>
+      <RadioButton value="ganymede">{{ t('Ganymede', 'Ganymede') }}</RadioButton>
+      <RadioButton value="luna">{{ t('Luna', 'Luna') }}</RadioButton>
       <RadioButton
         value="pickup"
         disabled

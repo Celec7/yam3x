@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import LocalizationExample from './demos/LocalizationExample.vue'
 import LocalizationOverridesExample from './demos/LocalizationOverridesExample.vue'
-import ActionLocalizationExample from './demos/ActionLocalizationExample.vue'
 </script>
 
 # Localization
@@ -35,18 +34,6 @@ Switch the inherited language while page, file, number, selection, and form stat
 :::
 
 One provider sets `en-US` and overrides the pagination `next` message. A component `locale` replaces the language for that instance, and a component `messages` entry replaces both. An omitted entry falls back; an empty string is an explicit override.
-
-### Action names
-
-<div class="vp-raw yam3x-doc-demo-theme"><ActionLocalizationExample /></div>
-
-::: details View demo source
-
-<<< ./demos/ActionLocalizationExample.vue{vue}
-
-:::
-
-The `actions` namespace supplies generated names and accessible labels for buttons, menu triggers, chips, badges, breadcrumbs, sliders, dialogs, and notifications. Changing language updates those names without restarting an open dialog edit, a snackbar timeout, or a range slider focus target.
 
 ## Use in your app
 
@@ -134,25 +121,25 @@ The `LocaleOverrides` object is keyed by component namespace. Each namespace acc
 
 ::: details Namespace map
 
-| Namespace       | Covers                                                                                  |
-| --------------- | --------------------------------------------------------------------------------------- |
-| `actions`       | Shared action, generated-name, and role labels across dialogs, sheets, menus, tabs, chips, badges, breadcrumbs, sliders, forms, and snackbars. |
-| `select`        | Empty select text.                                                                      |
-| `autocomplete`  | Result counts, suggestion names, and required-selection text.                           |
-| `optionPanel`   | Loading and no-data text.                                                               |
-| `datePicker`    | Field, range, navigation, mode, action, and validation text.                            |
-| `timePicker`    | Field, mode, action, dialog, dial, and validation text.                                 |
-| `dateInput`     | Date, time, and datetime group labels plus validation and segment names.                |
-| `calendar`      | Navigation, period, and range text.                                                     |
-| `numberField`   | Range and step messages; functions receive formatted bounds or the field label.         |
-| `pagination`    | Label, page navigation, page size, pending, and range text.                             |
-| `form`          | Summary, validation, submission, success, and failure text.                             |
-| `fileUpload`    | Selection, queue, progress, actions, rejections, and summaries.                         |
-| `dataTable`     | Query, selection, loading, empty, error, and scroll text.                               |
-| `treeView`      | Instructions, expansion, checking, loading, failure, and empty text.                    |
-| `treeSelect`    | Search, empty, and no-result text.                                                      |
-| `cascader`      | Search, empty, no-result, and level text.                                               |
-| `descriptions`  | Empty and missing-value text.                                                           |
+| Namespace      | Covers                                                                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `actions`      | Shared action, generated-name, and role labels across dialogs, sheets, menus, tabs, chips, badges, breadcrumbs, sliders, forms, and snackbars. |
+| `select`       | Empty select text.                                                                                                                             |
+| `autocomplete` | Result counts, suggestion names, and required-selection text.                                                                                  |
+| `optionPanel`  | Loading and no-data text.                                                                                                                      |
+| `datePicker`   | Field, range, navigation, mode, action, and validation text.                                                                                   |
+| `timePicker`   | Field, mode, action, dialog, dial, and validation text.                                                                                        |
+| `dateInput`    | Date, time, and datetime group labels plus validation and segment names.                                                                       |
+| `calendar`     | Navigation, period, and range text.                                                                                                            |
+| `numberField`  | Range and step messages; functions receive formatted bounds or the field label.                                                                |
+| `pagination`   | Label, page navigation, page size, pending, and range text.                                                                                    |
+| `form`         | Summary, validation, submission, success, and failure text.                                                                                    |
+| `fileUpload`   | Selection, queue, progress, actions, rejections, and summaries.                                                                                |
+| `dataTable`    | Query, selection, loading, empty, error, and scroll text.                                                                                      |
+| `treeView`     | Instructions, expansion, checking, loading, failure, and empty text.                                                                           |
+| `treeSelect`   | Search, empty, and no-result text.                                                                                                             |
+| `cascader`     | Search, empty, no-result, and level text.                                                                                                      |
+| `descriptions` | Empty and missing-value text.                                                                                                                  |
 
 Function entries receive typed arguments. For example, `numberField.rangeUnderflow(minimum)` and `rangeOverflow(maximum)` receive formatted bounds, while `pagination.range(start, end, total)` receives formatted counts.
 
@@ -162,23 +149,23 @@ Function entries receive typed arguments. For example, `numberField.rangeUnderfl
 
 ### Exports
 
-| Export           | Description                                              |
-| ---------------- | -------------------------------------------------------- |
-| `LocaleProvider` | Provides locale and message overrides to its descendants. |
-| `LocaleMessages`, `LocaleOverrides` | Complete namespace contracts and partial override map. |
+| Export                              | Description                                               |
+| ----------------------------------- | --------------------------------------------------------- |
+| `LocaleProvider`                    | Provides locale and message overrides to its descendants. |
+| `LocaleMessages`, `LocaleOverrides` | Complete namespace contracts and partial override map.    |
 
 ### Props
 
-| Prop       | Type             | Default                       | Use                                                                                              |
-| ---------- | ---------------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
-| `locale`   | `string`         | Parent provider, then `en-US` | BCP 47 language tag for built-in text and each component's locale-sensitive operations.          |
-| `messages` | `LocaleOverrides`| Inherited overrides           | Partial object keyed by component namespace. Each namespace accepts partial message entries.     |
+| Prop       | Type              | Default                       | Use                                                                                          |
+| ---------- | ----------------- | ----------------------------- | -------------------------------------------------------------------------------------------- |
+| `locale`   | `string`          | Parent provider, then `en-US` | BCP 47 language tag for built-in text and each component's locale-sensitive operations.      |
+| `messages` | `LocaleOverrides` | Inherited overrides           | Partial object keyed by component namespace. Each namespace accepts partial message entries. |
 
 ### Slots
 
-| Slot      | Use                                                        |
-| --------- | ---------------------------------------------------------- |
-| `default` | Renders children without an extra DOM element or wrapper.  |
+| Slot      | Use                                                       |
+| --------- | --------------------------------------------------------- |
+| `default` | Renders children without an extra DOM element or wrapper. |
 
 The provider has no models, events, or exposed methods. Existing component-specific message type exports remain available.
 

@@ -9,8 +9,7 @@ import { Option } from '@registry/components/option'
 import { Search, type SearchLayout, type SearchVariant } from '@registry/components/search'
 import { useDemoLocale } from './use-demo-locale'
 
-const { t } = useDemoLocale()
-
+const { localeTag, t } = useDemoLocale()
 const width = ref(960)
 const layout = ref<SearchLayout>('auto')
 const variant = ref<SearchVariant>('contained')
@@ -18,9 +17,12 @@ const direction = ref<'ltr' | 'rtl'>('ltr')
 const disabled = ref(false)
 const hideSearchIcon = ref(false)
 const showTrailing = ref(true)
+const loading = ref(false)
+const empty = ref(false)
 const query = ref('')
 const open = ref(false)
 const selected = ref('')
+
 const suggestions = computed(() => [
   {
     title: t('Material 3 expressive search', 'Material 3 Expressive 搜索'),
@@ -39,20 +41,13 @@ const suggestions = computed(() => [
     detail: t('Search history · 3 items', '搜索历史 · 3 项'),
   },
 ])
+
 const matches = computed(() => {
   const normalized = query.value.trim().toLocaleLowerCase()
   if (!normalized) return suggestions.value
-  const filtered = suggestions.value.filter((item) =>
+  return suggestions.value.filter((item) =>
     `${item.title} ${item.detail}`.toLocaleLowerCase().includes(normalized),
   )
-  return filtered.length > 0
-    ? filtered
-    : [
-        {
-          title: t(`Search for “${query.value}”`, `搜索“${query.value}”`),
-          detail: t('Press Enter to search all content', '按 Enter 搜索全部内容'),
-        },
-      ]
 })
 
 function pick(item: { title: string }, close: () => void): void {
@@ -60,16 +55,22 @@ function pick(item: { title: string }, close: () => void): void {
   selected.value = item.title
   close()
 }
+
+function searchCurrent(close: () => void): void {
+  selected.value = `${t('Searching:', '正在搜索：')} ${query.value}`
+  close()
+}
 </script>
 
 <template>
-  <div class="yam3x-demo yam3x-demo__stack search-demo">
+  <section class="search-demo yam3x-demo yam3x-demo__stack">
     <div class="search-demo__controls">
-      <label
-        >{{ t('Layout', '布局') }}
+      <label>
+        {{ t('Layout', '布局') }}
         <Select
           v-model="layout"
           :aria-label="t('Search layout', '搜索布局')"
+          :locale="localeTag"
         >
           <Option
             value="auto"
@@ -85,11 +86,12 @@ function pick(item: { title: string }, close: () => void): void {
           />
         </Select>
       </label>
-      <label
-        >{{ t('Style', '样式') }}
+      <label>
+        {{ t('Style', '样式') }}
         <Select
           v-model="variant"
           :aria-label="t('Search style', '搜索样式')"
+          :locale="localeTag"
         >
           <Option
             value="contained"
@@ -101,8 +103,8 @@ function pick(item: { title: string }, close: () => void): void {
           />
         </Select>
       </label>
-      <label class="search-demo__width"
-        >{{ t('Pane width', '窗格宽度') }} {{ width }}px
+      <label class="search-demo__width">
+        {{ t('Pane width', '窗格宽度') }} {{ width }}px
         <Slider
           v-model="width"
           :min="320"
@@ -111,11 +113,12 @@ function pick(item: { title: string }, close: () => void): void {
           :aria-label="t('Search pane width', '搜索窗格宽度')"
         />
       </label>
-      <label
-        >{{ t('Direction', '方向') }}
+      <label>
+        {{ t('Direction', '方向') }}
         <Select
           v-model="direction"
           :aria-label="t('Search text direction', '搜索文本方向')"
+          :locale="localeTag"
         >
           <Option
             value="ltr"
@@ -138,6 +141,14 @@ function pick(item: { title: string }, close: () => void): void {
       <Checkbox
         v-model="showTrailing"
         :label="t('Show trailing actions', '显示辅助操作')"
+      />
+      <Checkbox
+        v-model="loading"
+        :label="t('Show loading results', '显示加载结果')"
+      />
+      <Checkbox
+        v-model="empty"
+        :label="t('Show empty results', '显示空结果')"
       />
       <Button
         class="search-demo__background-action"
@@ -166,6 +177,7 @@ function pick(item: { title: string }, close: () => void): void {
           :disabled="disabled"
           :hide-search-icon="hideSearchIcon"
           :label="t('Search messages', '搜索消息')"
+          :locale="localeTag"
           data-testid="search"
           @search="selected = `${t('Searching:', '正在搜索：')} ${$event}`"
         >
@@ -192,7 +204,22 @@ function pick(item: { title: string }, close: () => void): void {
             <div class="search-demo__results-heading">
               {{ currentQuery ? t('Results', '搜索结果') : t('Suggestions', '搜索建议') }}
             </div>
+            <p
+              v-if="loading"
+              class="search-demo__status"
+              role="status"
+            >
+              {{ t('Loading results…', '正在加载结果…') }}
+            </p>
+            <p
+              v-else-if="empty"
+              class="search-demo__status"
+              role="status"
+            >
+              {{ t('No matching results', '没有匹配的结果') }}
+            </p>
             <ul
+              v-else
               class="search-demo__results-list"
               :aria-label="t('Search suggestions and results', '搜索建议和结果')"
             >
@@ -222,6 +249,18 @@ function pick(item: { title: string }, close: () => void): void {
                 </Button>
               </li>
             </ul>
+            <div
+              v-if="!loading && !empty && !matches.length"
+              class="search-demo__results-list"
+            >
+              <Button
+                type="button"
+                data-search-result
+                @click="searchCurrent(close)"
+              >
+                {{ t(`Search for “${currentQuery}”`, `搜索“${currentQuery}”`) }}
+              </Button>
+            </div>
           </template>
         </Search>
         <div class="search-demo__page-content">
@@ -244,7 +283,7 @@ function pick(item: { title: string }, close: () => void): void {
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>
@@ -297,6 +336,11 @@ function pick(item: { title: string }, close: () => void): void {
   color: var(--md-sys-color-on-surface-variant, #49454f);
   font-size: 14px;
   font-weight: 600;
+}
+.search-demo__status {
+  padding: 12px 16px;
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
 }
 .search-demo__results-list {
   display: grid;

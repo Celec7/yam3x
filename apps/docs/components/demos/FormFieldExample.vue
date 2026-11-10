@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { Button } from '@registry/components/button'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
@@ -17,16 +17,27 @@ const hideSubscript = ref<'always' | 'auto' | 'never'>('never')
 const floatLabel = ref<'auto' | 'always'>('auto')
 const submitted = ref(false)
 const emailInvalid = ref(false)
-function submit() {
-  submitted.value = true
-  emailInvalid.value = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
-function resetForm() {
+
+function submit(): void {
+  submitted.value = true
+  emailInvalid.value = !isValidEmail(email.value)
+}
+
+watch(email, (value) => {
+  if (submitted.value) emailInvalid.value = !isValidEmail(value)
+})
+
+function resetForm(): void {
   submitted.value = false
   emailInvalid.value = false
   email.value = ''
 }
-async function clearEmail() {
+
+async function clearEmail(): Promise<void> {
   email.value = ''
   await nextTick()
   emailInput.value?.focus()
@@ -34,7 +45,10 @@ async function clearEmail() {
 </script>
 
 <template>
-  <section class="form-field-demo">
+  <section
+    data-testid="form-field-form"
+    class="form-field-demo"
+  >
     <div class="form-field-demo__controls">
       <label for="form-field-variant">{{ t('Appearance', '外观') }}</label>
       <Select
@@ -139,37 +153,6 @@ async function clearEmail() {
           </span>
         </template>
       </FormField>
-      <FormField
-        class="form-field-demo__amount"
-        :label="t('Amount', '金额')"
-        :hint="t('Enter an amount in US dollars', '请输入美元金额')"
-      >
-        <template #prefix-text><span id="amount-prefix-description">$</span></template>
-        <input
-          aria-describedby="amount-prefix-description amount-suffix-description"
-          inputmode="decimal"
-          placeholder="0.00"
-        />
-        <template #suffix-text><span id="amount-suffix-description">USD</span></template>
-      </FormField>
-      <FormField
-        id="readonly-field-id"
-        class="form-field-demo__readonly"
-        :label="t('Read-only field', '只读字段')"
-        ><input
-          :value="t('Copyable content', '可以复制的内容')"
-          readonly
-        /><template #hint>{{
-          t('This content can be copied.', '此内容可以复制。')
-        }}</template></FormField
-      >
-      <FormField
-        class="form-field-demo__disabled"
-        :label="t('Disabled field', '不可用字段')"
-        ><input
-          :value="t('Unavailable', '暂不可用')"
-          disabled
-      /></FormField>
       <Button type="submit">{{ t('Submit', '提交') }}</Button>
       <Button type="reset">{{ t('Reset', '重置') }}</Button>
       <output aria-live="polite"

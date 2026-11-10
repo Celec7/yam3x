@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import IconButton from '@registry/components/icon-button/icon-button.vue'
-import IconToggleButton from '@registry/components/icon-button/icon-toggle-button.vue'
+import { IconButton, IconToggleButton } from '@registry/components/icon-button'
 import { Icon } from '@registry/components/icon'
 import { Tooltip } from '@registry/components/tooltip'
 import { useDemoLocale } from './use-demo-locale'
@@ -10,12 +9,14 @@ const { t } = useDemoLocale()
 
 const favorite = ref(false)
 const pinned = ref(false)
-const iconButtonSizes = ['extra-small', 'small', 'medium', 'large', 'extra-large'] as const
-const iconButtonWidths = ['narrow', 'default', 'wide'] as const
+const docsHref = t('/components/', '/zh/components/')
 </script>
 
 <template>
-  <div class="yam3x-demo yam3x-demo__row">
+  <section
+    class="yam3x-demo yam3x-demo__row"
+    data-testid="icon-button-actions"
+  >
     <IconButton
       id="icon-button-search"
       :aria-label="t('Search', '搜索')"
@@ -27,6 +28,7 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
       />
     </IconButton>
     <Tooltip for="icon-button-search">{{ t('Search', '搜索') }}</Tooltip>
+
     <IconToggleButton
       id="icon-button-favorite"
       v-model:checked="favorite"
@@ -42,6 +44,7 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
       </template>
     </IconToggleButton>
     <Tooltip for="icon-button-favorite">{{ t('Favorite', '收藏') }}</Tooltip>
+
     <IconToggleButton
       id="icon-button-filled-toggle"
       v-model:checked="pinned"
@@ -57,6 +60,7 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
       </template>
     </IconToggleButton>
     <Tooltip for="icon-button-filled-toggle">{{ t('Pin item', '固定项目') }}</Tooltip>
+
     <IconButton
       id="icon-button-details"
       variant="outlined"
@@ -68,6 +72,7 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
       />
     </IconButton>
     <Tooltip for="icon-button-details">{{ t('View details', '查看详情') }}</Tooltip>
+
     <IconButton
       id="icon-button-more"
       variant="filled"
@@ -79,6 +84,20 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
       />
     </IconButton>
     <Tooltip for="icon-button-more">{{ t('More options', '更多选项') }}</Tooltip>
+
+    <IconButton
+      id="icon-button-docs"
+      variant="standard"
+      :href="docsHref"
+      :aria-label="t('Open components', '打开组件')"
+    >
+      <Icon
+        name="arrow_forward"
+        filled
+      />
+    </IconButton>
+    <Tooltip for="icon-button-docs">{{ t('Open components', '打开组件') }}</Tooltip>
+
     <IconButton
       id="icon-button-disabled-interactive"
       disabled-interactive
@@ -89,76 +108,12 @@ const iconButtonWidths = ['narrow', 'default', 'wide'] as const
         filled
       />
     </IconButton>
-    <Tooltip for="icon-button-disabled-interactive">{{
-      t('Sign in to add to favorites', '收藏需要登录')
-    }}</Tooltip>
-    <span class="yam3x-demo__status">{{
-      favorite ? t('Added to favorites', '已收藏') : t('Not favorited', '未收藏')
-    }}</span>
-  </div>
-  <div class="yam3x-demo">
-    <div
-      v-for="size in iconButtonSizes"
-      :key="size"
-      class="yam3x-demo__row"
-    >
-      <span>{{ size }}</span>
-      <IconButton
-        v-for="width in iconButtonWidths"
-        :id="`icon-button-${size}-${width}`"
-        :key="width"
-        :size="size"
-        :width="width"
-        :aria-label="t(`Add item, ${size} ${width}`, `添加项目，${size} ${width}`)"
-      >
-        <Icon
-          name="add"
-          filled
-        />
-      </IconButton>
-      <Tooltip
-        v-for="width in iconButtonWidths"
-        :key="`tooltip-${width}`"
-        :for="`icon-button-${size}-${width}`"
-        >{{ t(`Add item, ${size} ${width}`, `添加项目，${size} ${width}`) }}</Tooltip
-      >
-    </div>
-  </div>
-  <div class="yam3x-demo">
-    <div
-      v-for="size in iconButtonSizes"
-      :key="`toggle-${size}`"
-      class="yam3x-demo__row"
-    >
-      <span>{{ size }}</span>
-      <IconToggleButton
-        :id="`icon-button-${size}-round-toggle`"
-        :size="size"
-        shape="round"
-        :aria-label="t(`Toggle ${size} round`, `切换 ${size} 圆形`)"
-      >
-        <Icon name="favorite" />
-        <template #selected-icon>
-          <Icon
-            name="favorite"
-            filled
-          />
-        </template>
-      </IconToggleButton>
-      <IconToggleButton
-        :id="`icon-button-${size}-square-toggle`"
-        :size="size"
-        shape="square"
-        :aria-label="t(`Toggle ${size} square`, `切换 ${size} 方形`)"
-      >
-        <Icon name="favorite" />
-        <template #selected-icon>
-          <Icon
-            name="favorite"
-            filled
-          />
-        </template>
-      </IconToggleButton>
-    </div>
-  </div>
+    <Tooltip for="icon-button-disabled-interactive">
+      {{ t('Sign in to add to favorites', '收藏需要登录') }}
+    </Tooltip>
+
+    <span class="yam3x-demo__status">
+      {{ favorite ? t('Added to favorites', '已收藏') : t('Not favorited', '未收藏') }}
+    </span>
+  </section>
 </template>

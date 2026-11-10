@@ -4,9 +4,9 @@ import { TreeSelect, type TreeSelectNode } from '@registry/components/tree-selec
 import { FormField } from '@registry/components/form-field'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
-import { LocaleProvider } from '@registry/components/localization'
 import { useDemoLocale } from './use-demo-locale'
-const { locale, t } = useDemoLocale()
+
+const { localeTag, t } = useDemoLocale()
 const value = ref<string | string[] | null>('brief')
 const values = ref<string | string[] | null>(['tokens', 'external'])
 const expanded = ref(['workspace', 'design'])
@@ -17,6 +17,8 @@ const fail = ref(true)
 const remote = ref<string | string[] | null>(null)
 const remoteExpanded = ref<string[]>([])
 const large = ref<string | string[] | null>('item-9999')
+const hideLeadingLarge = ref(false)
+
 const nodes = computed<TreeSelectNode[]>(() => [
   {
     key: 'workspace',
@@ -37,26 +39,27 @@ const nodes = computed<TreeSelectNode[]>(() => [
     ],
   },
 ])
-const sourceLargeNodes: TreeSelectNode[] = [
+
+const sourceLargeNodes = computed<TreeSelectNode[]>(() => [
   {
     key: 'catalog',
-    label: 'Catalog',
+    label: t('Catalog', '目录'),
     selectable: false,
     children: Array.from({ length: 10000 }, (_, index) => ({
       key: `item-${index}`,
-      label: `Item ${index + 1}`,
+      label: t(`Item ${index + 1}`, `项目 ${index + 1}`),
     })),
   },
-]
-const hideLeadingLarge = ref(false)
+])
 const largeNodes = computed(() =>
   hideLeadingLarge.value
-    ? [{ ...sourceLargeNodes[0]!, children: sourceLargeNodes[0]!.children!.slice(2) }]
-    : sourceLargeNodes,
+    ? [{ ...sourceLargeNodes.value[0]!, children: sourceLargeNodes.value[0]!.children!.slice(2) }]
+    : sourceLargeNodes.value,
 )
 const remoteNodes = computed<TreeSelectNode[]>(() => [
   { key: 'remote', label: t('Remote records', '远端记录'), hasChildren: true, selectable: false },
 ])
+
 async function loadRemote(_node: Readonly<TreeSelectNode>, { signal }: { signal: AbortSignal }) {
   await new Promise<void>((resolve, reject) => {
     const timer = window.setTimeout(() => {
@@ -79,88 +82,94 @@ async function loadRemote(_node: Readonly<TreeSelectNode>, { signal }: { signal:
 </script>
 
 <template>
-  <LocaleProvider :locale="locale === 'zh' ? 'zh-CN' : 'en-US'">
-    <section
-      class="tree-select-demo"
-      data-testid="tree-select-demo"
-      :dir="rtl ? 'rtl' : 'ltr'"
-    >
-      <div class="tree-select-demo__controls">
-        <Checkbox
-          v-model="rtl"
-          :label="t('Mirror picker', '镜像选择器')"
-        />
-        <Checkbox
-          v-model="disabled"
-          :label="t('Disable record fields', '禁用记录字段')"
-        />
-        <Checkbox
-          v-model="cancel"
-          :label="t('Reject changes', '拒绝更改')"
-        />
-      </div>
-      <form id="tree-select-form">
-        <fieldset :disabled="disabled">
-          <FormField :label="t('Document', '文档')"
-            ><TreeSelect
-              v-model="value"
-              v-model:expanded-keys="expanded"
-              :nodes="nodes"
-              :label="t('Document', '文档')"
-              name="document"
-              required
-              searchable
-              clearable
-              @beforeinput="cancel && $event.preventDefault()"
-          /></FormField>
-          <FormField :label="t('Document collection', '文档集合')"
-            ><TreeSelect
-              v-model="values"
-              :nodes="nodes"
-              :expanded-keys="['workspace', 'design']"
-              :label="t('Document collection', '文档集合')"
-              name="documents"
-              multiple
-              searchable
-              clearable
-              @beforeinput="cancel && $event.preventDefault()"
-          /></FormField>
-        </fieldset>
-        <Button
-          type="reset"
-          variant="text"
-          >{{ t('Reset documents', '重置文档') }}</Button
-        >
-      </form>
-      <FormField :label="t('Loaded document', '加载的文档')"
-        ><TreeSelect
-          v-model="remote"
-          v-model:expanded-keys="remoteExpanded"
-          :nodes="remoteNodes"
-          :load-children="loadRemote"
-          :label="t('Loaded document', '加载的文档')"
-      /></FormField>
-      <FormField :label="t('Large document catalog', '大型文档目录')"
-        ><TreeSelect
-          v-model="large"
-          :nodes="largeNodes"
-          :expanded-keys="['catalog']"
-          :label="t('Large document catalog', '大型文档目录')"
-          virtual
-          searchable
-      /></FormField>
+  <section
+    class="tree-select-demo"
+    data-testid="tree-select-demo"
+    :dir="rtl ? 'rtl' : 'ltr'"
+  >
+    <div class="tree-select-demo__controls">
       <Checkbox
-        v-model="hideLeadingLarge"
-        :label="t('Hide leading large records', '隐藏大型目录开头记录')"
+        v-model="rtl"
+        :label="t('Mirror picker', '镜像选择器')"
       />
-      <p>
-        {{ t('Selected document', '已选文档') }}: <output>{{ value ?? '—' }}</output>
-      </p>
-    </section>
-  </LocaleProvider>
+      <Checkbox
+        v-model="disabled"
+        :label="t('Disable record fields', '禁用记录字段')"
+      />
+      <Checkbox
+        v-model="cancel"
+        :label="t('Reject changes', '拒绝更改')"
+      />
+    </div>
+    <form id="tree-select-form">
+      <fieldset :disabled="disabled">
+        <FormField :label="t('Document', '文档')">
+          <TreeSelect
+            v-model="value"
+            v-model:expanded-keys="expanded"
+            :nodes="nodes"
+            :label="t('Document', '文档')"
+            :locale="localeTag"
+            name="document"
+            required
+            searchable
+            clearable
+            @beforeinput="cancel && $event.preventDefault()"
+          />
+        </FormField>
+        <FormField :label="t('Document collection', '文档集合')">
+          <TreeSelect
+            v-model="values"
+            :nodes="nodes"
+            :expanded-keys="['workspace', 'design']"
+            :label="t('Document collection', '文档集合')"
+            :locale="localeTag"
+            name="documents"
+            multiple
+            searchable
+            clearable
+            @beforeinput="cancel && $event.preventDefault()"
+          />
+        </FormField>
+      </fieldset>
+      <Button
+        type="reset"
+        variant="text"
+        >{{ t('Reset documents', '重置文档') }}</Button
+      >
+    </form>
+    <FormField :label="t('Loaded document', '加载的文档')">
+      <TreeSelect
+        v-model="remote"
+        v-model:expanded-keys="remoteExpanded"
+        :nodes="remoteNodes"
+        :load-children="loadRemote"
+        :label="t('Loaded document', '加载的文档')"
+        :locale="localeTag"
+      />
+    </FormField>
+    <FormField :label="t('Large document catalog', '大型文档目录')">
+      <TreeSelect
+        v-model="large"
+        :nodes="largeNodes"
+        :expanded-keys="['catalog']"
+        :label="t('Large document catalog', '大型文档目录')"
+        :locale="localeTag"
+        virtual
+        searchable
+      />
+    </FormField>
+    <Checkbox
+      v-model="hideLeadingLarge"
+      :label="t('Hide leading large records', '隐藏大型目录开头记录')"
+    />
+    <p>
+      {{ t('Selected document', '已选文档') }}: <output>{{ value ?? '—' }}</output>
+    </p>
+  </section>
 </template>
 
-<style>
+<style scoped>
 .tree-select-demo {
   display: grid;
   gap: 24px;
@@ -183,7 +192,11 @@ async function loadRemote(_node: Readonly<TreeSelectNode>, { signal }: { signal:
   padding: 0;
   border: 0;
 }
-.tree-select-demo .yam3x-form-field {
+.tree-select-demo :deep(.yam3x-form-field) {
   inline-size: min(100%, 320px);
+}
+.tree-select-demo p {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 </style>
