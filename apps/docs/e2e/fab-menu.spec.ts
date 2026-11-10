@@ -90,7 +90,7 @@ test('FAB menu opens from its FAB, keeps the close button anchored, and follows 
   await expect(trigger).toHaveAttribute('aria-expanded', 'false')
   await expect(trigger).toHaveAttribute('aria-controls', /-menu$/)
   await expect(trigger).toHaveCSS('width', '80px')
-  await trigger.scrollIntoViewIfNeeded()
+  await trigger.evaluate((element) => element.scrollIntoView({ block: 'end' }))
   const before = await trigger.boundingBox()
   await trigger.evaluate((element) => {
     const samples: Array<{ width: number; firstOpacity: number; lastOpacity: number }> = []
@@ -145,11 +145,16 @@ test('FAB menu opens from its FAB, keeps the close button anchored, and follows 
   expect(after).not.toBeNull()
   expect(Math.abs(before!.x + before!.width - (after!.x + after!.width))).toBeLessThanOrEqual(1)
   expect(Math.abs(before!.y - after!.y)).toBeLessThanOrEqual(1)
-  const finalItem = await page.getByRole('menuitem', { name: 'Create share link' }).boundingBox()
-  const triggerBox = await trigger.boundingBox()
-  expect(finalItem).not.toBeNull()
-  expect(triggerBox).not.toBeNull()
-  expect(Math.abs(triggerBox!.y - (finalItem!.y + finalItem!.height + 8))).toBeLessThanOrEqual(1)
+  await expect
+    .poll(async () => {
+      const finalItem = await page
+        .getByRole('menuitem', { name: 'Create share link' })
+        .boundingBox()
+      const triggerBox = await trigger.boundingBox()
+      if (!finalItem || !triggerBox) return Number.POSITIVE_INFINITY
+      return Math.abs(triggerBox.y - (finalItem.y + finalItem.height + 8))
+    })
+    .toBeLessThanOrEqual(1)
   await expect(menu).toHaveCSS('gap', '4px')
 })
 

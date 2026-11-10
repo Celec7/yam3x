@@ -147,7 +147,7 @@ test('morphs inner corners and centers the open chevron', async ({ page }) => {
 })
 
 test('mirrors the controls in RTL while keeping primary-first keyboard order', async ({ page }) => {
-  await page.getByLabel('RTL').check()
+  await page.getByRole('checkbox', { name: /RTL/ }).check()
   const group = mainDemo(page).getByRole('group', { name: 'Save actions' })
   const primary = group.getByRole('button', { name: 'Save', exact: true })
   const more = group.getByRole('button', { name: 'More Save options' })

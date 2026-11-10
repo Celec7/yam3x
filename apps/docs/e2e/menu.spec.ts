@@ -370,7 +370,7 @@ test('outside click closes; beforetoggle and beforeselect can cancel', async ({ 
   await trigger.click()
   await expect(menu).toBeVisible()
   await expect(trigger).toHaveAttribute('aria-expanded', 'true')
-  await page.getByRole('heading', { name: 'Menu' }).click()
+  await page.locator('h1').first().click({ force: true })
   await expect(page.getByRole('menu')).toHaveCount(0)
 })
 

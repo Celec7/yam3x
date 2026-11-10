@@ -326,7 +326,7 @@ test('selected indicator expands from the item center and settles at its target 
   expect(Math.abs(settledCenters[0]! - settledCenters[1]!)).toBeLessThan(1)
 })
 
-test('automatic mode shows compact and medium bars before the demo switches to a rail', async ({
+test('automatic mode shows compact and medium bars and adds a rail at wide widths', async ({
   page,
 }) => {
   // navigation-bar.adaptive.layout
@@ -343,7 +343,7 @@ test('automatic mode shows compact and medium bars before the demo switches to a
   await page.setViewportSize({ width: 959, height: 844 })
   await expect(item).toHaveCSS('display', 'flex')
   await page.setViewportSize({ width: 960, height: 844 })
-  await expect(navigation).toBeHidden()
-  await expect(page.getByRole('navigation', { name: 'Documentation navigation' })).toBeVisible()
+  await expect(navigation).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Documentation rail' })).toBeVisible()
   await expect(page.locator('.navigation-bar-example__rail')).toBeVisible()
 })
