@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import ButtonGroupActionsExample from './demos/ButtonGroupActionsExample.vue'
 import ButtonGroupExample from './demos/ButtonGroupExample.vue'
 </script>
 
 # Button groups
 
-Button groups keep related actions or choices together. Use `ButtonGroup` and `ButtonGroupItem` to compose actions; use `ButtonGroupSelection` for choices backed by a shared selection model.
+Button groups keep related actions or choices together. Material defines two variants: standard and connected. Use `ButtonGroup` with `ButtonGroupItem` for actions, or `ButtonGroupSelection` for a shared selection model.
 
-## Interactive example
+## Examples
+
+### Choices and selection
+
+Connected button groups help people select options, switch views, or sort elements in a page. They should replace the baseline segmented button, which is no longer recommended.
 
 <div class="vp-raw yam3x-doc-demo-theme">
   <ButtonGroupExample />
@@ -18,27 +23,37 @@ Button groups keep related actions or choices together. Use `ButtonGroup` and `B
 
 :::
 
+### Related actions
+
+Standard button groups add interaction between adjacent buttons so they respond to each other.
+
+<div class="vp-raw yam3x-doc-demo-theme">
+  <ButtonGroupActionsExample />
+</div>
+
+::: details View demo source
+
+<<< ./demos/ButtonGroupActionsExample.vue{vue}
+
+:::
+
 ## Use in your app
 
-After [installation](/guide/installation), import the copied components from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/installation), import the copied components from your app:
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import Button from './components/yam3x/button/button.vue'
+import { Button } from './components/yam3x/button'
 import { ButtonGroup, ButtonGroupItem, ButtonGroupSelection } from './components/yam3x/button-group'
 
-const currentView = ref('list')
-
-function onActivate({ value }: { value: string }) {
-  console.log('Action:', value)
-}
+const view = ref('list')
 </script>
 
 <template>
   <ButtonGroup
     label="File actions"
-    @activate="onActivate"
+    @activate="({ value }) => console.log(value)"
   >
     <ButtonGroupItem
       value="save"
@@ -55,20 +70,29 @@ function onActivate({ value }: { value: string }) {
   </ButtonGroup>
 
   <ButtonGroupSelection
-    v-model="currentView"
+    v-model="view"
     label="View mode"
+    variant="connected"
     :options="[
       { label: 'List', value: 'list' },
       { label: 'Grid', value: 'grid' },
     ]"
-    variant="connected"
   />
 </template>
 ```
 
-Use the default slot to compose custom controls. `ButtonGroup` provides `#overflow-indicator` when `overflow="menu"`. The slot receives `{ items, activate }`; use it to render the caller's menu, then call `activate(item.value)` for the selected item. Without an overflow slot, the group can scroll horizontally. `ButtonGroupSelection` is the project's options-based convenience component.
+Use the default slot to compose custom controls. `ButtonGroup` provides `#overflow-indicator` when `overflow="menu"`. The slot receives `{ items, activate }`; render the caller's menu and call `activate(item.value)` for the selected item. Without an overflow slot, the group can scroll horizontally.
 
-Set a manually composed group's `size` and `shape` to match its child buttons. Standard spacing follows `size`; Connected spacing defaults to 2px. The `gap` prop takes precedence; when it is unset, `--yam3x-button-group-gap` overrides either default. If both are unset, `--yam3x-connected-button-group-spacing` overrides Connected spacing.
+## Behavior and accessibility
+
+- Button groups move through layouts together in a single line. They do not wrap to a second line.
+- In a standard group, pressing a button affects the width of adjacent buttons. In a connected group, only the pressed button changes shape.
+- A selected button changes shape from round to square, or square to round.
+- Single selection uses a string `v-model`; multiple selection uses a string array.
+- `ButtonGroupSelection` emits `select` with the updated value and option. The `#option` slot receives `{ option, selected, disabled }`.
+- Options with `kind: 'icon'` use `IconButton` presentation.
+- Connected groups use one group-level button variant. Standard groups allow per-option variants.
+- Arrow keys move focus and update the selected option in single-selection mode, skipping disabled options.
 
 ## API
 
@@ -78,14 +102,14 @@ Set a manually composed group's `size` and `shape` to match its child buttons. S
 | ---------- | ------------------------------------------------------- | ---------- | ----------------------------------------------------------- |
 | `variant`  | `standard \| connected`                                 | `standard` | Uses separate buttons or a connected-choice layout.         |
 | `size`     | Button size                                             | `small`    | Selects size-specific group spacing and corners.            |
-| `shape`    | `round \| square`                                       | `round`    | Selects the Connected group's outer shape.                  |
+| `shape`    | `round \| square`                                       | `round`    | Selects the connected group's outer shape.                  |
 | `label`    | `string`                                                | —          | Accessible name for the group.                              |
 | `role`     | `string`                                                | `group`    | Group role; `ButtonGroupSelection` sets this automatically. |
 | `overflow` | `none \| menu`                                          | `none`     | Enables overflow measurement when a slot is provided.       |
 | `gap`      | `string \| number`                                      | —          | Overrides the spacing between items.                        |
 | `justify`  | `start \| center \| end \| between \| around \| evenly` | `start`    | Aligns the group items.                                     |
 
-`ButtonGroupItem` emits `activate` with the originating `MouseEvent`. The group emits `activate` with `{ value, source, event }`, where `source` is `button` or `overflow`.
+`ButtonGroup` emits `activate` with `{ value, source, event }`, where `source` is `button` or `overflow`.
 
 ### `ButtonGroupItem`
 
@@ -113,9 +137,9 @@ Set a manually composed group's `size` and `shape` to match its child buttons. S
 | `overflow`            | `none \| menu`                                                             | `none`         | Enables the custom overflow slot.                |
 | `gap`                 | `string \| number`                                                         | —              | Overrides spacing between items.                 |
 
-## Behavior and accessibility
+## Styling
 
-Single selection uses a string `v-model`; multiple selection uses a string array. The component emits `select` with the updated value and option when selection changes. The `#option` slot receives `{ option, selected, disabled }`. Options support `kind: 'icon'` for IconButton presentation. Connected groups use their group-level button variants uniformly; standard groups allow per-option variants. Arrow keys move focus and update the selected option in single-selection mode; disabled items are skipped.
+A manually composed group should use the same `size` and `shape` as its child buttons. Standard spacing follows `size`; connected spacing defaults to 2px. The `gap` prop takes precedence. When `gap` is unset, `--yam3x-button-group-gap` overrides either default; for connected groups, `--yam3x-connected-button-group-spacing` is the next fallback.
 
 ## Material references
 
