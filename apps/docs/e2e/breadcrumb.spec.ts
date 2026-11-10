@@ -51,21 +51,60 @@ test('keeps icon-only names, disabled text, and custom separators accessible', a
     'aria-current',
     'page',
   )
+  await expect(items.nth(2).locator('.yam3x-breadcrumb__item')).toHaveCSS('cursor', 'default')
+  await expect(items.nth(2).locator('.yam3x-breadcrumb__icon .yam3x-icon')).toHaveCount(0)
+  await expect(items.nth(1).locator('.yam3x-breadcrumb__item')).toHaveCSS('cursor', 'default')
+  await expect(items.nth(0).getByRole('link')).toHaveCSS('cursor', 'pointer')
   await expect(navigation.locator('.yam3x-breadcrumb__separator').first()).toContainText('/')
 })
 
-test('keeps a current destination operable when it is represented by a native link', async ({
+test('keeps a current destination operable while distinguishing it from ancestor links', async ({
   page,
 }) => {
   await page.goto('/components/breadcrumb')
   const navigation = page.getByRole('navigation', { name: 'Page path' })
+  const ancestor = navigation.getByRole('listitem').first().getByRole('link')
   const current = navigation.getByRole('listitem').nth(2).getByRole('link')
   await expect(current).toHaveAttribute('aria-current', 'page')
   await expect(current).toHaveAttribute('href', '/components/segmented-button')
   await expect(current).toHaveCSS('cursor', 'pointer')
+  expect(
+    await navigation.evaluate((element) => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--md-sys-color-on-surface)'
+      element.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    }),
+  ).toBe(await current.evaluate((element) => getComputedStyle(element).color))
+  await expect(ancestor).not.toHaveCSS(
+    'color',
+    await current.evaluate((element) => getComputedStyle(element).color),
+  )
+  expect((await current.boundingBox())!.height).toBeCloseTo(48, 0)
+  expect(
+    await current.evaluate((element) => getComputedStyle(element, '::after').insetBlockStart),
+  ).toBe('4px')
+  expect(
+    await current.evaluate((element) => getComputedStyle(element, '::after').backgroundColor),
+  ).toBe(await current.evaluate((element) => getComputedStyle(element).color))
+  await current.focus()
+  await expect(current).toHaveCSS('outline-offset', '2px')
+  expect(
+    await navigation.evaluate((element) => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--md-sys-color-secondary)'
+      element.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    }),
+  ).toBe(await current.evaluate((element) => getComputedStyle(element).outlineColor))
+  await current.blur()
   await current.hover()
   await expect
-    .poll(() => current.evaluate((element) => getComputedStyle(element, '::before').opacity))
+    .poll(() => current.evaluate((element) => getComputedStyle(element, '::after').opacity))
     .toBe('0.08')
 })
 
@@ -119,20 +158,16 @@ test('honors item and separator style hooks and accessibility media modes', asyn
     '--yam3x-breadcrumb-item-disabled-color': 'rgb(1, 2, 3)',
     '--yam3x-breadcrumb-item-disabled-opacity': '50%',
     '--yam3x-breadcrumb-item-icon-color': 'rgb(4, 5, 6)',
-    '--yam3x-breadcrumb-item-icon-focus-state-layer-color': 'rgb(7, 8, 9)',
-    '--yam3x-breadcrumb-item-icon-hover-state-layer-color': 'rgb(10, 11, 12)',
     '--yam3x-breadcrumb-item-icon-label-space': '5px',
     '--yam3x-breadcrumb-item-icon-padding-inline': '3px',
-    '--yam3x-breadcrumb-item-icon-pressed-state-layer-color': 'rgb(13, 14, 15)',
     '--yam3x-breadcrumb-item-icon-size': '18px',
+    '--yam3x-breadcrumb-item-icon-state-layer-color': 'rgb(10, 11, 12)',
     '--yam3x-breadcrumb-item-label-color': 'rgb(16, 17, 18)',
-    '--yam3x-breadcrumb-item-label-focus-state-layer-color': 'rgb(19, 20, 21)',
     '--yam3x-breadcrumb-item-label-font-size': '16px',
     '--yam3x-breadcrumb-item-label-font-weight': '600',
-    '--yam3x-breadcrumb-item-label-hover-state-layer-color': 'rgb(22, 23, 24)',
     '--yam3x-breadcrumb-item-label-line-height': '24px',
     '--yam3x-breadcrumb-item-label-padding-inline': '10px',
-    '--yam3x-breadcrumb-item-label-pressed-state-layer-color': 'rgb(25, 26, 27)',
+    '--yam3x-breadcrumb-item-label-state-layer-color': 'rgb(22, 23, 24)',
     '--yam3x-breadcrumb-item-label-tracking': '0.5px',
     '--yam3x-breadcrumb-item-last-color': 'rgb(28, 29, 30)',
     '--yam3x-breadcrumb-item-shape': '12px',
@@ -149,18 +184,7 @@ test('honors item and separator style hooks and accessibility media modes', asyn
     element.style.setProperty('--yam3x-breadcrumb-item-disabled-color', 'rgb(1, 2, 3)')
     element.style.setProperty('--yam3x-breadcrumb-item-disabled-opacity', '50%')
     element.style.setProperty('--yam3x-breadcrumb-item-last-color', 'rgb(28, 29, 30)')
-    element.style.setProperty(
-      '--yam3x-breadcrumb-item-icon-hover-state-layer-color',
-      'rgb(10, 11, 12)',
-    )
-    element.style.setProperty(
-      '--yam3x-breadcrumb-item-icon-focus-state-layer-color',
-      'rgb(7, 8, 9)',
-    )
-    element.style.setProperty(
-      '--yam3x-breadcrumb-item-icon-pressed-state-layer-color',
-      'rgb(13, 14, 15)',
-    )
+    element.style.setProperty('--yam3x-breadcrumb-item-icon-state-layer-color', 'rgb(10, 11, 12)')
   })
 
   await expect
@@ -198,16 +222,18 @@ test('honors item and separator style hooks and accessibility media modes', asyn
         firstStyle.paddingInlineStart,
       ],
       currentLinkColor: lastStyle.color,
+      stateInset: getComputedStyle(first, '::after').insetBlockStart,
       separatorSize: separatorStyle.inlineSize,
-      hoverColor: getComputedStyle(first, '::before').backgroundColor,
+      hoverColor: getComputedStyle(first, '::after').backgroundColor,
       labelGap: firstStyle.columnGap,
     }
   })
-  expect(styles.height).toBe('44px')
+  expect(styles.height).toBe('48px')
   expect(styles.shape).toBe('12px')
   expect(styles.labelColor).toBe('rgb(16, 17, 18)')
   expect(styles.labelFont).toEqual(['16px', '600', '24px', '0.5px', '10px'])
-  expect(styles.currentLinkColor).toBe('rgb(16, 17, 18)')
+  expect(styles.currentLinkColor).toBe('rgb(28, 29, 30)')
+  expect(styles.stateInset).toBe('2px')
   expect(styles.separatorSize).toBe('14px')
   expect(styles.hoverColor).toBe('rgb(22, 23, 24)')
   expect(styles.labelGap).toBe('5px')
@@ -223,7 +249,8 @@ test('honors item and separator style hooks and accessibility media modes', asyn
       labelGap: getComputedStyle(element.querySelector('.yam3x-breadcrumb__item--current')!)
         .columnGap,
       disabled: getComputedStyle(disabled).color,
-      hoverColor: getComputedStyle(iconOnly, '::before').backgroundColor,
+      hoverColor: getComputedStyle(iconOnly, '::after').backgroundColor,
+      stateInset: getComputedStyle(iconOnly, '::after').inset,
       currentColor: getComputedStyle(element.querySelector('.yam3x-breadcrumb__item--current')!)
         .color,
     }
@@ -234,6 +261,7 @@ test('honors item and separator style hooks and accessibility media modes', asyn
     padding: '3px',
     labelGap: '5px',
     hoverColor: 'rgb(10, 11, 12)',
+    stateInset: '4px',
     currentColor: 'rgb(28, 29, 30)',
   })
   expect(iconEffects.disabled).toMatch(/0\.5\)$/)
@@ -244,37 +272,35 @@ test('honors item and separator style hooks and accessibility media modes', asyn
     .poll(() => iconOnly.evaluate((element) => element.matches(':focus-visible')))
     .toBe(true)
   await expect
-    .poll(() =>
-      iconOnly.evaluate((element) => getComputedStyle(element, '::before').backgroundColor),
-    )
-    .toBe('rgb(7, 8, 9)')
+    .poll(() => iconOnly.evaluate((element) => getComputedStyle(element, '::after').opacity))
+    .toBe('0.1')
+  await expect(iconOnly).toHaveCSS('outline-width', '3px')
   await iconOnly.evaluate((element) => element.setAttribute('data-yam3x-pressed', ''))
   await expect
-    .poll(() =>
-      iconOnly.evaluate((element) => getComputedStyle(element, '::before').backgroundColor),
-    )
-    .toBe('rgb(13, 14, 15)')
+    .poll(() => iconOnly.evaluate((element) => getComputedStyle(element, '::after').opacity))
+    .toBe('0.1')
   await iconOnly.evaluate((element) => element.removeAttribute('data-yam3x-pressed'))
 
   await link.hover()
   await expect
-    .poll(() => link.evaluate((element) => getComputedStyle(element, '::before').opacity))
+    .poll(() => link.evaluate((element) => getComputedStyle(element, '::after').opacity))
     .toBe('0.08')
   await link.focus()
   await expect.poll(() => link.evaluate((element) => element.matches(':focus-visible'))).toBe(true)
   await expect
-    .poll(() => link.evaluate((element) => getComputedStyle(element, '::before').backgroundColor))
-    .toBe('rgb(19, 20, 21)')
+    .poll(() => link.evaluate((element) => getComputedStyle(element, '::after').opacity))
+    .toBe('0.1')
+  await expect(link).toHaveCSS('outline-width', '3px')
   await link.evaluate((element) => element.setAttribute('data-yam3x-pressed', ''))
   await expect
-    .poll(() => link.evaluate((element) => getComputedStyle(element, '::before').backgroundColor))
-    .toBe('rgb(25, 26, 27)')
+    .poll(() => link.evaluate((element) => getComputedStyle(element, '::after').opacity))
+    .toBe('0.1')
   await link.evaluate((element) => element.removeAttribute('data-yam3x-pressed'))
   await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
   await expect
     .poll(() =>
       link.evaluate((element) =>
-        Number.parseFloat(getComputedStyle(element, '::before').transitionDuration),
+        Number.parseFloat(getComputedStyle(element, '::after').transitionDuration),
       ),
     )
     .toBeLessThan(0.001)

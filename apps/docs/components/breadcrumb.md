@@ -50,11 +50,13 @@ Use `#item({ item, index, current })` to replace the visible label, `#icon` for 
 
 ## Behavior and accessibility
 
-Links retain the browser’s native Tab, Enter, context-menu, copy-link, and modifier-key behavior. By default, the final item is the current page. When it has an `href`, it remains a link with `aria-current="page"`; without an `href`, it is rendered as current-page text.
+Links retain the browser’s native Tab, Enter, context-menu, copy-link, and modifier-key behavior. By default, the final item is the current page. When it has an `href`, it remains a link with `aria-current="page"` and uses the on-surface color; without an `href`, it is rendered as current-page text. Non-link ancestors use on-surface-variant and do not imply a pointer cursor.
+
+Each item has a 40px visual pill inside a minimum 48px interaction target. Hover, focus, and pressed feedback comes from one shared state layer; focus is a 3px secondary ring with a 2px outer offset.
 
 ## Styling
 
-Set these project-defined custom properties on the Breadcrumb root. Label typography maps to the System Label Large role; colors, spacing density, and state-layer opacity follow shared System tokens by default.
+Set these project-defined custom properties on the Breadcrumb root. Label typography maps to the System Label Large role; colors, spacing density, and state-layer opacity follow shared System tokens by default. `--yam3x-breadcrumb-item-container-height` controls the visual pill height; the interaction target remains at least 48px through `--md-sys-touch-target-size`.
 
 | Area                      | Supported properties                                                                                                                                                                                                   |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -62,8 +64,7 @@ Set these project-defined custom properties on the Breadcrumb root. Label typogr
 | Label typography          | `--yam3x-breadcrumb-item-label-font-size`, `--yam3x-breadcrumb-item-label-font-weight`, `--yam3x-breadcrumb-item-label-line-height`, `--yam3x-breadcrumb-item-label-tracking`                                          |
 | Icon and separator size   | `--yam3x-breadcrumb-item-icon-size`, `--yam3x-breadcrumb-separator-icon-size`                                                                                                                                          |
 | Colors and disabled state | `--yam3x-breadcrumb-item-label-color`, `--yam3x-breadcrumb-item-icon-color`, `--yam3x-breadcrumb-item-last-color`, `--yam3x-breadcrumb-item-disabled-color`, `--yam3x-breadcrumb-item-disabled-opacity`                |
-| Label link state layers   | `--yam3x-breadcrumb-item-label-hover-state-layer-color`, `--yam3x-breadcrumb-item-label-focus-state-layer-color`, `--yam3x-breadcrumb-item-label-pressed-state-layer-color`                                            |
-| Icon link state layers    | `--yam3x-breadcrumb-item-icon-hover-state-layer-color`, `--yam3x-breadcrumb-item-icon-focus-state-layer-color`, `--yam3x-breadcrumb-item-icon-pressed-state-layer-color`                                               |
+| State layer colors        | `--yam3x-breadcrumb-item-label-state-layer-color`, `--yam3x-breadcrumb-item-icon-state-layer-color`                                                                                                                    |
 
 ## Accessibility reference
 

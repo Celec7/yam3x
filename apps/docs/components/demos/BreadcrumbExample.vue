@@ -45,7 +45,7 @@ const iconItems = [
       >
         <template #icon="{ index }"
           ><Icon
-            v-if="index === 0 || index === 2"
+            v-if="index === 0"
             name="home"
         /></template>
         <template #separator>/</template>

@@ -50,11 +50,13 @@ Breadcrumb 导航可继承 [LocaleProvider](/zh/components/localization) 的 `ac
 
 ## 行为与无障碍
 
-链接保留浏览器的 Tab、Enter、上下文菜单、复制链接和修饰键行为。默认最后一项为当前页面：提供 `href` 时它仍是 `aria-current="page"` 的链接；没有 `href` 时显示为当前文本。
+链接保留浏览器的 Tab、Enter、上下文菜单、复制链接和修饰键行为。默认最后一项为当前页面：提供 `href` 时它仍是 `aria-current="page"` 的链接，并使用 on-surface 颜色；没有 `href` 时显示为当前文本。非链接祖先使用 on-surface-variant，且不显示指针光标。
+
+每个项目在最小 48px 交互目标内使用 40px 的可见胶囊；hover、focus 和 pressed 反馈由同一个共享状态层提供，focus 为 3px secondary 外环加 2px 外偏移。
 
 ## 样式
 
-在 Breadcrumb 根元素上设置以下项目自定义属性。标签文字默认映射到 System Label Large；颜色、间距密度和状态层透明度默认跟随共享 System token。
+在 Breadcrumb 根元素上设置以下项目自定义属性。标签文字默认映射到 System Label Large；颜色、间距密度和状态层透明度默认跟随共享 System token。`--yam3x-breadcrumb-item-container-height` 控制可见胶囊高度；交互目标通过 `--md-sys-touch-target-size` 保持至少 48px。
 
 | 区域             | 支持的属性                                                                                                                                                                                                             |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -62,8 +64,7 @@ Breadcrumb 导航可继承 [LocaleProvider](/zh/components/localization) 的 `ac
 | 标签排版         | `--yam3x-breadcrumb-item-label-font-size`、`--yam3x-breadcrumb-item-label-font-weight`、`--yam3x-breadcrumb-item-label-line-height`、`--yam3x-breadcrumb-item-label-tracking`                                          |
 | 图标与分隔符尺寸 | `--yam3x-breadcrumb-item-icon-size`、`--yam3x-breadcrumb-separator-icon-size`                                                                                                                                          |
 | 颜色与禁用状态   | `--yam3x-breadcrumb-item-label-color`、`--yam3x-breadcrumb-item-icon-color`、`--yam3x-breadcrumb-item-last-color`、`--yam3x-breadcrumb-item-disabled-color`、`--yam3x-breadcrumb-item-disabled-opacity`                |
-| 标签链接状态层   | `--yam3x-breadcrumb-item-label-hover-state-layer-color`、`--yam3x-breadcrumb-item-label-focus-state-layer-color`、`--yam3x-breadcrumb-item-label-pressed-state-layer-color`                                            |
-| 图标链接状态层   | `--yam3x-breadcrumb-item-icon-hover-state-layer-color`、`--yam3x-breadcrumb-item-icon-focus-state-layer-color`、`--yam3x-breadcrumb-item-icon-pressed-state-layer-color`                                               |
+| 状态层颜色       | `--yam3x-breadcrumb-item-label-state-layer-color`、`--yam3x-breadcrumb-item-icon-state-layer-color`                                                                                                                    |
 
 ## 无障碍参考
 
