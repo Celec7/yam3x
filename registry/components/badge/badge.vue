@@ -2,7 +2,8 @@
 import { useComponentLocale } from '../localization/context'
 import { autoUpdate, computePosition, platform, type Placement } from '@floating-ui/dom'
 import { offsetParent } from 'composed-offset-position'
-import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { observeAnchor } from './anchor-observer'
 
 type BadgePosition =
   | 'above-after'
@@ -62,19 +63,29 @@ const badgeElement = ref<HTMLSpanElement>()
 const longLabel = ref(false)
 const positioned = ref(false)
 
-let rootObserver: MutationObserver | undefined
+let stopObservingAnchor: (() => void) | undefined
 let contentObserver: MutationObserver | undefined
 let stopAutoUpdate: (() => void) | undefined
 let currentAnchor: HTMLElement | null = null
 let generation = 0
+let disposed = false
+let anchorSyncQueued = false
 
 const floatingPlatform = {
   ...platform,
   getOffsetParent: (element: Element) => platform.getOffsetParent(element, offsetParent),
 }
 
+function anchorRoot(): Document | ShadowRoot | undefined {
+  const element = badgeElement.value
+  if (!element) return
+  const root = element.getRootNode()
+  if (root === element.ownerDocument || root instanceof ShadowRoot)
+    return root as Document | ShadowRoot
+}
+
 function findAnchor(id: string): HTMLElement | null {
-  const root = badgeElement.value?.getRootNode() as Document | ShadowRoot | undefined
+  const root = anchorRoot()
   const element = root?.getElementById(id)
   return element instanceof HTMLElement ? element : null
 }
@@ -164,7 +175,7 @@ function detachAnchor() {
 }
 
 function syncAnchor() {
-  measureLabel()
+  if (disposed) return
   const element = badgeElement.value
   if (!element || !props.for) {
     detachAnchor()
@@ -189,45 +200,50 @@ function syncAnchor() {
   if (anchor) void updatePosition(anchor, generation)
 }
 
-function onRootMutations() {
-  void nextTick(syncAnchor)
+function queueAnchorSync() {
+  if (anchorSyncQueued || disposed) return
+  anchorSyncQueued = true
+  void nextTick(() => {
+    anchorSyncQueued = false
+    syncAnchor()
+  })
+}
+
+function observeAnchorRoot() {
+  stopObservingAnchor?.()
+  stopObservingAnchor = undefined
+  if (!props.for) return
+  const root = anchorRoot()
+  if (root) stopObservingAnchor = observeAnchor(root, props.for, queueAnchorSync)
 }
 
 watch(
-  () => [props.for, props.position, badgeSize.value, props.dir],
+  () => props.for,
   () => {
-    void nextTick(syncAnchor)
+    observeAnchorRoot()
+    queueAnchorSync()
   },
+  { flush: 'post' },
 )
+watch(() => [props.position, badgeSize.value, props.dir], queueAnchorSync)
 
 onMounted(() => {
   const element = badgeElement.value
   if (!element) return
-  const root = element.getRootNode()
-  if (root instanceof Document || root instanceof ShadowRoot) {
-    rootObserver = new MutationObserver(onRootMutations)
-    rootObserver.observe(root, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['id', 'dir'],
-    })
-  }
   const content = element.querySelector('.yam3x-badge__content')
   if (content) {
     contentObserver = new MutationObserver(measureLabel)
     contentObserver.observe(content, { childList: true, subtree: true, characterData: true })
   }
+  measureLabel()
+  observeAnchorRoot()
   syncAnchor()
 })
 
-onUpdated(() => {
-  void nextTick(syncAnchor)
-})
-
 onBeforeUnmount(() => {
+  disposed = true
   detachAnchor()
-  rootObserver?.disconnect()
+  stopObservingAnchor?.()
   contentObserver?.disconnect()
 })
 </script>

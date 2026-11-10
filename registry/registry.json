@@ -152,6 +152,7 @@
     },
     "badge": {
       "files": [
+        "badge/anchor-observer.ts",
         "badge/badge.vue",
         "badge/index.ts",
         "localization/context.ts",
