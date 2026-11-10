@@ -130,6 +130,9 @@ test('modal scrim dismisses and a horizontal drag follows the pointer before clo
   await toggle.click()
   const scrim = page.locator('.yam3x-drawer__scrim')
   await expect(scrim).toHaveAccessibleName('Close panel')
+  expect(await scrim.evaluate((element) => getComputedStyle(element).transitionDuration)).toContain(
+    '0.5s',
+  )
   const frame = page.locator('.drawer-demo__frame')
   const frameSize = (await frame.boundingBox())!
   const pageScroll = await page.evaluate(() => window.scrollY)
@@ -516,6 +519,18 @@ test('reduced motion and forced colors retain a visible panel and focus boundary
   await expect(item).toBeFocused()
   await expect(item).toHaveCSS('outline-style', 'solid')
   await expect(item).toHaveCSS('outline-width', '3px')
+  const scrim = page.locator('.yam3x-drawer__scrim')
+  expect(await scrim.evaluate((element) => getComputedStyle(element).transitionProperty)).toBe(
+    'none',
+  )
+  expect(
+    await scrim.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).transitionDuration),
+    ),
+  ).toBeLessThan(0.001)
+  await page.keyboard.press('Escape')
+  await expect(scrim).toHaveCSS('visibility', 'hidden')
+  await expect(scrim).toHaveCSS('opacity', '0')
 })
 
 test('drawer and main content scroll independently and overlays fit a narrow desktop pane', async ({

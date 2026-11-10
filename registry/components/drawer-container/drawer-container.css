@@ -19,7 +19,7 @@
   );
   --_yam3x-drawer-motion-duration: var(
     --_yam3x-drawer-system-motion-duration-default-spatial,
-    513ms
+    500ms
   );
   --_yam3x-drawer-motion-easing: var(
     --_yam3x-drawer-system-motion-easing-default-spatial,
@@ -213,7 +213,7 @@
     transition-duration: 0ms;
   }
   .yam3x-drawer__scrim {
-    animation-duration: 0ms;
+    transition: none;
   }
 }
 @media (forced-colors: active) {

@@ -73,6 +73,8 @@ const open = ref(false)
 
 `overlay` 面板使用遮罩和 `dialog` 语义，约束焦点，可通过 Escape、激活遮罩或向锚定边缘拖动关闭。模态面板内容应提供可见关闭控件。面板裁剪横向溢出并允许纵向滚动。内容插槽负责导航选择及其键盘行为。
 
+正常动效使用共享的 500ms default spatial 契约。启用 reduced motion 时，布局、面板和 scrim 的过渡全部移除，scrim 立即消失，不保留 visibility 延迟。
+
 ## 样式
 
 在根元素上设置以下项目自定义属性。浮层专属的颜色和 elevation 覆盖项优先于通用面板覆盖项。

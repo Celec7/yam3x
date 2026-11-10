@@ -73,6 +73,8 @@ This component can inherit built-in interface text from [LocaleProvider](/compon
 
 `overlay` panels use a scrim and `dialog` semantics, contain focus, and close with Escape, scrim activation, or a drag toward their anchored edge. Include a visible close control in modal panel content. Panels clip horizontal overflow and scroll vertically. The content slots own navigation selection and its keyboard behavior.
 
+Normal motion uses the shared 500ms default spatial contract. With reduced motion, layout, panel, and scrim transitions are removed, and the scrim disappears immediately rather than retaining its visibility delay.
+
 ## Styling
 
 Set these project custom properties on the root. Overlay color and elevation overrides take precedence over shared panel overrides.
