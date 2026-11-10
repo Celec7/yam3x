@@ -43,6 +43,41 @@ test('tree-select.dialog.focus: moves from search into the tree, commits a key, 
   ).toBe('tokens')
 })
 
+test('tree-select.layout.panel: aligns the tree and search with the dialog content and keeps 48px targets', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 })
+  await page.goto('/components/tree-select')
+  const demo = page.getByTestId('tree-select-demo')
+  await demo.getByRole('combobox', { name: 'Document', exact: true }).click()
+  const dialog = page.getByRole('dialog', { name: 'Document', exact: true })
+  const panel = await dialog.boundingBox()
+  const contentX = panel!.x + 12
+  const search = await dialog.locator('.yam3x-tree-select__search-field').boundingBox()
+  const tree = await dialog.locator('.yam3x-tree-view').boundingBox()
+  const firstRow = dialog.getByRole('treeitem', { name: 'Workspace', exact: true })
+  const row = await firstRow.locator(':scope > .yam3x-tree-view__row').boundingBox()
+  expect(await dialog.evaluate((element) => getComputedStyle(element).paddingInlineStart)).toBe(
+    '12px',
+  )
+  expect(await dialog.evaluate((element) => getComputedStyle(element).rowGap)).toBe('12px')
+  expect(search!.x).toBeCloseTo(contentX, 0)
+  expect(tree!.x).toBeCloseTo(contentX, 0)
+  expect(row!.x).toBeCloseTo(contentX, 0)
+  expect(row!.height).toBeCloseTo(56, 0)
+  expect(
+    await dialog
+      .locator('.yam3x-tree-view__scroll')
+      .evaluate((element) => getComputedStyle(element).maxBlockSize),
+  ).toBe('280px')
+  await page.keyboard.press('Escape')
+  const multi = await demo
+    .getByRole('button', { name: 'Document collection', exact: true })
+    .boundingBox()
+  expect(multi!.width).toBeCloseTo(48, 0)
+  expect(multi!.height).toBeCloseTo(48, 0)
+})
+
 test('tree-select.search.ancestry: multi-selection retains filtered-out and unknown keys, keeps chips separate from the floating label, and cancels acceptance', async ({
   page,
 }) => {

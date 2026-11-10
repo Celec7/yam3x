@@ -107,7 +107,7 @@ const nodes: TreeSelectNode[] = [
 
 ## 样式
 
-使用 FormField 提供轮廓／填充字段外观与说明文字。弹层复用 OptionPanel 表面和 Tree view 的圆角行、状态层、焦点指示与按下反馈。弹层宽度跟随字段，可用空间足够时最小为 400px，最大为 640px 且受视口限制；最大高度为 480px，树滚动区为 280px。小视口的可用空间可能进一步降低这些上限。可通过 `panelClass` 设置弹层样式；[Tree view](/zh/components/tree-view) 和 [Input chip](/zh/components/chips) 各自拥有相应的组件样式约定。
+使用 FormField 提供轮廓／填充字段外观与说明文字。弹层复用 OptionPanel 表面和 Tree view 的圆角行、状态层、焦点指示与按下反馈。弹层提供随密度缩放的 12px 内边距和区块间距，并重置 OptionPanel 的菜单内边距，使搜索字段、树和底部操作共享同一内容边缘；多选展开按钮保持 48×48px 目标。弹层宽度跟随字段，可用空间足够时最小为 400px，最大为 640px 且受视口限制；最大高度为 480px，树滚动区为 280px。小视口的可用空间可能进一步降低这些上限。`--yam3x-tree-select-tree-max-height` 可覆盖树滚动区上限。可通过 `panelClass` 设置弹层样式；[Tree view](/zh/components/tree-view) 和 [Input chip](/zh/components/chips) 各自拥有相应的组件样式约定。
 
 ## Material 参考
 

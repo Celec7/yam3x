@@ -107,7 +107,7 @@ Catalog updates follow [Tree view's viewport anchor policy](/components/tree-vie
 
 ## Styling
 
-Use FormField for outlined/filled field appearance and supporting text. The popup reuses OptionPanel's surface and Tree view's rounded rows, state layers, focus indicator, and press feedback. Popup width follows the field with a 400px minimum when space permits, capped at 640px and the viewport; its height is capped at 480px with a 280px tree scroll area. In small viewports, available space can lower these caps. Use `panelClass` for popup-specific styles; [Tree view](/components/tree-view) and [Input chips](/components/chips) own their component styling contracts.
+Use FormField for outlined/filled field appearance and supporting text. The popup reuses OptionPanel's surface and Tree view's rounded rows, state layers, focus indicator, and press feedback. It supplies 12px density-scaled padding and section gaps, resets the OptionPanel menu padding so the search field, tree, and footer share one content edge, and keeps the multiple-selection disclosure at a 48x48px target. Popup width follows the field with a 400px minimum when space permits, capped at 640px and the viewport; its height is capped at 480px with a 280px tree scroll area. In small viewports, available space can lower these caps. `--yam3x-tree-select-tree-max-height` overrides the tree scroll cap. Use `panelClass` for popup-specific styles; [Tree view](/components/tree-view) and [Input chips](/components/chips) own their component styling contracts.
 
 ## Material references
 

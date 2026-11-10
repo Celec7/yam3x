@@ -64,6 +64,7 @@
 - Select keeps the accepted value on-surface while its menu is open and applies primary only to the trailing arrow. Multiple-selection chips use an 8px row gap without extra per-chip margins and reserve 4px above the first row for floating-label clearance, and the standalone focus fallback uses the 3px field outline.
 - Autocomplete keeps an outlined field with a 3px primary focus outline, exposes hint and error supporting text, and aligns suggestions to the shared menu language: 44px visual rows inside 48px targets, a 3px secondary focus ring, label-large text, pointer-aware insets, and level 2 popup elevation.
 - Cascader resets the inherited OptionPanel menu padding so its own density-scaled 12px dialog padding is the single content inset; option surfaces now align with the title, search field, and footer while retaining the shared 44px visual rows inside 48px targets.
+- TreeSelect resets the inherited OptionPanel menu padding, uses density-scaled section gaps, aligns the search field, tree, and footer to one 12px content edge, and gives the multiple-selection disclosure a 48x48px target.
 - Dialogs, menus, option panels, autocomplete, search, date pickers, time pickers, tooltips, FAB menus, bottom sheets, full-screen list panels, and modal navigation rails share an open-order layer stack. A new dialog closes popups from lower surfaces and takes a higher layer; popups opened inside it render above it.
 
 ### Updating copied source

@@ -570,13 +570,21 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
 
 <style>
 .yam3x-tree-select {
-  --_yam3x-tree-select-focus: var(--md-sys-color-secondary);
+  --_yam3x-tree-select-spacing-scale: var(--md-sys-density-spacing-scale, 1);
+  --_yam3x-tree-select-gap: calc(8px * var(--_yam3x-tree-select-spacing-scale));
+  --_yam3x-tree-select-panel-padding: calc(12px * var(--_yam3x-tree-select-spacing-scale));
+  --_yam3x-tree-select-focus: var(--md-sys-color-primary);
+  --_yam3x-tree-select-container-shape: var(
+    --yam3x-tree-select-container-shape,
+    var(--md-sys-shape-corner-extra-small, 4px)
+  );
   position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--_yam3x-tree-select-gap);
   inline-size: 100%;
   min-inline-size: 0;
+  border-radius: var(--_yam3x-tree-select-container-shape);
   color: inherit;
   font: inherit;
 }
@@ -585,7 +593,7 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
   align-items: center;
   justify-content: space-between;
   flex: 1 1 auto;
-  gap: 8px;
+  gap: var(--_yam3x-tree-select-gap);
   min-inline-size: 32px;
   min-block-size: 24px;
   padding: 0;
@@ -598,8 +606,9 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
   cursor: pointer;
 }
 .yam3x-tree-select__trigger:focus-visible {
+  border-radius: inherit;
   outline: 3px solid var(--_yam3x-tree-select-focus);
-  outline-offset: 2px;
+  outline-offset: -3px;
 }
 .yam3x-form-field__control .yam3x-tree-select__trigger:focus-visible {
   outline: none;
@@ -612,12 +621,14 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
   display: flex;
   flex: 1 1 auto;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--_yam3x-tree-select-gap);
   min-inline-size: 0;
-  padding-block: 8px;
+  padding-block: var(--_yam3x-tree-select-gap);
 }
 .yam3x-tree-select--multiple .yam3x-tree-select__trigger {
-  flex: 0 0 32px;
+  flex: 0 0 48px;
+  justify-content: center;
+  min-block-size: 48px;
   margin-inline-start: auto;
 }
 .yam3x-tree-select__native {
@@ -628,9 +639,13 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
   pointer-events: none;
 }
 .yam3x-tree-select__panel {
-  --_yam3x-tree-select-gap: calc(12px * var(--md-sys-density-spacing-scale, 1));
-  --_yam3x-tree-select-focus: var(--md-sys-color-secondary);
-  padding: var(--_yam3x-tree-select-gap);
+  --_yam3x-tree-select-panel-gap: calc(
+    12px * var(--_yam3x-tree-select-spacing-scale, var(--md-sys-density-spacing-scale, 1))
+  );
+  --yam3x-option-panel-container-padding-block: 0;
+  --yam3x-option-panel-container-padding-inline: 0;
+  gap: var(--_yam3x-tree-select-panel-gap);
+  padding: var(--_yam3x-tree-select-panel-padding);
 }
 .yam3x-tree-select__panel > .yam3x-tree-select__search-field {
   flex: none;
@@ -640,18 +655,19 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
   min-block-size: 0;
 }
 .yam3x-tree-select__panel .yam3x-tree-view__scroll {
-  max-block-size: 280px;
+  max-block-size: var(--yam3x-tree-select-tree-max-height, 280px);
   overflow-y: auto;
-}
-.yam3x-tree-select__panel .yam3x-tree-view__title {
-  margin-block-start: var(--_yam3x-tree-select-gap);
 }
 .yam3x-tree-select__actions {
   flex: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: end;
-  gap: 8px;
-  margin-block-start: var(--_yam3x-tree-select-gap);
+  gap: var(--_yam3x-tree-select-gap);
+}
+@media (forced-colors: active) {
+  .yam3x-tree-select__trigger:focus-visible {
+    outline-color: Highlight;
+  }
 }
 </style>
