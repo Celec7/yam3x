@@ -65,3 +65,7 @@ import Avatar from './components/yam3x/avatar/avatar.vue'
 | `--yam3x-avatar-font-weight` | System `title-medium` 字重     | 首字母字重。         |
 | `--yam3x-avatar-line-height` | System `title-medium` 行高     | 首字母行高。         |
 | `--yam3x-avatar-tracking`    | System `title-medium` 字符间距 | 首字母字符间距。     |
+
+## Material 参考
+
+[颜色角色](https://m3.material.io/styles/color/roles) · [圆角尺度](https://m3.material.io/styles/shape/corner-radius-scale) · [应用字体](https://m3.material.io/styles/typography/applying-type)

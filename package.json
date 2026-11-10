@@ -26,7 +26,8 @@
     "yam3x": "node packages/cli/src/index.mjs",
     "motion:generate": "node scripts/generate-motion.mjs",
     "docs:dev": "pnpm dev",
-    "docs:build": "pnpm build"
+    "docs:build": "pnpm build",
+    "docs:check": "node scripts/check-docs.mjs"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

@@ -66,6 +66,6 @@ Breadcrumb 导航可继承 [LocaleProvider](/zh/components/localization) 的 `ac
 | 颜色与禁用状态   | `--yam3x-breadcrumb-item-label-color`、`--yam3x-breadcrumb-item-icon-color`、`--yam3x-breadcrumb-item-last-color`、`--yam3x-breadcrumb-item-disabled-color`、`--yam3x-breadcrumb-item-disabled-opacity`                |
 | 状态层颜色       | `--yam3x-breadcrumb-item-label-state-layer-color`、`--yam3x-breadcrumb-item-icon-state-layer-color`                                                                                                                    |
 
-## 无障碍参考
+## Material 参考
 
-[WAI-ARIA 面包屑模式](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
+[应用字体](https://m3.material.io/styles/typography/applying-type) · [颜色系统](https://m3.material.io/styles/color/the-color-system) · [WAI-ARIA 面包屑模式](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)

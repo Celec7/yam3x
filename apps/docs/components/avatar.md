@@ -65,3 +65,7 @@ These project extension overrides are available on the Avatar root. Color defaul
 | `--yam3x-avatar-font-weight` | System `title-medium` font weight    | Initials font weight.         |
 | `--yam3x-avatar-line-height` | System `title-medium` line height    | Initials line height.         |
 | `--yam3x-avatar-tracking`    | System `title-medium` letter spacing | Initials letter spacing.      |
+
+## Material references
+
+[Color roles](https://m3.material.io/styles/color/roles) · [Corner radius scale](https://m3.material.io/styles/shape/corner-radius-scale) · [Applying type](https://m3.material.io/styles/typography/applying-type)

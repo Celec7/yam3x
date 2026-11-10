@@ -66,6 +66,6 @@ Set these project-defined custom properties on the Breadcrumb root. Label typogr
 | Colors and disabled state | `--yam3x-breadcrumb-item-label-color`, `--yam3x-breadcrumb-item-icon-color`, `--yam3x-breadcrumb-item-last-color`, `--yam3x-breadcrumb-item-disabled-color`, `--yam3x-breadcrumb-item-disabled-opacity`                |
 | State layer colors        | `--yam3x-breadcrumb-item-label-state-layer-color`, `--yam3x-breadcrumb-item-icon-state-layer-color`                                                                                                                    |
 
-## Accessibility reference
+## Material references
 
-[WAI-ARIA Breadcrumb pattern](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
+[Applying type](https://m3.material.io/styles/typography/applying-type) · [Color system](https://m3.material.io/styles/color/the-color-system) · [WAI-ARIA Breadcrumb pattern](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
