@@ -8,6 +8,7 @@ import {
   onMounted,
   provide,
   ref,
+  shallowReactive,
   shallowRef,
   useAttrs,
   useId,
@@ -120,10 +121,9 @@ const panel = ref<{
   toggle: () => void
   panel: HTMLElement | null
 } | null>(null)
+const optionContainer = ref<HTMLElement | null>(null)
+const mountedOptionMap = shallowReactive(new Map<string, SelectOptionRecord>())
 const mountedOptions = shallowRef<SelectOptionRecord[]>([])
-const mountedOptionMap = computed(
-  () => new Map(mountedOptions.value.map((option) => [option.value, option])),
-)
 const options = computed<SelectOptionRecord[]>(() => {
   if (props.options === undefined) return mountedOptions.value
   return props.options.map((option, index) => ({
@@ -132,20 +132,28 @@ const options = computed<SelectOptionRecord[]>(() => {
     selected: option.selected ?? false,
     id: `${listboxId}-option-${index}`,
     get element() {
-      return mountedOptionMap.value.get(option.value)?.element ?? null
+      return mountedOptionMap.get(option.value)?.element ?? null
     },
   }))
 })
+const normalizedQuery = computed(() => query.value.toLocaleLowerCase())
 function matchesOption(option: SelectOption) {
   if (!props.searchable || !query.value || props.filter === 'none') return true
   if (typeof props.filter === 'function') return props.filter(option, query.value)
   const label = option.label.toLocaleLowerCase()
-  const term = query.value.toLocaleLowerCase()
+  const term = normalizedQuery.value
   if (props.filter === 'starts-with') return label.startsWith(term)
   if (props.filter === 'ends-with') return label.endsWith(term)
   return label.includes(term)
 }
-const visibleOptions = computed(() => options.value.filter(matchesOption))
+const visibleOptions = computed(() =>
+  props.options === undefined
+    ? options.value.filter(matchesOption)
+    : filteredDataRecords.value.map(({ index }) => options.value[index]!),
+)
+const visibleOptionValues = computed(
+  () => new Set(visibleOptions.value.map((option) => option.value)),
+)
 const searchText = computed(() =>
   open.value
     ? query.value
@@ -237,23 +245,51 @@ function selectedValuesForMode(next: readonly string[]): string | string[] | nul
 function selected(value: string) {
   return selectedValues.value.has(value)
 }
-function sortOptions(records: SelectOptionRecord[]) {
-  return records.sort((a, b) => {
-    if (!a.element || !b.element || a.element === b.element) return 0
-    const relation = a.element.compareDocumentPosition(b.element)
-    return relation & Node.DOCUMENT_POSITION_FOLLOWING
-      ? -1
-      : relation & Node.DOCUMENT_POSITION_PRECEDING
-        ? 1
-        : 0
+let registryUpdatePending = false
+let registryDisposed = false
+let orderObserver: MutationObserver | undefined
+let removedFocusedOption: HTMLElement | null = null
+function publishMountedOptions() {
+  if (registryDisposed || props.options !== undefined) return
+  const records: SelectOptionRecord[] = []
+  for (const element of optionContainer.value?.querySelectorAll<HTMLElement>(
+    '[role="option"][data-value]',
+  ) ?? []) {
+    const record = mountedOptionMap.get(element.dataset.value!)
+    if (record?.element === element) records.push(record)
+  }
+  if (
+    records.length !== mountedOptions.value.length ||
+    records.some((record, index) => record !== mountedOptions.value[index])
+  )
+    mountedOptions.value = records
+}
+function scheduleRegistryUpdate() {
+  if (props.options !== undefined || registryUpdatePending || registryDisposed) return
+  registryUpdatePending = true
+  void nextTick(() => {
+    registryUpdatePending = false
+    publishMountedOptions()
   })
+}
+function onOptionMutations(records: MutationRecord[]) {
+  if (props.options !== undefined) return
+  const selector = '[role="option"][data-value]'
+  for (const record of records) {
+    for (const nodes of [record.addedNodes, record.removedNodes]) {
+      for (const node of nodes) {
+        if (node instanceof Element && (node.matches(selector) || node.querySelector(selector))) {
+          scheduleRegistryUpdate()
+          return
+        }
+      }
+    }
+  }
 }
 function register(option: SelectOptionRecord) {
   if (virtualEnabled.value) windowed.measure(option.value, option.element)
-  mountedOptions.value = sortOptions([
-    ...mountedOptions.value.filter((item) => item.value !== option.value),
-    option,
-  ])
+  mountedOptionMap.set(option.value, option)
+  scheduleRegistryUpdate()
   if (props.options === undefined && option.selected && !values.value.length) {
     modelValue.value = selectedValuesForMode([option.value])
   } else if (
@@ -265,14 +301,21 @@ function register(option: SelectOptionRecord) {
     modelValue.value = selectedValuesForMode([...values.value, option.value])
   }
   return () => {
-    if (mountedOptions.value.includes(option)) windowed.measure(option.value, null)
-    mountedOptions.value = mountedOptions.value.filter((item) => item !== option)
+    if (mountedOptionMap.get(option.value) !== option) return
+    if (
+      props.options === undefined &&
+      option.element === option.element?.ownerDocument.activeElement
+    )
+      removedFocusedOption = option.element
+    if (virtualEnabled.value) windowed.measure(option.value, null)
+    mountedOptionMap.delete(option.value)
+    scheduleRegistryUpdate()
   }
 }
 function setActive(value: string | null, scrollIntoView = true) {
   activeValue.value = value
   if (virtualEnabled.value && value !== null && scrollIntoView) windowed.scrollToKey(value)
-  const option = options.value.find((item) => item.value === value)
+  const option = optionMap.value.get(value ?? '')
   if (scrollIntoView && option?.element && panel.value) {
     option.element.scrollIntoView({ block: 'nearest' })
   }
@@ -375,7 +418,7 @@ function dispatchNativeInput(type: 'input' | 'change') {
   }
 }
 function selectValue(value: string, source: OptionSelectionSource = 'pointer') {
-  const option = options.value.find((item) => item.value === value)
+  const option = optionMap.value.get(value)
   if (!option || option.disabled || props.disabled) return
   if (props.multiple && source !== 'programmatic') setActive(value, false)
   const current = [...values.value]
@@ -644,43 +687,39 @@ watch(query, (value) => {
 watch(virtualEnabled, (enabled) => {
   if (enabled)
     void nextTick(() => {
-      for (const option of mountedOptions.value) windowed.measure(option.value, option.element)
+      for (const option of mountedOptionMap.values()) windowed.measure(option.value, option.element)
       if (activeValue.value !== null) windowed.scrollToKey(activeValue.value)
     })
 })
-watch(
-  visibleOptions,
-  (current) => {
-    if (
-      activeValue.value &&
-      !current.some((option) => option.value === activeValue.value && !option.disabled)
-    ) {
-      const document = panel.value?.panel?.ownerDocument
-      const before = document?.activeElement
-      const owned = !!(
-        open.value &&
-        props.multiple &&
-        !props.searchable &&
-        panel.value?.panel?.contains(before ?? null)
-      )
-      setActive(
-        activeOrSelected()?.value ?? null,
-        owned || (open.value && before === trigger.value),
-      )
-      if (owned)
-        void nextTick(() => {
-          if (
-            open.value &&
-            !props.disabled &&
-            document &&
-            (document.activeElement === before || document.activeElement === document.body)
-          )
-            focusActiveOption()
-        })
-    }
-  },
-  { deep: true },
-)
+watch(visibleOptions, (current) => {
+  const removedFocus = removedFocusedOption
+  removedFocusedOption = null
+  if (
+    activeValue.value &&
+    !current.some((option) => option.value === activeValue.value && !option.disabled)
+  ) {
+    const document = panel.value?.panel?.ownerDocument
+    const before = document?.activeElement
+    const owned = !!(
+      open.value &&
+      props.multiple &&
+      !props.searchable &&
+      (panel.value?.panel?.contains(before ?? null) ||
+        (removedFocus?.dataset.value === activeValue.value && before === document?.body))
+    )
+    setActive(activeOrSelected()?.value ?? null, owned || (open.value && before === trigger.value))
+    if (owned)
+      void nextTick(() => {
+        if (
+          open.value &&
+          !props.disabled &&
+          document &&
+          (document.activeElement === before || document.activeElement === document.body)
+        )
+          focusActiveOption()
+      })
+  }
+})
 watch(values, (current) => {
   if (current.length && !props.multiple && Array.isArray(modelValue.value))
     modelValue.value = current[0] ?? null
@@ -698,6 +737,10 @@ watch(
   },
 )
 onMounted(() => {
+  publishMountedOptions()
+  orderObserver = new MutationObserver(onOptionMutations)
+  if (optionContainer.value)
+    orderObserver.observe(optionContainer.value, { childList: true, subtree: true })
   if (props.options !== undefined) {
     const defaults = options.value
       .filter((option) => option.selected && !option.disabled)
@@ -714,6 +757,8 @@ onMounted(() => {
   attachFormResetListener()
 })
 onBeforeUnmount(() => {
+  registryDisposed = true
+  orderObserver?.disconnect()
   cancelAnimationFrame(focusFrame)
   associatedForm?.removeEventListener('reset', onFormReset)
   if (typeaheadTimer) clearTimeout(typeaheadTimer)
@@ -722,7 +767,10 @@ onBeforeUnmount(() => {
 provide(selectOptionContextKey, {
   values,
   activeValue,
-  isVisible: matchesOption,
+  isVisible: (option) =>
+    props.options === undefined && !mountedOptionMap.has(option.value)
+      ? matchesOption(option)
+      : visibleOptionValues.value.has(option.value),
   isSelected: selected,
   select: selectValue,
   register,
@@ -895,6 +943,7 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       @keydown="onMultiListKeydown"
     >
       <div
+        ref="optionContainer"
         class="yam3x-select__options"
         :class="{
           'yam3x-select__options--searchable': searchable,

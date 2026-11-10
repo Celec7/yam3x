@@ -89,7 +89,7 @@ const optionId = computed(() => props.id || `yam3x-option-${generatedId}`)
 const root = ref<HTMLElement | null>(null)
 let unregister: (() => void) | undefined
 function registerWithSelect() {
-  unregister?.()
+  const previous = unregister
   unregister = selectContext?.register({
     value: props.value,
     label: props.label,
@@ -98,6 +98,7 @@ function registerWithSelect() {
     id: optionId.value,
     element: root.value,
   })
+  previous?.()
 }
 onMounted(registerWithSelect)
 watch(
