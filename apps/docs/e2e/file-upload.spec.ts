@@ -36,12 +36,14 @@ test('honors native fieldset disabling and resumes when the fieldset is enabled'
     element.disabled = true
   })
   await expect(fieldset.getByRole('button', { name: 'Choose files', exact: true })).toBeDisabled()
+  await expect(fieldset.locator('.yam3x-file-upload__selection')).toHaveClass(/--disabled/)
   await response(page, 'first.txt').getByRole('button', { name: 'Complete', exact: true }).click()
   await response(page, 'second.txt').getByRole('button', { name: 'Complete', exact: true }).click()
   await expect(row(page, 'third.txt')).toHaveAttribute('data-status', 'waiting')
   await fieldset.evaluate((element: HTMLFieldSetElement) => {
     element.disabled = false
   })
+  await expect(fieldset.locator('.yam3x-file-upload__selection')).not.toHaveClass(/--disabled/)
   await expect(row(page, 'third.txt')).toHaveAttribute('data-status', 'uploading')
 })
 
@@ -155,12 +157,25 @@ test('applies the same checks to drops and prevents disabled or unavailable drop
   await area.dispatchEvent('dragenter', { dataTransfer: data })
   await expect(area).toHaveClass(/--dragging/)
   await expect(area).toContainText('Drop to add these files.')
+  await expect(area).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)')
+  await expect(area).toHaveCSS('outline-width', '2px')
+  await expect(area).toHaveCSS('outline-style', 'solid')
   await area.dispatchEvent('drop', { dataTransfer: data })
   await expect(row(page, 'dropped.txt')).toHaveAttribute('data-status', 'queued')
   await expect(row(page, 'dropped.pdf')).toContainText('This file type is not accepted.')
   await expect(area).not.toHaveClass(/--dragging/)
   await page.getByRole('checkbox', { name: 'Disable file actions', exact: true }).check()
   await expect(page.getByRole('button', { name: 'Choose files', exact: true })).toBeDisabled()
+  await expect(area).toHaveClass(/--disabled/)
+  const disabledSurface = await area.evaluate((element) => {
+    const probe = document.createElement('span')
+    probe.style.color = 'color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent)'
+    element.append(probe)
+    const border = getComputedStyle(probe).color
+    probe.remove()
+    return { border, current: getComputedStyle(element).borderTopColor }
+  })
+  expect(disabledSurface.current).toBe(disabledSurface.border)
   await area.dispatchEvent('drop', { dataTransfer: data })
   await expect(page.locator('[data-upload-id]')).toHaveCount(2)
   await page.getByRole('checkbox', { name: 'Disable file actions', exact: true }).uncheck()

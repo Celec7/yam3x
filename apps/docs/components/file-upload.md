@@ -95,7 +95,7 @@ The queue owns its File objects. The picker is unnamed and cleared after each se
 
 ## Styling
 
-The optional drop surface uses Surface Container Low, Outline Variant, and the Medium corner role. File names use Body Large, supporting content uses Body Small, and numeric values use tabular figures. There is 24 px drop padding, 16 px between regions, and 8 px between related instructions. Rows have a 56 px minimum and grow for content. Buttons retain their own targets, and each row inherits the containing surface.
+The optional drop surface uses Surface Container Low, Outline Variant, and the Medium corner role. Its resting and drag states each show one boundary; dragging replaces the dashed outline with a primary focus boundary rather than adding a second one. File names use Body Large, supporting content uses Body Small, and numeric values use tabular figures. There is 24 px drop padding, 16 px between regions, and 8 px between related instructions. Rows have a 56 px minimum and grow for content. Buttons retain their own targets, and each row inherits the containing surface. When disabled through the prop or an ancestor fieldset, the drop boundary uses 12% on-surface, supporting content uses 38%, and the drop instruction is hidden.
 
 ## Material references
 

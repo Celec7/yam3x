@@ -93,6 +93,8 @@ const upload: FileUploadAdapter = async ({ file, signal }) => {
 
 可选拖放区域使用 Surface Container Low、Outline Variant 和 Medium 圆角。文件名使用 Body Large，说明内容使用 Body Small，数值使用等宽数字。拖放区域内边距为 24 px，区域间距为 16 px，相关说明间距为 8 px。条目最小高度为 56 px，并随内容增长。按钮保留各自的点击目标，条目继承所在表面。
 
+拖放区域在静止和拖入状态各自只显示一条边界；拖入时使用 primary 边界替换虚线，而不是叠加第二条边界。通过 prop 或祖先 fieldset 禁用时，边界使用 12% on-surface，辅助文本使用 38%，并隐藏拖放提示。
+
 ## Material 参考
 
 [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Progress indicators guidelines](https://m3.material.io/components/progress-indicators/guidelines) · [Buttons guidelines](https://m3.material.io/components/buttons/guidelines)

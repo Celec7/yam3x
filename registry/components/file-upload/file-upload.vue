@@ -55,6 +55,7 @@ const uid = `yam3x-upload-${useId().replace(/:/g, '')}`
 const instructionsId = `${uid}-instructions`
 const constraintsId = `${uid}-constraints`
 const dragging = ref(false)
+const resolvedDisabled = ref(false)
 const removalNotice = ref('')
 let dragDepth = 0
 const { locale, messages } = useComponentLocale(
@@ -62,7 +63,10 @@ const { locale, messages } = useComponentLocale(
   () => props.locale,
   () => props.messages,
 )
-const isDisabled = () => props.disabled || picker.value?.matches(':disabled') === true
+function syncDisabled() {
+  resolvedDisabled.value = props.disabled || picker.value?.matches(':disabled') === true
+}
+const isDisabled = () => resolvedDisabled.value
 const queue = useFileUpload({
   prefix: uid,
   adapter: () => props.upload,
@@ -189,14 +193,22 @@ function clear() {
 watch(
   () => [props.autoUpload, props.upload, props.disabled, props.concurrency],
   () => {
+    syncDisabled()
     if (props.autoUpload) queue.start()
     queue.pump()
   },
   { flush: 'post' },
 )
+watch(resolvedDisabled, (disabled) => {
+  if (!disabled) return
+  dragDepth = 0
+  dragging.value = false
+})
 let disabledObserver: MutationObserver | undefined
 onMounted(() => {
+  syncDisabled()
   disabledObserver = new MutationObserver(() => {
+    syncDisabled()
     if (props.autoUpload) queue.start()
     queue.pump()
   })
@@ -236,6 +248,7 @@ defineExpose({
       :class="{
         'yam3x-file-upload__selection--drop': droppable,
         'yam3x-file-upload__selection--dragging': dragging,
+        'yam3x-file-upload__selection--disabled': resolvedDisabled,
       }"
       @dragenter="onDragEnter"
       @dragover="onDragOver"
@@ -279,7 +292,7 @@ defineExpose({
         >
       </div>
       <p
-        v-if="droppable"
+        v-if="droppable && !resolvedDisabled"
         class="yam3x-file-upload__support"
       >
         {{ dragging ? messages.drag : messages.drop }}
@@ -463,8 +476,18 @@ defineExpose({
   border-radius: var(--_yam3x-file-upload-corner);
 }
 .yam3x-file-upload__selection--dragging {
+  border-color: transparent;
   outline: 2px solid var(--_yam3x-file-upload-drag-outline);
   outline-offset: -2px;
+}
+.yam3x-file-upload__selection--disabled {
+  cursor: default;
+}
+.yam3x-file-upload__selection--drop.yam3x-file-upload__selection--disabled {
+  border-color: color-mix(in srgb, var(--_yam3x-file-upload-color) 12%, transparent);
+}
+.yam3x-file-upload__selection--disabled .yam3x-file-upload__support {
+  color: color-mix(in srgb, var(--_yam3x-file-upload-color) 38%, transparent);
 }
 .yam3x-file-upload__support {
   margin: 0;
@@ -537,7 +560,14 @@ defineExpose({
     border-color: CanvasText;
   }
   .yam3x-file-upload__selection--dragging {
+    border-color: transparent;
     outline-color: Highlight;
+  }
+  .yam3x-file-upload__selection--drop.yam3x-file-upload__selection--disabled {
+    border-color: GrayText;
+  }
+  .yam3x-file-upload__selection--disabled .yam3x-file-upload__support {
+    color: GrayText;
   }
 }
 </style>
