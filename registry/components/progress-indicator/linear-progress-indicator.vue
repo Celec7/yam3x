@@ -23,6 +23,11 @@ const props = withDefaults(
 )
 const attrs = useAttrs()
 const root = ref<HTMLElement | null>(null)
+const track = ref<HTMLElement | null>(null)
+const thicknessProbe = ref<HTMLElement | null>(null)
+const amplitudeProbe = ref<HTMLElement | null>(null)
+const wavelengthProbe = ref<HTMLElement | null>(null)
+const indeterminateWavelengthProbe = ref<HTMLElement | null>(null)
 const trackWidth = ref(0)
 const waveMetrics = ref({ thickness: 4, amplitude: 3, wavelength: 40, indeterminateWavelength: 20 })
 const maxValue = computed(() => progressMaximum(props.max))
@@ -61,7 +66,6 @@ const progressStyle = computed(() => ({
   '--_yam3x-linear-progress-stop-size-prop': `${stopSize.value}px`,
 }))
 let resizeObserver: ResizeObserver | undefined
-let styleObserver: MutationObserver | undefined
 let motionQuery: MediaQueryList | undefined
 let animationFrame = 0
 let animationStart: number | undefined
@@ -116,7 +120,7 @@ function syncWavyAnimation() {
   if (animationFrame) cancelAnimationFrame(animationFrame)
   animationFrame = 0
   animationStart = undefined
-  if (!wavyIndeterminate.value) return
+  if (!root.value || !wavyIndeterminate.value) return
   if (reducedMotion) paintWavyFrame(1100)
   else animationFrame = requestAnimationFrame(animateWavy)
 }
@@ -124,34 +128,18 @@ function onMotionChange(event: MediaQueryListEvent) {
   reducedMotion = event.matches
   syncWavyAnimation()
 }
-function cssLength(
-  element: HTMLElement,
-  name: string,
-  fallback: number,
-  allowZero = false,
-): number {
-  const probe = document.createElement('span')
-  probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:0'
-  probe.style.width = `var(${name}, ${fallback}px)`
-  element.append(probe)
-  const value = probe.getBoundingClientRect().width
-  probe.remove()
+function cssLength(probe: HTMLElement | null, fallback: number, allowZero = false): number {
+  const value = probe?.getBoundingClientRect().width ?? fallback
   return Number.isFinite(value) && (value > 0 || (allowZero && value === 0)) ? value : fallback
 }
 function readGeometry() {
   if (!root.value) return
-  const nextWidth = (
-    root.value.querySelector<HTMLElement>('.yam3x-linear-progress__track') ?? root.value
-  ).getBoundingClientRect().width
+  const nextWidth = (track.value ?? root.value).getBoundingClientRect().width
   const nextMetrics = {
-    thickness: cssLength(root.value, '--_yam3x-linear-progress-thickness', 4),
-    amplitude: cssLength(root.value, '--_yam3x-linear-progress-wave-amplitude', 3, true),
-    wavelength: cssLength(root.value, '--_yam3x-linear-progress-wave-wavelength', 40),
-    indeterminateWavelength: cssLength(
-      root.value,
-      '--_yam3x-linear-progress-indeterminate-wave-wavelength',
-      20,
-    ),
+    thickness: cssLength(thicknessProbe.value, 4),
+    amplitude: cssLength(amplitudeProbe.value, 3, true),
+    wavelength: cssLength(wavelengthProbe.value, 40),
+    indeterminateWavelength: cssLength(indeterminateWavelengthProbe.value, 20),
   }
   if (nextWidth !== trackWidth.value) trackWidth.value = nextWidth
   if (
@@ -169,10 +157,15 @@ onMounted(() => {
   if (root.value && typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(readGeometry)
     resizeObserver.observe(root.value)
-  }
-  if (root.value && typeof MutationObserver !== 'undefined') {
-    styleObserver = new MutationObserver(readGeometry)
-    styleObserver.observe(root.value, { attributes: true, attributeFilter: ['style', 'class'] })
+    for (const element of [
+      track,
+      thicknessProbe,
+      amplitudeProbe,
+      wavelengthProbe,
+      indeterminateWavelengthProbe,
+    ]) {
+      if (element.value) resizeObserver.observe(element.value)
+    }
   }
   if (typeof window.matchMedia === 'function') {
     motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -187,7 +180,6 @@ watch([wavyIndeterminate, trackWidth, waveMetrics], async () => {
 })
 onUnmounted(() => {
   resizeObserver?.disconnect()
-  styleObserver?.disconnect()
   motionQuery?.removeEventListener?.('change', onMotionChange)
   if (animationFrame) cancelAnimationFrame(animationFrame)
 })
@@ -214,6 +206,7 @@ onUnmounted(() => {
     "
   >
     <div
+      ref="track"
       class="yam3x-linear-progress__track"
       aria-hidden="true"
     >
@@ -263,6 +256,28 @@ onUnmounted(() => {
         class="yam3x-linear-progress__stop"
       />
     </div>
+    <span
+      class="yam3x-linear-progress__geometry"
+      aria-hidden="true"
+      inert
+    >
+      <span
+        ref="thicknessProbe"
+        class="yam3x-linear-progress__thickness-probe"
+      />
+      <span
+        ref="amplitudeProbe"
+        class="yam3x-linear-progress__amplitude-probe"
+      />
+      <span
+        ref="wavelengthProbe"
+        class="yam3x-linear-progress__wavelength-probe"
+      />
+      <span
+        ref="indeterminateWavelengthProbe"
+        class="yam3x-linear-progress__indeterminate-wavelength-probe"
+      />
+    </span>
   </div>
 </template>
 
@@ -305,6 +320,29 @@ onUnmounted(() => {
   height: calc(
     var(--_yam3x-linear-progress-thickness) + 2 * var(--_yam3x-linear-progress-wave-amplitude)
   );
+}
+.yam3x-linear-progress__geometry {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+.yam3x-linear-progress__geometry > span {
+  position: absolute;
+  height: 0;
+}
+.yam3x-linear-progress__thickness-probe {
+  width: var(--_yam3x-linear-progress-thickness);
+}
+.yam3x-linear-progress__amplitude-probe {
+  width: var(--_yam3x-linear-progress-wave-amplitude);
+}
+.yam3x-linear-progress__wavelength-probe {
+  width: var(--_yam3x-linear-progress-wave-wavelength);
+}
+.yam3x-linear-progress__indeterminate-wavelength-probe {
+  width: var(--_yam3x-linear-progress-indeterminate-wave-wavelength);
 }
 .yam3x-linear-progress__track {
   position: absolute;

@@ -468,8 +468,11 @@ test('wavy linear progress clips its generated waveform to the determinate value
       '12px',
     ),
   )
-  const secondWidth = await indicator.locator('svg').getAttribute('width')
-  expect(Number(firstWidth) - Number(secondWidth)).toBeCloseTo(84, 0)
+  await expect
+    .poll(
+      async () => Number(firstWidth) - Number(await indicator.locator('svg').getAttribute('width')),
+    )
+    .toBeCloseTo(84, 0)
   await expect
     .poll(async () => {
       const width = await indicator.evaluate((element) => element.getBoundingClientRect().width)

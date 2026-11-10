@@ -17,6 +17,7 @@
 ### Fixed
 
 - Select batches slotted option registration in DOM order and reuses catalog filtering, avoiding quadratic registration work for large non-virtual catalogs.
+- Linear progress value updates reuse measured geometry without allocating probes or reading layout; CSS geometry overrides and container resizing remain reactive.
 - Date pickers separate docked month and year controls into their own dropdown-and-arrow groups. Docked month and year menus are vertical 48px listboxes with a selected-row check; the selected row scrolls into view when opened.
 - Modal date pickers combine month and year into one dropdown with adjacent month arrows, keep the headline to one short line, and use the full localized date as its accessible name.
 - Modal range calendars share one visible weekday row above the continuous month sequence, omit month paging controls, and keep hidden weekday headers for each month grid.
