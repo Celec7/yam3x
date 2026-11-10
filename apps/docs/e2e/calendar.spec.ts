@@ -15,17 +15,16 @@ test.describe('Calendar', () => {
     await expect(calendar.getByRole('columnheader')).toHaveCount(7)
     await expect(calendar.getByRole('row')).toHaveCount(6)
     await expect(calendar.getByRole('columnheader').allTextContents()).resolves.toEqual([
-      'Sun',
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
+      'S',
+      'M',
+      'T',
+      'W',
+      'T',
+      'F',
+      'S',
     ])
     const selected = calendar.locator('.yam3x-calendar__day[aria-current="date"]')
     await expect(selected).toHaveAttribute('aria-current', 'date')
-    await expect(selected).toHaveAttribute('aria-pressed', 'true')
     await expect(selected).toHaveCSS('width', '48px')
     await expect
       .poll(() => selected.evaluate((element) => getComputedStyle(element, '::before').inset))
@@ -52,6 +51,12 @@ test.describe('Calendar', () => {
       await expect(element).toHaveCSS('line-height', systemLineHeight)
       await expect(element).toHaveCSS('letter-spacing', '0.5px')
     }
+    await expect(weekday).toHaveCSS('width', '40px')
+    await expect(weekday).toHaveCSS('height', '40px')
+    const outside = calendar
+      .locator('.yam3x-calendar__cell.is-outside .yam3x-calendar__day')
+      .first()
+    await expect(outside).toHaveCSS('opacity', '1')
   })
 
   test('supports month paging and controlled selection without moving page content', async ({
@@ -72,14 +77,42 @@ test.describe('Calendar', () => {
     await expect(start).toHaveCSS('background-image', 'none')
     await calendar.getByRole('button', { name: /October 12, 2026/ }).click()
     await expect(calendar).toHaveClass(/has-complete-range/)
-    await expect(start).toHaveCSS('background-image', /linear-gradient/)
-    await expect(start).toHaveCSS('background-size', '100% 40px')
+    const startDay = start.getByRole('button')
+    const rangeColor = await calendar.evaluate((element) => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--md-sys-color-secondary-container)'
+      element.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    })
+    await expect
+      .poll(() =>
+        startDay.evaluate((element) => getComputedStyle(element, '::after').backgroundColor),
+      )
+      .toBe(rangeColor)
+    await expect
+      .poll(() =>
+        startDay.evaluate((element) => getComputedStyle(element, '::after').insetBlockStart),
+      )
+      .toBe('4px')
     const interior = calendar.locator('[data-date="2026-10-10"]').locator('xpath=..')
-    await expect(interior).toHaveCSS('background-size', '100% 40px')
+    const interiorDay = interior.getByRole('button')
+    await expect
+      .poll(() =>
+        interiorDay.evaluate((element) => getComputedStyle(element, '::after').backgroundColor),
+      )
+      .toBe(rangeColor)
     await expect(page.getByText('Date range: 2026-10-08 → 2026-10-12')).toBeVisible()
     await calendar.getByRole('button', { name: /October 16, 2026/ }).click()
     const restarted = calendar.locator('[data-date="2026-10-16"]').locator('xpath=..')
-    await expect(restarted).toHaveCSS('background-image', 'none')
+    await expect
+      .poll(() =>
+        restarted
+          .getByRole('button')
+          .evaluate((element) => getComputedStyle(element, '::after').display),
+      )
+      .toBe('none')
     await expect(page.getByText('Date range: 2026-10-16 → End date')).toBeVisible()
   })
 
@@ -90,13 +123,13 @@ test.describe('Calendar', () => {
     await expect(calendar).toBeVisible()
     await expect(calendar.getByRole('columnheader')).toHaveCount(7)
     await expect(calendar.getByRole('columnheader').allTextContents()).resolves.toEqual([
-      'Sun',
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
+      'S',
+      'M',
+      'T',
+      'W',
+      'T',
+      'F',
+      'S',
     ])
 
     await calendar.getByRole('button', { name: /October 16, 2026/ }).click()
@@ -139,11 +172,17 @@ test.describe('Calendar', () => {
     const years = calendar.getByRole('listbox', { name: /Choose year/ })
     await expect(years).toBeVisible()
     await expect(years.getByRole('option')).toHaveCount(18)
+    expect(
+      await years.evaluate(
+        (element) => getComputedStyle(element).gridTemplateColumns.split(' ').length,
+      ),
+    ).toBe(3)
     const year = years.getByRole('option', { name: '2026', exact: true })
     await year.focus()
     await year.press('Enter')
-    await expect(calendar.getByRole('listbox', { name: 'Choose month, 2026' })).toBeVisible()
-    await calendar.locator('[role="option"][data-option-index="10"]').click()
+    const months = calendar.getByRole('listbox', { name: 'Choose month, 2026' })
+    await expect(months).toBeVisible()
+    await months.getByRole('option', { name: 'November', exact: true }).click()
     await expect(calendar.getByRole('grid', { name: 'November 2026' })).toBeVisible()
     await calendar.getByRole('button', { name: /November 12, 2026/ }).focus()
     await page.keyboard.press('Alt+PageUp')
@@ -176,12 +215,17 @@ test.describe('Calendar', () => {
     const selectedYear = years.getByRole('option', { name: '2026', exact: true })
     await selectedYear.focus()
     await page.keyboard.press('ArrowDown')
-    const nextYearRow = years.getByRole('option', { name: '2030', exact: true })
+    const nextYearRow = years.getByRole('option', { name: '2029', exact: true })
     await expect(nextYearRow).toBeFocused()
     await expect(nextYearRow).toHaveAttribute('aria-selected', 'false')
     await page.keyboard.press('Enter')
 
-    const months = calendar.getByRole('listbox', { name: 'Choose month, 2030' })
+    const months = calendar.getByRole('listbox', { name: 'Choose month, 2029' })
+    expect(
+      await months.evaluate(
+        (element) => getComputedStyle(element).gridTemplateColumns.split(' ').length,
+      ),
+    ).toBe(3)
     const october = months.getByRole('option', { name: 'October', exact: true })
     await expect(october).toBeFocused()
     await page.keyboard.press('ArrowRight')
@@ -189,13 +233,19 @@ test.describe('Calendar', () => {
     await expect(november).toBeFocused()
     await expect(november).toHaveAttribute('aria-selected', 'false')
     await page.keyboard.press('Enter')
-    await expect(calendar.getByRole('grid', { name: 'November 2030' })).toBeVisible()
+    await expect(calendar.getByRole('grid', { name: 'November 2029' })).toBeVisible()
   })
 
   test('roves dates by keyboard and reverses horizontal navigation in RTL', async ({ page }) => {
     const calendar = page.getByRole('region', { name: 'Calendar' })
     const day = calendar.getByRole('button', { name: /October 5, 2026/ })
     await day.focus()
+    await page.keyboard.press('Tab')
+    await day.focus()
+    await expect(day).toHaveCSS('outline-style', 'none')
+    await expect
+      .poll(() => day.evaluate((element) => getComputedStyle(element, '::before').outlineWidth))
+      .toBe('2px')
     await day.press('ArrowRight')
     await expect(calendar.getByRole('button', { name: /October 6, 2026/ })).toBeFocused()
     await calendar.evaluate((element) => {
@@ -248,27 +298,24 @@ test.describe('Calendar', () => {
     await expect(day).toHaveCSS('letter-spacing', '1px')
     await expect(day).toHaveCSS('color', 'rgb(10, 11, 12)')
 
-    const selected = calendar.getByRole('button', { pressed: true })
+    const selected = calendar.locator('.yam3x-calendar__cell.is-selected .yam3x-calendar__day')
     await set('--yam3x-calendar-item-selected-color', 'rgb(13, 14, 15)')
     await set('--yam3x-calendar-item-selected-container-color', 'rgb(16, 17, 18)')
-    await set('--yam3x-calendar-item-selected-ripple-color', 'rgb(19, 20, 21)')
     await set('--yam3x-calendar-item-selected-hover-color', 'rgb(22, 23, 24)')
-    await set('--yam3x-calendar-item-selected-focus-color', 'rgb(25, 26, 27)')
     await expect(selected).toHaveCSS('color', 'rgb(13, 14, 15)')
     await expect
       .poll(() =>
         selected.evaluate((element) => getComputedStyle(element, '::before').backgroundColor),
       )
       .toBe('rgb(16, 17, 18)')
-    await expect
-      .poll(() =>
-        selected.evaluate((element) => getComputedStyle(element, '::after').backgroundColor),
-      )
-      .toBe('rgb(19, 20, 21)')
     await selected.focus()
     await page.keyboard.press('Tab')
     await selected.focus()
-    await expect(selected).toHaveCSS('outline-color', 'rgb(25, 26, 27)')
+    await expect
+      .poll(() =>
+        selected.evaluate((element) => getComputedStyle(element, '::before').outlineWidth),
+      )
+      .toBe('2px')
     await selected.hover()
     const selectedHover = await selected.evaluate(
       (element) => getComputedStyle(element, '::before').backgroundColor,
@@ -316,9 +363,7 @@ test.describe('Calendar', () => {
     const special = calendar.getByRole('button', { name: /October 15, 2026/ })
     await set('--yam3x-calendar-item-special-color', 'rgb(31, 32, 33)')
     await set('--yam3x-calendar-item-special-container-color', 'rgb(34, 35, 36)')
-    await set('--yam3x-calendar-item-special-ripple-color', 'rgb(37, 38, 39)')
     await set('--yam3x-calendar-item-special-hover-color', 'rgb(40, 41, 42)')
-    await set('--yam3x-calendar-item-special-focus-color', 'rgb(43, 44, 45)')
     await expect(special).toHaveCSS('color', 'rgb(31, 32, 33)')
     await expect(special).toHaveAttribute('aria-description', 'Special date')
     await expect
@@ -326,11 +371,6 @@ test.describe('Calendar', () => {
         special.evaluate((element) => getComputedStyle(element, '::before').backgroundColor),
       )
       .toBe('rgb(34, 35, 36)')
-    await expect
-      .poll(() =>
-        special.evaluate((element) => getComputedStyle(element, '::after').backgroundColor),
-      )
-      .toBe('rgb(37, 38, 39)')
     await special.hover()
     const hoverWithSpecialToken = await special.evaluate(
       (element) => getComputedStyle(element, '::before').backgroundColor,
@@ -344,7 +384,9 @@ test.describe('Calendar', () => {
     await special.focus()
     await page.keyboard.press('Tab')
     await special.focus()
-    await expect(special).toHaveCSS('outline-color', 'rgb(43, 44, 45)')
+    await expect
+      .poll(() => special.evaluate((element) => getComputedStyle(element, '::before').outlineWidth))
+      .toBe('2px')
 
     const range = page.getByRole('region', { name: 'Date range' })
     const rangeRoot = range
@@ -358,10 +400,12 @@ test.describe('Calendar', () => {
       )
       ;(element as HTMLElement).style.setProperty('--yam3x-calendar-range-color', 'rgb(49, 50, 51)')
     })
+    const interiorDay = interior.getByRole('button')
     await expect
-      .poll(() => interior.evaluate((element) => getComputedStyle(element).backgroundImage))
-      .toContain('rgb(46, 47, 48)')
-    await expect(interior).toHaveCSS('background-size', '100% 40px')
+      .poll(() =>
+        interiorDay.evaluate((element) => getComputedStyle(element, '::after').backgroundColor),
+      )
+      .toBe('rgb(46, 47, 48)')
     await expect(interior).toHaveCSS('color', 'rgb(49, 50, 51)')
     await expect(range.getByRole('button', { name: /October 10, 2026/ })).toHaveAttribute(
       'aria-description',
@@ -436,7 +480,7 @@ test.describe('Calendar', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await calendar.getByRole('button', { name: /Next month/ }).click()
     await expect(calendar.getByRole('grid', { name: 'November 2026' })).toBeVisible()
-    const monthPage = calendar.locator('.yam3x-calendar__month-view')
+    const monthPage = calendar.locator('.yam3x-calendar__month-view:not([aria-hidden="true"])')
     await monthPage.evaluate((element) => element.classList.add('yam3x-calendar-next-enter-active'))
     await expect
       .poll(() =>
@@ -460,7 +504,11 @@ test.describe('Calendar', () => {
     await focusedDay.focus()
     await page.keyboard.press('Tab')
     await focusedDay.focus()
-    await expect(focusedDay).toHaveCSS('outline-style', 'solid')
+    await expect
+      .poll(() =>
+        focusedDay.evaluate((element) => getComputedStyle(element, '::before').outlineStyle),
+      )
+      .toBe('solid')
     await expect(calendar).toHaveCSS('border-top-width', '1px')
     await calendar.getByRole('button', { name: /Previous month/ }).click()
     const selected = calendar.getByRole('button', { name: /October 5, 2026/ })
@@ -482,8 +530,28 @@ test.describe('Calendar', () => {
     await range.getByRole('button', { name: /October 12, 2026/ }).click()
     const start = range.locator('[data-date="2026-10-08"]').locator('xpath=..')
     const end = range.locator('[data-date="2026-10-12"]').locator('xpath=..')
-    await expect(start).toHaveCSS('background-image', /(?:270deg|to left)/)
-    await expect(end).toHaveCSS('background-image', /(?:90deg|to right)/)
+    const startDay = start.getByRole('button')
+    const endDay = end.getByRole('button')
+    await expect(start).toHaveCSS('background-image', 'none')
+    await expect(end).toHaveCSS('background-image', 'none')
+    await expect
+      .poll(() =>
+        startDay.evaluate((element) => getComputedStyle(element, '::after').insetInlineStart),
+      )
+      .toBe('24px')
+    await expect
+      .poll(() =>
+        startDay.evaluate((element) => getComputedStyle(element, '::after').insetInlineEnd),
+      )
+      .toBe('-2px')
+    await expect
+      .poll(() =>
+        endDay.evaluate((element) => getComputedStyle(element, '::after').insetInlineStart),
+      )
+      .toBe('-2px')
+    await expect
+      .poll(() => endDay.evaluate((element) => getComputedStyle(element, '::after').insetInlineEnd))
+      .toBe('24px')
     await expect(page.getByText('Date range: 2026-10-08 → 2026-10-12')).toBeVisible()
   })
 })

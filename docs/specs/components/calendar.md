@@ -15,3 +15,5 @@ This project extension exposes a calendar grid outside a date-picker surface. Ma
 ## Project decisions
 
 - Project-defined: A standalone calendar grid is an extension that reuses the Material date-picker calendar so it remains visually and behaviorally consistent with the project's Date picker.
+- Project-defined (`calendar.grid.parity`): Use narrow weekday labels, a single 7-column date grid, and three-column month/year option grids. Derive keyboard rows from the same three-column contract. Use the date-picker focus treatment on the 40px date indicator, outside days at full opacity with on-surface-variant, and the date-picker range bar on a pseudo-element. Day cells expose `aria-selected`, not a second pressed state.
+- Project-defined (`calendar.container.standalone`): Use a 360px standalone surface with a 28px container shape and 12px inline padding. Keep the 48px date target at narrow widths and allow the calendar surface to scroll horizontally rather than shrinking the target. Use a simplified period header with a 48px target and the date-picker label typography; the single period toggle remains a Calendar extension.

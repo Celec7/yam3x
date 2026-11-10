@@ -194,7 +194,7 @@ const weekdayLabels = computed(() =>
   Array.from({ length: 7 }, (_, index) => {
     const date = new Date(Date.UTC(2023, 0, 1 + ((weekStartDay.value + index) % 7)))
     return {
-      short: formatDate(date, locale.value, { weekday: 'short' }),
+      short: formatDate(date, locale.value, { weekday: 'narrow' }),
       full: formatDate(date, locale.value, { weekday: 'long' }),
     }
   }),
@@ -297,7 +297,12 @@ function navigate(delta: number): void {
     ),
   )
 }
+function onViewLeave(element: Element): void {
+  ;(element as HTMLElement).inert = true
+  element.setAttribute('aria-hidden', 'true')
+}
 function changeView(): void {
+  direction.value = 'next'
   view.value = view.value === 'month' ? 'multi-year' : 'month'
   focusYear.value = view.value === 'multi-year' ? visibleMonth.value.getUTCFullYear() : null
   focusMonth.value = null
@@ -402,7 +407,7 @@ function optionKeydown(
   kind: 'year' | 'month' | 'multi-year',
   index: number,
 ): void {
-  const columns = kind === 'month' ? 3 : 4
+  const columns = 3
   let next = index
   let delta = 0
   if (event.key === 'ArrowRight')
@@ -563,7 +568,7 @@ defineExpose({
           {{ periodLabel
           }}<Icon
             class="yam3x-calendar__caret"
-            name="expand_more"
+            name="arrow_drop_down"
           />
         </button>
         <span class="yam3x-calendar__spacer" />
@@ -600,134 +605,131 @@ defineExpose({
       </header>
     </slot>
 
-    <Transition
-      :name="`yam3x-calendar-${direction}`"
-      mode="out-in"
-      @after-enter="focusActive"
-    >
-      <div
-        v-if="view === 'month'"
-        :key="toIsoDate(visibleMonth)"
-        class="yam3x-calendar__month-view"
+    <div class="yam3x-calendar__viewport">
+      <Transition
+        :name="`yam3x-calendar-${direction}`"
+        @after-enter="focusActive"
+        @leave="onViewLeave"
       >
         <div
-          class="yam3x-calendar__grid"
-          role="grid"
-          :aria-label="periodLabel"
+          v-if="view === 'month'"
+          :key="toIsoDate(visibleMonth)"
+          class="yam3x-calendar__month-view"
         >
           <div
-            class="yam3x-calendar__weekdays"
-            role="row"
-          >
-            <span
-              v-for="(weekday, index) in weekdayLabels"
-              :key="index"
-              role="columnheader"
-              :aria-label="weekday.full"
-              :title="weekday.full"
-              >{{ weekday.short }}</span
-            >
-          </div>
-          <div
-            class="yam3x-calendar__days"
-            role="rowgroup"
+            class="yam3x-calendar__grid"
+            role="grid"
+            :aria-label="periodLabel"
           >
             <div
-              v-for="(week, weekIndex) in weeks"
-              :key="weekIndex"
-              class="yam3x-calendar__week"
+              class="yam3x-calendar__weekdays"
               role="row"
             >
-              <div
-                v-for="date in week"
-                :key="toIsoDate(date)"
-                class="yam3x-calendar__cell"
-                role="gridcell"
-                :class="[
-                  rangeState(toIsoDate(date)),
-                  {
-                    'is-selected': toIsoDate(date) === modelValue,
-                    'is-today': toIsoDate(date) === today,
-                    'is-special': isSpecialDate?.(toIsoDate(date)),
-                    'is-outside': date.getUTCMonth() !== visibleMonth.getUTCMonth(),
-                  },
-                ]"
-                :aria-selected="
-                  toIsoDate(date) === modelValue || Boolean(rangeState(toIsoDate(date)))
-                "
+              <span
+                v-for="(weekday, index) in weekdayLabels"
+                :key="index"
+                role="columnheader"
+                :aria-label="weekday.full"
+                :title="weekday.full"
+                >{{ weekday.short }}</span
               >
-                <button
-                  type="button"
-                  class="yam3x-calendar__day"
-                  :data-date="toIsoDate(date)"
-                  :tabindex="toIsoDate(date) === toIsoDate(activeDate) ? 0 : -1"
-                  :disabled="!isAllowed(toIsoDate(date))"
-                  :aria-label="fullDateLabel(date)"
-                  :aria-description="dateDescription(date)"
-                  :aria-pressed="
-                    toIsoDate(date) === modelValue ||
-                    toIsoDate(date) === rangeStart ||
-                    toIsoDate(date) === rangeEnd
+            </div>
+            <div
+              class="yam3x-calendar__days"
+              role="rowgroup"
+            >
+              <div
+                v-for="(week, weekIndex) in weeks"
+                :key="weekIndex"
+                class="yam3x-calendar__week"
+                role="row"
+              >
+                <div
+                  v-for="date in week"
+                  :key="toIsoDate(date)"
+                  class="yam3x-calendar__cell"
+                  role="gridcell"
+                  :class="[
+                    rangeState(toIsoDate(date)),
+                    {
+                      'is-selected': toIsoDate(date) === modelValue,
+                      'is-today': toIsoDate(date) === today,
+                      'is-special': isSpecialDate?.(toIsoDate(date)),
+                      'is-outside': date.getUTCMonth() !== visibleMonth.getUTCMonth(),
+                    },
+                  ]"
+                  :aria-selected="
+                    toIsoDate(date) === modelValue || Boolean(rangeState(toIsoDate(date)))
                   "
-                  :aria-current="toIsoDate(date) === today ? 'date' : undefined"
-                  :data-special="isSpecialDate?.(toIsoDate(date)) ? 'true' : undefined"
-                  @click="selectDate(date)"
-                  @keydown="dayKeydown($event, date)"
                 >
-                  {{ date.getUTCDate() }}
-                </button>
+                  <button
+                    type="button"
+                    class="yam3x-calendar__day"
+                    :data-date="toIsoDate(date)"
+                    :tabindex="toIsoDate(date) === toIsoDate(activeDate) ? 0 : -1"
+                    :disabled="!isAllowed(toIsoDate(date))"
+                    :aria-label="fullDateLabel(date)"
+                    :aria-description="dateDescription(date)"
+                    :aria-current="toIsoDate(date) === today ? 'date' : undefined"
+                    :data-special="isSpecialDate?.(toIsoDate(date)) ? 'true' : undefined"
+                    @click="selectDate(date)"
+                    @keydown="dayKeydown($event, date)"
+                  >
+                    {{ date.getUTCDate() }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        v-else-if="view === 'year'"
-        :key="'months-' + visibleMonth.getUTCFullYear()"
-        class="yam3x-calendar__options"
-        role="listbox"
-        :aria-label="messages.chooseMonth(formatDate(visibleMonth, locale, { year: 'numeric' }))"
-      >
-        <button
-          v-for="month in months"
-          :key="month.value"
-          type="button"
-          role="option"
-          :data-option-index="month.value"
-          :data-active-option="month.value === (focusMonth ?? visibleMonth.getUTCMonth())"
-          :aria-selected="month.value === visibleMonth.getUTCMonth()"
-          :tabindex="month.value === (focusMonth ?? visibleMonth.getUTCMonth()) ? 0 : -1"
-          :disabled="!hasAllowedMonth(visibleMonth.getUTCFullYear(), month.value)"
-          @click="pickMonth(month.value)"
-          @keydown="optionKeydown($event, 'month', month.value)"
+        <div
+          v-else-if="view === 'year'"
+          :key="'months-' + visibleMonth.getUTCFullYear()"
+          class="yam3x-calendar__options"
+          role="listbox"
+          :aria-label="messages.chooseMonth(formatDate(visibleMonth, locale, { year: 'numeric' }))"
         >
-          {{ month.label }}
-        </button>
-      </div>
-      <div
-        v-else
-        :key="'years-' + yearPage[0]"
-        class="yam3x-calendar__options yam3x-calendar__years"
-        role="listbox"
-        :aria-label="messages.chooseYear(periodLabel)"
-      >
-        <button
-          v-for="(year, index) in years"
-          :key="year"
-          type="button"
-          role="option"
-          :data-option-index="index"
-          :data-active-option="year === (focusYear ?? visibleMonth.getUTCFullYear())"
-          :aria-selected="year === visibleMonth.getUTCFullYear()"
-          :tabindex="year === (focusYear ?? visibleMonth.getUTCFullYear()) ? 0 : -1"
-          :disabled="!hasAllowedYear(year)"
-          @click="pickYear(year)"
-          @keydown="optionKeydown($event, 'multi-year', index)"
+          <button
+            v-for="month in months"
+            :key="month.value"
+            type="button"
+            role="option"
+            :data-option-index="month.value"
+            :data-active-option="month.value === (focusMonth ?? visibleMonth.getUTCMonth())"
+            :aria-selected="month.value === visibleMonth.getUTCMonth()"
+            :tabindex="month.value === (focusMonth ?? visibleMonth.getUTCMonth()) ? 0 : -1"
+            :disabled="!hasAllowedMonth(visibleMonth.getUTCFullYear(), month.value)"
+            @click="pickMonth(month.value)"
+            @keydown="optionKeydown($event, 'month', month.value)"
+          >
+            {{ month.label }}
+          </button>
+        </div>
+        <div
+          v-else
+          :key="'years-' + yearPage[0]"
+          class="yam3x-calendar__options yam3x-calendar__years"
+          role="listbox"
+          :aria-label="messages.chooseYear(periodLabel)"
         >
-          {{ year }}
-        </button>
-      </div>
-    </Transition>
+          <button
+            v-for="(year, index) in years"
+            :key="year"
+            type="button"
+            role="option"
+            :data-option-index="index"
+            :data-active-option="year === (focusYear ?? visibleMonth.getUTCFullYear())"
+            :aria-selected="year === visibleMonth.getUTCFullYear()"
+            :tabindex="year === (focusYear ?? visibleMonth.getUTCFullYear()) ? 0 : -1"
+            :disabled="!hasAllowedYear(year)"
+            @click="pickYear(year)"
+            @keydown="optionKeydown($event, 'multi-year', index)"
+          >
+            {{ year }}
+          </button>
+        </div>
+      </Transition>
+    </div>
   </section>
 </template>
 
@@ -747,6 +749,10 @@ defineExpose({
     --md-sys-motion-spring-default-spatial
   );
   --_yam3x-calendar-system-motion-spring-fast-effects: var(--md-sys-motion-spring-fast-effects);
+  --_yam3x-calendar-system-typescale-body-large-family: var(
+    --md-sys-typescale-body-large-font-family,
+    inherit
+  );
   --_yam3x-calendar-system-typescale-body-large-size: var(--md-sys-typescale-body-large-size);
   --_yam3x-calendar-system-typescale-body-large-weight: var(--md-sys-typescale-body-large-weight);
   --_yam3x-calendar-system-typescale-body-large-line-height: var(
@@ -758,12 +764,13 @@ defineExpose({
   --_yam3x-calendar-system-typescale-line-height-scale: var(--md-sys-typescale-line-height-scale);
   display: inline-flex;
   flex-direction: column;
-  width: max-content;
+  width: 360px;
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
   padding: var(
     --yam3x-calendar-padding,
-    calc(8px * var(--_yam3x-calendar-system-density-spacing-scale, 1))
+    0 calc(12px * var(--_yam3x-calendar-system-density-spacing-scale, 1))
+      calc(8px * var(--_yam3x-calendar-system-density-spacing-scale, 1))
   );
   border-radius: var(--yam3x-calendar-container-shape, 28px);
   background: var(
@@ -780,8 +787,9 @@ defineExpose({
   gap: calc(4px * var(--_yam3x-calendar-system-density-spacing-scale, 1));
 }
 .yam3x-calendar__period {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: calc(8px * var(--_yam3x-calendar-system-density-spacing-scale, 1));
   min-width: 48px;
   min-height: 48px;
@@ -793,7 +801,11 @@ defineExpose({
     --yam3x-calendar-period-button-text-color,
     var(--_yam3x-calendar-system-color-on-surface-variant)
   );
-  font: inherit;
+  font-family: var(--_yam3x-calendar-system-typescale-body-large-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.1px;
   cursor: pointer;
 }
 .yam3x-calendar__period:hover,
@@ -801,6 +813,8 @@ defineExpose({
   background: color-mix(in srgb, currentColor 8%, transparent);
 }
 .yam3x-calendar__caret {
+  inline-size: 18px;
+  block-size: 18px;
   font-size: 18px;
 }
 .yam3x-calendar__spacer {
@@ -823,23 +837,29 @@ defineExpose({
   opacity: 0.38;
   cursor: default;
 }
-.yam3x-calendar__grid,
-.yam3x-calendar__days,
-.yam3x-calendar__options {
-  display: grid;
-  grid-template-columns: repeat(7, 48px);
+.yam3x-calendar__viewport {
+  position: relative;
   width: 336px;
-  max-width: 100%;
+  flex: none;
+  overflow: hidden;
+}
+.yam3x-calendar__grid,
+.yam3x-calendar__days {
+  display: flex;
+  flex-direction: column;
+  width: 336px;
+  flex: none;
   box-sizing: border-box;
 }
 .yam3x-calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 48px);
+  width: 336px;
   min-height: 48px;
   align-items: center;
   justify-items: center;
-  color: var(
-    --yam3x-calendar-weekday-color,
-    var(--_yam3x-calendar-system-color-on-surface-variant)
-  );
+  color: var(--yam3x-calendar-weekday-color, var(--_yam3x-calendar-system-color-on-surface));
+  font-family: var(--_yam3x-calendar-system-typescale-body-large-family);
   font-size: var(
     --yam3x-calendar-weekday-font-size,
     var(--_yam3x-calendar-system-typescale-body-large-size, 16px)
@@ -849,12 +869,11 @@ defineExpose({
     var(--_yam3x-calendar-system-typescale-body-large-weight, 400)
   );
   line-height: calc(
-    (
-      var(
+    var(
         --yam3x-calendar-weekday-line-height,
         var(--_yam3x-calendar-system-typescale-body-large-line-height, 24px)
-      )
-    )
+      ) *
+      var(--_yam3x-calendar-system-typescale-line-height-scale, 1)
   );
   letter-spacing: var(
     --yam3x-calendar-weekday-tracking,
@@ -864,13 +883,13 @@ defineExpose({
 .yam3x-calendar__weekdays span {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
 }
-.yam3x-calendar__days {
-  grid-auto-rows: 48px;
-  align-items: center;
-  justify-items: center;
+.yam3x-calendar__week {
+  display: grid;
+  grid-template-columns: repeat(7, 48px);
+  height: 48px;
 }
 .yam3x-calendar__cell {
   position: relative;
@@ -880,6 +899,7 @@ defineExpose({
   width: 48px;
   height: 48px;
   color: var(--yam3x-calendar-item-color, var(--_yam3x-calendar-system-color-on-surface));
+  font-family: var(--_yam3x-calendar-system-typescale-body-large-family);
   font-size: var(
     --yam3x-calendar-date-font-size,
     var(--_yam3x-calendar-system-typescale-body-large-size, 16px)
@@ -889,12 +909,11 @@ defineExpose({
     var(--_yam3x-calendar-system-typescale-body-large-weight, 400)
   );
   line-height: calc(
-    (
-      var(
+    var(
         --yam3x-calendar-date-line-height,
         var(--_yam3x-calendar-system-typescale-body-large-line-height, 24px)
-      )
-    )
+      ) *
+      var(--_yam3x-calendar-system-typescale-line-height-scale, 1)
   );
   letter-spacing: var(
     --yam3x-calendar-date-tracking,
@@ -902,87 +921,16 @@ defineExpose({
   );
 }
 .yam3x-calendar__cell.is-in-range {
-  background: linear-gradient(
-      var(
-        --yam3x-calendar-range-container-color,
-        var(--_yam3x-calendar-system-color-secondary-container)
-      ),
-      var(
-        --yam3x-calendar-range-container-color,
-        var(--_yam3x-calendar-system-color-secondary-container)
-      )
-    )
-    center/100% 40px no-repeat;
   color: var(
     --yam3x-calendar-range-color,
     var(--_yam3x-calendar-system-color-on-secondary-container)
   );
 }
-.yam3x-calendar__cell.is-range-start {
-  background: linear-gradient(
-      to right,
-      transparent 50%,
-      var(
-          --yam3x-calendar-range-container-color,
-          var(--_yam3x-calendar-system-color-secondary-container)
-        )
-        50%
-    )
-    center/100% 40px no-repeat;
+.yam3x-calendar__cell.is-outside {
+  color: var(--_yam3x-calendar-item-color, var(--_yam3x-calendar-system-color-on-surface-variant));
 }
-.yam3x-calendar__cell.is-range-end {
-  background: linear-gradient(
-      to left,
-      transparent 50%,
-      var(
-          --yam3x-calendar-range-container-color,
-          var(--_yam3x-calendar-system-color-secondary-container)
-        )
-        50%
-    )
-    center/100% 40px no-repeat;
-}
-.yam3x-calendar__day {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.yam3x-calendar__day:hover:not(:disabled) {
-  background: color-mix(in srgb, currentColor 8%, transparent);
-}
-.yam3x-calendar__cell.is-selected .yam3x-calendar__day,
-.yam3x-calendar__cell.is-range-start .yam3x-calendar__day,
-.yam3x-calendar__cell.is-range-end .yam3x-calendar__day {
-  background: var(
-    --yam3x-calendar-item-selected-container-color,
-    var(--_yam3x-calendar-system-color-primary)
-  );
-  color: var(--yam3x-calendar-item-selected-color, var(--_yam3x-calendar-system-color-on-primary));
-}
-.yam3x-calendar__cell.is-selected .yam3x-calendar__day:hover,
-.yam3x-calendar__cell.is-range-start .yam3x-calendar__day:hover,
-.yam3x-calendar__cell.is-range-end .yam3x-calendar__day:hover {
-  background: color-mix(
-    in srgb,
-    var(--yam3x-calendar-item-selected-hover-color, var(--_yam3x-calendar-system-color-on-primary))
-      8%,
-    var(--yam3x-calendar-item-selected-container-color, var(--_yam3x-calendar-system-color-primary))
-  );
-}
-.yam3x-calendar__cell.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end)
-  .yam3x-calendar__day {
-  outline: var(--yam3x-calendar-item-current-outline-thickness, 1px) solid
-    var(--yam3x-calendar-item-current-outline-color, var(--_yam3x-calendar-system-color-primary));
-  outline-offset: -1px;
+.yam3x-calendar__cell.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end) {
+  color: var(--_yam3x-calendar-system-color-primary);
 }
 .yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end) {
   color: var(
@@ -990,212 +938,37 @@ defineExpose({
     var(--_yam3x-calendar-system-color-on-tertiary-container)
   );
 }
-.yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end)
-  .yam3x-calendar__day {
-  background: var(
-    --yam3x-calendar-item-special-container-color,
-    var(--_yam3x-calendar-system-color-tertiary-container)
-  );
-}
-.yam3x-calendar__cell.is-outside {
-  color: var(--yam3x-calendar-item-color, var(--_yam3x-calendar-system-color-on-surface-variant));
-  opacity: 0.72;
-}
-.yam3x-calendar__day:disabled {
-  color: var(--yam3x-calendar-item-disabled-color, var(--_yam3x-calendar-system-color-on-surface));
-  opacity: var(--yam3x-calendar-item-disabled-color-opacity, 0.38);
-  cursor: default;
-}
-.yam3x-calendar__day:focus-visible,
-.yam3x-calendar__period:focus-visible,
-.yam3x-calendar__nav:focus-visible,
-.yam3x-calendar__options button:focus-visible {
-  outline: 2px solid var(--_yam3x-calendar-system-color-primary);
-  outline-offset: 2px;
-}
-.yam3x-calendar__options {
-  grid-template-columns: repeat(3, minmax(64px, 1fr));
-  gap: calc(4px * var(--_yam3x-calendar-system-density-spacing-scale, 1));
-  max-height: 336px;
-  overflow: auto;
-  padding: calc(4px * var(--_yam3x-calendar-system-density-spacing-scale, 1));
-}
-.yam3x-calendar__options.yam3x-calendar__years {
-  grid-template-columns: repeat(4, minmax(56px, 1fr));
-}
-.yam3x-calendar__options button {
-  min-height: 48px;
-  border: 0;
-  border-radius: 24px;
-  background: transparent;
-  color: var(--yam3x-calendar-item-color, var(--_yam3x-calendar-system-color-on-surface));
-  font: inherit;
-  cursor: pointer;
-}
-.yam3x-calendar__options button[aria-selected='true'] {
-  background: var(
-    --yam3x-calendar-item-selected-container-color,
-    var(--_yam3x-calendar-system-color-primary)
-  );
-  color: var(--yam3x-calendar-item-selected-color, var(--_yam3x-calendar-system-color-on-primary));
-}
-.yam3x-calendar__options button:disabled {
-  opacity: var(--yam3x-calendar-item-disabled-color-opacity, 0.38);
-  cursor: default;
-}
-.yam3x-calendar-next-enter-active,
-.yam3x-calendar-next-leave-active,
-.yam3x-calendar-previous-enter-active,
-.yam3x-calendar-previous-leave-active {
-  transition:
-    opacity var(--yam3x-calendar-slide-animation-duration, 250ms) cubic-bezier(0.2, 0, 0, 1),
-    transform var(--yam3x-calendar-slide-animation-duration, 250ms) cubic-bezier(0.2, 0, 0, 1);
-}
-.yam3x-calendar-next-enter-from {
-  opacity: 0;
-  transform: translateX(12px);
-}
-.yam3x-calendar-next-leave-to {
-  opacity: 0;
-  transform: translateX(-12px);
-}
-.yam3x-calendar-previous-enter-from {
-  opacity: 0;
-  transform: translateX(-12px);
-}
-.yam3x-calendar-previous-leave-to {
-  opacity: 0;
-  transform: translateX(12px);
-}
-@media (prefers-reduced-motion: reduce) {
-  .yam3x-calendar-next-enter-active,
-  .yam3x-calendar-next-leave-active,
-  .yam3x-calendar-previous-enter-active,
-  .yam3x-calendar-previous-leave-active {
-    transition: none;
-  }
-}
-@media (forced-colors: active) {
-  .yam3x-calendar {
-    border: 1px solid CanvasText;
-    background: Canvas;
-    color: CanvasText;
-  }
-  .yam3x-calendar__cell.is-selected .yam3x-calendar__day,
-  .yam3x-calendar__cell.is-range-start .yam3x-calendar__day,
-  .yam3x-calendar__cell.is-range-end .yam3x-calendar__day,
-  .yam3x-calendar__options button[aria-selected='true'] {
-    forced-color-adjust: none;
-    background: Highlight;
-    color: HighlightText;
-  }
-  .yam3x-calendar__day:focus-visible,
-  .yam3x-calendar__period:focus-visible,
-  .yam3x-calendar__nav:focus-visible,
-  .yam3x-calendar__options button:focus-visible {
-    outline-color: Highlight;
-  }
-}
-@media (max-width: 360px) {
-  .yam3x-calendar__grid,
-  .yam3x-calendar__days {
-    grid-template-columns: repeat(7, minmax(40px, 1fr));
-    width: 100%;
-  }
-  .yam3x-calendar__weekdays span {
-    width: 100%;
-  }
-  .yam3x-calendar__cell {
-    width: 100%;
-  }
-  .yam3x-calendar__day {
-    width: 40px;
-    height: 40px;
-  }
-}
-.yam3x-calendar {
-  width: 360px;
-  padding: var(
-    --yam3x-calendar-padding,
-    0 calc(12px * var(--_yam3x-calendar-system-density-spacing-scale, 1))
-      calc(8px * var(--_yam3x-calendar-system-density-spacing-scale, 1))
-  );
-  overflow-x: auto;
-}
-.yam3x-calendar__grid {
-  display: flex;
-  flex-direction: column;
-}
-.yam3x-calendar__days {
-  display: flex;
-  flex-direction: column;
-}
-.yam3x-calendar__week {
-  display: grid;
-  grid-template-columns: repeat(7, 48px);
-  height: 48px;
-}
-.yam3x-calendar__weekdays {
-  display: grid;
-}
-.yam3x-calendar__options {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.yam3x-calendar__options.yam3x-calendar__years {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.yam3x-calendar:dir(rtl) .yam3x-calendar__cell.is-range-start {
-  background: linear-gradient(
-      to left,
-      transparent 50%,
-      var(
-          --yam3x-calendar-range-container-color,
-          var(--_yam3x-calendar-system-color-secondary-container)
-        )
-        50%
-    )
-    center/100% 40px no-repeat;
-}
-.yam3x-calendar:dir(rtl) .yam3x-calendar__cell.is-range-end {
-  background: linear-gradient(
-      to right,
-      transparent 50%,
-      var(
-          --yam3x-calendar-range-container-color,
-          var(--_yam3x-calendar-system-color-secondary-container)
-        )
-        50%
-    )
-    center/100% 40px no-repeat;
-}
 .yam3x-calendar__day {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
   width: 48px;
   height: 48px;
+  border: 0;
+  border-radius: 50%;
   background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
 }
 .yam3x-calendar__day::before {
   content: '';
   position: absolute;
   z-index: -1;
   inset: 4px;
-  border-radius: 50%;
+  border-radius: inherit;
+  background: transparent;
   pointer-events: none;
-  background: transparent;
-}
-.yam3x-calendar__day:hover:not(:disabled) {
-  background: transparent;
 }
 .yam3x-calendar__day:hover:not(:disabled)::before {
   background: color-mix(in srgb, currentColor 8%, transparent);
 }
 .yam3x-calendar__cell.is-selected .yam3x-calendar__day,
 .yam3x-calendar__cell.is-range-start .yam3x-calendar__day,
-.yam3x-calendar__cell.is-range-end .yam3x-calendar__day,
-.yam3x-calendar__cell.is-selected .yam3x-calendar__day:hover,
-.yam3x-calendar__cell.is-range-start .yam3x-calendar__day:hover,
-.yam3x-calendar__cell.is-range-end .yam3x-calendar__day:hover {
-  background: transparent;
+.yam3x-calendar__cell.is-range-end .yam3x-calendar__day {
+  color: var(--yam3x-calendar-item-selected-color, var(--_yam3x-calendar-system-color-on-primary));
 }
 .yam3x-calendar__cell.is-selected .yam3x-calendar__day::before,
 .yam3x-calendar__cell.is-range-start .yam3x-calendar__day::before,
@@ -1216,41 +989,20 @@ defineExpose({
   );
 }
 .yam3x-calendar__cell.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end)
-  .yam3x-calendar__day {
-  outline: none;
-}
-.yam3x-calendar__cell.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end)
   .yam3x-calendar__day::before {
-  outline: var(--yam3x-calendar-item-current-outline-thickness, 1px) solid
+  outline: var(
+      --yam3x-calendar-item-current-outline-thickness,
+      var(--yam3x-calendar-date-current-outline-thickness, 1px)
+    )
+    solid
     var(--yam3x-calendar-item-current-outline-color, var(--_yam3x-calendar-system-color-primary));
-  outline-offset: -1px;
-}
-.yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end)
-  .yam3x-calendar__day {
-  background: transparent;
+  outline-offset: 0;
 }
 .yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end)
   .yam3x-calendar__day::before {
   background: var(
     --yam3x-calendar-item-special-container-color,
     var(--_yam3x-calendar-system-color-tertiary-container)
-  );
-}
-.yam3x-calendar__options button {
-  font-size: var(--yam3x-calendar-item-font-size, 14px);
-  font-weight: var(--yam3x-calendar-item-font-weight, 400);
-  line-height: calc(
-    (var(--yam3x-calendar-item-line-height, 20px)) *
-      var(--_yam3x-calendar-system-typescale-line-height-scale, 1.07)
-  );
-  letter-spacing: var(--yam3x-calendar-item-tracking, 0.25px);
-}
-.yam3x-calendar__cell.is-selected .yam3x-calendar__day:focus-visible,
-.yam3x-calendar__cell.is-range-start .yam3x-calendar__day:focus-visible,
-.yam3x-calendar__cell.is-range-end .yam3x-calendar__day:focus-visible {
-  outline-color: var(
-    --yam3x-calendar-item-selected-focus-color,
-    var(--_yam3x-calendar-system-color-on-primary)
   );
 }
 .yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end)
@@ -1268,51 +1020,155 @@ defineExpose({
     )
   );
 }
-.yam3x-calendar__cell.is-special .yam3x-calendar__day:focus-visible {
-  outline-color: var(
-    --yam3x-calendar-item-special-focus-color,
-    var(--_yam3x-calendar-system-color-on-tertiary-container)
-  );
+.yam3x-calendar__day:disabled {
+  color: var(--yam3x-calendar-item-disabled-color, var(--_yam3x-calendar-system-color-on-surface));
+  opacity: var(--yam3x-calendar-item-disabled-color-opacity, 0.38);
+  cursor: default;
 }
-.yam3x-calendar__day::after {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  inset: 4px;
-  border-radius: 50%;
-  background: var(--yam3x-calendar-item-ripple-color, currentColor);
-  opacity: 0;
-  transform: scale(0.2);
-  transition:
-    opacity var(--_yam3x-calendar-system-motion-spring-fast-effects),
-    transform var(--_yam3x-calendar-system-motion-spring-default-spatial);
-  pointer-events: none;
-}
-.yam3x-calendar__day:active::after {
-  opacity: 0.18;
-  transform: scale(1);
-}
-.yam3x-calendar__cell.is-selected .yam3x-calendar__day::after,
+.yam3x-calendar__cell.is-in-range .yam3x-calendar__day::after,
 .yam3x-calendar__cell.is-range-start .yam3x-calendar__day::after,
 .yam3x-calendar__cell.is-range-end .yam3x-calendar__day::after {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset-block: 4px;
+  inset-inline: -2px;
   background: var(
-    --yam3x-calendar-item-selected-ripple-color,
-    var(--_yam3x-calendar-system-color-on-primary)
+    --yam3x-calendar-range-container-color,
+    var(--_yam3x-calendar-system-color-secondary-container)
   );
+  pointer-events: none;
 }
-.yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end)
+.yam3x-calendar__cell.is-range-start .yam3x-calendar__day::after {
+  inset-inline-start: 50%;
+}
+.yam3x-calendar__cell.is-range-end .yam3x-calendar__day::after {
+  inset-inline-end: 50%;
+}
+.yam3x-calendar:not(.has-complete-range)
+  .yam3x-calendar__cell.is-range-start
+  .yam3x-calendar__day::after,
+.yam3x-calendar:not(.has-complete-range)
+  .yam3x-calendar__cell.is-range-end
   .yam3x-calendar__day::after {
-  background: var(
-    --yam3x-calendar-item-special-ripple-color,
-    var(--_yam3x-calendar-system-color-on-tertiary-container)
+  display: none;
+}
+.yam3x-calendar__day:focus-visible {
+  outline: none;
+}
+.yam3x-calendar__day:focus-visible::before {
+  outline: 2px solid var(--_yam3x-calendar-system-color-on-surface);
+  outline-offset: 2px;
+}
+.yam3x-calendar__period:focus-visible,
+.yam3x-calendar__nav:focus-visible,
+.yam3x-calendar__options button:focus-visible {
+  outline: 2px solid var(--_yam3x-calendar-system-color-primary);
+  outline-offset: 2px;
+}
+.yam3x-calendar__options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(8px * var(--_yam3x-calendar-system-density-spacing-scale, 1));
+  width: 336px;
+  max-height: 280px;
+  overflow: auto;
+  padding: calc(8px * var(--_yam3x-calendar-system-density-spacing-scale, 1));
+  box-sizing: border-box;
+}
+.yam3x-calendar__options button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  color: var(--yam3x-calendar-item-color, var(--_yam3x-calendar-system-color-on-surface));
+  font-family: var(--_yam3x-calendar-system-typescale-body-large-family);
+  font-size: var(
+    --yam3x-calendar-item-font-size,
+    var(--_yam3x-calendar-system-typescale-body-large-size, 16px)
   );
+  font-weight: var(
+    --yam3x-calendar-item-font-weight,
+    var(--_yam3x-calendar-system-typescale-body-large-weight, 400)
+  );
+  line-height: calc(
+    var(
+        --yam3x-calendar-item-line-height,
+        var(--_yam3x-calendar-system-typescale-body-large-line-height, 24px)
+      ) *
+      var(--_yam3x-calendar-system-typescale-line-height-scale, 1)
+  );
+  letter-spacing: var(
+    --yam3x-calendar-item-tracking,
+    var(--_yam3x-calendar-system-typescale-body-large-tracking, 0.5px)
+  );
+  cursor: pointer;
+}
+.yam3x-calendar__options button[aria-selected='true'] {
+  background: var(
+    --yam3x-calendar-item-selected-container-color,
+    var(--_yam3x-calendar-system-color-primary)
+  );
+  color: var(--yam3x-calendar-item-selected-color, var(--_yam3x-calendar-system-color-on-primary));
+}
+.yam3x-calendar__options button:disabled {
+  opacity: var(--yam3x-calendar-item-disabled-color-opacity, 0.38);
+  cursor: default;
+}
+.yam3x-calendar-next-enter-active,
+.yam3x-calendar-next-leave-active,
+.yam3x-calendar-previous-enter-active,
+.yam3x-calendar-previous-leave-active {
+  transition:
+    transform
+      var(
+        --yam3x-calendar-slide-animation-duration,
+        var(--yam3x-calendar-system-motion-spring-default-spatial)
+      ),
+    opacity
+      var(
+        --yam3x-calendar-slide-animation-duration,
+        var(--yam3x-calendar-system-motion-spring-fast-effects)
+      );
+}
+.yam3x-calendar-next-leave-active,
+.yam3x-calendar-previous-leave-active {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+}
+.yam3x-calendar-next-enter-from,
+.yam3x-calendar-previous-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.yam3x-calendar-next-leave-to,
+.yam3x-calendar-previous-enter-from {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.yam3x-calendar:dir(rtl) .yam3x-calendar-next-enter-from,
+.yam3x-calendar:dir(rtl) .yam3x-calendar-previous-leave-to {
+  transform: translateX(-100%);
+}
+.yam3x-calendar:dir(rtl) .yam3x-calendar-next-leave-to,
+.yam3x-calendar:dir(rtl) .yam3x-calendar-previous-enter-from {
+  transform: translateX(100%);
 }
 @media (prefers-reduced-motion: reduce) {
-  .yam3x-calendar__day::after {
+  .yam3x-calendar-next-enter-active,
+  .yam3x-calendar-next-leave-active,
+  .yam3x-calendar-previous-enter-active,
+  .yam3x-calendar-previous-leave-active {
     transition: none;
   }
 }
 @media (forced-colors: active) {
+  .yam3x-calendar {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
   .yam3x-calendar__cell.is-selected .yam3x-calendar__day::before,
   .yam3x-calendar__cell.is-range-start .yam3x-calendar__day::before,
   .yam3x-calendar__cell.is-range-end .yam3x-calendar__day::before,
@@ -1326,64 +1182,28 @@ defineExpose({
   .yam3x-calendar__options button[aria-selected='true'] {
     color: HighlightText;
   }
-  .yam3x-calendar__cell.is-in-range {
-    background: Highlight;
-    color: HighlightText;
+  .yam3x-calendar__cell.is-in-range .yam3x-calendar__day::after {
+    background: Canvas;
+    border-block: 1px solid CanvasText;
   }
   .yam3x-calendar__cell.is-special:not(.is-selected):not(.is-range-start):not(.is-range-end)
     .yam3x-calendar__day::before {
     background: transparent;
     outline: 1px solid CanvasText;
   }
-  .yam3x-calendar__day:disabled {
+  .yam3x-calendar__day:disabled,
+  .yam3x-calendar__options button:disabled {
     color: GrayText;
   }
-}
-.yam3x-calendar__caret {
-  width: 24px;
-  height: 24px;
-  font-size: 24px;
-}
-.yam3x-calendar__nav .yam3x-icon {
-  width: 24px;
-  height: 24px;
-  font-size: 24px;
-}
-.yam3x-calendar:dir(rtl) .yam3x-calendar__nav .yam3x-icon {
-  transform: scaleX(-1);
-}
-.yam3x-calendar__day {
-  letter-spacing: inherit;
-}
-.yam3x-calendar__cell.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end)
-  .yam3x-calendar__day::before {
-  outline-width: var(
-    --yam3x-calendar-item-current-outline-thickness,
-    var(--yam3x-calendar-date-current-outline-thickness, 1px)
-  );
-}
-.yam3x-calendar__weekdays {
-  grid-template-columns: repeat(7, 48px);
-  width: 336px;
-}
-@media (max-width: 360px) {
-  .yam3x-calendar__grid,
-  .yam3x-calendar__days,
-  .yam3x-calendar__weekdays {
-    width: 336px;
-    grid-template-columns: repeat(7, 48px);
+  .yam3x-calendar__day:focus-visible::before,
+  .yam3x-calendar__period:focus-visible,
+  .yam3x-calendar__nav:focus-visible,
+  .yam3x-calendar__options button:focus-visible {
+    outline-color: Highlight;
   }
-  .yam3x-calendar__weekdays span,
-  .yam3x-calendar__cell {
-    width: 48px;
+  .yam3x-calendar__cell.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end)
+    .yam3x-calendar__day::before {
+    outline-color: CanvasText;
   }
-  .yam3x-calendar__day {
-    width: 48px;
-    height: 48px;
-  }
-}
-.yam3x-calendar:not(.has-complete-range) .yam3x-calendar__cell.is-range-start,
-.yam3x-calendar:not(.has-complete-range) .yam3x-calendar__cell.is-range-end {
-  background: transparent;
 }
 </style>
