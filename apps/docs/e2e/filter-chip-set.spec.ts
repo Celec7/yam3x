@@ -1,27 +1,29 @@
 import { expect, test } from '@playwright/test'
 
-test('single filter grid separates focus from selection and toggles its selected value', async ({
+test('single filter toolbar separates focus from selection and toggles its selected value', async ({
   page,
 }) => {
   await page.goto('/components/chips')
-  const group = page.getByRole('grid', { name: 'Primary topic' })
-  const design = group.getByRole('gridcell', { name: 'Design' })
-  const engineering = group.getByRole('gridcell', { name: 'Engineering' })
+  const group = page.getByRole('toolbar', { name: 'Primary topic' })
+  await expect(page.getByRole('heading', { name: 'Primary topic', exact: true })).toBeVisible()
+  await expect(group).toHaveAttribute('aria-labelledby', 'filter-primary-label')
+  await expect(group).toHaveAttribute('aria-orientation', 'horizontal')
+  const design = group.getByRole('button', { name: 'Design' })
+  const engineering = group.getByRole('button', { name: 'Engineering' })
 
-  await expect(group.getByRole('row')).toHaveCount(1)
-  await expect(design).toHaveAttribute('aria-selected', 'true')
+  await expect(design).toHaveAttribute('aria-pressed', 'true')
   await expect(design).toHaveAttribute('tabindex', '0')
   await design.focus()
   await page.keyboard.press('ArrowRight')
   await expect(engineering).toBeFocused()
-  await expect(engineering).toHaveAttribute('aria-selected', 'false')
-  await expect(design).toHaveAttribute('aria-selected', 'true')
+  await expect(engineering).toHaveAttribute('aria-pressed', 'false')
+  await expect(design).toHaveAttribute('aria-pressed', 'true')
   await page.keyboard.press('Space')
-  await expect(engineering).toHaveAttribute('aria-selected', 'true')
-  await expect(design).toHaveAttribute('aria-selected', 'false')
+  await expect(engineering).toHaveAttribute('aria-pressed', 'true')
+  await expect(design).toHaveAttribute('aria-pressed', 'false')
   await expect(page.getByText(/Single selection: \s*engineering/)).toBeVisible()
   await page.keyboard.press('Enter')
-  await expect(engineering).toHaveAttribute('aria-selected', 'false')
+  await expect(engineering).toHaveAttribute('aria-pressed', 'false')
   await expect(page.getByText(/Single selection: \s*$/)).toBeVisible()
 
   await page.locator('html').evaluate((element) => {
@@ -29,34 +31,33 @@ test('single filter grid separates focus from selection and toggles its selected
   })
   await engineering.focus()
   await page.keyboard.press('ArrowLeft')
-  await expect(group.getByRole('gridcell', { name: 'Research' })).toBeFocused()
+  await expect(group.getByRole('button', { name: 'Research' })).toBeFocused()
 })
 
 test('multiple filter group keeps choices independent', async ({ page }) => {
   await page.goto('/components/chips')
-  const group = page.getByRole('grid', { name: 'More topics' })
-  const design = group.getByRole('gridcell', { name: 'Design' })
-  const engineering = group.getByRole('gridcell', { name: 'Engineering' })
+  const group = page.getByRole('toolbar', { name: 'More topics' })
+  const design = group.getByRole('button', { name: 'Design' })
+  const engineering = group.getByRole('button', { name: 'Engineering' })
 
-  await expect(group).toHaveAttribute('aria-multiselectable', 'true')
-  await expect(design).toHaveAttribute('aria-selected', 'true')
-  await expect(engineering).toHaveAttribute('aria-selected', 'false')
+  await expect(design).toHaveAttribute('aria-pressed', 'true')
+  await expect(engineering).toHaveAttribute('aria-pressed', 'false')
   await engineering.click()
-  await expect(design).toHaveAttribute('aria-selected', 'true')
-  await expect(engineering).toHaveAttribute('aria-selected', 'true')
+  await expect(design).toHaveAttribute('aria-pressed', 'true')
+  await expect(engineering).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByText(/Multiple selections: \s*design, engineering/)).toBeVisible()
   await design.click()
-  await expect(design).toHaveAttribute('aria-selected', 'false')
-  await expect(engineering).toHaveAttribute('aria-selected', 'true')
+  await expect(design).toHaveAttribute('aria-pressed', 'false')
+  await expect(engineering).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('filter chips map selected, unselected, and focus styles to System roles', async ({
   page,
 }) => {
   await page.goto('/components/chips')
-  const group = page.getByRole('grid', { name: 'Primary topic' })
-  const selected = group.getByRole('gridcell', { name: 'Design' })
-  const unselected = group.getByRole('gridcell', { name: 'Engineering' })
+  const group = page.getByRole('toolbar', { name: 'Primary topic' })
+  const selected = group.getByRole('button', { name: 'Design' })
+  const unselected = group.getByRole('button', { name: 'Engineering' })
 
   const selectedStyles = await selected.evaluate((element) => {
     const resolveColor = (token: string) => {
@@ -81,6 +82,20 @@ test('filter chips map selected, unselected, and focus styles to System roles', 
   expect(selectedStyles.foreground).toBe(selectedStyles.systemForeground)
   expect(selectedStyles.height).toBeCloseTo(32, 1)
   expect(selectedStyles.radius).toBe('8px')
+  const iconAlignment = await selected.evaluate((element) => {
+    const leading = element.querySelector<HTMLElement>('.yam3x-filter-chip__leading')!
+    const label = element.querySelector<HTMLElement>('.yam3x-filter-chip__label')!
+    const leadingBox = leading.getBoundingClientRect()
+    const labelBox = label.getBoundingClientRect()
+    return {
+      centerDelta: Math.abs(
+        leadingBox.top + leadingBox.height / 2 - (labelBox.top + labelBox.height / 2),
+      ),
+      gap: labelBox.left - leadingBox.right,
+    }
+  })
+  expect(iconAlignment.centerDelta).toBeLessThanOrEqual(0.5)
+  expect(iconAlignment.gap).toBeCloseTo(8, 0)
 
   const unselectedStyles = await unselected.evaluate((element) => {
     const probe = document.createElement('span')
@@ -139,6 +154,31 @@ test('filter chips map selected, unselected, and focus styles to System roles', 
   expect(disabledStyles.outline).toBe(disabledStyles.systemOutline)
 })
 
+test('keeps filter chip selection visible in forced colors', async ({ page }) => {
+  await page.emulateMedia({ forcedColors: 'active' })
+  await page.goto('/components/chips')
+  const group = page.getByRole('toolbar', { name: 'Primary topic' })
+  const selected = group.getByRole('button', { name: 'Design' })
+  const unselected = group.getByRole('button', { name: 'Engineering' })
+  const selectedStyles = await selected.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return {
+      background: style.backgroundColor,
+      color: style.color,
+      border: style.borderTopColor,
+      forced: style.forcedColorAdjust,
+    }
+  })
+  const unselectedStyles = await unselected.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return { background: style.backgroundColor, color: style.color, border: style.borderTopColor }
+  })
+  expect(selectedStyles.forced).toBe('none')
+  expect(selectedStyles.background).not.toBe(unselectedStyles.background)
+  expect(selectedStyles.color).not.toBe(unselectedStyles.color)
+  expect(selectedStyles.border).toBe(selectedStyles.background)
+})
+
 test('FilterChip trailing action matches the chip visual size and keeps its expanded touch target', async ({
   page,
 }) => {
@@ -180,8 +220,8 @@ test('FilterChipSet keeps wrapped and vertical gaps at 8px across density settin
   page,
 }) => {
   await page.goto('/components/chips')
-  const wrapped = page.getByRole('grid', { name: 'Primary topic' })
-  const vertical = page.getByRole('grid', { name: 'Vertical topics' })
+  const wrapped = page.getByRole('toolbar', { name: 'Primary topic' })
+  const vertical = page.getByRole('toolbar', { name: 'Vertical topics' })
   await wrapped.evaluate((element) => {
     ;(element as HTMLElement).style.maxWidth = '240px'
   })
@@ -191,7 +231,7 @@ test('FilterChipSet keeps wrapped and vertical gaps at 8px across density settin
       demoTheme?.style.setProperty('--md-sys-density-spacing-scale', value)
     }, scale)
     const wrappedGaps = await wrapped.evaluate((element) => {
-      const row = element.querySelector<HTMLElement>('[role="row"]')!
+      const row = element.querySelector<HTMLElement>('.yam3x-filter-chip-set__row')!
       const style = getComputedStyle(row)
       const chips = [...element.querySelectorAll<HTMLElement>('.yam3x-filter-chip')]
         .map((chip) => chip.getBoundingClientRect())
@@ -222,7 +262,7 @@ test('FilterChipSet keeps wrapped and vertical gaps at 8px across density settin
     }
 
     const verticalGaps = await vertical.evaluate((element) => {
-      const row = element.querySelector<HTMLElement>('[role="row"]')!
+      const row = element.querySelector<HTMLElement>('.yam3x-filter-chip-set__row')!
       const style = getComputedStyle(row)
       const chips = [...element.querySelectorAll<HTMLElement>('.yam3x-filter-chip')].map((chip) =>
         chip.getBoundingClientRect(),

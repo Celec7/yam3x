@@ -7,6 +7,7 @@ const props = withDefaults(
   defineProps<{
     options: readonly FilterChipOption[]
     label: string
+    ariaLabelledby?: string
     multi?: boolean
     disabled?: boolean
     vertical?: boolean
@@ -16,6 +17,7 @@ const props = withDefaults(
     hideSelectionIndicator?: boolean
   }>(),
   {
+    ariaLabelledby: undefined,
     multi: false,
     disabled: false,
     vertical: false,
@@ -96,21 +98,17 @@ function onKeydown(event: KeyboardEvent, index: number): void {
     ref="root"
     class="yam3x-filter-chip-set"
     :class="{ 'yam3x-filter-chip-set--vertical': vertical }"
-    role="grid"
-    :aria-label="label"
-    :aria-multiselectable="multi ? 'true' : undefined"
+    role="toolbar"
+    :aria-label="ariaLabelledby ? undefined : label"
+    :aria-labelledby="ariaLabelledby || undefined"
+    :aria-orientation="vertical ? 'vertical' : 'horizontal'"
     :aria-disabled="disabled ? 'true' : undefined"
   >
-    <div
-      class="yam3x-filter-chip-set__row"
-      role="row"
-    >
+    <div class="yam3x-filter-chip-set__row">
       <FilterChip
         v-for="(option, index) in options"
         :key="option.value"
         :data-chip-index="index"
-        role="gridcell"
-        :aria-selected="selectedValues.includes(option.value)"
         :aria-disabled="disabled || option.disabled ? 'true' : undefined"
         :selected="selectedValues.includes(option.value)"
         :selection-indicator="!hideSelectionIndicator"

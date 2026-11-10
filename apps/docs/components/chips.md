@@ -90,7 +90,7 @@ const topics = [
 
 `FilterChip` has `v-model:selected` (`false` by default), `variant`, `disabled`, `selectionIndicator`, and `trailingActionLabel`. Its default slot supplies the label; `#icon` and `#trailing-action` add optional content. The trailing action emits `action(MouseEvent)`.
 
-`FilterChipSet` requires `options: { label, value, disabled? }[]` and `label`. Its `v-model` is `string | null` in the default single-select mode and `string[]` with `multi`. `disabled`, `vertical`, `variant`, `hideSelectionIndicator`, `name`, and `form` configure the group. It emits `change(value)` and provides `#icon({ option })`.
+`FilterChipSet` requires `options: { label, value, disabled? }[]` and `label`. `ariaLabelledby` can reference a visible heading and takes precedence for the accessible name. Its `v-model` is `string | null` in the default single-select mode and `string[]` with `multi`. `disabled`, `vertical`, `variant`, `hideSelectionIndicator`, `name`, and `form` configure the group. It emits `change(value)` and provides `#icon({ option })`.
 
 ### Input
 
@@ -106,7 +106,7 @@ const topics = [
 
 Give each group a visible or programmatic label. Chip icons are decorative and do not replace labels. Action chips use native button or link behavior; `Chip` has no activation behavior.
 
-A standalone `FilterChip` uses button and `aria-pressed` semantics. `FilterChipSet` uses a labeled grid: Tab enters one option, arrow keys move focus, and Space or Enter changes selection. Single selection can be cleared to `null`; `multi` enables independent selection. When `name` is set, selected values participate in form submission.
+A standalone `FilterChip` uses button and `aria-pressed` semantics. `FilterChipSet` uses a labeled toolbar of toggle buttons: Tab enters one option, arrow keys move focus, and Space or Enter changes selection. Set `ariaLabelledby` when a visible heading names the group. A horizontal toolbar uses left/right arrows and a vertical toolbar uses up/down arrows, mirroring in RTL. Single selection can be cleared to `null`; `multi` enables independent selection. When `name` is set, selected values participate in form submission. In forced colors, selected chips use Highlight/HighlightText and unselected chips use a CanvasText border.
 
 A standalone `InputChip` toggles selection on its primary action; `@click.prevent` cancels that change. Its separate remove action is a project extension and defaults to the accessible name `Remove {label}`. `InputChipSet` maps the primary action to editing; Enter adds a value, duplicate values are ignored, and two Backspace presses remove the last chip. `maxChips` collapses overflow when focus leaves the group; `reorderable` enables drag and Alt+arrow reordering. `name` submits the current values with a form.
 

@@ -90,7 +90,7 @@ const topics = [
 
 `FilterChip` 提供 `v-model:selected`（默认 `false`）、`variant`、`disabled`、`selectionIndicator` 和 `trailingActionLabel`。默认插槽提供标签；`#icon` 和 `#trailing-action` 添加可选内容。尾部操作发出 `action(MouseEvent)`。
 
-`FilterChipSet` 必须提供 `options: { label, value, disabled? }[]` 和 `label`。默认单选模式下，`v-model` 为 `string | null`；设置 `multi` 后为 `string[]`。`disabled`、`vertical`、`variant`、`hideSelectionIndicator`、`name` 和 `form` 配置分组。组件发出 `change(value)`，并提供 `#icon({ option })`。
+`FilterChipSet` 必须提供 `options: { label, value, disabled? }[]` 和 `label`。`ariaLabelledby` 可引用可见标题，并优先作为无障碍名称。默认单选模式下，`v-model` 为 `string | null`；设置 `multi` 后为 `string[]`。`disabled`、`vertical`、`variant`、`hideSelectionIndicator`、`name` 和 `form` 配置分组。组件发出 `change(value)`，并提供 `#icon({ option })`。
 
 ### 输入
 
@@ -106,7 +106,7 @@ const topics = [
 
 为每个组提供可见或程序化标签。chip 图标是装饰内容，不能代替标签。操作 chip 使用原生按钮或链接行为；`Chip` 不提供激活行为。
 
-独立的 `FilterChip` 使用按钮与 `aria-pressed` 语义。`FilterChipSet` 使用带标签的网格：Tab 进入一个选项，方向键移动焦点，Space 或 Enter 更改选择。单选可清空为 `null`；`multi` 启用独立多选。设置 `name` 后，选中值参与表单提交。
+独立的 `FilterChip` 使用按钮与 `aria-pressed` 语义。`FilterChipSet` 使用带标签的 toolbar（切换按钮集合）：Tab 进入一个选项，方向键移动焦点，Space 或 Enter 更改选择。使用 `ariaLabelledby` 关联可见标题。水平 toolbar 使用左右方向键，垂直 toolbar 使用上下方向键，并在 RTL 中镜像。单选可清空为 `null`；`multi` 启用独立多选。设置 `name` 后，选中值参与表单提交。Forced colors 下选中 chip 使用 Highlight/HighlightText，未选中 chip 使用 CanvasText 边框。
 
 独立的 `InputChip` 在主操作时切换选中状态；`@click.prevent` 可取消该变化。独立的移除操作是项目拓展，默认无障碍名称为 `Remove {label}`。`InputChipSet` 将主操作用于编辑；Enter 添加值，重复值会被忽略，连续按两次 Backspace 可移除最后一个 chip。`maxChips` 在焦点离开组时收起溢出项；`reorderable` 启用拖动及 Alt+方向键重排。`name` 将当前值提交到表单。
 

@@ -152,6 +152,8 @@ const attrs = useAttrs()
   --yam3x-control-height: var(--_yam3x-filter-chip-height);
   --yam3x-state-layer-color: var(--_yam3x-filter-chip-state-layer);
   --yam3x-ripple-color: var(--_yam3x-filter-chip-state-layer);
+  display: inline-flex;
+  align-items: center;
   min-height: var(--yam3x-control-height);
   min-width: var(--_yam3x-filter-chip-min-width);
   max-width: var(--_yam3x-filter-chip-max-width);
@@ -320,8 +322,25 @@ const attrs = useAttrs()
   }
 }
 @media (forced-colors: active) {
+  .yam3x-filter-chip {
+    border-color: CanvasText;
+  }
+  .yam3x-filter-chip--selected:not(:disabled) {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .yam3x-filter-chip--selected:not(:disabled) .yam3x-filter-chip__icon,
+  .yam3x-filter-chip--selected:not(:disabled) .yam3x-filter-chip__check {
+    color: HighlightText;
+  }
   .yam3x-filter-chip.yam3x-state-layer:focus-visible {
     outline-color: Highlight;
+  }
+  .yam3x-filter-chip__action {
+    border-color: CanvasText;
+    color: ButtonText;
   }
   .yam3x-filter-chip__action:disabled {
     border-color: GrayText;

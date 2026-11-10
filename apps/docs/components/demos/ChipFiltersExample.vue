@@ -39,27 +39,55 @@ const options = [
     <p class="yam3x-demo__status">
       {{ t('Trailing actions opened:', '已触发尾部操作：') }} {{ trailingActionCount }}
     </p>
+    <h3
+      id="filter-primary-label"
+      class="yam3x-demo__group-label"
+    >
+      {{ t('Primary topic', '主要主题') }}
+    </h3>
     <FilterChipSet
       v-model="selectedTopic"
       :label="t('Primary topic', '主要主题')"
+      :aria-labelledby="'filter-primary-label'"
       :options="options"
     />
     <p class="yam3x-demo__status">{{ t('Single selection:', '单选值：') }} {{ selectedTopic }}</p>
+    <h3
+      id="filter-more-label"
+      class="yam3x-demo__group-label"
+    >
+      {{ t('More topics', '更多主题') }}
+    </h3>
     <FilterChipSet
       v-model="selectedTopics"
       :label="t('More topics', '更多主题')"
+      :aria-labelledby="'filter-more-label'"
       multi
       :options="options"
     />
     <p class="yam3x-demo__status">
       {{ t('Multiple selections:', '多选值：') }} {{ selectedTopics.join(', ') || t('None', '无') }}
     </p>
+    <h3
+      id="filter-vertical-label"
+      class="yam3x-demo__group-label"
+    >
+      {{ t('Vertical topics', '纵向主题') }}
+    </h3>
     <FilterChipSet
       v-model="verticalTopics"
       :label="t('Vertical topics', '纵向主题')"
+      :aria-labelledby="'filter-vertical-label'"
       vertical
       multi
       :options="options"
     />
   </div>
 </template>
+
+<style scoped>
+.yam3x-demo__group-label {
+  margin: 0;
+  font-size: 16px;
+}
+</style>
