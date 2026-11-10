@@ -106,6 +106,7 @@ let drag: DragState | null = null
 let pendingPointer: { pointerId: number; clientX: number; clientY: number } | null = null
 let dragFrame: number | null = null
 let settleTimer: ReturnType<typeof setTimeout> | undefined
+let settleListener: ((event: TransitionEvent) => void) | undefined
 let lastExpandedValue = 50
 
 function finiteClamp(value: number, min: number, max: number) {
@@ -185,16 +186,34 @@ function updateValue(nextValue: number, final = false) {
   return true
 }
 function startSettling() {
-  if (settleTimer) clearTimeout(settleTimer)
+  if (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    stopSettling()
+    return
+  }
+  stopSettling()
   settling.value = true
-  settleTimer = setTimeout(() => {
-    settling.value = false
-    settleTimer = undefined
-  }, 320)
+  const element = root.value
+  if (!element) return
+  settleListener = (event) => {
+    if (event.target !== element) return
+    if (
+      event.propertyName !== 'grid-template-columns' &&
+      event.propertyName !== 'grid-template-rows'
+    )
+      return
+    stopSettling()
+  }
+  element.addEventListener('transitionend', settleListener)
+  settleTimer = setTimeout(stopSettling, 600)
 }
 function stopSettling() {
   if (settleTimer) clearTimeout(settleTimer)
   settleTimer = undefined
+  if (settleListener) root.value?.removeEventListener('transitionend', settleListener)
+  settleListener = undefined
   settling.value = false
 }
 function nearestDetent(target: number) {
@@ -433,7 +452,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   cancelPendingPointerFrame()
-  if (settleTimer) clearTimeout(settleTimer)
+  stopSettling()
   compactMedia?.removeEventListener('change', onMediaChange)
   expandedMedia?.removeEventListener('change', onMediaChange)
   observer?.disconnect()
@@ -517,6 +536,7 @@ defineExpose({
   --_yam3x-split-pane-system-color-on-surface: var(--md-sys-color-on-surface);
   --_yam3x-split-pane-system-color-outline: var(--md-sys-color-outline);
   --_yam3x-split-pane-system-color-primary: var(--md-sys-color-primary);
+  --_yam3x-split-pane-system-color-secondary: var(--md-sys-color-secondary);
   --_yam3x-split-pane-system-shape-corner-medium: var(--md-sys-shape-corner-medium, 12px);
   --_yam3x-split-pane-system-motion-default-spatial: var(--md-sys-motion-spring-default-spatial);
   --_yam3x-split-pane-system-motion-fast-effects: var(--md-sys-motion-spring-fast-effects);
@@ -549,7 +569,10 @@ defineExpose({
   );
   --_yam3x-split-pane-handle-width: var(--yam3x-split-pane-drag-handle-width, 4px);
   --_yam3x-split-pane-handle-height: var(--yam3x-split-pane-drag-handle-height, 48px);
-  --_yam3x-split-pane-handle-shape: var(--yam3x-split-pane-drag-handle-shape, 999px);
+  --_yam3x-split-pane-handle-shape: var(
+    --yam3x-split-pane-drag-handle-shape,
+    var(--md-sys-shape-corner-full, 999px)
+  );
   --_yam3x-split-pane-handle-pressed-width: var(--yam3x-split-pane-drag-handle-pressed-width, 12px);
   --_yam3x-split-pane-handle-pressed-height: var(
     --yam3x-split-pane-drag-handle-pressed-height,
@@ -653,9 +676,9 @@ defineExpose({
 .yam3x-split-pane__separator:hover:not([aria-disabled='true']) .yam3x-split-pane__handle::after {
   opacity: var(--_yam3x-split-pane-handle-hover-opacity);
 }
-.yam3x-split-pane__separator:focus-visible {
-  outline: 2px solid var(--_yam3x-split-pane-system-color-primary);
-  outline-offset: -2px;
+.yam3x-split-pane .yam3x-split-pane__separator:focus-visible {
+  outline: 3px solid var(--_yam3x-split-pane-system-color-secondary);
+  outline-offset: -3px;
 }
 .yam3x-split-pane__separator:focus-visible {
   --yam3x-state-layer-color: var(--_yam3x-split-pane-handle-focus-color);

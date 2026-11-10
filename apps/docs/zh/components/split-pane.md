@@ -64,6 +64,8 @@ const width = ref(66)
 
 鼠标、触控和触笔拖动均跟随指针，键盘支持方向键、Home/End、PageUp/PageDown 和 Enter；Space 在设置 `detents` 时切换到下一停靠点。拖动期间发出 `input`，结束时发出 `change`；`beforeinput` 可取消用户值变更。组件暴露 `collapse()`、`expand()` 和 `snapToValue(value)`。
 
+分隔器保留 24px 全高交互轨道和 4px 可见把手；它是连续调整目标，不扩展为 48px 离散控件。Focus 为 3px secondary 内嵌环。
+
 ## 样式
 
 在 SplitPane 根元素上设置这些项目定义的 Component 属性。拖动手柄的颜色、状态透明度、焦点颜色、按下形状和过渡默认引用共享 System token；Material 未为辅助窗格布局定义独立的可调整分隔器，因此手柄尺寸和交互外观由项目定义。

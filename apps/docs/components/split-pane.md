@@ -66,7 +66,7 @@ Mouse, touch, and stylus dragging follow the pointer. Keyboard controls include 
 
 ## Styling
 
-Set these project-defined Component properties on the SplitPane root. Handle colors, state opacity, focus color, pressed shape, and transitions default to shared System tokens; handle dimensions and interaction appearance are project-defined because Material does not specify a standalone resizable divider for Supporting pane layouts.
+Set these project-defined Component properties on the SplitPane root. Handle colors, state opacity, focus color, pressed shape, and transitions default to shared System tokens; handle dimensions and interaction appearance are project-defined because Material does not specify a standalone resizable divider for Supporting pane layouts. The divider keeps a 24px full-height track with a 4px handle; it is a continuous resize target rather than a 48px discrete control. Focus is a 3px secondary inset ring.
 
 | Area            | Supported properties                                                                                                                                                                                                                                                                                                       |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

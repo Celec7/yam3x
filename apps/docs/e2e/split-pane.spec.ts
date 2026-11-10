@@ -26,6 +26,20 @@ test('SplitPane exposes a named separator and lays out its panes at the selected
   expect(geometry.trackWidth).toBe(24)
   expect(geometry.startWidth / (geometry.rootWidth - geometry.trackWidth)).toBeCloseTo(0.66, 1)
   expect(geometry.endWidth).toBeGreaterThan(0)
+  await separator.focus()
+  await page.keyboard.press('Tab')
+  await separator.focus()
+  await expect(separator).toHaveCSS('outline-width', '3px')
+  await expect(separator).toHaveCSS('outline-offset', '-3px')
+  const secondary = await root.evaluate((element) => {
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--md-sys-color-secondary)'
+    element.append(probe)
+    const color = getComputedStyle(probe).color
+    probe.remove()
+    return color
+  })
+  await expect(separator).toHaveCSS('outline-color', secondary)
 })
 
 test('SplitPane coalesces dense pointer input to the latest frame and settles at the release detent', async ({
@@ -81,7 +95,51 @@ test('SplitPane coalesces dense pointer input to the latest frame and settles at
   const finalWidth = ((await root.boundingBox())!.width - 24) * 0.75
   expect(settlingWidth).toBeGreaterThan(361)
   expect(settlingWidth).toBeLessThan(finalWidth)
+  await page.waitForTimeout(340)
+  await expect(root).toHaveClass(/yam3x-split-pane--settling/)
   await expect(root).not.toHaveClass(/yam3x-split-pane--settling/)
+  await expect
+    .poll(async () => (await root.locator('.yam3x-split-pane__start').boundingBox())!.width)
+    .toBeCloseTo(finalWidth, 0)
+})
+
+test('SplitPane skips the settling state under reduced motion', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/components/split-pane')
+  const root = page.locator('.yam3x-split-pane')
+  const separator = page.getByRole('separator', { name: 'Main content' })
+  const rootRect = (await root.boundingBox())!
+  const separatorRect = (await separator.boundingBox())!
+  const startX = separatorRect.x + separatorRect.width / 2
+  const releaseX = rootRect.x + rootRect.width * 0.77
+  const y = separatorRect.y + separatorRect.height / 2
+  await separator.evaluate(
+    (element, [start, release, pointerY]) => {
+      const pointer = (type: string, x: number) =>
+        element.dispatchEvent(
+          new PointerEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            pointerId: 52,
+            pointerType: 'mouse',
+            isPrimary: true,
+            button: 0,
+            clientX: x,
+            clientY: pointerY,
+          }),
+        )
+      pointer('pointerdown', start)
+      pointer('pointermove', release)
+      pointer('pointerup', release)
+    },
+    [startX, releaseX, y],
+  )
+  await expect(separator).toHaveAttribute('aria-valuenow', '75')
+  await expect(root).not.toHaveClass(/yam3x-split-pane--settling/)
+  await expect
+    .poll(async () => (await root.locator('.yam3x-split-pane__start').boundingBox())!.width)
+    .toBeCloseTo((rootRect.width - 24) * 0.75, 0)
 })
 
 test('SplitPane desktop divider follows physical pointer distance in LTR and RTL', async ({
