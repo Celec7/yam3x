@@ -8,6 +8,7 @@ const { locale, messages: text } = useDemoLocale({
   en: {
     date: 'Date',
     appointment: 'Event date',
+    dateHint: 'Choose a date; each segment accepts keyboard entry.',
     submitDate: 'Submit date',
     resetDate: 'Reset date',
     notSubmitted: 'Not submitted',
@@ -30,6 +31,7 @@ const { locale, messages: text } = useDemoLocale({
   zh: {
     date: '日期',
     appointment: '活动日期',
+    dateHint: '选择日期；每个片段都支持键盘输入。',
     submitDate: '提交日期',
     resetDate: '重置日期',
     notSubmitted: '尚未提交',
@@ -93,6 +95,7 @@ function submit(event: Event) {
         <DateInput
           v-model="date"
           :label="text.appointment"
+          :hint="text.dateHint"
           name="appointment"
           :locale="locale"
           required

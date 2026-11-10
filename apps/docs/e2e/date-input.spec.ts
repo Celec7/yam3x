@@ -40,6 +40,91 @@ test.describe('DateInput', () => {
     expect(localDate).toBe('2026-12-31')
   })
 
+  test('aligns the outlined field, hint, and focus with the shared text-field states', async ({
+    page,
+  }) => {
+    const group = page.getByRole('group', { name: 'Event date' })
+    const describedBy = await group.getAttribute('aria-describedby')
+    expect(describedBy).toBeTruthy()
+    const supporting = page.locator(`[id="${describedBy}"]`)
+    await expect(supporting).toHaveText('Choose a date; each segment accepts keyboard entry.')
+    const first = group.getByRole('spinbutton', { name: 'Month' })
+    expect(await first.getAttribute('aria-describedby')).toBe(describedBy)
+    const before = await group.evaluate((element) => {
+      const style = getComputedStyle(element)
+      const label = element.parentElement!.querySelector<HTMLElement>(
+        '.yam3x-date-input-field__label',
+      )!
+      return {
+        padding: style.paddingInlineStart,
+        labelSize: getComputedStyle(label).fontSize,
+        labelWeight: getComputedStyle(label).fontWeight,
+      }
+    })
+    await first.focus()
+    const focused = await group.evaluate((element) => {
+      const style = getComputedStyle(element)
+      const label = element.parentElement!.querySelector<HTMLElement>(
+        '.yam3x-date-input-field__label',
+      )!
+      return {
+        padding: style.paddingInlineStart,
+        outlineWidth: style.outlineWidth,
+        outlineOffset: style.outlineOffset,
+        outlineColor: style.outlineColor,
+        labelColor: getComputedStyle(label).color,
+      }
+    })
+    expect(focused.padding).toBe(before.padding)
+    expect(focused.outlineWidth).toBe('3px')
+    expect(focused.outlineOffset).toBe('-3px')
+    const primary = await page.evaluate(() => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--md-sys-color-primary)'
+      document.body.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    })
+    expect(focused.outlineColor).toBe(primary)
+    expect(focused.labelColor).toBe(primary)
+    expect(before.labelSize).toBe('14px')
+    expect(before.labelWeight).toBe('500')
+    const placeholder = await first.evaluate(
+      (element) => getComputedStyle(element, '::placeholder').color,
+    )
+    const onPrimaryContainer = await page.evaluate(() => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--md-sys-color-on-primary-container)'
+      document.body.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    })
+    expect(placeholder).toBe(onPrimaryContainer)
+
+    await page.getByRole('button', { name: 'Submit date' }).click()
+    const alert = page.getByRole('alert').filter({ hasText: 'This field is required.' })
+    await expect(alert).toBeVisible()
+    const error = await page.evaluate(() => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--md-sys-color-error)'
+      document.body.append(probe)
+      const color = getComputedStyle(probe).color
+      probe.remove()
+      return color
+    })
+    await expect(group.locator('..').locator('.yam3x-date-input-field__label')).toHaveCSS(
+      'color',
+      error,
+    )
+    await first.focus()
+    await expect(group).toHaveCSS('outline-color', error)
+    await expect(alert).toHaveAttribute('role', 'alert')
+    expect(await group.getAttribute('aria-describedby')).toBe(await alert.getAttribute('id'))
+    await expect(supporting).toHaveText(/This field is required\./)
+  })
+
   test('supports time fields, period changes, arrow adjustment and 24-hour seconds', async ({
     page,
   }) => {
@@ -223,6 +308,32 @@ test.describe('DateInput', () => {
     await expect(disabledHour).toBeDisabled()
     await expect(disabledHour).toHaveCSS('color', 'rgb(10, 11, 12)')
     await expect(disabledHour).toHaveCSS('opacity', '0.5')
+    const disabledField = disabled.locator('..')
+    const mixes = await disabled.evaluate((element) => {
+      const field = element.parentElement!
+      const labelProbe = document.createElement('span')
+      labelProbe.style.color = 'color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent)'
+      const borderProbe = document.createElement('span')
+      borderProbe.style.borderTopColor =
+        'color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent)'
+      field.append(labelProbe, borderProbe)
+      const values = {
+        label: getComputedStyle(labelProbe).color,
+        border: getComputedStyle(borderProbe).borderTopColor,
+      }
+      labelProbe.remove()
+      borderProbe.remove()
+      return values
+    })
+    await expect(disabledField.locator('.yam3x-date-input-field__label')).toHaveCSS(
+      'color',
+      mixes.label,
+    )
+    await expect(disabled.locator('.yam3x-date-input__literal').first()).toHaveCSS(
+      'color',
+      mixes.label,
+    )
+    await expect(disabled).toHaveCSS('border-top-color', mixes.border)
   })
 
   test('preserves visible focus and error cues in forced colors', async ({ page }) => {

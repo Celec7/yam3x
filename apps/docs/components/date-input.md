@@ -56,12 +56,13 @@ Built-in text, segment names, and date formatting can inherit [LocaleProvider](/
 | `requiredMessage`, `invalidMessage`    | `string`                                    | Localized defaults        | Required and invalid messages; invalid text is associated with the segments and announced as an alert.   |
 | `name`                                 | `string`                                    | None                      | Form field name; submits an ISO timestamp.                                                               |
 | `label`                                | `string`                                    | Localized by `type`       | Visible group label and accessible name; defaults to date, time, or date and time for the selected mode. |
+| `hint`                                 | `string`                                    | None                      | Supporting text shown until validation marks the field invalid; errors replace it.                       |
 
 ## Behavior and accessibility
 
 Project decision: in automatic hour-cycle mode, an unfinished time draft retains its original cycle across language changes until a valid commit or clearing. This prevents a 12-hour edit from becoming a different 24-hour value. Labels and segment order still update while preserving drafts and the focused segment; a language change alone does not commit a value.
 
-Events are `update:modelValue`, `beforeinput`, `input`, `change`, and `invalid`. Dates and date-times use separate numeric segments ordered by locale; typing into an empty segment does not insert mask characters. The 12-hour format displays localized AM/PM segments, while the 24-hour format uses hours from 0 to 23. Required state has a visible marker; error text is linked to the affected field segments and announced through an alert, with an error icon.
+Events are `update:modelValue`, `beforeinput`, `input`, `change`, and `invalid`. Dates and date-times use separate numeric segments ordered by locale; typing into an empty segment does not insert mask characters. The 12-hour format displays localized AM/PM segments, while the 24-hour format uses hours from 0 to 23. Required state has a visible marker; error text is linked to the affected field segments and announced through an alert, with an error icon. An untouched required field shows its hint instead of a required error; typing, leaving the group, or a native invalid event reveals the error.
 
 An empty validation-message override hides the visible text but does not make an invalid value valid; native validity retains a fallback message.
 
@@ -69,11 +70,12 @@ This module is an independent input control. DatePicker continues to manage tran
 
 ## Styling
 
-Set these project-defined custom properties on the DateInput group root. Default colors map to the applicable Text field and System roles.
+The outlined field uses Label Large for its label, Body Large for segments, and Body Small for supporting text. Focus is a 3px primary inset outline that does not change padding; invalid focus uses the error role. Set these project-defined custom properties on the DateInput group root. Default colors map to the applicable Text field and System roles.
 
 | Property                                     | Description                  |
 | -------------------------------------------- | ---------------------------- |
 | `--yam3x-date-input-color`                   | Enabled segment text color.  |
+| `--yam3x-date-input-container-shape`         | Field corner shape.          |
 | `--yam3x-date-input-focused-container-color` | Focused segment background.  |
 | `--yam3x-date-input-focused-color`           | Focused segment text color.  |
 | `--yam3x-date-input-disabled-color`          | Disabled segment text color. |

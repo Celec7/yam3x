@@ -57,12 +57,13 @@ const value = ref<Date | null>(null)
 | `requiredMessage`, `invalidMessage`    | `string`                                    | 本地化默认值          | 必填与无效状态消息；无效文本会关联到分段输入并作为 alert 播报。  |
 | `name`                                 | `string`                                    | 无                    | 表单值字段名称，提交 ISO 时间戳                                  |
 | `label`                                | `string`                                    | 按模式本地化          | 组的可见标签和无障碍名称；根据模式默认为日期、时间或日期与时间。 |
+| `hint`                                 | `string`                                    | 无                    | 校验失败前显示的辅助文本；错误会替换它。                         |
 
 ## 行为与无障碍
 
 项目决策：自动小时制下，未完成的时间草稿在语言切换后保留原有小时周期，直到有效提交或清除，以免把 12 小时制输入误解为 24 小时制值。标签和分段顺序仍随语言更新，保留草稿及当前聚焦的分段；切换语言本身不会提交值。
 
-事件：`update:modelValue`、`beforeinput`、`input`、`change` 和 `invalid`。日期与日期时间使用 locale 顺序的独立数字段；用户在空字段输入时，不插入遮罩字符。12 小时输入显示本地 AM/PM 段，24 小时输入使用 0–23 小时范围。必填状态显示可见标记；错误文本关联到受影响的输入分段并通过 alert 播报，同时显示错误图标。
+事件：`update:modelValue`、`beforeinput`、`input`、`change` 和 `invalid`。日期与日期时间使用 locale 顺序的独立数字段；用户在空字段输入时，不插入遮罩字符。12 小时输入显示本地 AM/PM 段，24 小时输入使用 0–23 小时范围。必填状态显示可见标记；错误文本关联到受影响的输入分段并通过 alert 播报，同时显示错误图标。未交互的必填字段显示 hint 而不是必填错误；输入、离开分组或原生 invalid 事件后显示错误。
 
 将验证文案覆盖为空字符串会隐藏可见文本，但不会让无效值通过验证；原生有效性仍保留回退消息。
 
@@ -70,11 +71,12 @@ const value = ref<Date | null>(null)
 
 ## 样式
 
-将以下项目自定义属性设置在 DateInput 分组根元素上。默认颜色映射到适用的 Text field 与 System 角色。
+轮廓字段的标签使用 Label Large，分段使用 Body Large，辅助文本使用 Body Small。focus 为 3px primary 内嵌轮廓，不改变内边距；无效状态的 focus 使用 error 角色。将以下项目自定义属性设置在 DateInput 分组根元素上。默认颜色映射到适用的 Text field 与 System 角色。
 
 | 属性                                         | 说明                       |
 | -------------------------------------------- | -------------------------- |
 | `--yam3x-date-input-color`                   | 启用状态的输入段文字颜色。 |
+| `--yam3x-date-input-container-shape`         | 字段圆角形状。             |
 | `--yam3x-date-input-focused-container-color` | 聚焦输入段背景色。         |
 | `--yam3x-date-input-focused-color`           | 聚焦输入段文字颜色。       |
 | `--yam3x-date-input-disabled-color`          | 禁用输入段文字颜色。       |

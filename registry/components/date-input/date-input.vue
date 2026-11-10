@@ -33,6 +33,7 @@ const props = withDefaults(
     blackoutDates?: (date: Date) => boolean
     blackoutTimes?: (time: TimeParts) => boolean
     label?: string
+    hint?: string
     labels?: SegmentLabel
     disabled?: boolean
     readonly?: boolean
@@ -52,6 +53,7 @@ const props = withDefaults(
     minTime: null,
     maxTime: null,
     label: undefined,
+    hint: '',
     disabled: false,
     readonly: false,
     required: false,
@@ -81,6 +83,7 @@ const initialValue = copyDate(props.modelValue ?? null)
 const draft = ref<Partial<Record<DateInputSegment, string>>>({})
 const activeSegment = ref<DateInputSegment>('month')
 const changedSinceFocus = ref(false)
+const touched = ref(false)
 const { locale, messages } = useComponentLocale(
   'dateInput',
   () => props.locale,
@@ -207,7 +210,9 @@ const problem = computed(() => {
   return validCandidate(date)?.message ?? null
 })
 
-const error = computed(() => problem.value ?? '')
+const error = computed(() => (touched.value ? problem.value : null) ?? '')
+const supportingId = `${uid}-supporting`
+const supportingText = computed(() => error.value || props.hint)
 const nativeValidationMessage = computed(() =>
   problem.value === null
     ? ''
@@ -275,6 +280,7 @@ function emitValue(value: Date | null, input = true): void {
   changedSinceFocus.value = true
 }
 function clearPart(id: DateInputSegment): void {
+  touched.value = true
   const nextDraft = { ...draft.value, [id]: '' }
   setDraft(nextDraft)
   const values = activeDateParts()
@@ -325,6 +331,7 @@ function commitDraft(id: DateInputSegment): void {
   }
 }
 function inputSegment(event: Event, id: DateInputSegment, maxLength: number): void {
+  touched.value = true
   const input = event.target as HTMLInputElement
   let text = input.value
   if (id === 'period') {
@@ -373,6 +380,7 @@ function onSegmentFocus(event: FocusEvent, id: DateInputSegment): void {
   ;(event.target as HTMLInputElement).select()
 }
 function onInvalid(event: Event): void {
+  touched.value = true
   const validity = (event.target as HTMLInputElement).validity
   const reason = validity.valueMissing
     ? 'valueMissing'
@@ -386,6 +394,7 @@ function onInvalid(event: Event): void {
   emit('invalid', { message: nativeValidationMessage.value, validity: reason })
 }
 function increment(id: DateInputSegment, amount: number): void {
+  touched.value = true
   const format = resolvedTimeFormat.value
   const segment = parts.value.find((part) => part.kind === 'field' && part.id === id)
   if (!segment || segment.kind !== 'field') return
@@ -505,6 +514,7 @@ function onGroupFocusOut(): void {
     if (root.value?.contains(document.activeElement)) return
     const active = document.activeElement as HTMLInputElement | null
     if (active && [...fields.values()].includes(active)) return
+    touched.value = true
     for (const id of Object.keys(draft.value) as DateInputSegment[]) commitDraft(id)
     setDraft({})
     if (changedSinceFocus.value) {
@@ -515,6 +525,7 @@ function onGroupFocusOut(): void {
 }
 function onFormReset(): void {
   currentValue.value = copyDate(initialValue)
+  touched.value = false
   setDraft({})
   emit('update:modelValue', copyDate(initialValue))
 }
@@ -537,7 +548,13 @@ defineExpose({
 </script>
 
 <template>
-  <div class="yam3x-date-input-field">
+  <div
+    class="yam3x-date-input-field"
+    :class="{
+      'yam3x-date-input-field--invalid': error,
+      'yam3x-date-input-field--disabled': disabled,
+    }"
+  >
     <label
       v-if="resolvedLabel"
       :id="`${uid}-label`"
@@ -556,9 +573,9 @@ defineExpose({
       role="group"
       :aria-labelledby="resolvedLabel ? `${uid}-label` : undefined"
       :aria-label="resolvedLabel ? undefined : messages.groupFallback"
-      :aria-invalid="problem !== null ? 'true' : undefined"
-      :aria-errormessage="error ? `${uid}-error` : undefined"
-      :aria-describedby="error ? `${uid}-error` : undefined"
+      :aria-invalid="error ? 'true' : undefined"
+      :aria-errormessage="error ? supportingId : undefined"
+      :aria-describedby="supportingText ? supportingId : undefined"
       :aria-disabled="disabled ? 'true' : undefined"
       :aria-required="required ? 'true' : undefined"
       :dir="direction"
@@ -591,9 +608,9 @@ defineExpose({
           :aria-valuemax="segmentLimits(part.id, part.max)[1]"
           :aria-valuenow="fieldNumber(part.id)"
           :aria-valuetext="part.id === 'period' ? displayedFieldValue(part.id) : undefined"
-          :aria-invalid="problem !== null ? 'true' : undefined"
-          :aria-errormessage="error ? `${uid}-error` : undefined"
-          :aria-describedby="error ? `${uid}-error` : undefined"
+          :aria-invalid="error ? 'true' : undefined"
+          :aria-errormessage="error ? supportingId : undefined"
+          :aria-describedby="supportingText ? supportingId : undefined"
           :disabled="disabled"
           :readonly="readonly"
           :required="
@@ -634,15 +651,17 @@ defineExpose({
       />
     </div>
     <p
-      v-if="error"
-      :id="`${uid}-error`"
-      class="yam3x-date-input-field__error"
-      role="alert"
+      v-if="supportingText"
+      :id="supportingId"
+      class="yam3x-date-input-field__subscript"
+      :class="{ 'yam3x-date-input-field__subscript--error': error }"
+      :role="error ? 'alert' : undefined"
     >
       <Icon
+        v-if="error"
         name="error"
         aria-hidden="true"
-      /><span>{{ error }}</span>
+      /><span>{{ supportingText }}</span>
     </p>
   </div>
 </template>
@@ -657,6 +676,20 @@ defineExpose({
   --_yam3x-date-input-system-color-primary: var(--md-sys-color-primary);
   --_yam3x-date-input-system-color-primary-container: var(--md-sys-color-primary-container);
   --_yam3x-date-input-system-density-spacing-scale: var(--md-sys-density-spacing-scale);
+  --_yam3x-date-input-system-typescale-line-height-scale: var(
+    --md-sys-typescale-line-height-scale,
+    1.07
+  );
+  --_yam3x-date-input-disabled-color-mix: color-mix(
+    in srgb,
+    var(--_yam3x-date-input-system-color-on-surface) 38%,
+    transparent
+  );
+  --_yam3x-date-input-disabled-border: color-mix(
+    in srgb,
+    var(--_yam3x-date-input-system-color-on-surface) 12%,
+    transparent
+  );
   display: inline-grid;
   gap: calc(4px * var(--_yam3x-date-input-system-density-spacing-scale, 1));
   max-width: 100%;
@@ -664,8 +697,18 @@ defineExpose({
   font: inherit;
 }
 .yam3x-date-input-field__label {
-  font-size: 14px;
   color: var(--_yam3x-date-input-system-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-label-large-font-family, inherit);
+  font-size: var(--md-sys-typescale-label-large-font-size, 14px);
+  font-weight: var(--md-sys-typescale-label-large-font-weight, 500);
+  line-height: calc(
+    var(--md-sys-typescale-label-large-line-height, 20px) *
+      var(--_yam3x-date-input-system-typescale-line-height-scale)
+  );
+  letter-spacing: var(--md-sys-typescale-label-large-tracking, 0.1px);
+}
+.yam3x-date-input-field:focus-within .yam3x-date-input-field__label {
+  color: var(--_yam3x-date-input-system-color-primary);
 }
 .yam3x-date-input {
   display: flex;
@@ -675,18 +718,57 @@ defineExpose({
   min-height: 56px;
   padding: 0 calc(16px * var(--_yam3x-date-input-system-density-spacing-scale, 1));
   border: 1px solid var(--_yam3x-date-input-system-color-outline);
-  border-radius: 4px;
+  border-radius: var(
+    --yam3x-date-input-container-shape,
+    var(--md-sys-shape-corner-extra-small, 4px)
+  );
   box-sizing: border-box;
   color: var(--yam3x-date-input-color, var(--_yam3x-date-input-system-color-on-surface));
-  font: inherit;
   direction: inherit;
+  font-family: var(--md-sys-typescale-body-large-font-family, inherit);
+  font-size: var(--md-sys-typescale-body-large-font-size, 16px);
+  font-weight: var(--md-sys-typescale-body-large-font-weight, 400);
+  line-height: calc(
+    var(--md-sys-typescale-body-large-line-height, 24px) *
+      var(--_yam3x-date-input-system-typescale-line-height-scale)
+  );
+  letter-spacing: var(--md-sys-typescale-body-large-tracking, 0.5px);
 }
 .yam3x-date-input:focus-within {
-  border: 2px solid var(--_yam3x-date-input-system-color-primary);
-  padding-inline: calc(15px * var(--_yam3x-date-input-system-density-spacing-scale, 1));
+  border-color: var(--_yam3x-date-input-system-color-primary);
+  outline: 3px solid var(--_yam3x-date-input-system-color-primary);
+  outline-offset: -3px;
 }
 .yam3x-date-input[aria-invalid='true'] {
   border-color: var(--_yam3x-date-input-system-color-error);
+}
+.yam3x-date-input-field--invalid .yam3x-date-input-field__label,
+.yam3x-date-input-field--invalid:focus-within .yam3x-date-input-field__label {
+  color: var(--_yam3x-date-input-system-color-error);
+}
+.yam3x-date-input-field--invalid .yam3x-date-input:focus-within {
+  outline-color: var(--_yam3x-date-input-system-color-error);
+}
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-date-input-field:not(.yam3x-date-input-field--invalid):not(
+      .yam3x-date-input-field--disabled
+    )
+    .yam3x-date-input:not(:focus-within):hover {
+    border-color: var(--_yam3x-date-input-system-color-on-surface);
+  }
+  .yam3x-date-input-field:not(.yam3x-date-input-field--invalid):not(
+      .yam3x-date-input-field--disabled
+    ):hover
+    .yam3x-date-input-field__label {
+    color: var(--_yam3x-date-input-system-color-on-surface);
+  }
+}
+.yam3x-date-input-field--disabled .yam3x-date-input-field__label,
+.yam3x-date-input-field--disabled .yam3x-date-input__literal {
+  color: var(--_yam3x-date-input-disabled-color-mix);
+}
+.yam3x-date-input-field--disabled .yam3x-date-input {
+  border-color: var(--_yam3x-date-input-disabled-border);
 }
 .yam3x-date-input__segment {
   flex: 0 0 auto;
@@ -728,6 +810,12 @@ defineExpose({
     var(--_yam3x-date-input-system-color-on-primary-container)
   );
 }
+.yam3x-date-input__segment:focus::placeholder {
+  color: var(
+    --yam3x-date-input-focused-color,
+    var(--_yam3x-date-input-system-color-on-primary-container)
+  );
+}
 .yam3x-date-input__segment:disabled {
   color: var(--yam3x-date-input-disabled-color, var(--_yam3x-date-input-system-color-on-surface));
   opacity: var(--yam3x-date-input-disabled-opacity, 0.38);
@@ -741,15 +829,26 @@ defineExpose({
   color: var(--yam3x-date-input-color, var(--_yam3x-date-input-system-color-on-surface-variant));
   user-select: none;
 }
-.yam3x-date-input-field__error {
+.yam3x-date-input-field__subscript {
   display: flex;
   align-items: center;
+  min-height: var(--md-sys-typescale-body-small-line-height, 16px);
   gap: calc(4px * var(--_yam3x-date-input-system-density-spacing-scale, 1));
   margin: 0;
-  color: var(--_yam3x-date-input-system-color-error);
-  font-size: 12px;
+  color: var(--_yam3x-date-input-system-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-body-small-font-family, inherit);
+  font-size: var(--md-sys-typescale-body-small-font-size, 12px);
+  font-weight: var(--md-sys-typescale-body-small-font-weight, 400);
+  line-height: calc(
+    var(--md-sys-typescale-body-small-line-height, 16px) *
+      var(--_yam3x-date-input-system-typescale-line-height-scale)
+  );
+  letter-spacing: var(--md-sys-typescale-body-small-tracking, 0.4px);
 }
-.yam3x-date-input-field__error :is(svg, .yam3x-icon) {
+.yam3x-date-input-field__subscript--error {
+  color: var(--_yam3x-date-input-system-color-error);
+}
+.yam3x-date-input-field__subscript :is(svg, .yam3x-icon) {
   width: 16px;
   height: 16px;
   flex: none;
@@ -777,9 +876,18 @@ defineExpose({
   }
   .yam3x-date-input[aria-invalid='true'] {
     border-color: Mark;
+    outline-color: Mark;
   }
-  .yam3x-date-input-field__error {
+  .yam3x-date-input-field--invalid .yam3x-date-input-field__label,
+  .yam3x-date-input-field__subscript--error {
     color: Mark;
+  }
+  .yam3x-date-input-field--disabled .yam3x-date-input-field__label,
+  .yam3x-date-input-field--disabled .yam3x-date-input__literal {
+    color: GrayText;
+  }
+  .yam3x-date-input:focus-within {
+    outline-color: Highlight;
   }
 }
 </style>
