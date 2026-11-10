@@ -21,6 +21,7 @@
 - Badges share anchor observation within each document or shadow root and ignore unrelated DOM changes, while retaining dynamic anchors, direction changes, and slot content updates.
 - Pan and Swipe retain only the samples needed for motion metrics, keeping per-update work and gesture storage bounded without changing reported movement or velocity.
 - Tree view shares incremental cascade-check summaries and resolves expanded visibility in one pass; virtual windows reuse key indexes for distant navigation and row offsets.
+- Documentation demo themes observe DOM changes only while active and update changed demo subtrees without rescanning the full page for unrelated mutations.
 - Date pickers separate docked month and year controls into their own dropdown-and-arrow groups. Docked month and year menus are vertical 48px listboxes with a selected-row check; the selected row scrolls into view when opened.
 - Modal date pickers combine month and year into one dropdown with adjacent month arrows, keep the headline to one short line, and use the full localized date as its accessible name.
 - Modal range calendars share one visible weekday row above the continuous month sequence, omit month paging controls, and keep hidden weekday headers for each month grid.
@@ -85,6 +86,8 @@
 ### Updating copied source
 
 Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-pointer.css`, `src/styles/yam3x-base.css`, and affected component files, including `src/components/yam3x/form-field/`, `src/components/yam3x/select/`, `src/components/yam3x/dialog/`, `src/components/yam3x/menu/`, `src/components/yam3x/bottom-sheet/`, `src/components/yam3x/fab-menu/`, `src/components/yam3x/autocomplete/`, `src/components/yam3x/search/`, `src/components/yam3x/time-picker/`, `src/components/yam3x/date-picker/`, `src/components/yam3x/date-input/`, `src/components/yam3x/list/`, `src/components/yam3x/navigation-rail/`, `src/components/yam3x/tooltip/`, `src/components/yam3x/option/`, and `src/components/yam3x/_shared/overlay-layer.ts` for the current interaction fixes. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/updating).
+
+Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/badge/` including the new `anchor-observer.ts`, `src/components/yam3x/tree-view/`, `src/components/yam3x/_shared/use-virtual-list.ts`, and `src/lib/yam3x/gestures/pointer-tracker.ts` for the performance fixes. No prop or event migrations are required.
 
 ## 0.3.1
 

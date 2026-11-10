@@ -12,6 +12,7 @@ const { isDark } = useData()
 const docsTheme = generateTheme('#6750a4')
 const demoThemeControllers = new Map<HTMLElement, ThemeController>()
 let demoThemeObserver: MutationObserver | undefined
+const demoThemeSelector = '.yam3x-doc-demo-theme, .yam3x-fab-menu__panel, .yam3x-snackbar-host'
 
 watchEffect(() => {
   if (typeof document === 'undefined') return
@@ -20,38 +21,54 @@ watchEffect(() => {
   applyTheme(docsTheme, root, resolvedMode)
 })
 
+function syncDemoThemeTarget(target: HTMLElement) {
+  const theme = docsDemoTheme.value
+  if (!theme || !target.isConnected) return
+  const controller = demoThemeControllers.get(target)
+  if (controller) controller.update(theme)
+  else demoThemeControllers.set(target, createThemeController(target, theme))
+}
+
+function visitDemoThemeTargets(node: Node, visit: (target: HTMLElement) => void) {
+  if (!(node instanceof Element)) return
+  if (node instanceof HTMLElement && node.matches(demoThemeSelector)) visit(node)
+  node.querySelectorAll<HTMLElement>(demoThemeSelector).forEach(visit)
+}
+
+function onDemoThemeMutations(records: MutationRecord[]) {
+  for (const record of records) {
+    for (const node of record.removedNodes) {
+      visitDemoThemeTargets(node, (target) => {
+        if (target.isConnected) return
+        demoThemeControllers.get(target)?.dispose()
+        demoThemeControllers.delete(target)
+      })
+    }
+    for (const node of record.addedNodes) {
+      if (node.isConnected) visitDemoThemeTargets(node, syncDemoThemeTarget)
+    }
+  }
+}
+
 function syncDemoThemeTargets() {
   if (typeof document === 'undefined') return
-
-  const theme = docsDemoTheme.value
-  const targets = new Set(
-    document.querySelectorAll<HTMLElement>(
-      '.yam3x-doc-demo-theme, .yam3x-fab-menu__panel, .yam3x-snackbar-host',
-    ),
-  )
-
+  demoThemeObserver?.disconnect()
   for (const [target, controller] of demoThemeControllers) {
-    if (!theme || !target.isConnected || !targets.has(target)) {
+    if (!docsDemoTheme.value || !target.isConnected || !target.matches(demoThemeSelector)) {
       controller.dispose()
       demoThemeControllers.delete(target)
     }
   }
-
-  if (!theme) return
-
-  for (const target of targets) {
-    const controller = demoThemeControllers.get(target)
-    if (controller) controller.update(theme)
-    else demoThemeControllers.set(target, createThemeController(target, theme))
-  }
+  if (!docsDemoTheme.value) return
+  document.querySelectorAll<HTMLElement>(demoThemeSelector).forEach(syncDemoThemeTarget)
+  demoThemeObserver?.observe(document.body, { childList: true, subtree: true })
 }
 
 watch(docsDemoTheme, syncDemoThemeTargets, { flush: 'post' })
 
 onMounted(() => {
+  demoThemeObserver = new MutationObserver(onDemoThemeMutations)
   syncDemoThemeTargets()
-  demoThemeObserver = new MutationObserver(syncDemoThemeTargets)
-  demoThemeObserver.observe(document.body, { childList: true, subtree: true })
 })
 
 onBeforeUnmount(() => {
