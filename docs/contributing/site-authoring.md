@@ -6,57 +6,123 @@ This guide covers content maintained in `apps/docs/`. The public site is bilingu
 
 - Use English for the source page and mirror headings in Chinese. Keep component and API names consistent with code and official Material terminology.
 - Use the official Material 3 Expressive component name for mapped components. Identify project extensions consistently and do not imply they are official Material components.
+- For official descriptions and guidance, preserve the Material wording rather than paraphrasing it. Add project-specific explanations as separate sentences.
 - Start with a concise explanation of the component or task and when to use it. Do not repeat the title or include implementation history.
-- Keep examples executable and relevant. Use the existing demo component for interactive examples and a consumer-valid import path for application examples.
-- Treat Vue source under `registry/` as the source of truth for props, models, events, slots, defaults, and behavior. Link to a project design guide when it helps explain intent; do not copy the whole guide into an API page.
-- For Material guidance, use pages explicitly marked Expressive. Keep the component's Material section to relevant official links; put current project behavior beside usage or API explanation.
+- Keep examples executable and relevant. Use consumer-valid imports in page snippets. Demo-only `@registry` imports stay in `demos/`.
+- Treat Vue source under `registry/` as the source of truth for props, models, events, slots, defaults, and behavior. Link to a project design guide when it explains intent; do not copy the guide into the API page.
 - Include only sections that help the reader complete a task. Merge adjacent content when there is no useful distinction; do not add empty headings.
 
 ## Component pages
 
-Use this outline for `apps/docs/components/*.md`:
+Keep the existing `/components/<name>` URL. Use this order:
 
 ```md
-<script setup lang="ts">
-import Example from './demos/Example.vue'
-</script>
+# Component name
 
-# Official component name or project extension
+State what it is and when to use it. For a family, distinguish members; for an extension, identify it as project-defined.
 
-State what it does and when to use it. For a family, distinguish members; for an extension, identify it as project-defined.
+## Examples
 
-## Interactive example
+### Basic
 
-<div class="vp-raw yam3x-doc-demo-theme"><Example /></div>
+<Demo />
 
-::: details View demo source
+### Variants
 
-<<< ./demos/Example.vue{vue}
+<Demo />
 
-:::
+### States
+
+<Demo />
+
+### Composition
+
+<Demo />
 
 ## Use in your app
 
-Show a short working example with imports from `./components/yam3x/`. Demo-only `@registry` imports are not consumer paths.
-
-## API
-
-Document caller-facing props, models, events, slots, and important defaults from `registry/`. Group a family by exported member. Explain native-attribute forwarding without listing every HTML attribute. Link to the page that owns an API instead of repeating it.
+Show a short working example with consumer imports. Put advanced composition in a details block.
 
 ## Behavior and accessibility
 
-State keyboard, focus, form, link, and state-ownership behavior not made clear by the API section. Identify project-defined behavior where it matters.
+### Keyboard
+
+### Focus and dismissal
+
+### Forms
+
+### Responsive and RTL
+
+### State ownership
+
+## API
+
+### Exports
+
+### Props and models
+
+### Events
+
+### Slots
+
+### Methods
+
+Use a separate table for each exported component. Put advanced or low-frequency API behind `::: details`.
 
 ## Styling
 
-Describe supported styling entry points and precedence only when callers need them.
+State whether public styling hooks exist. Put long override tables behind `::: details`.
 
 ## Material references
 
-Link the applicable Material 3 Expressive overview, guidelines, specifications, and accessibility pages. Do not repeat the design guide.
+Link the applicable Material 3 Expressive overview, guidelines, specifications, and accessibility pages.
 ```
 
-Keep related examples together. A family page may add a short choice guide and group its API by member. A composition page explains which component owns state, focus, dismissal, and navigation, and links to the API pages of its parts. A design-pattern page without a matching export names the actual component. A legacy page identifies its supported use and points to the current pattern. Check exported helpers as well as Vue components when deciding what the API owns.
+Rules:
+
+- Keep `## Use in your app`; the docs-site spec depends on it.
+- Put basic examples and usage before exhaustive API tables.
+- Do not put design rationale in API or Behavior. Put it in Examples, Usage, or the project design guide.
+- Do not enumerate more than a few props in prose. Use tables.
+- Do not hide a basic example behind a control panel or details block.
+- Keep family members in separate API tables. Do not merge them into one table.
+- Keep the page scannable: short paragraphs, bullets, and tables. Avoid paragraphs longer than roughly four lines.
+
+### Page types
+
+| Type                  | Examples                                  | Additional structure                                        |
+| --------------------- | ----------------------------------------- | ----------------------------------------------------------- |
+| Material component    | Button, Dialog, Tabs                      | Standard page                                               |
+| Project extension     | Data table, Tree view, Number field       | State the extension and Compose lineage in the intro        |
+| Family                | Button, Chips                             | One API table per export                                    |
+| Composition           | Fab menu, Split button, Navigation drawer | Add a short composition and state-ownership section         |
+| Alias                 | Text fields                               | Point to the owning component; do not duplicate demo or API |
+| Provider or directive | Localization, Textarea autosize           | Prioritize configuration and usage over variants            |
+
+## Demo coverage
+
+Every demo set must make the documented behavior observable. Consider this matrix and include the rows that apply:
+
+| Layer       | Shows                                                                 |
+| ----------- | --------------------------------------------------------------------- |
+| Basic       | The smallest useful composition                                       |
+| Variants    | Every documented visual variant, size, and shape                      |
+| States      | Disabled, invalid, loading, empty, selected, indeterminate, read-only |
+| Composition | The component with its typical neighbors                              |
+| Behavior    | Keyboard, focus, dismissal, RTL, responsive container                 |
+| Advanced    | Server data, virtualization, lazy loading, custom slots               |
+
+Rules:
+
+- One demo file should demonstrate one main task or state family. Do not use a single kitchen-sink file for unrelated behaviors.
+- Simple components may use one demo. Complex components should split into two to four demos.
+- Prefer static galleries for variants and a separate control for runtime states.
+- Do not hide the audited component at common desktop widths. Show responsive alternatives separately.
+- Keep existing `data-testid` values and accessible names used by E2E. Add new stable test IDs for new scenarios.
+- Use `useDemoLocale` for all visible copy and accessible names. Use its `localeTag` for date and time components.
+- Use locale-aware internal links in demos. Do not send a Chinese page to an English route.
+- Pass `dir` or a documented direction prop for demos that claim RTL support.
+- Keep the demo source block. Do not duplicate the same demo source on another page.
 
 ## Task guides
 
