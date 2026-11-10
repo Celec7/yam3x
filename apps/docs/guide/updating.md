@@ -10,3 +10,5 @@ To adopt a newer version from this repository:
 4. Run your app's type check and build, then try the affected interactions in a browser.
 
 To add a new component, follow [Installation and first use](/guide/installation). Command options are documented in `packages/cli/README.md` in the repository.
+
+See [Design foundations](/guide/design) for the typography, spacing, shape, and motion guidance that component updates follow.

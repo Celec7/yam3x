@@ -18,6 +18,13 @@ function headings(source) {
     .map((line) => line.trim())
 }
 
+function headingLevels(source) {
+  return source
+    .split('\n')
+    .filter((line) => /^#{2,3} /.test(line))
+    .map((line) => line.slice(0, line.indexOf(' ')))
+}
+
 function fencedCode(source) {
   return [...source.matchAll(/```[^\n]*\n([\s\S]*?)```/g)].map((match) => match[1])
 }
@@ -51,7 +58,13 @@ for (const page of pages) {
   }
 
   if (!/^#\s+/m.test(en)) errors.push(`${page}: missing H1`)
+  if (!/^## Examples$/m.test(en) && page !== 'text-fields.md') {
+    errors.push(`${page}: missing "Examples"`)
+  }
   if (!/^## Use in your app$/m.test(en)) errors.push(`${page}: missing "Use in your app"`)
+  if (!/^## Behavior and accessibility$/m.test(en) && page !== 'text-fields.md') {
+    errors.push(`${page}: missing "Behavior and accessibility"`)
+  }
   if (!/^## API$/m.test(en) && page !== 'text-fields.md') errors.push(`${page}: missing "API"`)
   if (!/^## Material references$/m.test(en) && page !== 'localization.md') {
     errors.push(`${page}: missing "Material references"`)
@@ -59,8 +72,22 @@ for (const page of pages) {
 
   const enHeadings = headings(en)
   const zhHeadings = headings(zh)
+  if (page !== 'text-fields.md') {
+    const actual = enHeadings.map((heading) => heading.slice(3))
+    const expected = ['Examples', 'Use in your app', 'Behavior and accessibility', 'API']
+    if (actual.includes('Styling')) expected.push('Styling')
+    if (page !== 'localization.md') expected.push('Material references')
+    if (actual.join('|') !== expected.join('|')) {
+      errors.push(`${page}: section order is ${actual.join(' → ')}`)
+    }
+  }
   if (enHeadings.length !== zhHeadings.length) {
     errors.push(`${page}: EN ${enHeadings.length} H2 sections, ZH ${zhHeadings.length}`)
+  }
+  const enLevels = headingLevels(en)
+  const zhLevels = headingLevels(zh)
+  if (enLevels.join(',') !== zhLevels.join(',')) {
+    errors.push(`${page}: EN and ZH heading levels differ`)
   }
 
   for (const match of en.matchAll(/from '\.\/demos\/([^']+)'/g)) {
