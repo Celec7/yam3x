@@ -14,7 +14,7 @@ This project extension presents persistent information, caution, or errors besid
 
 ### Anatomy and layout
 
-The following mappings are project-defined. Use Title Small for an optional title and Body Medium for the message. The message is required; an icon, actions, and dismissal are optional.
+The following mappings are project-defined. Use Title Small for an optional title and Body Medium for the message. The message is required; an icon, actions, and dismissal are optional. When a title is present, render it as a level-3 heading by default so the message is identifiable within the surrounding section; expose an override for a different hierarchy.
 
 - Project-defined: Use 16 px container padding, 12 px between the leading icon and text, and 8 px between related text or actions. Use a Medium corner role for the grouping surface. Content and controls determine its height; messages can wrap to multiple lines.
 - Project-defined: Place actions below the text when the inline arrangement does not fit. Keep the dismiss action independently reachable and its target distinct from other actions. The message container itself is not a whole-surface action.

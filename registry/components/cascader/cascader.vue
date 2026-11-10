@@ -532,6 +532,7 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
         <Heading
           variant="title"
           size="medium"
+          :level="2"
           >{{ label }}</Heading
         >
         <FormField

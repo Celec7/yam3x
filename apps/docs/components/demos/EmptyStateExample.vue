@@ -57,7 +57,6 @@ function onClear() {
         v-if="query"
         :title="t('No matching documents', '没有匹配的文档')"
         align="start"
-        :heading-level="3"
         icon="search_off"
       >
         {{

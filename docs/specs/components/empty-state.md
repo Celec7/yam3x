@@ -22,7 +22,7 @@ The following assignments are project-defined. A short explanatory title is requ
 | Embedded collection or panel | Title Medium   | Body Medium |
 | Main empty destination       | Headline Small | Body Large  |
 
-- Project-defined: Use On Surface for the title and On Surface Variant for the description, on the inherited content surface. Do not add a card or raised background merely because content is absent.
+- Project-defined: Use On Surface for the title and On Surface Variant for the description, on the inherited content surface. Do not add a card or raised background merely because content is absent. The title is a level-3 heading by default so an empty region remains identifiable in the document outline; callers override the level for a page title or a different surrounding hierarchy.
 - Project-defined: Use 24 px region padding, 16 px between imagery and text or text and actions, and 8 px between title and description. Center a short standalone message; use leading alignment when the surrounding section or longer explanation calls for it. Keep the text block around 40 characters wide where practical, allowing natural wrapping and growth.
 - Project-defined: An optional 48 px symbol or larger illustration supports the explanation rather than replacing it. Decorative imagery is hidden from assistive technology; informative imagery receives an appropriate alternative.
 

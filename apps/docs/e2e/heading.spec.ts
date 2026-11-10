@@ -12,12 +12,10 @@ test('optional levels expose native heading semantics while default content stay
   await expect(examples).toHaveCount(27)
   await expect(page.getByRole('heading', { name: 'Semantic level 1', level: 1 })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Semantic level 2', level: 2 })).toBeVisible()
-  await expect(
-    page.getByText('Plain text without heading semantics', { exact: true }),
-  ).not.toHaveAttribute('role')
-  await expect(
-    page.getByText('Plain text without heading semantics', { exact: true }),
-  ).not.toHaveAttribute('aria-level')
+  const plain = page.getByText('Plain text without heading semantics', { exact: true })
+  await expect(plain).not.toHaveAttribute('role')
+  await expect(plain).not.toHaveAttribute('aria-level')
+  await expect(plain).toHaveJSProperty('tagName', 'SPAN')
   await expect(page.getByTestId('heading-title-small')).toHaveCSS('display', 'block')
 })
 

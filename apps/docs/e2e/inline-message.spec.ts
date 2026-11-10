@@ -8,6 +8,12 @@ test('keeps announcement independent from visual tone and dismissal does not ste
   page,
 }) => {
   // inline-message.announcement.independent; inline-message.dismiss.focus
+  await expect(
+    page.getByRole('heading', { name: 'Shared with your team', exact: true, level: 3 }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Review access before sharing', exact: true, level: 2 }),
+  ).toBeVisible()
   const error = page.locator('.yam3x-inline-message--error')
   await expect(error).toHaveAttribute('role', 'status')
   await expect(page.locator('.yam3x-inline-message--warning')).not.toHaveAttribute('role')

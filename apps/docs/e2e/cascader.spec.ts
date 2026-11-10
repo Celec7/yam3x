@@ -8,6 +8,9 @@ test('cascader.path.commit: explores named levels without accepting and submits 
   const trigger = demo.getByRole('combobox', { name: 'Destination', exact: true })
   await trigger.click()
   const dialog = page.getByRole('dialog', { name: 'Destination', exact: true })
+  await expect(
+    dialog.getByRole('heading', { name: 'Destination', exact: true, level: 2 }),
+  ).toBeVisible()
   const search = dialog.getByRole('searchbox', { name: 'Search paths' })
   await expect(search).toBeFocused()
   await search.press('ArrowDown')

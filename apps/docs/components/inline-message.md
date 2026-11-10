@@ -38,19 +38,20 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 This component can inherit built-in interface text from [LocaleProvider](/components/localization)'s `actions` namespace. Optional `locale` overrides the language, defaulting to the provider then `en-US`; existing label props override the corresponding shared defaults.
 
-| Prop           | Default            | Use                                                                               |
-| -------------- | ------------------ | --------------------------------------------------------------------------------- |
-| `title`        | Empty              | Optional short title, using Title Small.                                          |
-| `tone`         | `info`             | `info`, `success`, `warning`, or `error`.                                         |
-| `announcement` | `off`              | `off` has no live role; `polite` uses `status`; `assertive` uses `alert`.         |
-| `icon`         | Tone icon          | Material Symbol name, or `false` to omit it.                                      |
-| `dismissible`  | `false`            | Show a separate dismiss action.                                                   |
-| `dismissLabel` | Localized default  | Accessible name of the dismiss action; localize it.                               |
-| `dismissFocus` | Containing element | Function returning a nearby focus destination after focused content is dismissed. |
+| Prop           | Default            | Use                                                                                   |
+| -------------- | ------------------ | ------------------------------------------------------------------------------------- |
+| `title`        | Empty              | Optional short title, using Title Small.                                              |
+| `headingLevel` | `3`                | Semantic level, 1–6, for the optional title. Override it for the surrounding outline. |
+| `tone`         | `info`             | `info`, `success`, `warning`, or `error`.                                             |
+| `announcement` | `off`              | `off` has no live role; `polite` uses `status`; `assertive` uses `alert`.             |
+| `icon`         | Tone icon          | Material Symbol name, or `false` to omit it.                                          |
+| `dismissible`  | `false`            | Show a separate dismiss action.                                                       |
+| `dismissLabel` | Localized default  | Accessible name of the dismiss action; localize it.                                   |
+| `dismissFocus` | Containing element | Function returning a nearby focus destination after focused content is dismissed.     |
 
 `v-model:open` controls visibility and defaults to `true`. Without a binding, the component owns visibility. `dismiss()` is emitted after the dismiss action requests closure. Closing a message does not mark the underlying condition resolved.
 
-The required default slot contains the message. `#icon` replaces the decorative icon; `#actions` contains your buttons or links. Actions are placed below the text and wrap; enabled text buttons in the actions area inherit the message foreground. Attributes, including `class`, `style`, and `id`, apply to the message root.
+The optional title is a level-3 heading by default. The required default slot contains the message. `#icon` replaces the decorative icon; `#actions` contains your buttons or links. Actions are placed below the text and wrap; enabled text buttons in the actions area inherit the message foreground. Attributes, including `class`, `style`, and `id`, apply to the message root.
 
 ## Behavior and accessibility
 

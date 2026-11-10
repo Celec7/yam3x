@@ -38,16 +38,16 @@ import { Button } from './components/yam3x/button'
 
 ## API
 
-| Prop           | Default    | Use                                                                                                                  |
-| -------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| `title`        | Required   | Short explanation of the empty region.                                                                               |
-| `description`  | Empty      | Supporting explanation, replaced by the default slot when supplied.                                                  |
-| `context`      | `embedded` | `embedded` uses Title Medium / Body Medium; `page` uses Headline Small / Body Large.                                 |
-| `align`        | `center`   | `center` or direction-aware `start`.                                                                                 |
-| `icon`         | None       | Optional decorative Material Symbol, displayed at 48 px.                                                             |
-| `headingLevel` | None       | Semantic heading level, 1–6; omitted renders the title as a span. Choose it from the surrounding document structure. |
+| Prop           | Default    | Use                                                                                  |
+| -------------- | ---------- | ------------------------------------------------------------------------------------ |
+| `title`        | Required   | Short explanation of the empty region.                                               |
+| `description`  | Empty      | Supporting explanation, replaced by the default slot when supplied.                  |
+| `context`      | `embedded` | `embedded` uses Title Medium / Body Medium; `page` uses Headline Small / Body Large. |
+| `align`        | `center`   | `center` or direction-aware `start`.                                                 |
+| `icon`         | None       | Optional decorative Material Symbol, displayed at 48 px.                             |
+| `headingLevel` | `3`        | Semantic heading level, 1–6. Override it to match the surrounding document outline.  |
 
-The default slot supplies supporting content. `#illustration` replaces the icon area with your image or illustration. Give informative images an appropriate alternative; use an empty alternative or `aria-hidden="true"` for decoration. `#actions` holds the next steps, using the Button hierarchy appropriate to the surrounding page. Attributes apply to the root.
+The title is a level-3 heading by default. The default slot supplies supporting content. `#illustration` replaces the icon area with your image or illustration. Give informative images an appropriate alternative; use an empty alternative or `aria-hidden="true"` for decoration. `#actions` holds the next steps, using the Button hierarchy appropriate to the surrounding page. Attributes apply to the root.
 
 ## Behavior and accessibility
 

@@ -16,7 +16,7 @@ withDefaults(
     context: 'embedded',
     align: 'center',
     icon: undefined,
-    headingLevel: undefined,
+    headingLevel: 3,
   },
 )
 defineSlots<{ default?(): unknown; illustration?(): unknown; actions?(): unknown }>()

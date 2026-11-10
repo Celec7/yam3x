@@ -5,6 +5,7 @@
 ### Breaking changes
 
 - DateInput removes the controlled `value` and `update:value` compatibility aliases. Use `v-model`, `modelValue`, and `update:modelValue` instead.
+- Empty state and Inline message titles now render as level-3 headings by default, with `headingLevel` overrides; Cascader dialog titles use level 2.
 - FormField resolves form controls through native form elements or `data-form-field-control`; external custom-element tags are no longer special-cased.
 - Remove the mandatory Tailwind CSS dependency. Copied components now use standard CSS without Tailwind or its Vite plugin, and the published Tailwind theme aliases (`bg-yam3x-*`, `text-yam3x-*`, `font-yam3x-*`, `rounded-yam3x-*`, `p-yam3x-*`, `gap-yam3x-*`, and other generated utilities) are no longer provided. Replace them with application-owned CSS using the retained semantic `--md-sys-*` custom properties.
 - Button variants no longer use `tailwind-variants`. The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
@@ -13,6 +14,7 @@
 
 - Foundation CSS exposes read-only pointer capability flags for primary pointer, any-pointer, hover, and any-hover. Components use the primary pointer for layout sizing so hybrid devices stay stable.
 - Date pickers accept `closeLabel` and `saveLabel` for the full-screen modal actions. `DatePickerMessages` gains matching `close` and `save` messages.
+- InlineMessage accepts `headingLevel` for its optional title.
 
 ### Fixed
 

@@ -14,5 +14,6 @@ This project extension applies Material typography to semantic document headings
 
 ## Project decisions
 
-- `heading.extension.semantic-level` (project-defined): Consumers choose a native heading level separately from the visual Material type role. This avoids treating visual size as document structure.
+- `heading.extension.semantic-level` (project-defined): Consumers choose a native heading level separately from the visual Material type role. This avoids treating visual size as document structure. Omitting `level` is the deliberate visual-only mode and renders ordinary text without heading semantics.
+- `heading.composition.levels` (project-defined): Built-in compositions that render a title supply a semantic level. Page-level error summaries and modal dialog titles use level 2; embedded empty states, inline messages, and description-list titles use level 3. Callers may override the level to match the surrounding outline; the visual role remains independent.
 - Project-defined API: The component exposes display, headline, title, and label variants, and an `emphasized` switch. It maps the selected family, size, and emphasis to the matching System typography tokens; Material defines the type styles, not this Vue API or its defaults.

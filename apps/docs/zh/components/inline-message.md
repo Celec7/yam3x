@@ -41,6 +41,7 @@ import { InlineMessage } from './components/yam3x/inline-message'
 | 属性           | 默认值         | 用途                                                                         |
 | -------------- | -------------- | ---------------------------------------------------------------------------- |
 | `title`        | 空             | 可选的简短标题，使用 Title Small。                                           |
+| `headingLevel` | `3`            | 可选标题的语义层级，1–6；可按周围文档大纲覆盖。                              |
 | `tone`         | `info`         | `info`、`success`、`warning` 或 `error`。                                    |
 | `announcement` | `off`          | `off` 不使用实时区域角色；`polite` 使用 `status`；`assertive` 使用 `alert`。 |
 | `icon`         | 对应语气的图标 | Material Symbol 名称；`false` 表示隐藏。                                     |
@@ -50,7 +51,7 @@ import { InlineMessage } from './components/yam3x/inline-message'
 
 `v-model:open` 控制可见性，默认 `true`。未绑定时由组件管理。关闭操作请求隐藏后触发 `dismiss()`。关闭提示不表示其背后的问题已解决。
 
-必需的默认插槽提供消息正文。`#icon` 替换装饰图标；`#actions` 放置按钮或链接。操作位于正文下方并可换行；操作区内可用的文字按钮继承消息前景色。`class`、`style`、`id` 等属性应用于消息根元素。
+可选标题默认是 3 级标题。必需的默认插槽提供消息正文。`#icon` 替换装饰图标；`#actions` 放置按钮或链接。操作位于正文下方并可换行；操作区内可用的文字按钮继承消息前景色。`class`、`style`、`id` 等属性应用于消息根元素。
 
 ## 行为与无障碍
 

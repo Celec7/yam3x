@@ -45,9 +45,9 @@ import { Button } from './components/yam3x/button'
 | `context`      | `embedded` | `embedded` 使用 Title Medium / Body Medium；`page` 使用 Headline Small / Body Large。 |
 | `align`        | `center`   | `center` 或遵循书写方向的 `start`。                                                   |
 | `icon`         | 无         | 可选的装饰性 Material Symbol，以 48 px 显示。                                         |
-| `headingLevel` | 无         | 语义标题层级，1–6；省略时标题渲染为 span。请根据周围文档结构选择。                    |
+| `headingLevel` | `3`        | 语义标题层级，1–6。可按周围文档大纲覆盖。                                             |
 
-默认插槽提供补充内容。`#illustration` 用图片或插画替换图标区域。信息性图片需提供合适的替代文本；装饰内容使用空替代文本或 `aria-hidden="true"`。`#actions` 放置下一步操作，按所在页面选择合适的 Button 层级。属性应用于根元素。
+标题默认是 3 级标题。默认插槽提供补充内容。`#illustration` 用图片或插画替换图标区域。信息性图片需提供合适的替代文本；装饰内容使用空替代文本或 `aria-hidden="true"`。`#actions` 放置下一步操作，按所在页面选择合适的 Button 层级。属性应用于根元素。
 
 ## 行为与无障碍
 

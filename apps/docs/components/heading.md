@@ -50,7 +50,7 @@ The default slot provides the content.
 
 ## Behavior and accessibility
 
-Without `level`, Heading renders ordinary text without heading semantics. Choose `level` from the document hierarchy, independently of visual size.
+Without `level`, Heading renders ordinary text without heading semantics; this is the visual-only mode. Choose `level` from the document hierarchy, independently of visual size. Built-in compositions supply their own levels: page-level summaries and dialog titles use level 2, while embedded empty states, inline messages, and description titles use level 3.
 
 ## Styling
 

@@ -10,6 +10,7 @@ const props = withDefaults(
   defineProps<{
     locale?: string
     title?: string
+    headingLevel?: 1 | 2 | 3 | 4 | 5 | 6
     tone?: 'info' | 'success' | 'warning' | 'error'
     announcement?: 'off' | 'polite' | 'assertive'
     icon?: string | false
@@ -19,6 +20,7 @@ const props = withDefaults(
   }>(),
   {
     title: '',
+    headingLevel: 3,
     tone: 'info',
     announcement: 'off',
     icon: undefined,
@@ -99,6 +101,7 @@ function onDismiss() {
         v-if="title"
         variant="title"
         size="small"
+        :level="headingLevel"
         class="yam3x-inline-message__title"
         >{{ title }}</Heading
       >

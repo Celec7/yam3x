@@ -29,6 +29,7 @@ function onShowError() {
     </InlineMessage>
     <InlineMessage
       tone="warning"
+      :heading-level="2"
       :title="t('Review access before sharing', '共享前请检查权限')"
     >
       {{

@@ -10,6 +10,9 @@ test('keeps search and surrounding region available while clearing no-match resu
   const search = page.getByRole('searchbox', { name: 'Search documents', exact: true })
   const empty = page.locator('.yam3x-empty-state').filter({ hasText: 'No matching documents' })
   await expect(empty).not.toHaveAttribute('role')
+  await expect(
+    empty.getByRole('heading', { name: 'No matching documents', exact: true, level: 3 }),
+  ).toBeVisible()
   await search.focus()
   await search.fill('new query')
   await expect(search).toBeFocused()
