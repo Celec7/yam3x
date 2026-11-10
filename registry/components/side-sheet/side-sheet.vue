@@ -37,7 +37,7 @@ defineSlots<{
   sheet?: () => unknown
   headline?: () => unknown
   actions?: () => unknown
-  back?: () => unknown
+  back?: (props: { backLabel: string }) => unknown
   toggle?: (props: SideSheetToggleSlotProps) => unknown
 }>()
 const { messages: actionMessages } = useComponentLocale(
