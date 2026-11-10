@@ -222,11 +222,15 @@ test('applies container and spacing density while keeping 48px targets', async (
     .locator(':scope > .yam3x-tree-view__row')
   const text = row.locator('.yam3x-tree-view__text')
   const disclosure = row.locator('.yam3x-tree-view__disclosure')
-  await expect(row).toHaveCSS('min-height', '56px')
+  await expect
+    .poll(() => row.evaluate((element) => element.getBoundingClientRect().height))
+    .toBe(56)
   await outer.evaluate((element) => {
     ;(element as HTMLElement).style.setProperty('--md-sys-density-container-scale', '0.75')
   })
-  await expect(row).toHaveCSS('min-height', '48px')
+  await expect
+    .poll(() => row.evaluate((element) => element.getBoundingClientRect().height))
+    .toBe(48)
   await expect(disclosure).toHaveCSS('width', '48px')
   await expect(disclosure).toHaveCSS('height', '48px')
 
@@ -235,7 +239,9 @@ test('applies container and spacing density while keeping 48px targets', async (
     style.removeProperty('--md-sys-density-container-scale')
     style.setProperty('--md-sys-density-spacing-scale', '0.75')
   })
-  await expect(row).toHaveCSS('min-height', '56px')
+  await expect
+    .poll(() => row.evaluate((element) => element.getBoundingClientRect().height))
+    .toBe(56)
   await expect(row).toHaveCSS('padding-block-start', '3px')
   await expect(text).toHaveCSS('row-gap', '3px')
   await expect(disclosure).toHaveCSS('width', '48px')

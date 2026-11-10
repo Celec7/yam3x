@@ -6,6 +6,10 @@
     var(--md-sys-touch-target-size, 48px),
     calc(56px * var(--md-sys-density-container-scale, 1))
   );
+  --_yam3x-tree-view-row-headroom: max(
+    0px,
+    calc((var(--_yam3x-tree-view-height) - var(--md-sys-touch-target-size, 48px)) / 2)
+  );
   --_yam3x-tree-view-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-tree-view-label-min-width: var(--yam3x-tree-view-label-min-width, 10rem);
   --_yam3x-tree-view-row-shape: var(--yam3x-tree-view-row-shape, var(--md-sys-shape-corner-medium));
@@ -94,7 +98,9 @@
       var(--_yam3x-tree-view-leading-space) + var(--_yam3x-tree-view-label-min-width) +
       var(--_yam3x-tree-view-gap)
   );
-  padding-block: calc(4px * var(--md-sys-density-spacing-scale, 1));
+  padding-block: calc(
+    var(--_yam3x-tree-view-row-headroom) * var(--md-sys-density-spacing-scale, 1)
+  );
   padding-inline: calc(
       var(--_yam3x-tree-view-padding) + (var(--_yam3x-tree-view-level) - 1) *
         var(--_yam3x-tree-view-indent)
