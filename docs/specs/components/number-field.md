@@ -10,13 +10,15 @@ This project extension combines a numeric editor with optional increment and dec
 - Keep labels clear and provide an additional visual indication of error rather than relying on color alone. See [Text fields guidelines: label text and error icon](https://m3.material.io/components/text-fields/guidelines).
 - Use tabular figures where changing digits should remain aligned. See [Applying type: tabular numbers](https://m3.material.io/styles/typography/applying-type).
 - Increment and decrement actions use the adopted [Icon button](icon-button.md) treatment and target behavior rather than custom miniature hit areas.
+- Compose Material 3 has no number-field primitive; its closest composition is `OutlinedTextField` or `TextField` with trailing `IconButton`s. Parsing and step behavior remain project-defined Web semantics.
 
 ## Project decisions
 
 ### Layout and appearance
 
 - Project-defined: Values, labels, and supporting content retain the type and color roles owned by Form field. Increment and decrement controls occupy a trailing group; unit or currency text remains visibly associated with the value.
-- `number-field.geometry.targets` (project-defined): Retain Form field's default container geometry and allow growth for enlarged text and language height. Reserve each step action's interactive area without overlap. Hide optional step actions when a text-only presentation is chosen; do not shrink the targets to force a fit.
+- `number-field.geometry.targets` (project-defined): Retain Form field's default container geometry and allow growth for enlarged text and language height. A step action reserves a 48 × 40 px minimum box using the shared touch-target width and a 40 px minimum height, with 4 px between the two actions; the default 56 px field resolves each box to 48 × 48 px. The editor is the only Tab stop, and pointer step actions are not Tab stops. Hide optional step actions when a text-only presentation is chosen; do not shrink the reserved boxes to force a fit.
+- `number-field.geometry.padding` (project-defined): The outlined composition adds 4 px block padding to the Form field container and control. The filled composition adds 4 px container block padding and a 16 px top inset with no bottom inset on the control, aligning the value with the floating label and the step row. These overrides preserve the 56 px container and replace, rather than add to, Form field's own block padding.
 - Project-defined: Keep the value editable without requiring the pointer controls. Do not add a slider-like track or encode magnitude through shape changes; those would suggest a different interaction model.
 
 ### Editing and commitment

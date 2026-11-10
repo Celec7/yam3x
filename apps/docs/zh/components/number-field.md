@@ -77,7 +77,9 @@ const weight = ref<number | null>(0.1)
 
 ## 样式
 
-可在 Number field 根元素使用 [Form field 样式钩子](/zh/components/form-field#样式)。输入使用等宽数字；标签、说明和控件间距可随语言行高及文字放大增长。即使可见图标较小，步进操作也保留独立的点击区域。
+可在 Number field 根元素使用 [Form field 样式钩子](/zh/components/form-field#样式)。输入使用等宽数字；标签、说明和控件间距可随语言行高及文字放大增长。
+
+Outlined 外观在 Form field 容器和编辑器控件上增加 4 px 垂直内边距。Filled 外观使用 4 px 容器垂直内边距，并在控件顶部增加 16 px、底部不增加内边距。每个步进操作保留 48 × 40 px 最小区域，两个操作间距 4 px；默认 56 px 字段中实际解析为 48 × 48 px。编辑器是唯一 Tab 停靠点，指针步进操作使用 `tabindex="-1"`。
 
 ## Material 参考
 

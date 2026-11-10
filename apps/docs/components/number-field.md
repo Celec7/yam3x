@@ -77,7 +77,9 @@ The native form receives an unlocalized numeric string under `name`, or an empty
 
 ## Styling
 
-Use the supported [Form field styling hooks](/components/form-field#styling) on the Number field root. The input uses tabular digits. Labels, supporting text, and control spacing can grow with language height and enlarged text. Step targets reserve separate space even when the visible icons are small.
+Use the supported [Form field styling hooks](/components/form-field#styling) on the Number field root. The input uses tabular digits. Labels, supporting text, and control spacing can grow with language height and enlarged text.
+
+The outlined field adds 4 px block padding to the Form field container and editor control. Filled adds 4 px container block padding and a 16 px top inset with no bottom inset on the control. Each step action reserves a 48 × 40 px minimum box with 4 px between actions; the default 56 px field resolves it to 48 × 48 px. The editor is the only Tab stop, while pointer step actions use `tabindex="-1"`.
 
 ## Material references
 

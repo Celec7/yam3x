@@ -117,6 +117,55 @@ test('keeps read-only and disabled editors unchanged and localizes Chinese error
   await expect(page.getByRole('button', { name: '增加数量', exact: true })).toBeEnabled()
 })
 
+test('records Form field padding overrides and step target geometry', async ({ page }) => {
+  // number-field.geometry.padding; number-field.geometry.targets
+  const input = page.getByRole('spinbutton', { name: 'Quantity *', exact: true })
+  const field = page.locator('.yam3x-number-field').filter({ has: input })
+  const metrics = () =>
+    field.evaluate((element) => {
+      const container = element.querySelector<HTMLElement>('.yam3x-form-field__container')!
+      const control = element.querySelector<HTMLElement>('.yam3x-form-field__control')!
+      const actions = element.querySelector<HTMLElement>('.yam3x-number-field__actions')!
+      const step = element.querySelector<HTMLElement>('.yam3x-number-field__step')!
+      const buttons = Array.from(step.parentElement!.children, (item) =>
+        item.querySelector<HTMLElement>('button'),
+      )
+      const box = step.getBoundingClientRect()
+      const containerStyle = getComputedStyle(container)
+      const controlStyle = getComputedStyle(control)
+      const stepStyle = getComputedStyle(step)
+      return {
+        container: [
+          parseFloat(containerStyle.paddingTop),
+          parseFloat(containerStyle.paddingBottom),
+        ],
+        control: [parseFloat(controlStyle.paddingTop), parseFloat(controlStyle.paddingBottom)],
+        step: {
+          width: box.width,
+          height: box.height,
+          minInline: parseFloat(stepStyle.minInlineSize),
+          minBlock: parseFloat(stepStyle.minBlockSize),
+        },
+        gap: parseFloat(getComputedStyle(actions).columnGap),
+        tabindex: buttons.map((button) => button?.getAttribute('tabindex')),
+      }
+    })
+  const outlined = await metrics()
+  expect(outlined.container).toEqual([4, 4])
+  expect(outlined.control).toEqual([4, 4])
+  expect(outlined.step).toEqual({ width: 48, height: 48, minInline: 48, minBlock: 40 })
+  expect(outlined.gap).toBe(4)
+  expect(outlined.tabindex).toEqual(['-1', '-1'])
+  await page.getByRole('checkbox', { name: 'Filled appearance', exact: true }).check()
+  await expect(field).toHaveClass(/yam3x-form-field--filled/)
+  const filled = await metrics()
+  expect(filled.container).toEqual([4, 4])
+  expect(filled.control).toEqual([16, 0])
+  expect(filled.step).toEqual({ width: 48, height: 48, minInline: 48, minBlock: 40 })
+  expect(filled.gap).toBe(4)
+  expect(filled.tabindex).toEqual(['-1', '-1'])
+})
+
 test('reserves separate targets and grows with 200% text in a narrow container', async ({
   page,
 }) => {

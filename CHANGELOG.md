@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
 - Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Select batches slotted option registration in DOM order and reuses catalog filtering, avoiding quadratic registration work for large non-virtual catalogs.
 - Linear progress value updates reuse measured geometry without allocating probes or reading layout; CSS geometry overrides and container resizing remain reactive.
@@ -94,6 +95,7 @@ Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/bad
 
 ### Fixed
 
+- Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
 - Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Align idle labels in outlined multi-line FormField controls with the first text line.
 - Align compact Navigation Bar indicators and ripple targets with the icon row.
@@ -135,6 +137,7 @@ When updating an existing app, merge the new `src/styles/yam3x-tokens.css` and r
 
 ### Fixed
 
+- Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
 - Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Floating field labels in RTL and above searchable selection chips, required-state propagation, and description-observer feedback.
 - Selection and error preservation when native form reset is canceled, picker focus recovery after option changes, and obsolete Tree view loading feedback.
