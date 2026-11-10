@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Select batches slotted option registration in DOM order and reuses catalog filtering, avoiding quadratic registration work for large non-virtual catalogs.
 - Linear progress value updates reuse measured geometry without allocating probes or reading layout; CSS geometry overrides and container resizing remain reactive.
 - Badges share anchor observation within each document or shadow root and ignore unrelated DOM changes, while retaining dynamic anchors, direction changes, and slot content updates.
@@ -93,6 +94,7 @@ Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/bad
 
 ### Fixed
 
+- Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Align idle labels in outlined multi-line FormField controls with the first text line.
 - Align compact Navigation Bar indicators and ripple targets with the icon row.
 
@@ -133,6 +135,7 @@ When updating an existing app, merge the new `src/styles/yam3x-tokens.css` and r
 
 ### Fixed
 
+- Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Floating field labels in RTL and above searchable selection chips, required-state propagation, and description-observer feedback.
 - Selection and error preservation when native form reset is canceled, picker focus recovery after option changes, and obsolete Tree view loading feedback.
 - Virtual viewport anchoring across catalog updates and scrolling-container padding.

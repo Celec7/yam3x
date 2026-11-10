@@ -554,6 +554,9 @@ function onRecover(event: MouseEvent, action: () => void) {
   --_yam3x-data-table-inline-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-data-table-block-padding: calc(12px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-data-table-height: calc(56px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-data-table-heading-gap: var(--md-sys-spacing-8, 8px);
+  --_yam3x-data-table-filter-inset: var(--md-sys-spacing-8, 8px);
+  --_yam3x-data-table-sort-icon-size: 20px;
   --_yam3x-data-table-color: var(--md-sys-color-on-surface);
   --_yam3x-data-table-surface: var(--md-sys-color-surface);
   --_yam3x-data-table-header: var(--md-sys-color-surface-container-low);
@@ -656,13 +659,13 @@ function onRecover(event: MouseEvent, action: () => void) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--_yam3x-data-table-heading-gap);
 }
 .yam3x-data-table__heading > span {
   flex: 1;
 }
 .yam3x-data-table__header--filterable {
-  padding-inline-end: 8px;
+  padding-inline-end: var(--_yam3x-data-table-filter-inset);
 }
 .yam3x-data-table__header--sortable {
   padding: 0;
@@ -672,9 +675,9 @@ function onRecover(event: MouseEvent, action: () => void) {
   max-inline-size: 100%;
 }
 .yam3x-data-table__sort-icon {
-  flex: 0 0 20px;
-  inline-size: 20px;
-  block-size: 20px;
+  flex: 0 0 var(--_yam3x-data-table-sort-icon-size);
+  inline-size: var(--_yam3x-data-table-sort-icon-size);
+  block-size: var(--_yam3x-data-table-sort-icon-size);
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -682,7 +685,9 @@ function onRecover(event: MouseEvent, action: () => void) {
   stroke-linejoin: round;
 }
 .yam3x-data-table__selection-cell {
-  inline-size: 80px;
+  inline-size: calc(
+    var(--md-sys-touch-target-size, 48px) + 2 * var(--_yam3x-data-table-inline-padding)
+  );
 }
 .yam3x-data-table__check :deep(.yam3x-checkbox__label-text),
 .yam3x-data-table__sr-only {

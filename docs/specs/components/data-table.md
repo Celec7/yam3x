@@ -28,6 +28,7 @@ The following role assignments are project-defined. The table has a caption or a
 
 - Project-defined: Use 16 px inline and 12 px block cell padding, with a 56 px minimum header and row height. Rows grow for wrapped content, language height, and enlarged text. These spacing-scale choices leave room for text and independent controls without adopting List row dimensions.
 - Project-defined: Start-align text and keep numeric alignment consistent within each column. A truncated value must remain available through a keyboard- and touch-accessible detail path; a hover-only tooltip is insufficient.
+- Project-defined: Size a selectable leading column from the shared touch-target size plus both inline paddings. A filterable header keeps its trailing inset on the shared 8 px spacing token, so the 48 px filter action does not crowd the column edge. Fixed-column offsets come from measured header cells rather than standalone constants; keep the 20 px sort direction icon and the 40 rem default minimum documented with the table geometry.
 
 ### Appearance and adaptation
 

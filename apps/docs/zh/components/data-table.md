@@ -155,6 +155,8 @@ const selected = ref<DataTableKey[]>([])
 
 项目样式采用 Surface 表体、Surface Container Low 表头、Outline Variant 分隔线，以及 Secondary Container/On Secondary Container 所选行。标题使用 Title Medium，静态列标题使用 Title Small，排序操作采用文本 Button 的角色，单元格使用 Body Medium，辅助文字使用 Body Small。单元格水平内边距为 16 px、垂直为 12 px；行最小高度为 56 px，可随控件和换行内容增长。选择、悬停和焦点保持独立展示。
 
+可选择的首列宽度由共享 touch-target token 加两侧水平内边距计算，既保留 48 px 控件目标，也会随密度收窄。可筛选表头使用共享 spacing token 的 8 px 尾部内边距，排序方向图标为 20 px。固定列偏移来自实际渲染的表头单元格，不是独立的固定值。
+
 公开的 `--yam3x-data-table-min-width` 覆盖项默认为 `40rem`，可按列内容调整，例如紧凑的两列表格使用 `100%`。标题及周围操作按区域宽度换行，不随表格列横向滚动。
 
 ## Material 参考

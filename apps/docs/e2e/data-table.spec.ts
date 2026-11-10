@@ -253,6 +253,39 @@ test('contains horizontal scrolling at 200% text in RTL and keeps all columns, n
   expect(await table.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true)
 })
 
+test('derives filterable header and selection geometry from shared tokens', async ({ page }) => {
+  const local = page.getByTestId('table-local')
+  const table = local.locator('.yam3x-data-table')
+  const status = local.locator('.yam3x-data-table__header').filter({ hasText: 'Status' }).first()
+  await expect(status).toHaveCSS('padding-inline-start', '16px')
+  await expect(status).toHaveCSS('padding-inline-end', '8px')
+  await expect(status).toHaveCSS('padding-block-start', '12px')
+  await expect(local.locator('.yam3x-data-table__sort-icon').first()).toHaveCSS('width', '20px')
+  const selection = local.locator('thead .yam3x-data-table__selection-cell')
+  const initial = await selection.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return {
+      width: element.getBoundingClientRect().width,
+      inset: parseFloat(style.paddingInlineStart) + parseFloat(style.paddingInlineEnd),
+    }
+  })
+  expect(initial.width - initial.inset).toBeGreaterThanOrEqual(48)
+  await table.evaluate((element) => {
+    ;(element as HTMLElement).style.setProperty('--md-sys-density-spacing-scale', '0.75')
+  })
+  await expect(status).toHaveCSS('padding-inline-start', '12px')
+  await expect(status).toHaveCSS('padding-inline-end', '8px')
+  const dense = await selection.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return {
+      width: element.getBoundingClientRect().width,
+      inset: parseFloat(style.paddingInlineStart) + parseFloat(style.paddingInlineEnd),
+    }
+  })
+  expect(dense.width).toBeLessThan(initial.width)
+  expect(dense.width - dense.inset).toBeGreaterThanOrEqual(48)
+})
+
 test('localizes table and selection feedback on the Chinese page', async ({ page }) => {
   await page.goto('/zh/components/data-table')
   const local = page.getByTestId('table-local')

@@ -157,6 +157,8 @@ Project styling uses a Surface body, Surface Container Low header, Outline Varia
 
 The documented `--yam3x-data-table-min-width` override defaults to `40rem`; adjust it for your columns, for example `100%` for a compact two-column table. The title and surrounding actions wrap to the available region rather than scrolling with the columns.
 
+A selectable leading column is sized from the shared touch-target token plus both inline paddings, so it keeps a 48 px control target and narrows with density. Filterable headers use an 8 px trailing inset from the shared spacing token, and sort direction icons are 20 px. Fixed-column offsets are measured from rendered header cells and are not separate fixed values.
+
 ## Material references
 
 [Buttons specs](https://m3.material.io/components/buttons/specs) · [Menus guidelines](https://m3.material.io/components/menus/guidelines) · [Applying type](https://m3.material.io/styles/typography/applying-type) · [Lists guidelines](https://m3.material.io/components/lists/guidelines) · [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design)
