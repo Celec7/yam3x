@@ -66,7 +66,7 @@ Use a Data table to compare multiple records, or Form fields for editing values.
 
 ## Styling
 
-The group uses theme colors and typography tokens. Labels use Label Large / On Surface Variant; values use Body Large / On Surface. The optional outline uses Outline Variant and the Medium corner role. Override `--yam3x-descriptions-gap` to change group padding and spacing between attributes; its default is 24px scaled by density. Keep complete content readable at enlarged text sizes.
+The group uses theme colors and typography tokens. Labels use Label Large / On Surface Variant; values use Body Large / On Surface. The optional outline uses a 1px Outline Variant border, the Medium corner role, and the same 24px density-scaled inner padding. Stacked labels sit 4px above values, while inline labels use a 16px column gap; both scale with density. Override `--yam3x-descriptions-gap` to change group padding and spacing between attributes; its default is 24px scaled by density. Keep complete content readable at enlarged text sizes.
 
 ## Material references
 

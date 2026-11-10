@@ -96,7 +96,7 @@ const { messages } = useComponentLocale(
   </div>
 </template>
 
-<style>
+<style scoped>
 .yam3x-descriptions {
   --_yam3x-descriptions-gap: var(
     --yam3x-descriptions-gap,
@@ -106,6 +106,8 @@ const { messages } = useComponentLocale(
   --_yam3x-descriptions-value: var(--md-sys-color-on-surface);
   --_yam3x-descriptions-outline: var(--md-sys-color-outline-variant);
   --_yam3x-descriptions-shape: var(--md-sys-shape-corner-medium);
+  --_yam3x-descriptions-item-gap: calc(4px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-descriptions-inline-gap: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-descriptions-label-font: var(--md-sys-typescale-label-large-font-family);
   --_yam3x-descriptions-label-size: var(--md-sys-typescale-label-large-font-size);
   --_yam3x-descriptions-label-weight: var(--md-sys-typescale-label-large-font-weight);
@@ -138,7 +140,7 @@ const { messages } = useComponentLocale(
 .yam3x-descriptions__item {
   display: grid;
   align-content: start;
-  gap: 4px;
+  gap: var(--_yam3x-descriptions-item-gap);
   min-inline-size: 0;
 }
 .yam3x-descriptions__item--full {
@@ -168,7 +170,7 @@ const { messages } = useComponentLocale(
 }
 .yam3x-descriptions--inline > .yam3x-descriptions__list > .yam3x-descriptions__item {
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  column-gap: 16px;
+  column-gap: var(--_yam3x-descriptions-inline-gap);
 }
 @container (min-width: 32rem) {
   .yam3x-descriptions:where(:not(.yam3x-descriptions--columns-1)) > .yam3x-descriptions__list {

@@ -66,7 +66,7 @@ const items: DescriptionItem[] = [
 
 ## 样式
 
-组件使用主题颜色和排版 token。标签采用 Label Large / On Surface Variant，值采用 Body Large / On Surface。可选边框采用 Outline Variant 和 Medium 圆角角色。可覆盖 `--yam3x-descriptions-gap` 调整组内边距和属性间距，默认为按密度缩放的 24px。放大文字时应保留完整内容的可读性。
+组件使用主题颜色和排版 token。标签采用 Label Large / On Surface Variant，值采用 Body Large / On Surface。可选边框采用 1px Outline Variant 边框、Medium 圆角角色，以及与分组相同的 24px 密度缩放内边距。堆叠布局中标签位于值上方 4px；内联布局使用 16px 列间距，二者都随密度缩放。可覆盖 `--yam3x-descriptions-gap` 调整组内边距和属性间距，默认为按密度缩放的 24px。放大文字时应保留完整内容的可读性。
 
 ## Material 参考
 

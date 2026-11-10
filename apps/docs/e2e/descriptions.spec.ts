@@ -87,3 +87,42 @@ test('descriptions.content.empty: Chinese defaults distinguish absent attributes
   await expect(demo.locator('dl')).toHaveCount(0)
   await expect(demo.locator('.yam3x-descriptions__empty')).toHaveText('暂无详情')
 })
+
+test('descriptions.geometry.spacing: scopes styles and scales item gaps and outlines with density', async ({
+  page,
+}) => {
+  await page.goto('/components/descriptions')
+  const component = page.getByTestId('descriptions-demo').locator('.yam3x-descriptions')
+  const item = component.locator('.yam3x-descriptions__item').first()
+  const geometry = await component.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return {
+      border: parseFloat(style.borderTopWidth),
+      radius: parseFloat(style.borderTopLeftRadius),
+      padding: parseFloat(style.paddingInlineStart),
+    }
+  })
+  expect(geometry).toEqual({ border: 1, radius: 12, padding: 24 })
+  await expect(item).toHaveCSS('row-gap', '4px')
+  await page.getByRole('checkbox', { name: 'Inline labels', exact: true }).check()
+  await expect(item).toHaveCSS('column-gap', '16px')
+  await component.evaluate((element) => {
+    ;(element as HTMLElement).style.setProperty('--md-sys-density-spacing-scale', '0.75')
+  })
+  await expect(component).toHaveCSS('padding-inline-start', '18px')
+  await expect(item).toHaveCSS('row-gap', '3px')
+  await expect(item).toHaveCSS('column-gap', '12px')
+  const foreign = await page.evaluate(() => {
+    const element = document.createElement('div')
+    element.className = 'yam3x-descriptions yam3x-descriptions--outlined'
+    document.body.append(element)
+    const style = getComputedStyle(element)
+    const result = {
+      border: style.borderTopWidth,
+      padding: style.paddingInlineStart,
+    }
+    element.remove()
+    return result
+  })
+  expect(foreign).toEqual({ border: '0px', padding: '0px' })
+})
