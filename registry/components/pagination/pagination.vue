@@ -310,7 +310,10 @@ onBeforeUnmount(() => observer?.disconnect())
 
 <style scoped>
 .yam3x-pagination {
-  --_yam3x-pagination-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-pagination-gap: max(
+    8px,
+    var(--md-sys-spacing-8, calc(8px * var(--md-sys-density-spacing-scale, 1)))
+  );
   --_yam3x-pagination-color: var(--md-sys-color-on-surface);
   --_yam3x-pagination-supporting-color: var(--md-sys-color-on-surface-variant);
   --_yam3x-pagination-label-font: var(--md-sys-typescale-label-large-font-family);
@@ -346,8 +349,8 @@ onBeforeUnmount(() => observer?.disconnect())
   display: grid;
   place-items: center;
   flex: none;
-  min-inline-size: 48px;
-  min-block-size: 48px;
+  min-inline-size: var(--md-sys-touch-target-size, 48px);
+  min-block-size: var(--md-sys-touch-target-size, 48px);
 }
 .yam3x-pagination--compact .yam3x-pagination__pages-clip {
   position: absolute;

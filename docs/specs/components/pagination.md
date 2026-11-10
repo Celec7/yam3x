@@ -16,7 +16,7 @@ This project extension navigates a collection with a known total page count. It 
 
 The following assignments are project-defined. Use Label Large for compact page actions and Body Small for an optional range summary. The current page may use the emphasized Label Large counterpart; ordinary page labels stay baseline.
 
-- Project-defined: Arrange previous, page choices, and next in reading order with 8 px gaps. Reserve at least 48 px for each compact page action's interactive area. A selected page uses Secondary Container and On Secondary Container with a Full corner role; unselected page actions have no persistent filled container.
+- Project-defined: Arrange previous, page choices, and next in reading order with gaps from the shared 8 px spacing token and never below 8 px. Reserve the shared touch-target size for each compact page action's interactive area. A selected page uses Secondary Container and On Secondary Container with a Full corner role; unselected page actions have no persistent filled container.
 - `pagination.layout.adaptive` (project-defined): Show the first, last, current, and nearby page numbers when they fit. Ellipses indicate omitted pages and are not interactive controls. In narrow containers use previous, a visible current/total summary, and next; keep the same current page through the presentation change.
 - Project-defined: Place page-size selection and result summaries in a wrapping secondary group. They must not squeeze the primary navigation controls or require a fixed component width.
 

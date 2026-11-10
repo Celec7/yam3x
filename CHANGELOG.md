@@ -65,6 +65,7 @@
 - Autocomplete keeps an outlined field with a 3px primary focus outline, exposes hint and error supporting text, and aligns suggestions to the shared menu language: 44px visual rows inside 48px targets, a 3px secondary focus ring, label-large text, pointer-aware insets, and level 2 popup elevation.
 - Cascader resets the inherited OptionPanel menu padding so its own density-scaled 12px dialog padding is the single content inset; option surfaces now align with the title, search field, and footer while retaining the shared 44px visual rows inside 48px targets.
 - TreeSelect resets the inherited OptionPanel menu padding, uses density-scaled section gaps, aligns the search field, tree, and footer to one 12px content edge, and gives the multiple-selection disclosure a 48x48px target.
+- Pagination now uses the shared touch-target token for page actions and the shared 8px spacing token with an 8px floor.
 - File upload now uses a single drop boundary while dragging and applies a resolved disabled surface for both the prop and an ancestor fieldset, including hiding the drop instruction.
 - FilterChipSet now exposes a labeled toolbar of toggle buttons instead of a single-row grid, supports `ariaLabelledby` for a visible heading, keeps selected chips visible in forced colors, and centers the leading icon with an 8px label gap.
 - Tree view now uses the container density scale for row height with a 48px floor, spacing density for padding and internal gaps, and ripple-only pressed feedback instead of stacking a static pressed fill.

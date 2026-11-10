@@ -73,7 +73,7 @@ The page window includes the first, last, current, and adjacent pages. Ellipses 
 
 Zero results show a zero range with no numbered actions. A single page omits redundant navigation. If the total shrinks past the accepted page, the application must resolve a valid page: the component emits no automatic request, shows no invented current-page marker, and disables navigation until corrected. A page-size selector and range summary wrap separately from the primary navigation.
 
-The component preserves numeric alignment with tabular figures, reserves separate 48 px targets, and mirrors directional icons in RTL. Page buttons remain ordinary Tab stops; no grid-style arrow-key behavior is added. Pending state keeps the accepted page identifiable and provides a status message. The application owns focus after replacing result content.
+The component preserves numeric alignment with tabular figures, reserves the shared touch-target size for separate page targets, and mirrors directional icons in RTL. Gaps use the shared 8 px spacing token and never compress below 8 px. Page buttons remain ordinary Tab stops; no grid-style arrow-key behavior is added. Pending state keeps the accepted page identifiable and provides a status message. The application owns focus after replacing result content.
 
 ## Styling
 

@@ -112,6 +112,25 @@ test('adapts to its container, preserves focused identity, and keeps targets at 
   await paginator.screenshot({ path: '/tmp/yam3x-pagination-mobile.png' })
 })
 
+test('uses the shared touch target and keeps the 8px gap floor under density', async ({ page }) => {
+  const region = page.getByRole('region', { name: 'Local results', exact: true })
+  const root = region.locator('.yam3x-pagination')
+  const nav = region.getByRole('navigation', { name: 'Pagination', exact: true })
+  const target = nav.locator('.yam3x-pagination__target').first()
+  await expect(nav).toHaveCSS('column-gap', '8px')
+  await expect(target).toHaveCSS('min-width', '48px')
+  await expect(target).toHaveCSS('min-height', '48px')
+  await root.evaluate((element) => {
+    ;(element as HTMLElement).style.setProperty('--md-sys-density-spacing-scale', '0.75')
+  })
+  await expect(nav).toHaveCSS('column-gap', '8px')
+  await root.evaluate((element) => {
+    ;(element as HTMLElement).style.setProperty('--md-sys-touch-target-size', '56px')
+  })
+  await expect(target).toHaveCSS('min-width', '56px')
+  await expect(target).toHaveCSS('min-height', '56px')
+})
+
 test('uses paired selected roles and localizes navigation while honoring reduced motion', async ({
   page,
 }) => {
