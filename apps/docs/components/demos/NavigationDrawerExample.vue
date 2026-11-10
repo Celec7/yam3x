@@ -87,7 +87,7 @@ async function selectDestination(
           <template #selected-icon
             ><Icon
               name="inbox"
-              class="filled"
+              filled
           /></template>
         </NavigationDrawerItem>
       </NavigationDrawerSection>

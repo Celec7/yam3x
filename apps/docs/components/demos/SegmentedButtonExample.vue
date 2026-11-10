@@ -38,7 +38,7 @@ function onViewChange({ previousValue, value }: SegmentedButtonChangeDetail<stri
     >
       <SingleChoiceSegmentedButtonRow
         v-model="view"
-        aria-label="View mode"
+        :aria-label="t('View mode', '视图模式')"
         name="view"
         @change="onViewChange"
       >
@@ -77,7 +77,7 @@ function onViewChange({ previousValue, value }: SegmentedButtonChangeDetail<stri
     >
       <MultiChoiceSegmentedButtonRow
         v-model="filters"
-        aria-label="Content filters"
+        :aria-label="t('Content filters', '内容筛选')"
         name="filter"
         :density="2"
         :disabled="disableFilters"

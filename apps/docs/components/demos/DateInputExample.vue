@@ -4,7 +4,7 @@ import { Button } from '@registry/components/button'
 import { DateInput } from '@registry/components/date-input'
 import { useDemoLocale } from './use-demo-locale'
 
-const { locale, messages: text } = useDemoLocale({
+const { localeTag, messages: text } = useDemoLocale({
   en: {
     date: 'Date',
     appointment: 'Event date',
@@ -97,7 +97,7 @@ function submit(event: Event) {
           :label="text.appointment"
           :hint="text.dateHint"
           name="appointment"
-          :locale="locale"
+          :locale="localeTag"
           required
           @beforeinput="onDateBeforeInput"
           @input="recordDateInputEvent('input')"
@@ -155,7 +155,7 @@ function submit(event: Event) {
         :model-value="time"
         :label="text.disabledInput"
         disabled
-        :locale="locale"
+        :locale="localeTag"
       />
     </section>
     <section class="date-input-demo__section">
@@ -163,7 +163,7 @@ function submit(event: Event) {
       <DateInput
         v-model="limitedDate"
         :label="text.limitedDate"
-        :locale="locale"
+        :locale="localeTag"
         :min-date="new Date(2026, 9, 10)"
         :max-date="new Date(2026, 9, 20)"
         :is-date-selectable="selectableDate"
@@ -204,7 +204,7 @@ function submit(event: Event) {
         :model-value="dateTime"
         :label="text.readOnlyInput"
         readonly
-        :locale="locale"
+        :locale="localeTag"
       />
     </section>
   </div>

@@ -12,7 +12,12 @@ import {
 import { Icon } from '@registry/components/icon'
 import { useDemoLocale } from './use-demo-locale'
 
-const { t } = useDemoLocale()
+const { locale, t } = useDemoLocale()
+
+function localHref(path: string): string {
+  if (locale.value !== 'zh') return path
+  return path === '/' ? '/zh/' : `/zh${path}`
+}
 
 const mode = ref<NavigationRailMode>('collapsed')
 const expanded = ref<boolean | undefined>(undefined)
@@ -22,25 +27,25 @@ const hideWhenCollapsed = ref(false)
 const selected = ref('home')
 const events = ref<string[]>([])
 const items: NavigationRailItem[] = [
-  { value: 'home', label: t('Home', '首页'), href: '/' },
+  { value: 'home', label: t('Home', '首页'), href: localHref('/') },
   {
     value: 'search',
     label: t('Search', '搜索'),
-    href: '/components/search',
+    href: localHref('/components/search'),
     badge: 3,
     badgeLabel: t('3 new results', '3 条新结果'),
   },
-  { value: 'saved', label: t('Saved', '收藏'), href: '/components/list' },
+  { value: 'saved', label: t('Saved', '收藏'), href: localHref('/components/list') },
   {
     value: 'downloads',
     label: t('Downloads', '下载'),
-    href: '/guide/installation',
+    href: localHref('/guide/installation'),
     disabled: true,
   },
   {
     value: 'settings',
     label: t('Settings', '设置'),
-    href: '/guide/theme',
+    href: localHref('/guide/theme'),
     secondary: true,
   },
 ]

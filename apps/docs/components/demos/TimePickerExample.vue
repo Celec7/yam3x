@@ -11,7 +11,11 @@ import {
 } from '@registry/components/time-picker'
 import { useDemoLocale } from './use-demo-locale'
 
-const { locale, messages: text } = useDemoLocale({
+const {
+  locale,
+  localeTag,
+  messages: text,
+} = useDemoLocale({
   en: {
     notSubmitted: 'Not submitted',
     unselected: 'No time selected',
@@ -158,7 +162,7 @@ function formatDialValue({
       :presentation="presentation"
       :variant="variant"
       :show-seconds="showSeconds"
-      :locale="locale"
+      :locale="localeTag"
       :label="text.label"
       :hour-label="text.hour"
       :minute-label="text.minute"
@@ -187,7 +191,7 @@ function formatDialValue({
         <TimePicker
           v-model="composedValue"
           :format="format"
-          :locale="locale"
+          :locale="localeTag"
           :hour-label="text.hour"
           :minute-label="text.minute"
           :dial-value-label="formatDialValue"
@@ -197,7 +201,7 @@ function formatDialValue({
         <TimeInput
           v-model="composedValue"
           :format="format"
-          :locale="locale"
+          :locale="localeTag"
           :hour-label="text.hour"
           :minute-label="text.minute"
           :min-time="minTime"

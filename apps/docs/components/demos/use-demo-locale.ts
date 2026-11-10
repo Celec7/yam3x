@@ -4,6 +4,7 @@ import { useData } from 'vitepress'
 export type DemoLocale = 'en' | 'zh'
 type DemoLocaleApi = {
   locale: ComputedRef<DemoLocale>
+  localeTag: ComputedRef<'en-US' | 'zh-CN'>
   t: (english: string, chinese: string) => string
 }
 
@@ -17,10 +18,11 @@ export function useDemoLocale<T>(messages?: Record<DemoLocale, T>) {
   const locale = computed<DemoLocale>(() =>
     lang.value.toLowerCase().startsWith('zh') ? 'zh' : 'en',
   )
+  const localeTag = computed<'en-US' | 'zh-CN'>(() => (locale.value === 'zh' ? 'zh-CN' : 'en-US'))
 
   const t = (english: string, chinese: string) => (locale.value === 'en' ? english : chinese)
 
-  if (!messages) return { locale, t }
+  if (!messages) return { locale, localeTag, t }
 
-  return { locale, messages: computed(() => messages[locale.value]), t }
+  return { locale, localeTag, messages: computed(() => messages[locale.value]), t }
 }

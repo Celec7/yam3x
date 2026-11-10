@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { Calendar } from '@registry/components/calendar'
 import { useDemoLocale } from './use-demo-locale'
 
-const { locale, t } = useDemoLocale()
+const { localeTag, t } = useDemoLocale()
 
 function toLocalDate(value: Date): string {
   const year = value.getFullYear()
@@ -32,7 +32,7 @@ const rangeEnd = ref<string | null>(null)
     <label class="calendar-demo__label">{{ t('Standalone calendar', '独立日历') }}</label>
     <Calendar
       v-model="date"
-      :locale="locale"
+      :locale="localeTag"
       :is-special-date="(value) => value.endsWith('-15')"
     />
     <p>{{ t('Current selection:', '当前选择：') }} {{ date || t('None selected', '未选择') }}</p>
@@ -42,7 +42,7 @@ const rangeEnd = ref<string | null>(null)
       selection="range"
       :label="t('Date range', '日期范围')"
       :start-at="date"
-      :locale="locale"
+      :locale="localeTag"
     />
     <p>
       {{ t('Date range:', '日期范围：') }} {{ rangeStart || t('Start date', '开始日期') }} →
@@ -53,7 +53,7 @@ const rangeEnd = ref<string | null>(null)
       :start-at="restrictedStart"
       :min-date="restrictedMin"
       :max-date="restrictedMax"
-      :locale="locale"
+      :locale="localeTag"
       :is-date-selectable="(value) => value !== unavailableDate"
       :is-special-date="(value) => value.endsWith('-15')"
     />

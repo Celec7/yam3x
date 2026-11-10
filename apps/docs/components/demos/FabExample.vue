@@ -14,7 +14,7 @@ const { t } = useDemoLocale()
       <FloatingActionButton
         id="fab-example-default"
         size="default"
-        aria-label="Create project"
+        :aria-label="t('Create project', '创建项目')"
       >
         <Icon name="add" />
       </FloatingActionButton>

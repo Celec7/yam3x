@@ -6,13 +6,22 @@ import NavigationRail from '@registry/components/navigation-rail/navigation-rail
 import { Icon } from '@registry/components/icon'
 import { useDemoLocale } from './use-demo-locale'
 
-const { t } = useDemoLocale()
+const { locale, t } = useDemoLocale()
+
+function localHref(path: string): string {
+  if (locale.value !== 'zh') return path
+  return path === '/' ? '/zh/' : `/zh${path}`
+}
 
 const active = ref('overview')
 const localizedItems = [
-  { label: t('Overview', '概览'), value: 'overview', href: '/' },
-  { label: t('Components', '组件'), value: 'components', href: '/components/' },
-  { label: t('Design foundations', '设计基础'), value: 'foundations', href: '/guide/design' },
+  { label: t('Overview', '概览'), value: 'overview', href: localHref('/') },
+  { label: t('Components', '组件'), value: 'components', href: localHref('/components/') },
+  {
+    label: t('Design foundations', '设计基础'),
+    value: 'foundations',
+    href: localHref('/guide/design'),
+  },
 ]
 </script>
 
@@ -27,7 +36,7 @@ const localizedItems = [
       <NavigationBarItem
         value="overview"
         :label="t('Overview', '概览')"
-        href="/"
+        :href="localHref('/')"
       >
         <template #icon="{ selected }">
           <Icon
@@ -44,7 +53,7 @@ const localizedItems = [
       <NavigationBarItem
         value="components"
         :label="t('Components', '组件')"
-        href="/components/"
+        :href="localHref('/components/')"
       >
         <template #icon="{ selected }">
           <Icon
@@ -69,7 +78,7 @@ const localizedItems = [
       <NavigationBarItem
         value="foundations"
         :label="t('Design foundations', '设计基础')"
-        href="/guide/design"
+        :href="localHref('/guide/design')"
       >
         <template #icon="{ selected }">
           <Icon
@@ -84,6 +93,9 @@ const localizedItems = [
         /></template>
       </NavigationBarItem>
     </NavigationBar>
+    <p class="yam3x-demo__status">
+      {{ t('At 960px and wider, use a navigation rail.', '宽度达到 960px 时改用导航栏轨。') }}
+    </p>
     <NavigationRail
       v-model="active"
       class="navigation-bar-example__rail"
@@ -145,9 +157,6 @@ const localizedItems = [
   height: 420px;
 }
 @media (min-width: 960px) {
-  .navigation-bar-example__bar {
-    display: none;
-  }
   .navigation-bar-example__rail {
     display: block;
   }

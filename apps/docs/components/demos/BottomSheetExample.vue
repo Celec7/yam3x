@@ -129,6 +129,14 @@ function guardClose(event: Event): void {
         <BottomSheetAction>{{ t('Done', '完成') }}</BottomSheetAction>
       </BottomSheet>
     </div>
+    <p class="yam3x-demo__status">
+      {{
+        t(
+          'At wider window sizes, use a side sheet for the same contextual content.',
+          '在较宽窗口中，使用 side sheet 呈现相同的上下文内容。',
+        )
+      }}
+    </p>
     <div class="bottom-sheet-demo__wide-side-sheet">
       <SideSheet
         v-model:open="wideSideSheetOpen"
@@ -189,9 +197,6 @@ function guardClose(event: Event): void {
   display: none;
 }
 @media (min-width: 600px) {
-  .bottom-sheet-demo__mobile-modal {
-    display: none;
-  }
   .bottom-sheet-demo__wide-side-sheet {
     display: block;
   }
