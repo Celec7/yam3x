@@ -39,7 +39,7 @@ Material 3 Expressive 定义了组件内部使用的 Button、List 与进度展�
 
 ## 在应用中使用
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件：
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件：
 
 ```vue
 <script setup lang="ts">

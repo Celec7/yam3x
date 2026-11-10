@@ -37,9 +37,9 @@ One provider sets `en-US` and overrides the pagination `next` message. A compone
 
 ## Use in your app
 
-After [installation](/guide/installation), add `localization` alongside the components you use. Installing a migrated component copies its internal locale dependencies; add `localization` to obtain the public provider entry point.
+After [installation](/guide/start/installation), add `localization` alongside the components you use. Installing a migrated component copies its internal locale dependencies; add `localization` to obtain the public provider entry point.
 
-For an existing application, merge participating components following [Update copied source](/guide/updating). The CLI preserves existing files; adding the provider does not rewrite previously copied components.
+For an existing application, merge participating components following [Update copied source](/guide/maintain/updating). The CLI preserves existing files; adding the provider does not rewrite previously copied components.
 
 ```sh
 pnpm dlx @celec7/yam3x@latest add localization pagination

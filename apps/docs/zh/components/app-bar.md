@@ -43,7 +43,7 @@ Search 渲染的是按钮，不是文本框。激活后发出 `search` 事件，
 
 ## 在应用中导入
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件。请使用 `./components/yam3x/` 之类的调用方路径；演示源码中的 `@registry` 路径仅用于文档站点。
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件。请使用 `./components/yam3x/` 之类的调用方路径；演示源码中的 `@registry` 路径仅用于文档站点。
 
 ```vue
 <script setup lang="ts">

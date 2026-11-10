@@ -19,7 +19,7 @@ test('exposes a labelled ordered navigation trail with native links and current-
   await expect(navigation.locator('.yam3x-breadcrumb__separator').first()).toHaveCSS('top', '-1px')
   await expect(items.nth(0).getByRole('link', { name: 'Get started' })).toHaveAttribute(
     'href',
-    '/guide/installation',
+    '/guide/start/installation',
   )
   await expect(items.nth(1).getByRole('link', { name: 'Components' })).toHaveAttribute(
     'href',

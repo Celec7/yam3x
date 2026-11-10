@@ -40,13 +40,13 @@ const items: NavigationRailItem[] = [
   {
     value: 'downloads',
     label: t('Downloads', '下载'),
-    href: localHref('/guide/installation'),
+    href: localHref('/guide/start/installation'),
     disabled: true,
   },
   {
     value: 'settings',
     label: t('Settings', '设置'),
-    href: localHref('/guide/theme'),
+    href: localHref('/guide/foundations/color'),
     secondary: true,
   },
 ]

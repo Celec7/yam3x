@@ -37,7 +37,7 @@ Turn auto-sizing off to restore the textarea's original inline height and overfl
 
 ## Use in your app
 
-After [installation](/guide/installation), import the directive from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), import the directive from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">

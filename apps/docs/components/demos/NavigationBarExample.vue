@@ -20,7 +20,7 @@ const localizedItems = [
   {
     label: t('Design foundations', '设计基础'),
     value: 'foundations',
-    href: localHref('/guide/design'),
+    href: localHref('/guide/foundations/'),
   },
 ]
 </script>
@@ -78,7 +78,7 @@ const localizedItems = [
       <NavigationBarItem
         value="foundations"
         :label="t('Design foundations', '设计基础')"
-        :href="localHref('/guide/design')"
+        :href="localHref('/guide/foundations/')"
       >
         <template #icon="{ selected }">
           <Icon

@@ -7,7 +7,7 @@ hero:
   actions:
     - theme: brand
       text: 开始使用
-      link: /zh/guide/installation
+      link: /zh/guide/start/installation
     - theme: alt
       text: 浏览组件
       link: /zh/components/
@@ -20,4 +20,4 @@ features:
     details: 从主题、色彩、形状与动效入手，并查阅对应的 Material 规范。
 ---
 
-Material 3 的颜色、排版和动效规范见 [Material 3](https://m3.material.io/)；本项目的主题能力见[设计基础](/zh/guide/design)。
+Material 3 的颜色、排版和动效规范见 [Material 3](https://m3.material.io/)；本项目的主题能力见[基础总览](/zh/guide/foundations/)。

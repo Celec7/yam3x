@@ -26,7 +26,7 @@ import DatePickerExample from '../../components/demos/DatePickerExample.vue'
 
 ## 在应用中导入
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件。使用 `./components/yam3x/` 之类的使用者路径；演示源码中的 `@registry` 路径仅用于本站。
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件。使用 `./components/yam3x/` 之类的使用者路径；演示源码中的 `@registry` 路径仅用于本站。
 
 ```vue
 <script setup lang="ts">

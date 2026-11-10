@@ -35,7 +35,7 @@ Bottom sheet 从屏幕边缘呈现辅助内容或操作。Standard sheet 与主�
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入：
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入：
 
 ```vue
 <script setup lang="ts">

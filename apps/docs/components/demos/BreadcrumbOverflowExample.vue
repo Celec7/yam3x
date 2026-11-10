@@ -12,7 +12,7 @@ const wrap = ref(false)
 
 const basePath = locale.value === 'zh' ? '/zh' : ''
 const items = [
-  { label: t('Workspace', '工作区'), href: `${basePath}/guide/installation` },
+  { label: t('Workspace', '工作区'), href: `${basePath}/guide/start/installation` },
   { label: t('Design system', '设计系统'), href: `${basePath}/components/` },
   { label: t('Navigation components', '导航组件'), href: `${basePath}/components/breadcrumb` },
   {

@@ -126,6 +126,18 @@ Rules:
 - Pass `dir` or a documented direction prop for demos that claim RTL support.
 - Keep the demo source block. Do not duplicate the same demo source on another page.
 
+## Guide information architecture
+
+The site keeps lifecycle tasks, maintenance, and design foundations separate:
+
+- `/guide/start/` is the entry point and path chooser.
+- `/guide/start/installation` owns setup and the first component.
+- `/guide/maintain/updating` owns version comparison and merge work.
+- `/guide/foundations/` is the foundations overview.
+- `/guide/foundations/layout`, `typography`, `color`, `spacing`, and `gestures` own one foundation each.
+
+Keep old guide URLs as meta-refresh stubs when a route moves. Internal links use the new routes; `pnpm docs:check` rejects links to retired guide routes.
+
 ## Task guides
 
 Use this structure for installation, configuration, and update tasks under `apps/docs/guide/`. Adapt steps to the task; troubleshooting is optional.

@@ -6,7 +6,7 @@ import SplitPaneExample from '../../components/demos/SplitPaneExample.vue'
 
 Split pane 将主要内容与相关辅助内容并排放置，并允许调整分隔比例。两个区域都需要保持可见，且相对空间值得调整时使用它。
 
-Split pane 是项目扩展。Material 描述了[辅助窗格](/zh/guide/design)布局，但没有定义独立可拖动组件；Compose Material 3 也没有直接基元，最接近的组合是带可拖动分隔器的 `Row` 或 `Box`。紧凑宽度单窗格切换、599px 与 840px 断点以及分隔器交互都属于项目决策。分隔器语义和键盘行为遵循 [WAI-ARIA window splitter 模式](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/)。
+Split pane 是项目扩展。Material 描述了[辅助窗格](/zh/guide/foundations/layout)布局，但没有定义独立可拖动组件；Compose Material 3 也没有直接基元，最接近的组合是带可拖动分隔器的 `Row` 或 `Box`。紧凑宽度单窗格切换、599px 与 840px 断点以及分隔器交互都属于项目决策。分隔器语义和键盘行为遵循 [WAI-ARIA window splitter 模式](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/)。
 
 ## 示例
 
@@ -24,7 +24,7 @@ Split pane 是项目扩展。Material 描述了[辅助窗格](/zh/guide/design)�
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">

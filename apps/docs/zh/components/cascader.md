@@ -52,7 +52,7 @@ Material 没有定义独立的 Cascader 组件。最接近的 Compose Material 3
 
 ## 在应用中使用
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件与字段包装组件：
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件与字段包装组件：
 
 ```vue
 <script setup lang="ts">

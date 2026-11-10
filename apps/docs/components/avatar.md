@@ -24,7 +24,7 @@ The row shows the default 40 px round avatar, a 48 px icon-only avatar, a 40 px 
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">

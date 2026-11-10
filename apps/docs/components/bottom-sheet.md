@@ -35,7 +35,7 @@ Detents can be named, percentages, pixel strings, or numbers. Change the unit to
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied components from your app:
+After [installation](/guide/start/installation), import the copied components from your app:
 
 ```vue
 <script setup lang="ts">

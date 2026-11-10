@@ -50,7 +50,7 @@ Toggles expose `aria-pressed`. A selected round toggle adopts the size's square 
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied components from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), import the copied components from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">
@@ -97,7 +97,7 @@ const alignment = ref('start')
 
 <template>
   <IconButton
-    href="/guide/installation"
+    href="/guide/start/installation"
     variant="outlined"
     aria-label="Open installation"
   >

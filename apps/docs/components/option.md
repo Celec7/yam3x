@@ -52,7 +52,7 @@ Set `role="dialog"` when the surface contains controls that are not a single opt
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied primitives from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), import the copied primitives from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">

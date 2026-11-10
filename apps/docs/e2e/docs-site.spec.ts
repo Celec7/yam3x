@@ -5,16 +5,16 @@ test('public guides lead from installation to design foundations and component r
 }) => {
   await page.goto('/')
   await page.getByRole('link', { name: 'Get started', exact: true }).first().click()
-  await expect(page).toHaveURL('/guide/installation')
+  await expect(page).toHaveURL('/guide/start/installation')
   await expect(
     page.getByRole('heading', { name: 'Installation and first use', level: 1 }),
   ).toBeVisible()
   await page.getByRole('link', { name: 'Update copied source' }).first().click()
-  await expect(page).toHaveURL('/guide/updating')
-  await page.getByRole('link', { name: 'Design foundations', exact: true }).first().click()
-  await expect(page).toHaveURL('/guide/design')
+  await expect(page).toHaveURL('/guide/maintain/updating')
+  await page.getByRole('link', { name: 'Foundations', exact: true }).first().click()
+  await expect(page).toHaveURL('/guide/foundations/')
   await page.getByRole('link', { name: 'Color and theming' }).first().click()
-  await expect(page).toHaveURL('/guide/theme')
+  await expect(page).toHaveURL('/guide/foundations/color')
   await page.getByRole('link', { name: 'Components', exact: true }).first().click()
   await expect(page).toHaveURL('/components/')
   await page.getByRole('link', { name: 'Buttons', exact: true }).first().click()

@@ -52,7 +52,7 @@ Material 3 Expressive 没有定义 TreeSelect。最接近的 Compose 组合是�
 
 ## 在应用中使用
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件与字段包装组件：
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件与字段包装组件：
 
 ```vue
 <script setup lang="ts">

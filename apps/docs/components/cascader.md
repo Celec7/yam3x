@@ -52,7 +52,7 @@ The controls mirror the picker, disable the field through a fieldset, allow bran
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component and the field wrapper from your app:
+After [installation](/guide/start/installation), import the copied component and the field wrapper from your app:
 
 ```vue
 <script setup lang="ts">

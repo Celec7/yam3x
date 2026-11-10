@@ -24,7 +24,7 @@ The demo compares the small, medium, and large sizes, a text-only Extended FAB, 
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">
@@ -70,7 +70,7 @@ import { Icon } from './components/yam3x/icon'
 
   <ExtendedFloatingActionButton
     lowered
-    href="/guide/installation"
+    href="/guide/start/installation"
   >
     <template #icon>
       <Icon

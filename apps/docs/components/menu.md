@@ -35,7 +35,7 @@ Menu items can show a leading icon, supporting text, a badge, trailing text or a
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app:
+After [installation](/guide/start/installation), import the copied component from your app:
 
 ```vue
 <script setup lang="ts">

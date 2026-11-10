@@ -15,7 +15,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 Vite 插件或样式构建步骤。完整步骤请参阅[安装指南](apps/docs/zh/guide/installation.md)。
+CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 Vite 插件或样式构建步骤。完整步骤请参阅[安装指南](apps/docs/zh/guide/start/installation.md)。
 
 ## 文档
 
@@ -23,11 +23,11 @@ CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 
 - [文档索引](docs/README.md)
 - [项目术语表](docs/glossary.md)
 - [组件交付流水线](docs/contributing/component-implementation.md)
-- [安装和使用组件](apps/docs/zh/guide/installation.md)
-- [设计基础](apps/docs/zh/guide/design.md)
+- [安装和使用组件](apps/docs/zh/guide/start/installation.md)
+- [基础](apps/docs/zh/guide/foundations/index.md)
 - [项目组件设计指南](docs/specs/README.md)
-- [主题与动态颜色](apps/docs/zh/guide/theme.md)
-- [更新已复制的源码](apps/docs/zh/guide/updating.md)
+- [颜色与主题](apps/docs/zh/guide/foundations/color.md)
+- [更新已复制的源码](apps/docs/zh/guide/maintain/updating.md)
 - [共享设计基础](docs/specs/foundations.md)
 - [架构与源码归属](docs/architecture.md)
 - [CLI 包参考](packages/cli/README.md)

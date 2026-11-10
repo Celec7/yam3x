@@ -39,7 +39,7 @@ Standard button groups add interaction between adjacent buttons so they respond 
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied components from your app:
+After [installation](/guide/start/installation), import the copied components from your app:
 
 ```vue
 <script setup lang="ts">

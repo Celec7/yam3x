@@ -37,7 +37,7 @@ The lowered style uses the project's lower elevation. `href` renders a native li
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), import the copied component from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">
@@ -86,7 +86,7 @@ import { Icon } from './components/yam3x/icon'
   </FloatingActionButton>
 
   <FloatingActionButton
-    href="/guide/installation"
+    href="/guide/start/installation"
     variant="secondary-container"
     aria-label="Open installation"
   >

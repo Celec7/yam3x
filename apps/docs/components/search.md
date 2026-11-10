@@ -37,7 +37,7 @@ The app bar keeps a single entry point and mounts Search only while it is open. 
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app:
+After [installation](/guide/start/installation), import the copied component from your app:
 
 ```vue
 <script setup lang="ts">

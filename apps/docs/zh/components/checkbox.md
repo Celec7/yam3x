@@ -54,7 +54,7 @@ Checkbox 让用户从列表中选择一个或多个项目，或开启、关闭�
 
 ## 在应用中导入
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">

@@ -37,7 +37,7 @@ lowered 样式使用项目定义的较低高度。`href` 渲染原生链接；�
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">
@@ -86,7 +86,7 @@ import { Icon } from './components/yam3x/icon'
   </FloatingActionButton>
 
   <FloatingActionButton
-    href="/zh/guide/installation"
+    href="/zh/guide/start/installation"
     variant="secondary-container"
     aria-label="打开安装指南"
   >

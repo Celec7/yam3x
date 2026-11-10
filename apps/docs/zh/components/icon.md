@@ -56,7 +56,7 @@ Material Symbols 是新的默认图标集，提供 outlined、rounded 和 sharp 
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；示例源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；示例源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">

@@ -52,7 +52,7 @@ import NumberFieldStatesExample from '../../components/demos/NumberFieldStatesEx
 
 ## 在应用中导入
 
-先按[安装指南](/zh/guide/installation)复制组件及其 Form field 与 Icon button 依赖，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)复制组件及其 Form field 与 Icon button 依赖，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">

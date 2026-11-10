@@ -39,7 +39,7 @@ Standard button group 会为相邻按钮增加联动，使它们相互响应。
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入：
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入：
 
 ```vue
 <script setup lang="ts">

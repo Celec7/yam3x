@@ -29,6 +29,77 @@ function fencedCode(source) {
   return [...source.matchAll(/```[^\n]*\n([\s\S]*?)```/g)].map((match) => match[1])
 }
 
+const guideRoot = path.join(root, 'apps/docs/guide')
+const zhGuideRoot = path.join(root, 'apps/docs/zh/guide')
+
+async function markdownFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true })
+  const files = []
+  for (const entry of entries) {
+    const target = path.join(directory, entry.name)
+    if (entry.isDirectory()) files.push(...(await markdownFiles(target)))
+    else if (entry.name.endsWith('.md')) files.push(target)
+  }
+  return files
+}
+
+function isRedirect(source) {
+  return /http-equiv:\s*refresh/.test(source)
+}
+
+const guidePages = await markdownFiles(guideRoot)
+for (const enPath of guidePages) {
+  const relative = path.relative(guideRoot, enPath)
+  const zhPath = path.join(zhGuideRoot, relative)
+  const en = await readFile(enPath, 'utf8')
+  let zh
+  try {
+    zh = await readFile(zhPath, 'utf8')
+  } catch {
+    errors.push(`guide/${relative}: missing Chinese mirror`)
+    continue
+  }
+  if (isRedirect(en) || isRedirect(zh)) continue
+  if (!/^#\s+/m.test(en)) errors.push(`guide/${relative}: missing H1`)
+  if (headingLevels(en).join(',') !== headingLevels(zh).join(',')) {
+    errors.push(`guide/${relative}: EN and ZH heading levels differ`)
+  }
+}
+
+const oldGuideRoutes = new Set([
+  '/guide/',
+  '/guide/installation',
+  '/guide/updating',
+  '/guide/design',
+  '/guide/theme',
+  '/guide/gestures',
+])
+const markdownSources = [
+  ...(await markdownFiles(path.join(root, 'apps/docs/components'))),
+  ...(await markdownFiles(path.join(root, 'apps/docs/zh/components'))),
+  ...guidePages,
+  ...(await markdownFiles(zhGuideRoot)),
+]
+for (const sourcePath of markdownSources) {
+  const source = await readFile(sourcePath, 'utf8')
+  const prose = source.replace(/```[^\n]*\n[\s\S]*?```/g, '')
+  for (const match of prose.matchAll(/\]\(((?:\/zh)?\/guide\/[^)\s#]*)(?:#[^)]*)?\)/g)) {
+    const route = match[1]
+    if (oldGuideRoutes.has(route)) {
+      errors.push(`${path.relative(root, sourcePath)}: old guide route ${route}`)
+      continue
+    }
+    const relative = route.replace(/^\/zh\//, '').replace(/^\//, '')
+    const target = route.endsWith('/') ? `${relative}index.md` : `${relative}.md`
+    const targetPath = path.join(root, 'apps/docs', route.startsWith('/zh/') ? 'zh' : '', target)
+    try {
+      await readFile(targetPath, 'utf8')
+    } catch {
+      errors.push(`${path.relative(root, sourcePath)}: missing guide target ${route}`)
+    }
+  }
+}
+
 const demoFiles = new Set(
   (await readdir(demos))
     .filter((name) => name.endsWith('.vue'))
@@ -36,11 +107,11 @@ const demoFiles = new Set(
 )
 const usedDemos = new Set()
 
-for (const file of await readdir(path.join(root, 'apps/docs/guide'))) {
-  if (!file.endsWith('.md')) continue
-  const source = await readFile(path.join(root, 'apps/docs/guide', file), 'utf8')
+for (const filePath of guidePages) {
+  const source = await readFile(filePath, 'utf8')
+  const relative = path.relative(path.join(root, 'apps/docs/guide'), filePath)
   for (const match of source.matchAll(/<<<\s+([^\s{]+)/g)) {
-    const target = path.posix.normalize(path.posix.join('guide', match[1]))
+    const target = path.posix.normalize(path.posix.join('guide', path.dirname(relative), match[1]))
     if (target.includes('/demos/')) usedDemos.add(target.replace('../components/', 'components/'))
   }
 }
@@ -124,5 +195,7 @@ if (errors.length) {
   for (const error of errors) console.error(`  - ${error}`)
   process.exitCode = 1
 } else {
-  console.log(`OK: ${pages.length} component page pairs and ${demoFiles.size} demos checked.`)
+  console.log(
+  `OK: ${pages.length} component page pairs, ${guidePages.length} guide pages, and ${demoFiles.size} demos checked.`,
+)
 }

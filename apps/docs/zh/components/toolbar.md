@@ -50,7 +50,7 @@ Floating 工具栏将紧凑的操作组放在内容附近。此静态示例使�
 
 ## 在应用中导入
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件。请使用 `./components/yam3x/` 之类的调用方路径；演示源码中的 `@registry` 路径仅用于文档站点。
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件。请使用 `./components/yam3x/` 之类的调用方路径；演示源码中的 `@registry` 路径仅用于文档站点。
 
 ```vue
 <script setup lang="ts">

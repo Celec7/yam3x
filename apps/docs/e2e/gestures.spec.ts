@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/guide/gestures')
+  await page.goto('/guide/foundations/gestures')
 })
 
 test('long press reports start and end while preserving the native button', async ({ page }) => {

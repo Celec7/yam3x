@@ -5,7 +5,7 @@ test('theme guide applies variants and settings, follows system mode, and report
   page,
 }) => {
   await page.emulateMedia({ colorScheme: 'light' })
-  await page.goto('/guide/theme')
+  await page.goto('/guide/foundations/color')
   const target = page.getByTestId('theme-target')
   const icon = page.getByRole('img', { name: 'Current theme preview' })
   await expect(target).toHaveAttribute('data-theme', 'light')
@@ -141,7 +141,7 @@ test('theme guide applies variants and settings, follows system mode, and report
     .not.toBe(rootPrimary)
   await page.goBack()
   await page.goBack()
-  await expect(page).toHaveURL('/guide/theme')
+  await expect(page).toHaveURL('/guide/foundations/color')
   await page.getByRole('button', { name: 'Reset component demo theme' }).click()
   await expect(page.getByRole('button', { name: 'Apply to component demos' })).toBeVisible()
 })

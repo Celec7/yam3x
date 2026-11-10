@@ -7,7 +7,7 @@ hero:
   actions:
     - theme: brand
       text: Get started
-      link: /guide/installation
+      link: /guide/start/installation
     - theme: alt
       text: Browse components
       link: /components/
@@ -20,4 +20,4 @@ features:
     details: Start with theming, color, shape, and motion, with links to the corresponding Material guidance.
 ---
 
-For Material 3 guidance on color, typography, and motion, see [Material 3](https://m3.material.io/). For this project's theme features, see [Design foundations](/guide/design).
+For Material 3 guidance on color, typography, and motion, see [Material 3](https://m3.material.io/). For this project's theme features, see [Foundations](/guide/foundations/).

@@ -37,7 +37,7 @@ Search 让用户输入查询并查看相关建议或结果。Search 是 Material
 
 ## 在应用中使用
 
-完成[安装](/zh/guide/installation)后，从应用中导入复制后的组件：
+完成[安装](/zh/guide/start/installation)后，从应用中导入复制后的组件：
 
 ```vue
 <script setup lang="ts">

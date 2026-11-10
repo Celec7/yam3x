@@ -11,4 +11,4 @@ const { extensionGroups } = getComponentCatalog('zh')
 
 <CatalogGroups :groups="extensionGroups" base-path="/zh" />
 
-使用这些模块前，请先完成[安装与首次使用](/zh/guide/installation)。各页面的 API 以当前 Vue 源码为准。
+使用这些模块前，请先完成[安装与首次使用](/zh/guide/start/installation)。各页面的 API 以当前 Vue 源码为准。

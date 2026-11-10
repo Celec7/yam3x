@@ -16,31 +16,41 @@ function catalogSidebar(groups: ComponentGroup[], prefix = '') {
 function localeThemeConfig(prefix: '' | '/zh', english = false) {
   const labels = english
     ? {
-        guide: 'Guides',
-        design: 'Design guidance',
+        start: 'Start',
+        startOverview: 'Start here',
+        maintain: 'Maintain',
+        foundations: 'Foundations',
+        foundationsOverview: 'Foundations overview',
+        layout: 'Layout and adaptive structure',
+        typography: 'Typography',
         components: 'Components',
         extensions: 'Extensions',
         catalog: 'Component catalog',
         allComponents: 'All components',
         extensionCatalog: 'Extension catalog',
-        start: 'Overview',
         installation: 'Installation and first use',
         updating: 'Updating copied source',
         colors: 'Color and theming',
+        spacing: 'Spacing and density',
         gestures: 'Gestures and interaction',
       }
     : {
-        guide: '使用指南',
-        design: '设计指南',
+        start: '开始',
+        startOverview: '开始使用',
+        maintain: '维护',
+        foundations: '基础',
+        foundationsOverview: '基础总览',
+        layout: '布局与自适应结构',
+        typography: '排版',
         components: '组件',
         extensions: '项目拓展',
         catalog: '组件目录',
         allComponents: '全部组件',
         extensionCatalog: '拓展目录',
-        start: '总览',
         installation: '安装与首次使用',
         updating: '更新已复制的源码',
         colors: '颜色与主题',
+        spacing: '间距与密度',
         gestures: '手势与交互',
       }
   const catalog = getComponentCatalog(english ? 'en' : 'zh')
@@ -73,36 +83,65 @@ function localeThemeConfig(prefix: '' | '/zh', english = false) {
       group.items.map((item) => [`${prefix}/components/${item.path}`, extensionSidebar]),
     ),
   )
-  const guideSidebar = [
+  const startSidebar = [
     {
-      text: labels.guide,
+      text: labels.start,
       items: [
-        { text: labels.start, link: `${prefix}/guide/` },
-        { text: labels.installation, link: `${prefix}/guide/installation` },
-        { text: labels.updating, link: `${prefix}/guide/updating` },
+        { text: labels.startOverview, link: `${prefix}/guide/start/` },
+        { text: labels.installation, link: `${prefix}/guide/start/installation` },
+      ],
+    },
+    {
+      text: labels.maintain,
+      items: [
+        { text: labels.updating, link: `${prefix}/guide/maintain/updating` },
       ],
     },
   ]
-  const designSidebar = [
+  const foundationsSidebar = [
     {
-      text: labels.design,
+      text: labels.foundations,
       items: [
-        { text: labels.start, link: `${prefix}/guide/design` },
-        { text: labels.colors, link: `${prefix}/guide/theme` },
-        { text: labels.gestures, link: `${prefix}/guide/gestures` },
+        { text: labels.foundationsOverview, link: `${prefix}/guide/foundations/` },
+        { text: labels.layout, link: `${prefix}/guide/foundations/layout` },
+        { text: labels.typography, link: `${prefix}/guide/foundations/typography` },
+        { text: labels.colors, link: `${prefix}/guide/foundations/color` },
+        { text: labels.spacing, link: `${prefix}/guide/foundations/spacing` },
+        { text: labels.gestures, link: `${prefix}/guide/foundations/gestures` },
       ],
     },
   ]
-  const designPageSidebars = Object.fromEntries(
-    ['design', 'theme', 'gestures'].map((page) => [`${prefix}/guide/${page}`, designSidebar]),
+  const startPageSidebars = Object.fromEntries(
+    [
+      `${prefix}/guide/`,
+      `${prefix}/guide/start/`,
+      `${prefix}/guide/start/installation`,
+      `${prefix}/guide/installation`,
+      `${prefix}/guide/updating`,
+      `${prefix}/guide/maintain/updating`,
+    ].map((page) => [page, startSidebar]),
+  )
+  const foundationsPageSidebars = Object.fromEntries(
+    [
+      `${prefix}/guide/design`,
+      `${prefix}/guide/theme`,
+      `${prefix}/guide/gestures`,
+      `${prefix}/guide/foundations/`,
+      `${prefix}/guide/foundations/index`,
+      `${prefix}/guide/foundations/layout`,
+      `${prefix}/guide/foundations/typography`,
+      `${prefix}/guide/foundations/color`,
+      `${prefix}/guide/foundations/spacing`,
+      `${prefix}/guide/foundations/gestures`,
+    ].map((page) => [page, foundationsSidebar]),
   )
 
   return {
     langMenuLabel: english ? 'Change language' : '切换语言',
     socialLinks: [],
     nav: [
-      { text: labels.guide, link: `${prefix}/guide/` },
-      { text: labels.design, link: `${prefix}/guide/design` },
+      { text: labels.start, link: `${prefix}/guide/start/` },
+      { text: labels.foundations, link: `${prefix}/guide/foundations/` },
       { text: labels.components, link: `${prefix}/components/` },
       { text: labels.extensions, link: `${prefix}/extensions/` },
     ],
@@ -111,8 +150,8 @@ function localeThemeConfig(prefix: '' | '/zh', english = false) {
       ...extensionPageSidebars,
       [`${prefix}/components/`]: componentSidebar,
       [`${prefix}/extensions/`]: extensionSidebar,
-      [`${prefix}/guide/`]: guideSidebar,
-      ...designPageSidebars,
+      ...startPageSidebars,
+      ...foundationsPageSidebars,
     },
   }
 }

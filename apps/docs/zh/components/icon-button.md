@@ -50,7 +50,7 @@ toggle 暴露 `aria-pressed`。选中的圆形 toggle 采用该尺寸的方形�
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">
@@ -97,7 +97,7 @@ const alignment = ref('start')
 
 <template>
   <IconButton
-    href="/zh/guide/installation"
+    href="/zh/guide/start/installation"
     variant="outlined"
     aria-label="打开安装指南"
   >

@@ -35,7 +35,7 @@ Menu 在临时表面上显示一组选项。菜单可以从多种控件打开，
 
 ## 在应用中使用
 
-先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入：
+先按[安装指南](/zh/guide/start/installation)复制组件，再从应用中导入：
 
 ```vue
 <script setup lang="ts">

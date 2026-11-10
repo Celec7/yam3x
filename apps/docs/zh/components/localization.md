@@ -37,9 +37,9 @@ import LocalizationOverridesExample from '../../components/demos/LocalizationOve
 
 ## 在应用中使用
 
-完成[安装](/zh/guide/installation)后，将 `localization` 与所需组件一起添加。安装已迁移的组件会复制其内部本地化依赖；添加 `localization` 可获得公开 provider 入口。
+完成[安装](/zh/guide/start/installation)后，将 `localization` 与所需组件一起添加。安装已迁移的组件会复制其内部本地化依赖；添加 `localization` 可获得公开 provider 入口。
 
-已有应用升级时，请按[更新复制的源码](/zh/guide/updating)合并参与组件；CLI 会保留现有文件，仅添加 provider 不会改写原来的组件。
+已有应用升级时，请按[更新复制的源码](/zh/guide/maintain/updating)合并参与组件；CLI 会保留现有文件，仅添加 provider 不会改写原来的组件。
 
 ```sh
 pnpm dlx @celec7/yam3x@latest add localization pagination

@@ -39,7 +39,7 @@ Expand the block to mount a selection-only field with `:multiple="false"` and no
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app:
+After [installation](/guide/start/installation), import the copied component from your app:
 
 ```vue
 <script setup lang="ts">

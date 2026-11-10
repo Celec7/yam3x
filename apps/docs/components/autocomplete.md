@@ -65,7 +65,7 @@ The examples cover native required validation, `selection-required`, form reset,
 
 ## Use in your app
 
-After [installation](/guide/installation), import the copied component from your app:
+After [installation](/guide/start/installation), import the copied component from your app:
 
 ```vue
 <script setup lang="ts">

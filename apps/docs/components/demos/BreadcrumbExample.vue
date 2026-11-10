@@ -10,7 +10,7 @@ const { locale, t } = useDemoLocale()
 const wrap = ref(false)
 const basePath = locale.value === 'zh' ? '/zh' : ''
 const items = [
-  { label: t('Get started', '开始使用'), href: `${basePath}/guide/installation` },
+  { label: t('Get started', '开始使用'), href: `${basePath}/guide/start/installation` },
   { label: t('Components', '组件'), href: `${basePath}/components/` },
   {
     label: t('Interaction and selection', '交互与选择'),

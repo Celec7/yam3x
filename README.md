@@ -15,7 +15,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-The CLI copies editable source and declares dependencies; the copied components need no additional Vite plugins or styling build step. See the [installation guide](apps/docs/guide/installation.md) for a complete walkthrough.
+The CLI copies editable source and declares dependencies; the copied components need no additional Vite plugins or styling build step. See the [installation guide](apps/docs/guide/start/installation.md) for a complete walkthrough.
 
 ## Documentation
 
@@ -23,11 +23,11 @@ The CLI copies editable source and declares dependencies; the copied components 
 - [Documentation index](docs/README.md)
 - [Project glossary](docs/glossary.md)
 - [Component delivery pipeline](docs/contributing/component-implementation.md)
-- [Install and use components](apps/docs/guide/installation.md)
-- [Design foundations](apps/docs/guide/design.md)
+- [Install and use components](apps/docs/guide/start/installation.md)
+- [Foundations](apps/docs/guide/foundations/index.md)
 - [Project component design guides](docs/specs/README.md)
-- [Theme and dynamic color](apps/docs/guide/theme.md)
-- [Update copied source](apps/docs/guide/updating.md)
+- [Color and theming](apps/docs/guide/foundations/color.md)
+- [Update copied source](apps/docs/guide/maintain/updating.md)
 - [Shared design foundations](docs/specs/foundations.md)
 - [Architecture and source ownership](docs/architecture.md)
 - [CLI package reference](packages/cli/README.md)

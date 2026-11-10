@@ -11,4 +11,4 @@ This catalog lists helper modules and extended capabilities that yam3x provides 
 
 <CatalogGroups :groups="extensionGroups" />
 
-Follow [Installation and first use](/guide/installation) before using these modules. Each page documents the API in the current Vue source.
+Follow [Installation and first use](/guide/start/installation) before using these modules. Each page documents the API in the current Vue source.
