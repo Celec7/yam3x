@@ -2,7 +2,7 @@
 
 ## Scope
 
-`ChipSet` is a project layout helper for arranging related chips. Material defines chip patterns and group guidance, not this Vue helper or its API. Shared source-backed requirements are collected in the [Chips family guide](chips.md).
+`ChipSet` is a project layout helper for arranging related chips. Material defines chip patterns and group guidance, not this helper or its API. Shared source-backed requirements are collected in the [Chips family guide](chips.md). Compose `FlowRow`, or `Row`, with the existing chip primitives is the closest composition.
 
 ## Design target
 
@@ -12,5 +12,7 @@
 
 ## Project decisions
 
-- Project-defined extension: `ChipSet` owns layout only and does not impose selection or input semantics, leaving those behaviors to the chips and their purpose-built set helpers.
-- Project-defined layout: A vertical arrangement is allowed when the surrounding design deliberately calls for it; Material's chip-set guidance uses an inline group.
+The following are project decisions.
+
+- `ChipSet` owns layout only and does not impose selection or input semantics, leaving those behaviors to the chips and their purpose-built set helpers.
+- A vertical arrangement is allowed when the surrounding design deliberately calls for it; Material's chip-set guidance uses an inline group.

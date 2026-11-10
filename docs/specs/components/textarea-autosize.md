@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project extension lets a multi-line text field grow with its content within product-defined limits. Material defines multi-line text fields but does not require automatic resizing.
+This project extension lets a multi-line text field grow with its content within product-defined limits. Material defines multi-line text fields but does not require automatic resizing. The closest Compose composition is `OutlinedTextField` or `BasicTextField` with measured text height.
 
 ## Design target
 
@@ -12,4 +12,6 @@ This project extension lets a multi-line text field grow with its content within
 
 ## Project decisions
 
-- Project-defined: Content-driven height and minimum/maximum bounds are extension behavior because Material does not prescribe auto-sizing. Keep entered text usable without clipping and use internal scrolling after the selected maximum height is reached.
+The following is a project decision.
+
+- Content-driven height and minimum and maximum bounds are extension behavior because Material does not prescribe auto-sizing. Keep entered text usable without clipping and use internal scrolling after the selected maximum height is reached.

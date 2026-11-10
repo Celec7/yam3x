@@ -24,9 +24,11 @@ Sliders let people choose and adjust a value along a range. This guide adopts Ma
 
 ## Project decisions
 
-- Project-defined: The owning feature determines the range, step interval, units, and any synchronized text-field presentation.
-- Project-defined: The API continues to allow vertical range sliders for layouts that need them; horizontal is the recommended choice.
-- Project-defined: Stop positions use the usable span between the rounded track end-cap centers, matching Jetpack Compose. The thumb uses the same span for interior values and stays at the physical track end for the minimum and maximum values.
-- Project-defined: The stop at the active handle value is omitted because the handle occupies that position. Standard sliders keep the first tick and replace the last tick with the inactive-end stop; centered and range sliders omit both endpoint ticks and draw an end stop at each visible inactive end. The `stops` prop controls the interior ticks and requires a step interval greater than one.
-- Project-defined: The end stop sits on the same cap-center grid as the other stops so every interval stays equal. The token table's `stop-indicator.trailing-space` is not applied as an extra offset; doing so would leave the final interval larger than the interior intervals, and neither Compose nor Android Views consumes that token.
-- Project-defined: On standard sliders with inset icons, move the icon to the inactive side while the active track fraction is below 30%. This threshold keeps the icon legible near the start of the range.
+The choices below are project-defined.
+
+- The owning feature determines the range, step interval, units, and any synchronized text-field presentation.
+- Vertical range sliders remain available for layouts that need them; horizontal is the recommended choice.
+- Stop positions use the usable span between the rounded track end-cap centers, matching Jetpack Compose. The thumb uses the same span for interior values and stays at the physical track end for the minimum and maximum values.
+- The stop at the active handle value is omitted because the handle occupies that position. Standard sliders keep the first tick and replace the last tick with the inactive-end stop; centered and range sliders omit both endpoint ticks and draw an end stop at each visible inactive end. Interior stop indicators are opt-in and require a step interval greater than one.
+- The end stop sits on the same cap-center grid as the other stops so every interval stays equal. The token table's `stop-indicator.trailing-space` is not applied as an extra offset; doing so would leave the final interval larger than the interior intervals, and neither Compose nor Android Views consumes that token.
+- On standard sliders with inset icons, move the icon to the inactive side while the active track fraction is below 30%. This threshold keeps the icon legible near the start of the range.

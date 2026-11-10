@@ -2,7 +2,7 @@
 
 ## Scope
 
-Suggestion chips present product-generated next steps or responses that help narrow a person's intent. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview).
+Suggestion chips present product-generated next steps or responses that help narrow a person's intent. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview) and the [Chips family guide](chips.md) for shared geometry and accessibility.
 
 ## Design target
 
@@ -16,4 +16,4 @@ Suggestion chips present product-generated next steps or responses that help nar
 ### Appearance and accessibility
 
 - Keep each suggestion understandable without relying on an icon. See [Chips accessibility: labeling](https://m3.material.io/components/chips/accessibility).
-- Follow the shared chip geometry, contrast, state feedback, and keyboard guidance in the [Chips family guide](chips.md).
+- Follow the shared chip contrast, state feedback, and keyboard guidance in the [Chips family guide](chips.md).

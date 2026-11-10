@@ -2,7 +2,7 @@
 
 ## Scope
 
-Breadcrumbs show a page's position within a hierarchy and provide links to ancestor pages. Material 3 does not define a dedicated Breadcrumb component or visual contract.
+Breadcrumbs show a page's position within a hierarchy and provide links to ancestor pages. Material 3 does not define a dedicated Breadcrumb component or visual contract. No direct primitive exists; the closest composition is Compose `Row` with text and icon buttons.
 
 ## Design target
 
@@ -11,10 +11,12 @@ Breadcrumbs show a page's position within a hierarchy and provide links to ances
 
 ## Project decisions
 
-- Project-defined (`breadcrumb.extension.navigation-semantics`): Present the hierarchy as a compact navigation trail with links to ancestor destinations, a labeled navigation landmark, and a clear current-page item. Keep destinations as native links.
-- Project-defined (`breadcrumb.extension.narrow-layout`): Preserve hierarchy and full accessible names at narrow widths. Wrap or shorten visible labels without causing page-level horizontal overflow.
-- Project-defined: Map linked ancestors to the System primary color, the current item to on-surface whether or not it is a link, and non-link ancestors to on-surface-variant. Use System Label Large for compact labels. Material defines these reusable roles, but not their mapping to breadcrumbs.
-- Project-defined: Use one shared state layer at the System hover, focus, and pressed opacities; do not stack a local layer with the shared layer. Use a 3px secondary focus ring with a 2px outer offset.
-- Project-defined: Keep a 40px visual pill inside a minimum 48px interaction target. Use the System full corner role. Static items keep the default cursor; current links remain native links with a pointer cursor.
-- Project-defined: Apply a 1px optical adjustment: labels move down 1px and separators move up 1px so text ink and separator glyphs share the visual center rather than their font line-box centers.
-- Project-defined: Separators communicate hierarchy visually, remain decorative to assistive technology, and do not interrupt reading order. Keep focus, hover, and current-page treatments distinct.
+The following are project decisions.
+
+- `breadcrumb.extension.navigation-semantics`: Present the hierarchy as a compact navigation trail with links to ancestor destinations, a labeled navigation landmark, and a clear current-page item. Keep destinations as native links.
+- `breadcrumb.extension.narrow-layout`: Preserve hierarchy and full accessible names at narrow widths. Wrap or shorten visible labels without causing page-level horizontal overflow.
+- Map linked ancestors to the System primary color, the current item to on-surface whether or not it is a link, and non-link ancestors to on-surface-variant. Use System Label Large for compact labels. Material defines these reusable roles, but not their mapping to breadcrumbs.
+- Use one shared state layer at the System hover, focus, and pressed opacities; do not stack a local layer with the shared layer. Use a 3px secondary focus ring with a 2px outer offset.
+- Keep a 40px visual pill inside a minimum 48px interaction target. Use the System full corner role. Static items keep the default cursor; current links remain native links with a pointer cursor.
+- Apply a 1px optical adjustment: labels move down 1px and separators move up 1px so text ink and separator glyphs share the visual center rather than their font line-box centers.
+- Separators communicate hierarchy visually, remain decorative to assistive technology, and do not interrupt reading order. Keep focus, hover, and current-page treatments distinct.

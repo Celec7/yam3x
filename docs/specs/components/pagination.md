@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project extension navigates a collection with a known total page count. It can accompany a table, list, or search result region. It is independent of data fetching and does not represent cursor-only navigation with a fabricated page count. Material 3 Expressive does not define a standalone Pagination component. Apply the [shared foundations](../foundations.md).
+This project extension navigates a collection with a known total page count. It can accompany a table, list, or search result region. It is independent of data fetching and does not represent cursor-only navigation with a fabricated page count. Material 3 Expressive does not define a standalone Pagination component. Compose Material 3 has no pagination primitive; the closest composition is a row of `Button` and `IconButton` controls. Apply the [shared foundations](../foundations.md).
 
 ## Design target
 
@@ -12,17 +12,19 @@ This project extension navigates a collection with a known total page count. It 
 
 ## Project decisions
 
+The following are project decisions.
+
 ### Anatomy and layout
 
-The following assignments are project-defined. Use Label Large for compact page actions and Body Small for an optional range summary. The current page may use the emphasized Label Large counterpart; ordinary page labels stay baseline.
+Use Label Large for compact page actions and Body Small for an optional range summary. The current page may use the emphasized Label Large counterpart; ordinary page labels stay baseline.
 
-- Project-defined: Arrange previous, page choices, and next in reading order with gaps from the shared 8 px spacing token and never below 8 px. Reserve the shared touch-target size for each compact page action's interactive area. A selected page uses Secondary Container and On Secondary Container with a Full corner role; unselected page actions have no persistent filled container.
-- `pagination.layout.adaptive` (project-defined): Show the first, last, current, and nearby page numbers when they fit. Ellipses indicate omitted pages and are not interactive controls. In narrow containers use previous, a visible current/total summary, and next; keep the same current page through the presentation change.
-- Project-defined: Place page-size selection and result summaries in a wrapping secondary group. They must not squeeze the primary navigation controls or require a fixed component width.
+- Arrange previous, page choices, and next in reading order with gaps from the shared 8 px spacing token and never below 8 px. Reserve the shared touch-target size for each compact page action's interactive area. A selected page uses Secondary Container and On Secondary Container with a Full corner role; unselected page actions have no persistent filled container.
+- `pagination.layout.adaptive`: Show the first, last, current, and nearby page numbers when they fit. Ellipses indicate omitted pages and are not interactive controls. In narrow containers use previous, a visible current/total summary, and next; keep the same current page through the presentation change.
+- Place page-size selection and result summaries in a wrapping secondary group. They must not squeeze the primary navigation controls or require a fixed component width.
 
 ### Navigation and states
 
-- Project-defined: Expose a named navigation region and identify the current page with its accessible current-page state. Use links for addressable destinations and buttons for in-place changes; do not expose current-page identity as a toggle-button pressed state.
-- Project-defined: Previous and next are unavailable at the relevant boundary. An empty collection presents a zero-result summary and no actionable numbered pages. A single page may retain its summary without redundant navigation actions.
-- `pagination.state.accepted` (project-defined): The application owns the requested page, accepted page, page size, and query result. Distinguish a pending request from the page actually displayed. Failure leaves the displayed page identifiable and provides recovery in the result region.
-- Project-defined: A page-size change preserves the first visible record when the application can do so. If the total shrinks, the application resolves a valid page instead of leaving an unreachable current-page marker. Keep keyboard focus on a surviving equivalent control when the page window changes.
+- Expose a named navigation region and identify the current page with its accessible current-page state. Use links for addressable destinations and buttons for in-place changes; do not expose current-page identity as a toggle-button pressed state.
+- Previous and next are unavailable at the relevant boundary. An empty collection presents a zero-result summary and no actionable numbered pages. A single page may retain its summary without redundant navigation actions.
+- `pagination.state.accepted`: The application owns the requested page, accepted page, page size, and query result. Distinguish a pending request from the page actually displayed. Failure leaves the displayed page identifiable and provides recovery in the result region.
+- A page-size change preserves the first visible record when the application can do so. If the total shrinks, the application resolves a valid page instead of leaving an unreachable current-page marker. Keep keyboard focus on a surviving equivalent control when the page window changes.

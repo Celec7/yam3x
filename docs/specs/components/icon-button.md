@@ -6,14 +6,18 @@ An icon button performs a compact action represented by an icon. A toggle icon b
 
 ## Design target
 
-- Use the current filled, tonal, outlined, or standard styles according to action emphasis. Filled is the highest-emphasis style. See [Icon button guidelines](https://m3.material.io/components/icon-buttons/guidelines).
+- Use filled, tonal, outlined, or standard styles according to action emphasis. Filled is the highest-emphasis style. See [Icon button guidelines](https://m3.material.io/components/icon-buttons/guidelines).
 - Use an icon that clearly communicates the action. A toggle is for a true binary choice, not a one-shot action; expose its selected state. See [Icon button specifications](https://m3.material.io/components/icon-buttons/specs).
 - Use a filled icon for a default icon button. For toggles, use an outlined icon when unselected and its filled version when selected. If no filled version exists, increase the icon weight to semibold, or bold when needed. See [Icon button guidelines: icon](https://m3.material.io/components/icon-buttons/guidelines).
 - `icon-button.a11y.target`: Give every icon button an accessible name that describes its action and a 48 × 48 dp minimum target, including when the visible button is smaller. Keep keyboard focus and activation available. See [Icon button accessibility](https://m3.material.io/components/icon-buttons/accessibility).
 - Keep icon and state contrast at or above 3:1. A selected round toggle adopts the size's square corner, while a selected square toggle becomes fully rounded. Use the size, width, shape, and color mappings in the [Icon button specifications](https://m3.material.io/components/icon-buttons/specs).
-- On Web, compose a concise Tooltip for icon-only actions on hover/focus. Keep the icon button's accessible name independent of the tooltip. See [Icon button accessibility](https://m3.material.io/components/icon-buttons/accessibility).
+- On Web, compose a concise Tooltip for icon-only actions on hover and focus. Keep the icon button's accessible name independent of the tooltip. See [Icon button accessibility](https://m3.material.io/components/icon-buttons/accessibility).
 
 ## Project decisions
 
-- Project-defined: `IconButton` represents actions and `IconToggleButton` represents binary selection. The toggle model and `#selected-icon` slot follow Vue composition conventions; role-radio activation keeps an already selected item selected. Public props, defaults, and link handling belong to the source and public [Icon button page](../../../apps/docs/components/icon-button.md).
-- Project-defined: Keep component geometry as private implementation tokens and use Material system color roles for theming. This avoids exposing a second set of color and dimension overrides for a compact component.
+The choices below are project-defined.
+
+- Actions and binary selection are separate components. The toggle model follows Vue composition conventions, and activation keeps an already selected toggle selected.
+- Component geometry stays private and theming uses Material system color roles. This avoids exposing a second set of color and dimension overrides for a compact component.
+
+Current API details belong to the component source and the public [Icon button page](../../../apps/docs/components/icon-button.md).

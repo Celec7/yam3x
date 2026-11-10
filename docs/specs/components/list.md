@@ -10,24 +10,19 @@ Lists present related content, destinations, or actions as rows. Choose the item
 - `list.geometry.rows`: Use the documented list-item anatomy, line configurations, spacing, and dimensions shown in [Lists specifications](https://m3.material.io/components/lists/specs). Keep primary text prominent, supporting content secondary, and trailing information aligned.
 - `list.geometry.avatar`: Leading initials use the Avatar composition and the full `title-medium` role, including family, size, weight, line height, and tracking. Do not restyle the same initials with a smaller size or separate tracking.
 - `list.geometry.media`: Use the official small corner shape for leading video and Expressive leading image media. The baseline image token has no rounding; the Expressive image variant uses `shape.corner.small`.
-- `list.geometry.icons`: Use the 20dp Expressive size for leading and trailing icons. The baseline icon size remains 24dp.
+- `list.geometry.icons`: Use the 20 dp Expressive size for leading and trailing icons. The baseline icon size remains 24 dp.
 - Limit supporting text to three lines and truncate it responsively when it exceeds the available space, following [Lists guidelines](https://m3.material.io/components/lists/guidelines).
 - `list.selection.semantics`: Give each list a coherent interaction purpose. A row that navigates, selects, or performs an action must communicate that role. Preserve the keyboard, selection, and accessible-name behavior in [Lists accessibility](https://m3.material.io/components/lists/accessibility).
 - `list.state.selected-icons`: Selected leading and trailing icons use the selected content role. Hover, focus, and pressed selected states switch those icons to `on-surface` while the label keeps the selected label role.
 - `list.state.dragged`: The dragged visual state maps Compose `ReorderListTokens`: `tertiary-container` container, `on-tertiary-container` label and icons, and the large corner shape. Reordering and drop zones remain consumer-owned.
 - Adapt a list to its containing layout using the [canonical layout examples](https://m3.material.io/foundations/layout/canonical-examples/overview).
 
-## Token mapping
-
-- Map `md.comp.list.list-item.*` through registry-local Component aliases. Component colors resolve to System color roles; typography resolves to System type roles; state shapes resolve to System shape roles where those semantics match. CSS selectors consume only the Component aliases.
-- Keep List-specific row heights, insets, gaps, media dimensions, and state geometry in the List Component layer when Material defines no matching shared System token. Do not use selector sample hex values as component defaults.
-- Map `md.comp.list.expand.*` through separate Expandable List Component aliases. The expanded row and disclosure treatments use semantic System roles; their light-mode selector samples are references, not fixed colors.
-- `registry/components/list/` owns these mappings and remains independently distributable. Its styles do not depend on the documentation site.
-
 ## Project decisions
 
-- Project-defined: Expressive is the default visual target. Standard and segmented configurations remain available when they better support a specific content hierarchy.
-- Project-defined: A segmented list represents one visual group. Multiple groups use separate labelled List instances, with spacing owned by the surrounding layout; no ListGroup API is introduced without a concrete requirement that one list must contain multiple groups.
-- Project-defined extension: `ExpandableListItem` uses inline disclosure by default. Its optional `presentation="fullScreen"` mode provides the official full-screen container-transform pattern and requires an accessible dialog name, supplied through `fullScreenTitle`, the `#full-screen-title` slot, or the root `aria-label`.
-- Project-defined extension: Web `aria-current="page"` styling represents the current navigation destination. It remains visually distinct in state semantics from `ListOption` selection (`aria-selected`), even where both use the same selected colors.
-- Project-defined extension: the density spacing scale adjusts List Component spacing aliases; the official token dimensions map to CSS pixels using the project's density convention.
+The following are project decisions.
+
+- Expressive is the default visual target. Standard and segmented configurations remain available when they better support a specific content hierarchy.
+- A segmented list represents one visual group. Multiple groups use separate labelled list instances, with spacing owned by the surrounding layout; no group container is introduced without a concrete requirement for multiple groups in one list.
+- An expandable list item uses inline disclosure by default. An optional full-screen mode provides the official full-screen container-transform pattern and requires an accessible dialog name.
+- Web `aria-current="page"` styling represents the current navigation destination. It stays visually and semantically distinct from option selection (`aria-selected`), even where both use the same selected colors.
+- The density spacing scale adjusts list spacing. The official token dimensions map to CSS pixels using the project's density convention. Row heights, insets, gaps, media dimensions, and state geometry remain list-owned values where Material defines no matching shared System token.

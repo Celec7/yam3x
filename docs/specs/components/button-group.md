@@ -16,10 +16,10 @@ Material 3 Expressive defines Standard Button Groups for related actions and Con
 ### Appearance and layout
 
 - Standard-group buttons respond to interaction with coordinated shape and size changes. Keep their resting size, shape, and style consistent. See [Button groups specs: Standard variants](https://m3.material.io/components/button-groups/specs).
-- Standard-group press expansion uses the specified spring motion so the pressed item's growth and adjacent items' shrinkage remain coordinated. See [Button groups specs: Standard variants](https://m3.material.io/components/button-groups/specs).
-- Standard between-button spacing is 18, 12, 8, 8, and 8 dp for XS through XL. Connected spacing is 2 dp at every size. Connected inner corners use the size-specific resting value, become fully rounded on hover, focus, and selection, and use the smaller pressed value while active. Selection changes only the inner corners; outer corners keep the configured round or square shape. See the [Button groups token selector and measurement figures](https://m3.material.io/components/button-groups/specs).
+- Standard-group press expansion uses the specified spring motion so the pressed item's growth and adjacent items' shrinkage stay coordinated. Take the 15% pressed-width multiplier from the token selector. See [Button groups specs: Standard variants](https://m3.material.io/components/button-groups/specs).
+- Standard between-button spacing is 18, 12, 8, 8, and 8 dp for XS through XL. Connected spacing is 2 dp at every size. Connected inner corners use the size-specific resting value, become fully rounded on hover, focus, and selection, and use the smaller pressed value while active. Selection changes only the inner corners; outer corners keep the chosen round or square shape. See the [Button groups token selector and measurement figures](https://m3.material.io/components/button-groups/specs).
 - Connected round groups keep fully rounded outer corners; square groups use the size-specific outer corners shown in the [measurement figures](https://m3.material.io/components/button-groups/specs). Pressing a Connected button changes only that button's shape, without resizing its neighbors.
-- Keep group members on one row. Standard groups generally fit their contents; Connected groups may use available parent width with a sensible maximum. At constrained widths, adapt size or spacing or move trailing choices to overflow rather than wrapping the group. See [Button groups guidelines: responsive behavior](https://m3.material.io/components/button-groups/guidelines) and its responsive and overflow figures.
+- Keep group members on one row. Standard groups generally fit their contents; Connected groups may use available parent width up to a 720 px maximum. At constrained widths, adapt size or spacing or move trailing choices to overflow rather than wrapping the group. See [Button groups guidelines: responsive behavior](https://m3.material.io/components/button-groups/guidelines) and its responsive and overflow figures.
 - The group container has no visual surface or color role; each child remains an individual button. See [Button groups specs: anatomy](https://m3.material.io/components/button-groups/specs).
 
 ### Interaction and accessibility
@@ -30,7 +30,7 @@ Material 3 Expressive defines Standard Button Groups for related actions and Con
 
 ## Project decisions
 
-- The group remains on one row and can scroll horizontally. With `overflow="menu"` and `#overflow-indicator`, trailing items are measured and supplied to a caller-rendered menu. Connected groups default to a configurable 720 px maximum inline size.
-- The group receives the size and shape of its child buttons for component-token mapping. Manually composed groups should keep those values aligned; an explicit `gap` overrides the size-based spacing.
-- The XS unselected Connected inner corner follows the token selector's 8 dp value. The measurement figure's caption instead says 4 dp; 4 dp is the selector's XS pressed inner-corner value.
-- On Web, the Standard pressed-width spring uses a CSS timing-curve approximation. The 15% width multiplier comes from the Button groups token selector.
+The following are project decisions.
+
+- The group stays on one row and can scroll horizontally. At constrained widths, trailing items move to an overflow menu rendered by the caller.
+- The XS unselected Connected inner corner follows the token selector's 8 dp value. The measurement figure's caption says 4 dp; 4 dp is the selector's XS pressed inner-corner value.

@@ -2,7 +2,7 @@
 
 ## Scope
 
-`DrawerContainer` is a project-defined layout primitive that places optional panels beside or over primary content. Material does not define a generic two-sided drawer container.
+DrawerContainer is a project-defined layout primitive that places optional panels beside or over primary content. Material does not define a generic two-sided drawer container. ModalNavigationDrawer and PermanentNavigationDrawer inform the layout only; the container composes Surface plus panels.
 
 ## Design target
 
@@ -13,10 +13,12 @@
 
 ## Project decisions
 
-- Project-defined (`drawer-container.extension.modal-focus`): A modal panel traps focus, blocks background interaction, exposes the `dialog` role, and returns focus after dismissal. The consumer supplies a visible close affordance inside modal content; the scrim label is not a substitute for it.
+The following are project decisions.
+
+- `drawer-container.extension.modal-focus`: A modal panel traps focus, blocks background interaction, exposes the `dialog` role, and returns focus after dismissal. The consumer supplies a visible close affordance inside modal content; the scrim label is not a substitute for it.
 - When a modal panel composes a Side sheet, the outer panel provides the single named dialog boundary and focus trap. Keep the Side sheet's inner section structural so the composition does not expose nested dialogs or duplicate focus management.
 - When composing a Side sheet, keep the panel's horizontal overflow clipped and place its content within the available width.
-- Project-defined (`drawer-container.extension.adaptive`): The container supports start/end panels and chooses modal, reflowing, or persistent layout from the available space. The consumer chooses explicit modes when content or surrounding layout requires them.
-- Project-defined: The generic container owns placement and layout relationships, not navigation roles, selected destinations, or sheet anatomy. `NavigationDrawer` is the public navigation surface and may compose this primitive internally. Keep current props, slots, events, and responsive thresholds in the component source and public docs.
-- Project-defined: Keep the generic container width at 360px by default. The dedicated `SideSheet` composition has its own 400px default width and owns Side sheet content anatomy.
-- Project-defined (`drawer-container.extension.motion`): Use the System default spatial duration and easing for grid, panel, and scrim motion, with a 500ms fallback. Under reduced motion, remove grid, panel, and scrim transitions and the scrim visibility delay so the scrim appears and disappears immediately.
+- `drawer-container.extension.adaptive`: The container supports start/end panels and chooses modal, reflowing, or persistent layout from the available space. The consumer chooses explicit modes when content or surrounding layout requires them.
+- The generic container owns placement and layout relationships, not navigation roles, selected destinations, or sheet anatomy. NavigationDrawer is the public navigation surface and may compose this primitive internally.
+- Keep the generic container width at 360px by default. The dedicated SideSheet composition has its own 400px default width and owns Side sheet content anatomy.
+- `drawer-container.extension.motion`: Use the System default spatial duration and easing for grid, panel, and scrim motion, with a 500ms fallback. Under reduced motion, remove grid, panel, and scrim transitions and the scrim visibility delay so the scrim appears and disappears immediately.

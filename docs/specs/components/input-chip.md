@@ -2,7 +2,7 @@
 
 ## Scope
 
-Input chips turn text a person entered into a discrete value, such as a contact or a search term. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview).
+Input chips turn text a person entered into a discrete value, such as a contact or a search term. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview) and the [Chips family guide](chips.md) for shared geometry and accessibility.
 
 ## Design target
 
@@ -16,9 +16,10 @@ Input chips turn text a person entered into a discrete value, such as a contact 
 
 - `input-chip.a11y.remove-name`: Name the remove action so it identifies which value will be removed. See [Chips accessibility: labeling Input chip actions](https://m3.material.io/components/chips/accessibility).
 - Use an optional avatar or icon only to add context; keep the text value as the accessible label. See [Chips guidelines: Input chip icons](https://m3.material.io/components/chips/guidelines) and [Chips accessibility: labeling](https://m3.material.io/components/chips/accessibility).
-- Follow the shared chip geometry, contrast, focus, and keyboard guidance in the [Chips family guide](chips.md).
+- Follow the shared chip contrast, focus, and keyboard guidance in the [Chips family guide](chips.md).
 
 ## Project decisions
 
-- Project-defined: A standalone `InputChip` exposes a controlled selected state and primary click. Text editing is provided by the `InputChipSet` convenience component, which prevents the standalone selection toggle when mapping the primary click to editing.
-- Project-defined: The optional remove action is separate from the primary click and remains available on standalone input chips.
+The following are project decisions.
+
+- The optional remove action is separate from the primary action and remains available on standalone input chips.

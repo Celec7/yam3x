@@ -27,13 +27,14 @@ Buttons perform actions with a clear visual hierarchy from high emphasis to low 
 ### Labels and accessibility
 
 - `button.label.single-line`: Keep the visible label concise and fully visible on one line. Material recommends one to three words and sentence case. See [Buttons guidelines: label text](https://m3.material.io/components/buttons/guidelines) and [Buttons accessibility: 200% text size](https://m3.material.io/components/buttons/accessibility).
-- `button.a11y.visible-focus`: Keep keyboard focus visible with the shared 3dp `secondary` indicator and a 2dp offset. See [Buttons accessibility: keyboard navigation](https://m3.material.io/components/buttons/accessibility).
+- `button.a11y.visible-focus`: Keep keyboard focus visible with the shared 3 dp `secondary` indicator and a 2 dp offset. See [Buttons accessibility: keyboard navigation](https://m3.material.io/components/buttons/accessibility).
 - Tab reaches a button, and Space or Enter activates it. The accessible label should match the visible label. See [Buttons accessibility: keyboard navigation and labeling](https://m3.material.io/components/buttons/accessibility).
 
 ## Project decisions
 
-- `button.a11y.small-hit-target` (project-defined): A small visual Button has a 48 × 48 CSS px interactive area. This extends the target-area guidance for extra-small and small icon buttons to the shared labeled Button. See [Buttons specs: target areas](https://m3.material.io/components/buttons/specs).
-- `button.toggle.aria-state` (project-defined): Expose toggle selection through the button's accessible pressed state so assistive technology can report its current value.
-- Project-defined: Approximate the button press spring with a CSS spatial curve and duration on Web; the official damping and stiffness values do not map directly to CSS transitions.
-- Project-defined: Render a Button used for navigation as a native anchor so it retains link semantics and navigation behavior.
-- Project-defined extension: `#trailing-icon` can place an icon after the label in LTR. Material places the optional icon before the label in LTR and after it in RTL; prefer direction-aware placement through the leading icon slot for official anatomy.
+The following are project decisions.
+
+- `button.a11y.small-hit-target`: A small visual Button has a 48 × 48 CSS px interactive area. This extends the target-area guidance for extra-small and small icon buttons to the shared labeled Button. See [Buttons specs: target areas](https://m3.material.io/components/buttons/specs).
+- `button.toggle.aria-state`: Toggle selection is exposed through the button's accessible pressed state so assistive technology can report its current value.
+- A Button used for navigation uses native link semantics and navigation behavior.
+- The optional icon sits before the label in LTR and after it in RTL. A trailing icon may additionally follow the label in LTR as a project extension.

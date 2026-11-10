@@ -2,7 +2,7 @@
 
 ## Scope
 
-Assist chips provide a contextual or automated action, or surface supplemental information related to the current task. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview).
+Assist chips provide a contextual or automated action, or surface supplemental information related to the current task. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview) and the [Chips family guide](chips.md) for shared geometry and accessibility.
 
 ## Design target
 

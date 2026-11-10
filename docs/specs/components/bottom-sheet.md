@@ -20,7 +20,8 @@ Bottom sheets present secondary content anchored to the bottom edge. This guide 
 
 ## Project decisions
 
-- Project-defined: This component remains bottom-anchored at every width. A consuming layout may select the [Side sheet](https://m3.material.io/components/side-sheets/overview) when that pattern better fits an expanded screen.
-- Project-defined: Standard is the component default; Material does not prescribe a default for this Vue API.
-- Project-defined: The Vue API uses `partially-expanded` and `expanded` to name detents, matching Compose terminology. `collapsed`, `fit`, percentage, pixel, and numeric detents adapt the interaction to web layouts; numeric detents use CSS pixels.
-- Project-defined: `detents` are ordered from lowest to highest. Closing preserves the selected detent. A controlled `detent` value takes precedence over the modal default opening position.
+The following are project decisions.
+
+- The sheet remains bottom-anchored at every width. A consuming layout may use the [Side sheet](https://m3.material.io/components/side-sheets/overview) when that pattern better fits an expanded screen.
+- Standard is the default presentation; Material does not prescribe a default.
+- The sheet may rest at a partial or expanded height. Height stops are ordered from lowest to highest, and closing preserves the selected stop.

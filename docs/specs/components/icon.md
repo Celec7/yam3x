@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project extension renders Material Symbols and project-provided SVG icons in interface contexts. Material defines iconography guidance, not this Vue component or its registration API.
+This project extension renders Material Symbols and project-provided SVG icons in interface contexts. Material defines iconography guidance, not this Vue component or its registration API. Icon is the Compose Material 3 primitive; the extension keeps its icon role rather than adding a new Material component.
 
 ## Design target
 
@@ -13,7 +13,8 @@ This project extension renders Material Symbols and project-provided SVG icons i
 
 ## Project decisions
 
-- Project-defined extension: The component accepts registered symbols and project-provided SVGs; this does not add a Material component or redefine the Material Symbols family.
-- Project default: `grade="auto"` maps the active light theme to grade 0 and the active dark theme to grade -25. The nearest explicit `data-theme` or `.dark` target takes precedence; without an explicit theme target, the System color preference provides the default. `--yam3x-icon-auto-grade` is a project override for exceptional theme integrations. Explicit grades map `low` to -25, `medium` to 0, and `high` to 200.
-- `icon.extension.axes` (project-defined): Accept `weight` from 100 through 700 at the declared discrete values; unsupported values fall back to 400. The 200 minimum is guidance for standard 24 px icons, not a global clamp, because larger optical sizes may use lighter axes. Clamp a finite `opticalSize` to Material Symbols' 20–48 range and fall back to 24 for a non-finite value.
-- `icon.extension.accessible-name` (project-defined): An informative standalone icon exposes an accessible name; an icon that repeats its control's meaning is decorative, with the name remaining on the containing control. This keeps the icon from creating duplicate or unlabeled accessibility content.
+The following are project decisions. The component accepts registered symbols and project-provided SVGs; this does not add a Material component or redefine the Material Symbols family.
+
+- The default grade follows the active theme: grade 0 for light and grade -25 for dark. The nearest explicit theme target takes precedence; without one, the System color preference provides the default. Exceptional theme integrations may override the automatic grade. Explicit grades map low to -25, medium to 0, and high to 200.
+- `icon.extension.axes`: Accept weight from 100 through 700 at the declared discrete values; unsupported values fall back to 400. The 200 minimum is guidance for standard 24 px icons, not a global clamp, because larger optical sizes may use lighter axes. Clamp a finite optical size to Material Symbols' 20–48 range and fall back to 24 for a non-finite value.
+- `icon.extension.accessible-name`: An informative standalone icon exposes an accessible name; an icon that repeats its control's meaning is decorative, with the name remaining on the containing control. This keeps the icon from creating duplicate or unlabeled accessibility content.

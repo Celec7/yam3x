@@ -17,7 +17,9 @@ Menus show a temporary list of choices or actions. This project adopts the curre
 
 ## Project decisions
 
-- Project-defined: New designs use the current Expressive vertical menu. Baseline compatibility behavior is not a design target for new work.
-- Project-defined: The current menu container defaults to 112px minimum and 280px maximum width. Material’s Expressive selector does not define these values, so they remain project defaults.
-- Project-defined: The container shadow maps to System `--md-sys-elevation-level2`; Material’s Expressive selector does not expose a readable menu elevation value.
-- Project-defined: Web menus support `type: 'gap'` as an Expressive grouping treatment. Map the official `Menu gap` and `Menu group padding` tokens to the space between and within group surfaces. When a menu is scrollable, gaps render as dividers. Dividers remain the recommended Web default. Material recommends one or two gaps per menu; this is not enforced at runtime.
+The following are project decisions.
+
+- New designs use the current Expressive vertical menu. Baseline compatibility behavior is not a design target for new work.
+- The menu container defaults to a 112 px minimum and 280 px maximum width. Material's Expressive selector does not define these values, so they remain project defaults.
+- The container shadow maps to System elevation level 2; Material's Expressive selector does not expose a readable menu elevation value.
+- Web menus support a gap grouping treatment. The official `Menu gap` and `Menu group padding` tokens map to the space between and within group surfaces. When a menu is scrollable, gaps render as dividers. Dividers remain the recommended Web default. Material recommends one or two gaps per menu; this is not enforced at runtime.

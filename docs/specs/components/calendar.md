@@ -2,11 +2,11 @@
 
 ## Scope
 
-This project extension exposes a calendar grid outside a date-picker surface. Material defines calendar anatomy and date selection within [Date pickers](https://m3.material.io/components/date-pickers/overview), not as a separate Calendar component.
+This project extension exposes a calendar grid outside a date-picker surface. Material defines calendar anatomy and date selection within [Date pickers](https://m3.material.io/components/date-pickers/overview), not as a separate Calendar component. No standalone primitive exists; the calendar surface of Compose Material 3 `DatePicker` is the closest composition.
 
 ## Design target
 
-- Reuse the month heading, weekday headers, date grid, and date states shown in the [Date picker specifications](https://m3.material.io/components/date-pickers/specs). Do not infer a separate visual system from the Vue API.
+- Reuse the month heading, weekday headers, date grid, and date states shown in the [Date picker specifications](https://m3.material.io/components/date-pickers/specs). Do not infer a separate visual system for the extension.
 - `calendar.typography.date-labels`: Use the Date picker date and weekday label roles: Body Large, 16sp, 24sp line height, weight 400, and 0.5sp tracking. See the Date picker token selector in [Date picker specifications](https://m3.material.io/components/date-pickers/specs).
 - Follow the date picker's selection, keyboard, localization, contrast, and target-size guidance in [Date picker guidelines](https://m3.material.io/components/date-pickers/guidelines) and [accessibility](https://m3.material.io/components/date-pickers/accessibility).
 - In the date grid, Home and End move to the first and last day of the month; Page Up/Down move by month and Shift+Page Up/Down by year. Shift+M opens month selection and Shift+Y opens year selection, following Date picker accessibility guidance.
@@ -14,7 +14,9 @@ This project extension exposes a calendar grid outside a date-picker surface. Ma
 
 ## Project decisions
 
-- Project-defined: A standalone calendar grid is an extension that reuses the Material date-picker calendar so it remains visually and behaviorally consistent with the project's Date picker.
-- Project-defined (`calendar.grid.parity`): Use narrow weekday labels, a single 7-column date grid, and three-column month/year option grids. Derive keyboard rows from the same three-column contract. Use the date-picker focus treatment on the 40px date indicator, outside days at full opacity with on-surface-variant, and the date-picker range bar on a pseudo-element. Day cells expose `aria-selected`, not a second pressed state.
-- Project-defined (`calendar.range.single-day`): When range start and end are the same date, render one selected endpoint indicator with no directional range bar. Keep `aria-selected` on that grid cell.
-- Project-defined (`calendar.container.standalone`): Use a 360px standalone surface with a 28px container shape and 12px inline padding. Keep the 48px date target at narrow widths and allow the calendar surface to scroll horizontally rather than shrinking the target. Use a simplified period header with a 48px target and the date-picker label typography; the single period toggle remains a Calendar extension.
+The following are project decisions.
+
+- A standalone calendar grid is an extension that reuses the Material date-picker calendar so it remains visually and behaviorally consistent with the project's Date picker.
+- `calendar.grid.parity`: Use narrow weekday labels, a single 7-column date grid, and three-column month and year option grids. Derive keyboard rows from the same three-column contract. Use the date-picker focus treatment on the 40px date indicator, outside days at full opacity with on-surface-variant, and the date-picker range bar on a pseudo-element. Day cells expose `aria-selected`, not a second pressed state.
+- `calendar.range.single-day`: When range start and end are the same date, render one selected endpoint indicator with no directional range bar. Keep `aria-selected` on that grid cell.
+- `calendar.container.standalone`: Use a 360px standalone surface with a 28px container shape and 12px inline padding. Keep the 48px date target at narrow widths and allow the calendar surface to scroll horizontally rather than shrinking the target. Use a simplified period header with a 48px target and the date-picker label typography; the single period toggle remains a Calendar extension.

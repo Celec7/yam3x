@@ -1,6 +1,6 @@
 # Documentation map
 
-This directory contains maintained contributor guidance and project component design guides. The public docs site for application developers lives in [`apps/docs/`](../apps/docs/); its English and Chinese pages are paired, with English as the source page.
+`docs/` contains maintained contributor guidance and project design guides. Public application documentation lives in [`apps/docs/`](../apps/docs/); English is the source page and Chinese mirrors it.
 
 ## Start here
 
@@ -11,7 +11,7 @@ This directory contains maintained contributor guidance and project component de
 | Choose and cite design or implementation sources   | [Design and implementation references](design/references.md) |
 | Find workspace commands                            | [Contributing](../CONTRIBUTING.md)                           |
 
-## Component work
+## Design and implementation
 
 | Task                                             | Page                                                                            |
 | ------------------------------------------------ | ------------------------------------------------------------------------------- |
@@ -22,7 +22,7 @@ This directory contains maintained contributor guidance and project component de
 | Read shared design guidance and contracts        | [Shared design foundations](specs/foundations.md)                               |
 | Define or change CSS and theme-token ownership   | [CSS and token conventions](design/css-and-tokens.md)                           |
 
-## Delivery, verification, and releases
+## Delivery and releases
 
 | Task                                                | Page                                                    |
 | --------------------------------------------------- | ------------------------------------------------------- |
@@ -33,16 +33,14 @@ This directory contains maintained contributor guidance and project component de
 
 ## Architecture decisions
 
-Shared architecture decision records live under [`decisions/`](decisions/), grouped by lifecycle status. `proposed` includes accepted directions awaiting implementation; move a record to `implemented` with its code and verification evidence, repairing inbound links.
+Records live under [`decisions/`](decisions/), grouped by lifecycle status. A proposed record names an accepted direction awaiting implementation. Move it to `implemented` with its code and verification evidence, and repair inbound links.
 
 - [Remove Tailwind from development and distribution](decisions/implemented/2026-11-08-remove-tailwind.md)
 - [Order floating overlays by open sequence](decisions/implemented/2026-11-08-overlay-layer-stack.md)
 
 ## Fact ownership
 
-Installable components are discovered from the entrypoints under [`registry/components/`](../registry/components/). Foundation source mappings live in [`registry/foundations/registry.json`](../registry/foundations/registry.json), and dependency versions live in the pnpm workspace catalog. The CLI consumes the generated [`registry/registry.json`](../registry/registry.json); regenerate it with `pnpm registry:generate` instead of editing it directly. Current public props and slots live in component source; public usage belongs in `apps/docs/`.
-
-Use one owner per fact:
+Installable components come from entrypoints under [`registry/components/`](../registry/components/). Foundation source mappings live in [`registry/foundations/registry.json`](../registry/foundations/registry.json), and dependency versions live in the pnpm workspace catalog. The CLI consumes the generated [`registry/registry.json`](../registry/registry.json); regenerate it with `pnpm registry:generate` instead of editing it directly. Current props and slots live in component source; public usage belongs in `apps/docs/`.
 
 - Design intent and project decisions: `docs/specs/`.
 - Current API and behavior: `registry/`.

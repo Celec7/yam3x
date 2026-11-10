@@ -27,5 +27,7 @@ Checkboxes let people select multiple related options, show a group's partial se
 
 ## Project decisions
 
-- Project-defined: A Checkbox represents one value and does not coordinate sibling controls. The parent form or selection owner derives an indeterminate state and applies parent changes to children, keeping group coordination with the owner of that selection.
-- Project-defined: Keyboard focus uses a 44 px circular `secondary` ring with a 3 px stroke, centered in the 48 px target. This follows Material Web's focus-ring mechanics and the official focus-state figure. The 40 px state layer remains for hover and pressed feedback.
+The following are project decisions.
+
+- A Checkbox represents one value and does not coordinate sibling controls. The parent form or selection owner derives an indeterminate state and applies parent changes to children, keeping group coordination with the owner of that selection.
+- Keyboard focus uses a 44 px circular `secondary` ring with a 3 px stroke, centered in the 48 px target. This follows Material Web's focus-ring mechanics and the official focus-state figure. The 40 px state layer remains for hover and pressed feedback.

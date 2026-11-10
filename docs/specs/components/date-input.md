@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project extension combines direct date or time entry in a form field. Material defines date entry within Date pickers and time entry within Time pickers, but not this combined standalone component.
+This project extension combines direct date or time entry in a form field. Material defines date entry within Date pickers and time entry within Time pickers, but not this combined standalone component. The closest Compose Material 3 references are the DatePicker and TimePicker input modes composed with a TextField.
 
 ## Design target
 
@@ -13,6 +13,8 @@ This project extension combines direct date or time entry in a form field. Mater
 
 ## Project decisions
 
-- Project-defined: The component supports date-only, time-only, and combined date-time entry. A combined mode composes the Material date and time patterns.
-- Project-defined: Parsing, validation, free-text acceptance, and locale policy belong to the consuming form. Keep typed input editable and explain invalid or incomplete values.
-- Project-defined (**date-input.behavior.locale-draft**): A locale change preserves unfinished edits and the focused segment. Keep the original automatic hour cycle while a time draft is incomplete so that changing display language cannot reinterpret its value; adopt the new locale's cycle once the draft is validly committed or cleared.
+The following are project decisions.
+
+- The component supports date-only, time-only, and combined date-time entry. A combined mode composes the Material date and time patterns.
+- Parsing, validation, free-text acceptance, and locale policy belong to the consuming form. Keep typed input editable and explain invalid or incomplete values.
+- `date-input.behavior.locale-draft`: A locale change preserves unfinished edits and the focused segment. Keep the original automatic hour cycle while a time draft is incomplete so that changing display language cannot reinterpret its value; adopt the new locale's cycle once the draft is validly committed or cleared.

@@ -54,7 +54,7 @@ This guide collects Material 3 principles that apply across component families. 
 
 ### Shared component contracts
 
-The component alignment work established the following cross-component defaults. Component guides own exact values, variants, and exceptions; use these contracts when a new composition has no more specific requirement.
+These cross-component defaults apply when a new composition has no more specific requirement. Component guides own exact values, variants, and exceptions.
 
 - **Field composition.** Build editable inputs on the shared Form field anatomy rather than a private surface. Use a 3 px inset primary focus indicator without shifting content, keep the label and supporting text on their adopted roles, and replace supporting text with an error message plus visual error cue. Disabled content and boundaries use the shared on-surface opacity roles. See [Text fields](components/form-field.md), [Date input](components/date-input.md), and [Autocomplete](components/autocomplete.md).
 - **Menus and option rows.** Use one menu/option geometry for dropdowns and suggestions: a 44 px visual row inside a 48 px target, a 3 px inset secondary focus ring, label-large typography, level-2 elevation, and pointer-capability-aware insets. Do not invent a lighter row treatment for one consumer. See [Options](components/option.md), [Menus](components/menu.md), and [Select](components/select.md).

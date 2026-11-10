@@ -2,49 +2,29 @@
 
 ## Scope
 
-Time pickers help people select a specific time. This guide adopts Material's dial and text-input controls and their modal flow. See [Time picker overview](https://m3.material.io/components/time-pickers/overview).
+Time pickers select a specific time through a dial or text input, optionally in a modal flow. This guide adopts Material's dial and input controls with hour, minute, and optional period selection. See [Time picker overview](https://m3.material.io/components/time-pickers/overview).
 
 ## Design target
 
-- Provide the dial and manual input modes described in [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines). Use separate hour and minute fields; include period selection for 12-hour time where applicable.
-- Use the dial dimensions, target areas, selected states, and colors shown in [Time picker specifications](https://m3.material.io/components/time-pickers/specs). Adapt orientation or use input mode when the dial does not fit; avoid scrolling the picker.
-- Use `on-surface` for the enlarged time values and `on-surface-variant` for the Hour/Minute supporting labels, as shown by the Input token selector.
-- Place Hour/Minute labels below the enlarged input fields, as shown in [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines).
-- Place the dial/input mode toggle at the leading edge of the bottom action row. In input mode, focus the selected field with a 2dp `primary` outline at the field edge and a `primary-container` fill. Give the selectors and period options the 3dp `secondary` focus indicator with a 2dp offset.
-- `time-picker.color.roles`: Use the surface and selected-state color roles shown in [Time picker specifications](https://m3.material.io/components/time-pickers/specs).
-- Follow the 12-hour and 24-hour dial arrangements in [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines). Let locale or time-format settings determine which presentation is used.
-- Use the enter/exit transition for the modal picker and the transition between dial and input modes. Honor reduced-motion preferences. See [Time picker guidelines: behavior](https://m3.material.io/components/time-pickers/guidelines).
-- Confirm commits the selected time; Cancel or dismissal closes without confirmation. Keep the mode-switch control and actions clearly labeled. See [Time picker accessibility](https://m3.material.io/components/time-pickers/accessibility).
+- Provide dial and manual input modes. Use separate hour and minute fields and include period selection for 12-hour time. See [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines).
+- Use the dial dimensions, target areas, selected states, and colors in [Time picker specifications](https://m3.material.io/components/time-pickers/specs). Adapt orientation or switch to input when the dial does not fit; avoid scrolling the picker.
+- Map the picker container to `surface-container-high`; map the dial face and unselected time field to `surface-container-highest`. Selected time uses `primary-container` and `on-primary-container`. Selected period uses `tertiary-container` and `on-tertiary-container`; unselected period uses `on-surface-variant` and `outline`.
+- Use `on-surface` for enlarged time values and `on-surface-variant` for Hour and Minute labels. Place those labels below the enlarged fields. See [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines).
+- Use a 256 dp dial face, 48 dp targets and handle, 8 dp center, and 2 dp track. Use 96 by 80 dp time selectors, with the first selector 114 dp wide in the 24-hour vertical layout. Period selectors are 52 by 80 dp vertical, 216 by 38 dp horizontal, or 52 by 72 dp in input mode. Input fields are 96 by 72 dp, with 24 dp picker padding.
+- Place the dial and input mode toggle at the leading edge of the bottom action row. In input mode, focus the selected field with a 2 dp primary outline and `primary-container` fill. Give selectors and period options a 3 dp secondary focus indicator with a 2 dp offset.
+- `time-picker.color.roles`: Use the surface and selected-state roles in [Time picker specifications](https://m3.material.io/components/time-pickers/specs).
+- Follow the 12-hour and 24-hour dial arrangements. In the 24-hour dial, place even hours on the inner ring and odd hours on the outer ring. Let locale or time-format settings choose the presentation. See [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines).
+- Use the modal enter and exit transition and the transition between dial and input modes. Honor reduced-motion preferences. See [Time picker guidelines](https://m3.material.io/components/time-pickers/guidelines).
+- Confirm commits the selected time; Cancel or dismissal closes without confirmation. Keep the mode switch and actions clearly labeled. See [Time picker accessibility](https://m3.material.io/components/time-pickers/accessibility).
 - `time-picker.a11y.keyboard`: Give input fields and dial targets accessible names and keyboard access. Follow the labeling, target, and keyboard guidance in [Time picker accessibility](https://m3.material.io/components/time-pickers/accessibility).
-- Localize generated dial-value names and both directions of the mode-toggle name. The caller-provided dial-value formatter receives the selected value, unit, and range maximum; provide translated labels when using a non-English locale.
-
-## Official token mapping
-
-Map the official `md.comp.time-picker.*` and `md.comp.time-input.*` tokens through this component's private Component aliases. The CSS consumes those aliases; theme colors and shared scales enter through System tokens.
-
-| Official requirement  | System or Component mapping                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Picker container      | `surface-container-high`; dial face and unselected time field use `surface-container-highest`                |
-| Selected time         | `primary-container` with `on-primary-container`                                                              |
-| Selected period       | `tertiary-container` with `on-tertiary-container`; unselected period uses `on-surface-variant` and `outline` |
-| Enlarged input labels | `on-surface`; supporting text and headline use `on-surface-variant`                                          |
-| Dial                  | 256dp face, 48dp target, 48dp handle, 8dp center, 2dp track                                                  |
-| Time selector         | 96×80dp; first selector is 114dp wide in the 24-hour vertical layout                                         |
-| Period selector       | 52×80dp vertical dial, 216×38dp horizontal dial, and 52×72dp input                                           |
-| Input field           | 96×72dp                                                                                                      |
-| Picker padding        | 24dp on each side                                                                                            |
-
-The official Input token selector names its component tokens under `md.comp.time-input.*`. It specifies a 96×72dp input field, a 52×72dp period selector, a 12/16/500/0.5pt headline, a 12/16/400/0.4pt supporting label, a 45/52/400/0pt enlarged time label, and a 57/64/400/−0.25pt separator. The selected period label is 16/24/500/0.15pt. In the Dial selector, dial numerals use 16/24/400/0.5pt. Map these values to the Component layer; do not replace the official roles with hard-coded theme colors.
+- Localize dial value names and both directions of the mode-toggle name. A caller-provided dial value formatter receives the selected value, unit, and range maximum.
 
 ## Project decisions
 
-- Project-defined API: Expose dial and text input as separate composable Vue controls (`TimePicker` and `TimeInput`) and provide `TimePickerDialog` as a convenience composition. Standalone controls update immediately; the dialog keeps a draft until confirmation. This follows the controls' separate roles while using Vue's `v-model` composition.
-- Project-defined: Keep the selected time provisional until confirmation. Support seconds only when the consuming feature needs them; Material primarily depicts hour and minute selection.
-- Project-defined: Represent time as `{ hour, minute, second? }` in 24-hour values independent of calendar dates. Optional seconds are a project extension.
-- Project-defined: Support a docked dialog presentation and automatic compact layout for constrained viewports; Material's documented modal flow remains the design target.
-- Project-defined: For the 24-hour dial, follow the guideline's explicit even-hours-inner and odd-hours-outer rule; its example image appears to show 0–11 on the outer ring and 12–23 on the inner ring instead.
-- Project-defined: Automatic layout uses a 684px minimum width and 480px minimum height for the horizontal dial, and a 596px minimum height for the vertical dial. These cutoffs keep the 256px dial, surrounding content, and 24px container padding visible without scrolling.
-- Project-defined: Use a fade-and-scale transition between hour, minute, and second dial faces; Material does not specify this transition.
-- Project-defined: Preserve a one-digit raw value while its field is focused, then pad it on blur. This keeps two-digit entry such as `11` possible while still committing the parsed number on every valid keystroke.
-- Project-defined: Keep CSS implementation aliases private. The Vue props and slots are the supported customization surface; incidental CSS properties are not consumer overrides.
-- Project-defined (**time-picker.behavior.locale-draft**): Changing language preserves the active mode and provisional time. Keep invalid automatic-hour-cycle input in its editing cycle until correction or dismissal so a language change cannot reinterpret the draft or enable confirmation.
+- Expose the dial and text input as separate controls, with a dialog composition that keeps a draft until confirmation. Standalone controls update immediately.
+- Represent time as `{ hour, minute, second? }` using 24-hour values independent of a calendar date. Support seconds only when the feature needs them.
+- Support a docked dialog and an automatic compact layout. Material's modal flow remains the design target.
+- Use a 684 px minimum width and 480 px minimum height for the horizontal dial, and a 596 px minimum height for the vertical dial. These keep the 256 px dial, surrounding content, and 24 px padding visible without scrolling.
+- Use a fade-and-scale transition between hour, minute, and second faces; Material does not specify this transition.
+- Preserve a one-digit raw value while its field is focused, then pad it on blur so two-digit entry remains possible.
+- `time-picker.behavior.locale-draft`: A language change preserves the active mode and provisional time. Keep invalid automatic-hour-cycle input in its editing cycle until correction or dismissal so the change cannot reinterpret the draft or enable confirmation.

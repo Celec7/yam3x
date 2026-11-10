@@ -2,7 +2,7 @@
 
 ## Scope
 
-Filter chips represent criteria that include items in a collection or search result. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview).
+Filter chips represent criteria that include items in a collection or search result. They are one of Material's four chip variants. See the [Chips overview](https://m3.material.io/components/chips/overview) and the [Chips family guide](chips.md) for shared geometry and accessibility.
 
 ## Design target
 
@@ -16,7 +16,7 @@ Filter chips represent criteria that include items in a collection or search res
 
 - Use `secondary-container` and `on-secondary-container` for a selected Filter chip. See the [Chips color specifications](https://m3.material.io/components/chips/specs).
 - Keep the label at least 3:1 contrast with the chip background. Use `outline` rather than `outline-variant` for the interactive cue when needed to meet that contrast. See [Chips accessibility: color contrast](https://m3.material.io/components/chips/accessibility).
-- Use the shared chip geometry and state feedback from the [Chips specifications](https://m3.material.io/components/chips/specs); see the [family guide](chips.md) for shared measurements and accessibility requirements.
+- Use the shared chip geometry and state feedback from the [Chips specifications](https://m3.material.io/components/chips/specs).
 
 ### Responsive behavior
 

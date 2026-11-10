@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project extension presents primary content beside related supporting content and optionally lets people resize the divider. Material describes supporting-pane layouts but does not define a standalone draggable Split pane component.
+This project extension presents primary content beside related supporting content and optionally lets people resize the divider. Material describes supporting-pane layouts but does not define a standalone draggable Split pane component. Compose Material 3 has no direct primitive; the closest composition is a `Row` or `Box` layout with a draggable divider.
 
 ## Design target
 
@@ -13,11 +13,13 @@ This project extension presents primary content beside related supporting conten
 
 ## Project decisions
 
-- Project-defined (`split-pane.extension.separator`): When enabled, expose the divider as a keyboard-operable separator with a visible focus state and bounded value. Resizing changes space allocation without changing which content is primary.
-- Project-defined (`split-pane.extension.keyboard`): Support keyboard resizing and preserve the selected proportion when orientation changes. The component also supports drag resizing; Material does not define these interactions.
-- Project-defined adaptive API: `v-model:compact-pane` selects one pane in compact `auto` mode, with primary content shown by default. The consuming scaffold owns the control that switches between panes. This intentionally differs from the Material Supporting pane example, which places supporting content below the primary area at compact sizes.
-- Project-defined breakpoint implementation: compact, medium, and expanded window categories map to 0–599px, 600–839px, and 840px or wider viewports.
-- Project-defined sizing: medium `auto` layouts stack both panes; expanded layouts show them side by side and remain user-resizable. Unlike the official example's fixed 360dp supporting area, the divider ratio is controlled by the component model and bounds.
-- Project-defined appearance: the divider handle geometry and its hover, focus, and drag states have no official Supporting pane component tokens. Use the Component CSS hooks documented by the public component page; their default colors, state opacity, shape, and motion map to shared System tokens.
-- Project-defined (`split-pane.extension.divider-target`): Keep a 24px full-height divider track with a 4px visible handle. The divider is a continuous resize target, so it does not expand to the 48px discrete-control target.
-- Project-defined (`split-pane.extension.motion`): Use the System default spatial spring for settle motion. End the settling state on the grid transition's `transitionend`, with a 600ms fallback; under reduced motion, skip the settling state entirely. Focus is the shared 3px secondary inset ring.
+The following are project decisions.
+
+- `split-pane.extension.separator`: When enabled, expose the divider as a keyboard-operable separator with a visible focus state and bounded value. Resizing changes space allocation without changing which content is primary.
+- `split-pane.extension.keyboard`: Support keyboard resizing and preserve the selected proportion when orientation changes. The component also supports drag resizing; Material does not define these interactions.
+- Compact automatic mode shows one selected pane, with primary content shown by default. The consuming scaffold owns the control that switches between panes. This intentionally differs from the Material Supporting pane example, which places supporting content below the primary area at compact sizes.
+- Compact, medium, and expanded window categories map to 0–599px, 600–839px, and 840px or wider viewports.
+- Medium automatic layouts stack both panes; expanded layouts show them side by side and remain user-resizable. Unlike the official example's fixed 360dp supporting area, the divider ratio is controlled by the component's bounds.
+- Divider appearance has no official Supporting pane component tokens. Its default colors, state opacity, shape, and motion map to shared System tokens.
+- `split-pane.extension.divider-target`: Keep a 24px full-height divider track with a 4px visible handle. The divider is a continuous resize target, so it does not expand to the 48px discrete-control target.
+- `split-pane.extension.motion`: Use the System default spatial spring for settle motion. End the settling state on the grid transition's `transitionend`, with a 600ms fallback; under reduced motion, skip the settling state entirely. Focus is the shared 3px secondary inset ring.

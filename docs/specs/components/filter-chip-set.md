@@ -2,7 +2,7 @@
 
 ## Scope
 
-`FilterChipSet` is a project helper for coordinating related Material Filter chips. Material defines the chip pattern, not this Vue composition or its API. See [Filter chips](filter-chip.md) and the shared [Chips family guide](chips.md).
+`FilterChipSet` is a project helper for coordinating related Material Filter chips. Material defines the chip pattern, not this composition or its API. See [Filter chips](filter-chip.md) and the shared [Chips family guide](chips.md). Compose `FlowRow` with `FilterChip` children and set-level selection semantics is the closest composition.
 
 ## Design target
 
@@ -14,8 +14,10 @@
 
 ## Project decisions
 
-- Project-defined extension: The helper owns group-level labeling and selection coordination because Material defines the Filter chip pattern but not a Vue set component. `ariaLabelledby` may reference an external visible heading; `label` is the fallback. Do not emit grid, row, or gridcell roles. Use toolbar orientation for horizontal and vertical layouts.
-- Project-defined: Keep selected chips visible in forced colors with the System Highlight/HighlightText pair; unselected chips use a CanvasText border and focus uses Highlight.
-- Project-defined: Lay out the leading selection indicator or icon and the label in one centered flex row with an 8px gap. Do not rely on inline baseline alignment for the check indicator.
-- Vue selection behavior: single-select starts empty and lets activating the selected chip clear it to `null`; multi-select toggles each value independently. Material defines chip activation and allows single or multiple selection, but does not prescribe this helper's model contract.
-- Layout behavior: the helper wraps chips by default and offers a vertical layout. Its gap follows the configured spacing density when that makes the gap larger, but never falls below the official 8 dp minimum.
+The following are project decisions.
+
+- The helper owns group-level labeling and selection coordination because Material defines the Filter chip pattern but not a set component. An external visible heading may supply the group label, with an inline label as the fallback. Do not emit grid, row, or gridcell roles. Use toolbar orientation for horizontal and vertical layouts.
+- Keep selected chips visible in forced colors with the System Highlight and HighlightText pair; unselected chips use a CanvasText border and focus uses Highlight.
+- Lay out the leading selection indicator or icon and the label in one centered flex row with an 8px gap. Do not rely on inline baseline alignment for the check indicator.
+- Single-selection starts empty and activating the selected chip clears the selection; multi-selection toggles each value independently. Material defines chip activation and allows single or multiple selection, but does not prescribe this helper's model contract.
+- The helper wraps chips by default and offers a vertical layout. Its gap follows the configured spacing density when that makes the gap larger, but never falls below the official 8 dp minimum.

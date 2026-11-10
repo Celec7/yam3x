@@ -30,6 +30,8 @@ A switch controls one independent setting whose effect takes place immediately. 
 
 ## Project decisions
 
+The following are project decisions.
+
 - Animate the pressed handle size with a 100 ms linear transition and return with the fast spatial spring. Compose snaps the pressed size, while Material Web uses 100 ms linear growth; the short transition avoids an abrupt jump while keeping press feedback immediate. The official measurement tokens define the 28 dp pressed size but not the press interpolation.
 - Map selected icons to `primary` and the selected hover handle to `primary-container`, following the named token values in the specs selector. The color figure labels selected icons `on-primary-container`; the selector is the chosen mapping source for this project.
-- When `icons="both"`, keep the unselected icon visible while disabled, using the disabled-unselected icon color at 38% opacity. This uses the disabled icon token available in the selector and keeps both icon variants available to the component.
+- With both icon variants enabled, keep the unselected icon visible while disabled, using the disabled-unselected icon color at 38% opacity. This uses the disabled icon token available in the selector and keeps both icon variants available to the component.

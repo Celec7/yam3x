@@ -22,9 +22,10 @@ Search lets people enter a query and review suggestions or results. It is distin
 
 ## Project decisions
 
-- Project-defined: Keep both `contained` and `divided` available in the Vue API. Contained remains the default and follows the Expressive recommendation; divided is retained as the baseline option for existing project designs.
-- Project-defined: Map input and supporting text through the shared System body-large typography tokens so theme-wide type settings stay consistent.
-- Project-defined: Search styles consume private Component aliases under `--_yam3x-search-*`. These aliases map shared System roles and Search-specific values; they are implementation details, not consumer CSS overrides.
-- Project-defined: In `auto` layout, use the measured content-pane width to select docked Search at 600px or wider and full-screen Search below 600px.
-- Project-defined: The feature using Search owns the searched data, result ranking, and what selecting a result does. Search owns query entry and the focused results surface.
-- Project-defined: Search fits its available pane instead of overflowing to enforce the 360dp nominal minimum. In panes narrower than 408px while unfocused or 384px while focused, the bar may be narrower than 360px. Provide enough space to meet the official width range when the layout allows it.
+The choices below are project-defined.
+
+- Both styles remain available. Contained is the default and follows the Expressive recommendation; divided is retained as the baseline option for existing project designs.
+- Input and supporting text use the shared System body-large typography tokens so theme-wide type settings stay consistent.
+- Automatic layout uses the measured content-pane width to select docked Search at 600px or wider and full-screen Search below 600px.
+- The feature using Search owns the searched data, result ranking, and what selecting a result does. Search owns query entry and the focused results surface.
+- Search fits its available pane instead of overflowing to enforce the 360dp nominal minimum. In panes narrower than 408px while unfocused or 384px while focused, the bar may be narrower than 360px. Provide enough space to meet the official width range when the layout allows it.

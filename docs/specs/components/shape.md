@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project extension applies Material's decorative shapes to content and clipping. It is separate from the corner-radius scale that Material components use for their own containers.
+This project extension applies Material's decorative shapes to content and clipping. It is separate from the corner-radius scale that Material components use for their own containers. The closest Compose reference is `MaterialShapes` with shape morph; it informs shape names and morph behavior but is not an official Web component.
 
 ## Design target
 
@@ -13,7 +13,9 @@ This project extension applies Material's decorative shapes to content and clipp
 
 ## Project decisions
 
-- Project-defined extension: `Shape` clips consumer-provided content and transitions between its forms with CSS. The consuming interface owns the content's accessibility meaning and context.
-- `shape.extension.geometry` (project-defined): The public names follow the Material Shape Library, while normalized paths are project-adapted for CSS clipping and interpolation. They are not official Material geometry, component tokens, or corner-radius values.
-- Project mapping: The default size is `48px`, the named-shape fill uses System `primary`, and morphing uses System `spring-slow-spatial`. Material does not prescribe these values for a Web Shape component.
-- `shape.motion.reduced` (project-defined): Respect reduced motion by stopping shape morph motion while preserving the rendered form.
+The following are project decisions.
+
+- Shape clips consumer-provided content and transitions between its forms with CSS. The consuming interface owns the content's accessibility meaning and context.
+- `shape.extension.geometry`: Shape names follow the Material Shape Library, while normalized paths are project-adapted for CSS clipping and interpolation. They are not official Material geometry, component tokens, or corner-radius values.
+- The default size is 48px, the named-shape fill uses System `primary`, and morphing uses System `spring-slow-spatial`. Material does not prescribe these values for a Web Shape component.
+- `shape.motion.reduced`: Respect reduced motion by stopping shape morph motion while preserving the rendered form.

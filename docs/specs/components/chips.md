@@ -24,4 +24,6 @@ Material 3 defines four chip variants: Assist, Filter, Input, and Suggestion. Ea
 
 ## Project decisions
 
-- Project-defined extensions are not additional Material chip variants: the passive [Chip](chip.md), layout-only [ChipSet](chip-set.md), [FilterChipSet](filter-chip-set.md), and [InputChipSet](input-chip-set.md). Their local guides identify which composition decisions extend the official chip family.
+The following are project decisions.
+
+- The passive [Chip](chip.md), layout-only [ChipSet](chip-set.md), [FilterChipSet](filter-chip-set.md), and [InputChipSet](input-chip-set.md) are project helper guides, not additional Material chip variants. Each local guide identifies which composition decisions extend the official chip family.
