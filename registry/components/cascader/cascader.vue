@@ -708,6 +708,8 @@ defineExpose({ show, close, focus: () => trigger.value?.focus(), trigger })
 }
 .yam3x-cascader__panel {
   --_yam3x-cascader-gap: calc(12px * var(--md-sys-density-spacing-scale, 1));
+  --yam3x-option-panel-container-padding-block: 0;
+  --yam3x-option-panel-container-padding-inline: 0;
   container-type: inline-size;
   gap: var(--_yam3x-cascader-gap);
   padding: var(--_yam3x-cascader-gap);

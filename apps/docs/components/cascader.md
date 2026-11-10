@@ -97,7 +97,7 @@ Option changes can reconcile the draft and its focus, but do not prune applicati
 
 ## Styling
 
-Use FormField for outlined/filled field appearance and supporting text. The popup adopts OptionPanel and Option menu rows, with their rounded shapes, state layers, and press feedback. Its preferred minimum width is 640px, capped at 800px and the available viewport width. Lists have a 192px flexible basis and a 280px height cap; the overall popup height is capped at 520px. Smaller available spaces can lower these caps. Use `panelClass` for popup-specific styling; [Option](/components/option) owns the row styling contract.
+Use FormField for outlined/filled field appearance and supporting text. The popup adopts OptionPanel and Option menu rows, with their rounded shapes, state layers, and press feedback. The dialog supplies its own density-scaled 12px padding and resets the OptionPanel menu padding so row surfaces align with the title, search field, and footer. Its preferred minimum width is 640px, capped at 800px and the available viewport width. Lists have a 192px flexible basis and a 280px height cap; the overall popup height is capped at 520px. Smaller available spaces can lower these caps. Use `panelClass` for popup-specific styling; [Option](/components/option) owns the row styling contract.
 
 ## Material references
 

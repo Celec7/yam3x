@@ -63,6 +63,7 @@
 - Option rows use a 44px visual surface inside the 48px interaction target, a 3px `secondary` focus ring that preserves the row radius, level 2 panel elevation, label-large text, and 32px group labels. A fine primary pointer uses 16px start / 10px end and a 12px icon gap; a coarse pointer uses 12px / 12px and 8px.
 - Select keeps the accepted value on-surface while its menu is open and applies primary only to the trailing arrow. Multiple-selection chips use an 8px row gap without extra per-chip margins and reserve 4px above the first row for floating-label clearance, and the standalone focus fallback uses the 3px field outline.
 - Autocomplete keeps an outlined field with a 3px primary focus outline, exposes hint and error supporting text, and aligns suggestions to the shared menu language: 44px visual rows inside 48px targets, a 3px secondary focus ring, label-large text, pointer-aware insets, and level 2 popup elevation.
+- Cascader resets the inherited OptionPanel menu padding so its own density-scaled 12px dialog padding is the single content inset; option surfaces now align with the title, search field, and footer while retaining the shared 44px visual rows inside 48px targets.
 - Dialogs, menus, option panels, autocomplete, search, date pickers, time pickers, tooltips, FAB menus, bottom sheets, full-screen list panels, and modal navigation rails share an open-order layer stack. A new dialog closes popups from lower surfaces and takes a higher layer; popups opened inside it render above it.
 
 ### Updating copied source

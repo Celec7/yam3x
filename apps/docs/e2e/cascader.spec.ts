@@ -74,6 +74,30 @@ test('cascader.path.commit: cancels leaf acceptance and permits only explicit in
   ).toBe('["docs"]')
 })
 
+test('cascader.layout.option: aligns option surfaces with the dialog content and keeps shared row geometry', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 })
+  await page.goto('/components/cascader')
+  const demo = page.getByTestId('cascader-demo')
+  await demo.getByRole('combobox', { name: 'Destination', exact: true }).click()
+  const dialog = page.getByRole('dialog', { name: 'Destination', exact: true })
+  const panel = await dialog.boundingBox()
+  const search = await dialog.locator('.yam3x-cascader__search-field').boundingBox()
+  const option = dialog.getByRole('option', { name: 'Product', exact: true })
+  const row = await option.boundingBox()
+  const surface = await option.locator('.yam3x-option__surface').boundingBox()
+  expect(await dialog.evaluate((element) => getComputedStyle(element).paddingInlineStart)).toBe(
+    '12px',
+  )
+  expect(panel!.width).toBeCloseTo(640, 0)
+  expect(search!.x).toBeCloseTo(panel!.x + 12, 0)
+  expect(row!.x).toBeCloseTo(panel!.x + 12, 0)
+  expect(surface!.x).toBeCloseTo(row!.x, 0)
+  expect(row!.height).toBeCloseTo(48, 0)
+  expect(surface!.height).toBeCloseTo(44, 0)
+})
+
 test('cascader.search.paths: full-path results distinguish repeated values and preserve disabled ancestry', async ({
   page,
 }) => {
