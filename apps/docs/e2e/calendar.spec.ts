@@ -116,6 +116,26 @@ test.describe('Calendar', () => {
     await expect(page.getByText('Date range: 2026-10-16 → End date')).toBeVisible()
   })
 
+  test('keeps a same-day range to the endpoint indicator without a trailing bar', async ({
+    page,
+  }) => {
+    const calendar = page.getByRole('region', { name: 'Date range' })
+    const day = calendar.getByRole('button', { name: /October 12, 2026/ })
+    await day.click()
+    await day.click()
+    await expect(page.getByText('Date range: 2026-10-12 → 2026-10-12')).toBeVisible()
+    const cell = calendar.locator('[data-date="2026-10-12"]').locator('xpath=..')
+    await expect(cell).toHaveClass(/is-range-start/)
+    await expect(cell).toHaveClass(/is-range-end/)
+    const endpoint = cell.getByRole('button')
+    await expect
+      .poll(() => endpoint.evaluate((element) => getComputedStyle(element, '::after').display))
+      .toBe('none')
+    await expect
+      .poll(() => endpoint.evaluate((element) => getComputedStyle(element, '::before').inset))
+      .toBe('4px')
+  })
+
   test('keeps the second calendar range start circular until an end date is chosen', async ({
     page,
   }) => {

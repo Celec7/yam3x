@@ -519,6 +519,7 @@ function dateDescription(date: Date): string | undefined {
   return undefined
 }
 function rangeState(value: string): string {
+  if (value === props.rangeStart && value === props.rangeEnd) return 'is-range-start is-range-end'
   if (value === props.rangeStart) return 'is-range-start'
   if (value === props.rangeEnd) return 'is-range-end'
   if (props.rangeStart && props.rangeEnd && value > props.rangeStart && value < props.rangeEnd)
@@ -1044,6 +1045,9 @@ defineExpose({
 }
 .yam3x-calendar__cell.is-range-end .yam3x-calendar__day::after {
   inset-inline-end: 50%;
+}
+.yam3x-calendar__cell.is-range-start.is-range-end .yam3x-calendar__day::after {
+  display: none;
 }
 .yam3x-calendar:not(.has-complete-range)
   .yam3x-calendar__cell.is-range-start
