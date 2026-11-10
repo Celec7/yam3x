@@ -28,21 +28,29 @@ export interface PointerGestureDetail {
 
 /** Tracks pointer samples and derives the same motion metrics used by Pan and Swipe. */
 export class PointerTracker {
-  #samples: PointerInput[]
+  #first: PointerInput
+  #current: PointerInput
+  #previousMove: PointerInput | undefined
+  #lastMove: PointerInput | undefined
 
   constructor(initial: PointerInput) {
-    this.#samples = [initial]
+    this.#first = this.#current = initial
+    if (initial.kind === 'pointermove') this.#lastMove = initial
   }
 
   get current(): PointerInput {
-    return this.#samples[this.#samples.length - 1]!
+    return this.#current
   }
   get detail(): PointerGestureDetail {
     return this.#compute()
   }
 
   append(input: PointerInput): void {
-    this.#samples.push(input)
+    this.#current = input
+    if (input.kind === 'pointermove') {
+      this.#previousMove = this.#lastMove
+      this.#lastMove = input
+    }
   }
 
   static centroid(...trackers: PointerTracker[]): PointerGestureDetail {
@@ -67,7 +75,7 @@ export class PointerTracker {
     const deltaTime = Math.max(...details.map((x) => x.deltaTime))
     const duration =
       Math.max(...trackers.map((x) => x.current.timestamp)) -
-      Math.min(...trackers.map((x) => x.#samples[0]!.timestamp))
+      Math.min(...trackers.map((x) => x.#first.timestamp))
     return {
       startClientX,
       startClientY,
@@ -96,11 +104,10 @@ export class PointerTracker {
   }
 
   #compute(): PointerGestureDetail {
-    const first = this.#samples[0]!
-    const current = this.current
-    const moves = this.#samples.filter((input) => input.kind === 'pointermove')
-    const previous = moves.at(-2) ?? first
-    const last = moves.at(-1) ?? first
+    const first = this.#first
+    const current = this.#current
+    const previous = this.#previousMove ?? first
+    const last = this.#lastMove ?? first
     const deltaX = last.clientX - previous.clientX
     const deltaY = last.clientY - previous.clientY
     const totalDeltaX = last.clientX - first.clientX

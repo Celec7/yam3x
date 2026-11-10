@@ -631,6 +631,50 @@ describe('gesture foundations', () => {
     binding.destroy()
   })
 
+  it('keeps long pan updates bounded without rescanning historical samples', () => {
+    const element = document.createElement('div')
+    const recognizer = pan({ minDisplacement: 0 })
+    const moves = 1_200
+    let sampleReads = 0
+    const send = (kind: 'pointerdown' | 'pointermove', index: number) => {
+      const input = normalizePointerEvent(
+        new PointerEvent(kind, {
+          pointerId: 7,
+          pointerType: 'mouse',
+          buttons: 1,
+          clientX: index,
+        }),
+        element,
+      )
+      Object.defineProperties(input, {
+        timestamp: { value: index * 8 },
+        kind: {
+          get() {
+            sampleReads += 1
+            return kind
+          },
+        },
+      })
+      recognizer.onInput(input)
+    }
+
+    try {
+      send('pointerdown', 0)
+      for (let index = 1; index <= moves; index++) send('pointermove', index)
+
+      expect(recognizer.currentDetail).toMatchObject({
+        phase: 'update',
+        deltaX: 1,
+        totalDeltaX: moves,
+        velocityX: 0.125,
+        duration: moves * 8,
+      })
+      expect(sampleReads).toBeLessThan(moves * 8)
+    } finally {
+      recognizer.reset()
+    }
+  })
+
   it('emits pan start, update, and end details after crossing the movement threshold', () => {
     const element = document.createElement('div')
     const recognizer = pan({ minDisplacement: 4 })
