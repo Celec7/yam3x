@@ -46,10 +46,19 @@ describe('Icon', () => {
     expect(wrapper.attributes('style')).toContain("'FILL' 1, 'wght' 600, 'GRAD' -25, 'opsz' 36")
     await wrapper.setProps({ grade: 'high' })
     expect(wrapper.attributes('style')).toContain("'GRAD' 200")
+    await wrapper.setProps({ grade: 'medium' })
+    expect(wrapper.attributes('style')).toContain("'GRAD' 0")
+    await wrapper.setProps({ opticalSize: 10 })
+    expect(wrapper.attributes('style')).toContain("'opsz' 20")
+    await wrapper.setProps({ opticalSize: 60 })
+    expect(wrapper.attributes('style')).toContain("'opsz' 48")
+    await wrapper.setProps({ opticalSize: NaN })
+    expect(wrapper.attributes('style')).toContain("'opsz' 24")
     await wrapper.setProps({
       variant: 'invalid' as never,
       grade: 'invalid' as never,
       weight: 450 as never,
+      opticalSize: 36,
     })
     expect(wrapper.attributes('style')).toContain('Material Symbols Outlined')
     expect(wrapper.attributes('style')).toContain(

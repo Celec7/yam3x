@@ -40,9 +40,10 @@ const resolvedGrade = computed<IconGrade>(() =>
 const resolvedWeight = computed<IconWeight>(() =>
   validWeights.includes(props.weight) ? props.weight : 400,
 )
-const resolvedOpticalSize = computed(() =>
-  Number.isFinite(Number(props.opticalSize)) ? Number(props.opticalSize) : 24,
-)
+const resolvedOpticalSize = computed(() => {
+  const value = Number(props.opticalSize)
+  return Number.isFinite(value) ? Math.min(48, Math.max(20, value)) : 24
+})
 const gradeValue = computed(() =>
   resolvedGrade.value === 'auto'
     ? 'var(--_yam3x-icon-auto-grade)'

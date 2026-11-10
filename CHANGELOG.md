@@ -18,6 +18,7 @@
 
 ### Fixed
 
+- Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
 - Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
 - Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Select batches slotted option registration in DOM order and reuses catalog filtering, avoiding quadratic registration work for large non-virtual catalogs.
@@ -97,6 +98,7 @@ Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/bad
 
 ### Fixed
 
+- Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
 - Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
 - Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Align idle labels in outlined multi-line FormField controls with the first text line.
@@ -139,6 +141,7 @@ When updating an existing app, merge the new `src/styles/yam3x-tokens.css` and r
 
 ### Fixed
 
+- Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
 - Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
 - Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
 - Floating field labels in RTL and above searchable selection chips, required-state propagation, and description-observer feedback.

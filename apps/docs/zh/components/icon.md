@@ -47,8 +47,8 @@ import Icon from './components/yam3x/icon/icon.vue'
 | `variant`     | `outlined \| rounded \| sharp`                  | `outlined` | 字体样式或注册表键。                                                                                                                                                                                       |
 | `filled`      | `boolean`                                       | `false`    | 设置填充轴；注册 SVG 时切换两条路径。                                                                                                                                                                      |
 | `grade`       | `auto \| low \| medium \| high`                 | `auto`     | `auto` 在浅色模式下使用 GRAD `0`，深色模式下使用 `-25`；显式值分别对应 `-25`、`0`、`200`。最近的 `data-theme` 或 `.dark` 主题目标控制自动模式，否则跟随系统配色方案。可用 `--yam3x-icon-auto-grade` 覆盖。 |
-| `weight`      | `100 \| 200 \| 300 \| 400 \| 500 \| 600 \| 700` | `400`      | 设置 `wght` 轴。对于标准 24px 图标，Material 建议使用 regular 400，最小字重为 200。                                                                                                                        |
-| `opticalSize` | `number`                                        | `24`       | 设置 `opsz` 轴；对于常规 Material Symbols 用法，应根据实际图标尺寸从 20–48 范围内选择。                                                                                                                    |
+| `weight`      | `100 \| 200 \| 300 \| 400 \| 500 \| 600 \| 700` | `400`      | 设置 `wght` 轴；不支持的运行时值回退到 400。对于标准 24px 图标，Material 建议使用 regular 400，最小字重为 200。                                                                                            |
+| `opticalSize` | `number`                                        | `24`       | 设置 `opsz` 轴。有限值会裁剪到 Material Symbols 的 20–48 范围；非有限值回退到 24。                                                                                                                         |
 
 `registerIcon(name, variant, { outlined, filled })` 为每条提供的路径接受 `{ viewBox, path }`。可在实例创建前或之后注册。路径和 viewBox 会在存入前验证；同名同 variant 的新条目会替换旧条目。
 
@@ -56,7 +56,7 @@ import Icon from './components/yam3x/icon/icon.vue'
 
 默认图标是装饰内容，会带 `role="img" aria-hidden="true"`。传入 `aria-label` 或 `aria-labelledby` 后会向辅助技术暴露图像名称。图标不接收键盘或指针操作；交互目标由父控件负责。
 
-组件接受自定义轴值，不会在运行时截断或限制数值。Material 对标准 24px 图标的最小字重要求为 200。常见图标尺寸为 20、24、40 和 48px；`opsz` 轴支持 20–48。
+组件接受 100 至 700 的声明字重值；不支持的运行时值回退到 400。Material 对标准 24px 图标的最小字重建议为 200，因此更轻的字重只适合更大的光学尺寸。有限的 `opticalSize` 值会裁剪到支持的 20–48 范围；非有限值回退到 24。
 
 ## 样式
 

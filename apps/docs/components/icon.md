@@ -47,8 +47,8 @@ import Icon from './components/yam3x/icon/icon.vue'
 | `variant`     | `outlined \| rounded \| sharp`                  | `outlined` | Font style or registry key.                                                                                                                                                                                                                                              |
 | `filled`      | `boolean`                                       | `false`    | Sets the fill axis; switches between two paths for registered SVGs.                                                                                                                                                                                                      |
 | `grade`       | `auto \| low \| medium \| high`                 | `auto`     | `auto` uses GRAD `0` in light mode and `-25` in dark mode; explicit values map to `-25`, `0`, and `200`. The nearest `data-theme` or `.dark` target controls automatic mode; otherwise it follows the system color scheme. Set `--yam3x-icon-auto-grade` to override it. |
-| `weight`      | `100 \| 200 \| 300 \| 400 \| 500 \| 600 \| 700` | `400`      | Sets the `wght` axis. For a standard 24px icon, Material recommends regular weight 400 and a minimum weight of 200.                                                                                                                                                      |
-| `opticalSize` | `number`                                        | `24`       | Sets the `opsz` axis; choose within Material Symbols' 20–48 range for the rendered icon.                                                                                                                                                                                 |
+| `weight`      | `100 \| 200 \| 300 \| 400 \| 500 \| 600 \| 700` | `400`      | Sets the `wght` axis; unsupported runtime values fall back to 400. For a standard 24px icon, Material recommends regular weight 400 and a minimum weight of 200.                                                                                                         |
+| `opticalSize` | `number`                                        | `24`       | Sets the `opsz` axis. Finite values are clamped to Material Symbols' 20–48 range; non-finite values fall back to 24.                                                                                                                                                     |
 
 `registerIcon(name, variant, { outlined, filled })` accepts `{ viewBox, path }` for each provided path. Register icons before or after creating an instance. The path and viewBox are validated before storage; a new entry with the same name and variant replaces the old one.
 
@@ -56,7 +56,7 @@ import Icon from './components/yam3x/icon/icon.vue'
 
 By default, an icon is decorative and receives `role="img" aria-hidden="true"`. Passing `aria-label` or `aria-labelledby` exposes an image name to assistive technology. The icon does not receive keyboard or pointer input; the parent control owns the interaction target.
 
-The renderer accepts custom axis values without runtime clamping. Material's minimum weight of 200 applies to standard 24px icons. Common icon sizes are 20, 24, 40, and 48px; the `opsz` axis supports values from 20 to 48.
+The renderer accepts the declared weight values from 100 through 700; unsupported runtime values fall back to 400. Material's minimum weight of 200 applies to standard 24px icons, so lighter values are appropriate only at larger optical sizes. Finite `opticalSize` values are clamped to the supported 20–48 range; non-finite values fall back to 24.
 
 ## Styling
 
