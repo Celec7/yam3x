@@ -52,7 +52,7 @@ Breadcrumb 导航可继承 [LocaleProvider](/zh/components/localization) 的 `ac
 
 链接保留浏览器的 Tab、Enter、上下文菜单、复制链接和修饰键行为。默认最后一项为当前页面：提供 `href` 时它仍是 `aria-current="page"` 的链接，并使用 on-surface 颜色；没有 `href` 时显示为当前文本。非链接祖先使用 on-surface-variant，且不显示指针光标。
 
-每个项目在最小 48px 交互目标内使用 40px 的可见胶囊；hover、focus 和 pressed 反馈由同一个共享状态层提供，focus 为 3px secondary 外环加 2px 外偏移。
+每个项目在最小 48px 交互目标内使用 40px 的可见胶囊；hover、focus 和 pressed 反馈由同一个共享状态层提供，focus 为 3px secondary 外环加 2px 外偏移。标签和分隔符带有 1px 的光学调整，使其墨迹共享同一视觉中心。
 
 ## 样式
 

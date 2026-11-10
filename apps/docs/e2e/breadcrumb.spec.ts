@@ -10,6 +10,13 @@ test('exposes a labelled ordered navigation trail with native links and current-
   const list = navigation.getByRole('list')
   const items = list.getByRole('listitem')
   await expect(items).toHaveCount(3)
+  const tops = await items.evaluateAll((entries) =>
+    entries.map((entry) => entry.getBoundingClientRect().top),
+  )
+  expect(new Set(tops).size).toBe(1)
+  await expect(items.first()).toHaveCSS('margin-top', '0px')
+  await expect(items.first().locator('.yam3x-breadcrumb__label')).toHaveCSS('top', '1px')
+  await expect(navigation.locator('.yam3x-breadcrumb__separator').first()).toHaveCSS('top', '-1px')
   await expect(items.nth(0).getByRole('link', { name: 'Get started' })).toHaveAttribute(
     'href',
     '/guide/installation',

@@ -52,7 +52,7 @@ Use `#item({ item, index, current })` to replace the visible label, `#icon` for 
 
 Links retain the browser’s native Tab, Enter, context-menu, copy-link, and modifier-key behavior. By default, the final item is the current page. When it has an `href`, it remains a link with `aria-current="page"` and uses the on-surface color; without an `href`, it is rendered as current-page text. Non-link ancestors use on-surface-variant and do not imply a pointer cursor.
 
-Each item has a 40px visual pill inside a minimum 48px interaction target. Hover, focus, and pressed feedback comes from one shared state layer; focus is a 3px secondary ring with a 2px outer offset.
+Each item has a 40px visual pill inside a minimum 48px interaction target. Hover, focus, and pressed feedback comes from one shared state layer; focus is a 3px secondary ring with a 2px outer offset. Labels and separators use a 1px optical adjustment so their ink shares the visual center.
 
 ## Styling
 

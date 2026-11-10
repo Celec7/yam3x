@@ -200,6 +200,7 @@ const navigationLabel = computed(() =>
   align-items: center;
   min-inline-size: 0;
   min-block-size: var(--md-sys-touch-target-size, 48px);
+  margin: 0;
 }
 .yam3x-breadcrumb[data-wrap] .yam3x-breadcrumb__entry {
   max-inline-size: 100%;
@@ -330,11 +331,14 @@ const navigationLabel = computed(() =>
 .yam3x-breadcrumb__label {
   position: relative;
   z-index: 1;
+  inset-block-start: 1px;
   min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .yam3x-breadcrumb__separator {
+  position: relative;
+  inset-block-start: -1px;
   display: inline-flex;
   flex: none;
   align-items: center;
