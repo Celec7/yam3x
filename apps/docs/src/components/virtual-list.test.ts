@@ -343,3 +343,29 @@ it('virtual.window.anchor: unmount discards queued restoration and restores the 
   expect(element.scrollTop).toBe(253)
   expect(element.style.overflowAnchor).toBe('')
 })
+
+it('keeps distant offset lookups bounded and refreshes them after catalog changes', async () => {
+  const fixture = mountWindow()
+  let reads = 0
+  fixture.keys.value = new Proxy(
+    Array.from({ length: 10_000 }, (_, index) => index),
+    {
+      get(target, key, receiver) {
+        if (typeof key === 'string' && /^\d+$/.test(key)) reads++
+        return Reflect.get(target, key, receiver)
+      },
+    },
+  )
+  await flushPromises()
+  expect(fixture.windowed.offsetFor(9_999)).toBe(99_990)
+  reads = 0
+  for (let index = 0; index < 100; index++)
+    expect(fixture.windowed.offsetFor(9_999 - index)).toBe((9_999 - index) * 10)
+  expect(reads).toBeLessThan(1_000)
+
+  fixture.keys.value = [9_999, 0]
+  await flushPromises()
+  expect(fixture.windowed.offsetFor(9_999)).toBe(0)
+  expect(fixture.windowed.offsetFor(0)).toBe(10)
+  expect(fixture.windowed.offsetFor(1)).toBe(0)
+})

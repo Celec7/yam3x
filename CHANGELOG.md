@@ -20,6 +20,7 @@
 - Linear progress value updates reuse measured geometry without allocating probes or reading layout; CSS geometry overrides and container resizing remain reactive.
 - Badges share anchor observation within each document or shadow root and ignore unrelated DOM changes, while retaining dynamic anchors, direction changes, and slot content updates.
 - Pan and Swipe retain only the samples needed for motion metrics, keeping per-update work and gesture storage bounded without changing reported movement or velocity.
+- Tree view shares incremental cascade-check summaries and resolves expanded visibility in one pass; virtual windows reuse key indexes for distant navigation and row offsets.
 - Date pickers separate docked month and year controls into their own dropdown-and-arrow groups. Docked month and year menus are vertical 48px listboxes with a selected-row check; the selected row scrolls into view when opened.
 - Modal date pickers combine month and year into one dropdown with adjacent month arrows, keep the headline to one short line, and use the full localized date as its accessible name.
 - Modal range calendars share one visible weekday row above the continuous month sequence, omit month paging controls, and keep hidden weekday headers for each month grid.

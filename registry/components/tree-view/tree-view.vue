@@ -17,10 +17,9 @@ import TreeViewNodeView from './tree-view-node.vue'
 import EmptyState from '../empty-state/empty-state.vue'
 import { treeViewKey } from './tree-view.context'
 import {
+  createTreeChecks,
   isTreeBranch,
-  treeCheckState,
   treeRecords,
-  updateTreeChecks,
   validateTreeChildren,
   visibleTreeRecords,
 } from './tree-view.utils'
@@ -142,6 +141,12 @@ function children(node: TreeViewNode) {
   return node.children ?? (node.hasChildren ? cache.value.get(node.key) : undefined)
 }
 const records = computed(() => treeRecords(props.nodes, children))
+const checkIndex = computed(() => createTreeChecks(records.value, children))
+const checkStates = computed(() => {
+  const index = checkIndex.value
+  index.sync(checked.value)
+  return { index }
+})
 const visible = computed(() => visibleTreeRecords(records.value, expanded.value))
 const virtualEnabled = computed(() => props.virtual !== false)
 const windowed = useVirtualList({
@@ -158,7 +163,7 @@ const virtualChildren = computed(() => {
   const retained = new Set(windowed.items.value.map((item) => item.key))
   for (const key of [...retained]) {
     let parent = records.value.get(key)?.parent
-    while (parent != null) {
+    while (parent != null && !retained.has(parent)) {
       retained.add(parent)
       parent = records.value.get(parent)?.parent
     }
@@ -184,13 +189,7 @@ function branch(node: TreeViewNode) {
   return isTreeBranch(node, children)
 }
 function state(node: TreeViewNode) {
-  return treeCheckState(
-    node,
-    checked.value,
-    children,
-    cascade.value,
-    records.value.get(node.key)?.disabled,
-  )
+  return checkStates.value.index.state(node.key, cascade.value)
 }
 function elementLabelId(key: TreeViewKey) {
   if (!ids.has(key)) ids.set(key, `${uid}-node-${++idCount}`)
@@ -243,14 +242,7 @@ function select(node: TreeViewNode, toggleValue: boolean) {
 }
 function check(node: TreeViewNode, input?: HTMLInputElement) {
   if (!unavailable(node) && checking.value && node.checkable !== false) {
-    const next = updateTreeChecks(
-      node,
-      state(node) !== 'checked',
-      checkedKeys.value,
-      records.value,
-      children,
-      cascade.value,
-    )
+    const next = checkStates.value.index.update(node.key, state(node) !== 'checked', cascade.value)
     checkedKeys.value = next
     emit('check', { node, keys: next })
   }

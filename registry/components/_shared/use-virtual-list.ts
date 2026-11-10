@@ -35,6 +35,7 @@ export function useVirtualList<K extends Key>(config: {
   let dataRevision = 0
   let navigationRevision = 0
   const keys = computed(config.keys)
+  const keyIndices = computed(() => new Map(keys.value.map((key, index) => [key, index])))
   const estimate = computed(() => {
     const value = config.options()?.estimateSize ?? 48
     return Number.isFinite(value) && value > 0 ? value : 48
@@ -82,7 +83,7 @@ export function useVirtualList<K extends Key>(config: {
     )
     const pinned = config.keepMounted?.()
     if (pinned != null) {
-      const index = keys.value.indexOf(pinned)
+      const index = keyIndices.value.get(pinned) ?? -1
       if (index >= 0) indices.add(index)
     }
     return [...indices]
@@ -131,7 +132,7 @@ export function useVirtualList<K extends Key>(config: {
     const element = elements.get(key)
     pendingTarget =
       !element || !heights.has(key) || element.getBoundingClientRect().height <= 0 ? key : null
-    const index = keys.value.indexOf(key)
+    const index = keyIndices.value.get(key) ?? -1
     if (index < 0) {
       pendingTarget = null
       return
@@ -177,7 +178,7 @@ export function useVirtualList<K extends Key>(config: {
       const anchorKey = keys.value[anchorIndex]
       const withinRow = top.value - paddingStart.value - offsets.value[anchorIndex]!
       const pinned = config.keepMounted?.()
-      const pinnedIndex = pinned == null ? -1 : keys.value.indexOf(pinned)
+      const pinnedIndex = pinned == null ? -1 : (keyIndices.value.get(pinned) ?? -1)
       const pinnedVisible =
         pinnedIndex >= 0 &&
         paddingStart.value + offsets.value[pinnedIndex]! >= top.value &&
@@ -203,7 +204,7 @@ export function useVirtualList<K extends Key>(config: {
       }
       if (changed) {
         revision.value++
-        const index = anchorKey === undefined ? -1 : keys.value.indexOf(anchorKey)
+        const index = anchorKey === undefined ? -1 : (keyIndices.value.get(anchorKey) ?? -1)
         if (index >= 0) {
           const size = offsets.value[index + 1]! - offsets.value[index]!
           writeTop(
@@ -272,7 +273,7 @@ export function useVirtualList<K extends Key>(config: {
           key = survivor
           withinRow = 0
         }
-        const index = current.indexOf(key)
+        const index = keyIndices.value.get(key)!
         const size = offsets.value[index + 1]! - offsets.value[index]!
         writeTop(
           paddingStart.value + offsets.value[index]! + Math.min(withinRow, Math.max(0, size - 1)),
@@ -291,7 +292,7 @@ export function useVirtualList<K extends Key>(config: {
     heights.clear()
   })
   function offsetFor(key: K) {
-    const index = keys.value.indexOf(key)
+    const index = keyIndices.value.get(key) ?? -1
     return index < 0 ? 0 : offsets.value[index]!
   }
   return { items, totalSize, measure, scrollToKey, offsetFor }

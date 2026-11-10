@@ -4,8 +4,8 @@ import { nextTick, ref } from 'vue'
 import TreeView from '../../../../registry/components/tree-view/tree-view.vue'
 import {
   treeRecords,
-  treeCheckState,
-  updateTreeChecks,
+  createTreeChecks,
+  visibleTreeRecords,
   validateTreeChildren,
 } from '../../../../registry/components/tree-view/tree-view.utils'
 import type { TreeViewNode } from '../../../../registry/components/tree-view/tree-view.types'
@@ -45,35 +45,99 @@ describe('Tree view', () => {
     }
     const records = treeRecords([root], children)
     reads = 0
-    const result = updateTreeChecks(root, true, ['unknown'], records, children, true)
+    const checks = createTreeChecks(records, children)
+    checks.sync(new Set(['unknown']))
+    const result = checks.update(root.key, true, true)
     expect(result).toHaveLength(depth + 2)
     expect(result).toContain('unknown')
     expect(reads).toBeLessThan(depth * 20)
-    const cleared = updateTreeChecks(root, false, result, records, children, true)
+    checks.sync(new Set(result))
+    const cleared = checks.update(root.key, false, true)
     expect(cleared).toEqual(['unknown'])
+  })
+  it('shares deep-tree summaries and resolves visibility without repeated ancestor walks', () => {
+    const depth = 1_000
+    let root: TreeViewNode = { key: depth, label: 'Leaf' }
+    for (let key = depth - 1; key >= 0; key--) root = { key, label: String(key), children: [root] }
+    let reads = 0
+    const readChildren = (node: TreeViewNode) => {
+      reads++
+      return node.children
+    }
+    const records = treeRecords([root], readChildren)
+    reads = 0
+    const checks = createTreeChecks(records, readChildren)
+    checks.sync(new Set([depth]))
+    for (const key of records.keys()) expect(checks.state(key, true)).toBe('checked')
+    expect(reads).toBeLessThan(depth * 4)
+    reads = 0
+    const cleared = checks.update(depth, false, true)
+    expect(cleared).toEqual([])
+    expect(checks.state(0, true)).toBe('checked')
+    checks.sync(new Set(cleared))
+    expect(checks.state(0, true)).toBe('unchecked')
+    expect(reads).toBe(0)
+
+    const lookup = vi.spyOn(records, 'get')
+    try {
+      const expanded = new Set(records.keys())
+      expect(visibleTreeRecords(records, expanded).map(({ node }) => node.key)).toEqual([
+        ...records.keys(),
+      ])
+      expect(lookup.mock.calls.length).toBeLessThan(depth * 4)
+      expanded.delete(1)
+      expect(visibleTreeRecords(records, expanded).map(({ node }) => node.key)).toEqual([0, 1])
+    } finally {
+      lookup.mockRestore()
+    }
+  })
+
+  it('rebuilds check summaries for in-place child and checkability changes', async () => {
+    const data = ref<TreeViewNode[]>([
+      {
+        key: 'root',
+        label: 'Root',
+        children: [{ key: 'leaf', label: 'Leaf' }],
+      },
+    ])
+    const wrapper = mount(TreeView, {
+      props: {
+        nodes: data.value,
+        label: 'Tree',
+        checkMode: 'cascade',
+        expandedKeys: ['root'],
+        checkedKeys: ['leaf'],
+      },
+    })
+    const state = () => wrapper.get('[data-tree-key="root"]').attributes('aria-checked')
+    expect(state()).toBe('true')
+    data.value[0]!.children = [...data.value[0]!.children!, { key: 'new', label: 'New' }]
+    await nextTick()
+    expect(state()).toBe('mixed')
+    data.value[0]!.children![1]!.checkable = false
+    await nextTick()
+    expect(state()).toBe('true')
+    await wrapper.setProps({ checkedKeys: [] })
+    expect(state()).toBe('false')
   })
   it('derives mixed checks for complete branches and changes only the target subtree and its ancestors', () => {
     // tree-view.check.known
     const records = treeRecords(nodes, children)
-    const first = updateTreeChecks(
-      nodes[0]!,
-      true,
-      ['outside-key', 'locked', 'other'],
-      records,
-      children,
-      true,
-    )
+    const checks = createTreeChecks(records, children)
+    checks.sync(new Set(['outside-key', 'locked', 'other']))
+    const first = checks.update(0, true, true)
     expect(new Set(first)).toEqual(new Set(['outside-key', 'locked', 'other', 0, 'a', 'b']))
-    expect(treeCheckState(nodes[0]!, new Set(first), children, true)).toBe('checked')
-    const partial = updateTreeChecks(nodes[0]!.children![0]!, false, first, records, children, true)
+    checks.sync(new Set(first))
+    expect(checks.state(0, true)).toBe('checked')
+    const partial = checks.update('a', false, true)
     expect(partial).toEqual(['outside-key', 'locked', 'other', 'b'])
-    expect(treeCheckState(nodes[0]!, new Set(partial), children, true)).toBe('indeterminate')
-    const cleared = updateTreeChecks(nodes[0]!, false, partial, records, children, true)
+    checks.sync(new Set(partial))
+    expect(checks.state(0, true)).toBe('indeterminate')
+    const cleared = checks.update(0, false, true)
     expect(cleared).toEqual(['outside-key', 'locked', 'other'])
     const unknown: TreeViewNode = { key: 'unknown', label: 'Unknown', hasChildren: true }
-    expect(
-      updateTreeChecks(unknown, true, [], treeRecords([unknown], children), children, true),
-    ).toEqual(['unknown'])
+    const incomplete = createTreeChecks(treeRecords([unknown], children), children)
+    expect(incomplete.update('unknown', true, true)).toEqual(['unknown'])
   })
 
   it('rejects loader nodes that would duplicate keys, introduce cycles, or invalidate the node shape', () => {
@@ -99,13 +163,20 @@ describe('Tree view', () => {
       ],
     }
     const records = treeRecords([root], children)
-    const checked = updateTreeChecks(root, true, ['group'], records, children, true)
+    let checks = createTreeChecks(records, children)
+    checks.sync(new Set(['group']))
+    const checked = checks.update('root', true, true)
     expect(checked).toEqual(['group', 'root'])
-    expect(treeCheckState(root, new Set(checked), children, true)).toBe('checked')
-    expect(treeCheckState(root, new Set(['group']), children, true)).toBe('unchecked')
+    checks.sync(new Set(checked))
+    expect(checks.state('root', true)).toBe('checked')
+    checks.sync(new Set(['group']))
+    expect(checks.state('root', true)).toBe('unchecked')
     root.children![0]!.children = [{ key: 'leaf', label: 'Leaf' }]
-    expect(treeCheckState(root, new Set(['group']), children, true)).toBe('unchecked')
-    expect(treeCheckState(root, new Set(['leaf']), children, true)).toBe('checked')
+    checks = createTreeChecks(treeRecords([root], children), children)
+    checks.sync(new Set(['group']))
+    expect(checks.state('root', true)).toBe('unchecked')
+    checks.sync(new Set(['leaf']))
+    expect(checks.state('root', true)).toBe('checked')
   })
 
   it('keeps focus separate from selection and returns focus to a collapsed ancestor', async () => {
