@@ -49,6 +49,14 @@ The theme system owns generation and application of shared tokens; each componen
 - Keep static styling in CSS. Use inline styles for runtime values, preferably by setting component custom properties instead of duplicating CSS declarations.
 - Compute a custom property in an element scope where all of its dependencies are available. Inherited variables can be consumed by descendants, but a child-defined variable is not available to its parent. Keep dependent calculations on the element that owns the dependency, or on a descendant that inherits it.
 
+### Component style boundaries
+
+- Scope component-owned selectors to the component. Vue single-file components use scoped styles; do not define unscoped selectors for component-owned classes or rely on global base styles to style a component from outside. Reach child internals with `:deep()` only when the component owns the dependency and the rule cannot live in that child.
+- Do not style host-provided ancestors, list items, or form wrappers from a component. Reset the component's own margins when host typography or list rules would enter the component box; do not change external layout to protect internal appearance.
+- Derive a fixed component dimension from the shared tokens that define it when possible, such as a selection column that equals the touch target plus both inline paddings. Keep truly component-specific constants local and documented when they affect use.
+- Optical adjustments of 1–2 px are fixed CSS pixels, not density-scaled spacing. Give a reused optical value a local custom property so its intent is explicit, and record it in the component guide when it affects visible alignment.
+- Keep `:focus-visible`, state layers, touch targets, and other genuinely cross-component behavior in the foundation stylesheet. A component may override a documented exception but should not duplicate the shared default.
+
 Token layers describe value ownership and are independent of CSS cascade layers. Foundation rules use the native CSS `@layer base`, while component styles remain unlayered so copied components keep ordinary specificity. Broader `@layer` adoption needs compatibility review with consuming applications before it becomes a project rule.
 
 ## Registry distribution and generated files

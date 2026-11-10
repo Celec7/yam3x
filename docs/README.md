@@ -19,7 +19,7 @@ This directory contains maintained contributor guidance and project component de
 | Read the intended project design for a component | [Project component design guides](specs/README.md)                              |
 | Start a new component guide                      | [Spec template](specs/TEMPLATE.md)                                              |
 | Review project mappings to official components   | [Material 3 component map](design/m3-coverage.md)                               |
-| Read shared Material design guidance             | [Shared design foundations](specs/foundations.md)                               |
+| Read shared design guidance and contracts        | [Shared design foundations](specs/foundations.md)                               |
 | Define or change CSS and theme-token ownership   | [CSS and token conventions](design/css-and-tokens.md)                           |
 
 ## Delivery, verification, and releases
