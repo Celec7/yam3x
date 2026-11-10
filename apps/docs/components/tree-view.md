@@ -110,7 +110,7 @@ Checking defaults to `selectionMode="none"`. Tree items expose their checked or 
 
 Native check controls are unnamed; they do not submit values, and form reset preserves the accepted check model. Applications can reset all models explicitly or change the Vue `key` for a new record session. Keys from deleted records remain application-owned until pruned.
 
-Enabled rows show a ripple on pointer, Enter, or Space press, fading after release or cancellation. Feedback stays within the current row; disclosure and check controls retain their own feedback. Branch expansion and collapse transition height and opacity; descendants leave the accessible and interactive tree as collapse begins. Reduced motion removes spatial transitions while retaining visible state changes.
+Enabled rows show a ripple on pointer, Enter, or Space press, fading after release or cancellation. Hover uses the shared 8% state layer; pressed feedback is the ripple only, without a second static fill. Feedback stays within the current row; disclosure and check controls retain their own feedback. Branch expansion and collapse transition height and opacity; descendants leave the accessible and interactive tree as collapse begins. Reduced motion removes spatial transitions while retaining visible state changes.
 
 ### Branch loading and recovery
 
@@ -132,7 +132,7 @@ Data insertions and removals retain the first visible record and its row-relativ
 
 ## Styling
 
-Labels use Body Large, metadata and guidance Body Small, and the title Title Medium. Rows start at 56 px, with 16 px outer inline padding and 24 px indentation per level; text can wrap and grow. Selected nodes use Secondary Container/On Secondary Container, and focus has an independent visible outline. Expansion alone does not select a row.
+Labels use Body Large, metadata and guidance Body Small, and the title Title Medium. Rows start at 56 px, follow the container density scale with a 48 px floor, and use the spacing density scale for padding, indentation, and gaps; disclosure, check, and focus targets stay at least 48 px. Text can wrap and grow. Selected nodes use Secondary Container/On Secondary Container, and focus has an independent visible outline. Expansion alone does not select a row.
 
 Rows use the Medium corner role (12 px by default), shared by hover, selection, and the focus outline. This mapping is a project design decision. Override it with `--yam3x-tree-view-row-shape`; its default is `--md-sys-shape-corner-medium`.
 

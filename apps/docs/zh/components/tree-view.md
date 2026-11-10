@@ -110,7 +110,7 @@ const selected = ref<TreeViewKey[]>([])
 
 原生勾选控件不带名称，不提交表单值；表单重置保留已接受的勾选模型。应用可显式重置所有模型，或为新记录会话更换 Vue `key`。已删除记录的键在应用清除前仍由应用拥有。
 
-可用节点行在指针、Enter 或空格按下时显示涟漪，松开或取消后淡出。反馈限制在当前行，展开按钮和勾选控件保留各自的反馈。分支展开与折叠使用高度和透明度过渡；折叠开始时，其后代立即退出可访问与交互序列。减少动态效果时不播放空间过渡，仍保留可见的状态变化。
+可用节点行在指针、Enter 或空格按下时显示涟漪，松开或取消后淡出。hover 使用共享的 8% 状态层；pressed 反馈只由涟漪提供，不再叠加静态按压填充。反馈限制在当前行，展开按钮和勾选控件保留各自的反馈。分支展开与折叠使用高度和透明度过渡；折叠开始时，其后代立即退出可访问与交互序列。减少动态效果时不播放空间过渡，仍保留可见的状态变化。
 
 ### 分支加载与恢复
 
@@ -132,7 +132,7 @@ const selected = ref<TreeViewKey[]>([])
 
 ## 样式
 
-标签使用 Body Large，元数据和说明使用 Body Small，标题使用 Title Medium。行最小高度为 56 px，外侧水平内边距为 16 px，每级缩进 24 px，文字可换行并增长。所选节点使用 Secondary Container/On Secondary Container，焦点具有独立的可见轮廓。仅展开不会选择一行。
+标签使用 Body Large，元数据和说明使用 Body Small，标题使用 Title Medium。行高从 56 px 开始，跟随 container density 缩放并以 48 px 为下限；外侧内边距、缩进和间距使用 spacing density；展开、勾选和焦点目标保持至少 48 px。文字可换行并增长。所选节点使用 Secondary Container/On Secondary Container，焦点具有独立的可见轮廓。仅展开不会选择一行。
 
 节点行使用 Medium 圆角（默认 12 px），悬停、选中背景和焦点轮廓采用相同形状。此映射属于项目设计选择。通过 `--yam3x-tree-view-row-shape` 覆盖圆角；默认取 `--md-sys-shape-corner-medium`。
 

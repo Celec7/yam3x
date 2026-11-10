@@ -214,6 +214,33 @@ test('contains deep hierarchy at narrow widths and 200% text without losing comp
   await expect.poll(() => region.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0)
 })
 
+test('applies container and spacing density while keeping 48px targets', async ({ page }) => {
+  const outer = page.getByTestId('tree-explorer').locator('.yam3x-tree-view')
+  const row = page
+    .getByTestId('tree-explorer')
+    .getByRole('treeitem', { name: 'Workspace', exact: true })
+    .locator(':scope > .yam3x-tree-view__row')
+  const text = row.locator('.yam3x-tree-view__text')
+  const disclosure = row.locator('.yam3x-tree-view__disclosure')
+  await expect(row).toHaveCSS('min-height', '56px')
+  await outer.evaluate((element) => {
+    ;(element as HTMLElement).style.setProperty('--md-sys-density-container-scale', '0.75')
+  })
+  await expect(row).toHaveCSS('min-height', '48px')
+  await expect(disclosure).toHaveCSS('width', '48px')
+  await expect(disclosure).toHaveCSS('height', '48px')
+
+  await outer.evaluate((element) => {
+    const style = (element as HTMLElement).style
+    style.removeProperty('--md-sys-density-container-scale')
+    style.setProperty('--md-sys-density-spacing-scale', '0.75')
+  })
+  await expect(row).toHaveCSS('min-height', '56px')
+  await expect(row).toHaveCSS('padding-block-start', '3px')
+  await expect(text).toHaveCSS('row-gap', '3px')
+  await expect(disclosure).toHaveCSS('width', '48px')
+})
+
 test('shows held pointer and keyboard feedback only on the activated node row', async ({
   page,
 }) => {
@@ -229,6 +256,9 @@ test('shows held pointer and keyboard feedback only on the activated node row', 
   await page.mouse.down()
   await expect(design).toHaveAttribute('data-yam3x-pressed', '')
   await expect(row.locator('.yam3x-ripple--visible')).toHaveCount(1)
+  await expect
+    .poll(() => row.evaluate((el) => Number.parseFloat(getComputedStyle(el, '::after').opacity)))
+    .toBeLessThan(0.09)
   await expect(workspace).not.toHaveAttribute('data-yam3x-pressed')
   await expect(workspace.locator(':scope > .yam3x-tree-view__row .yam3x-ripple')).toHaveCount(0)
   await page.mouse.up()

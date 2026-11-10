@@ -2,7 +2,10 @@
   --_yam3x-tree-view-virtual-max-height: var(--yam3x-tree-view-virtual-max-height, 400px);
   --_yam3x-tree-view-padding: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-tree-view-indent: calc(24px * var(--md-sys-density-spacing-scale, 1));
-  --_yam3x-tree-view-height: calc(56px * var(--md-sys-density-spacing-scale, 1));
+  --_yam3x-tree-view-height: max(
+    var(--md-sys-touch-target-size, 48px),
+    calc(56px * var(--md-sys-density-container-scale, 1))
+  );
   --_yam3x-tree-view-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-tree-view-label-min-width: var(--yam3x-tree-view-label-min-width, 10rem);
   --_yam3x-tree-view-row-shape: var(--yam3x-tree-view-row-shape, var(--md-sys-shape-corner-medium));
@@ -18,7 +21,6 @@
   --_yam3x-tree-view-branch-easing: var(--md-sys-motion-easing-default-spatial);
   --_yam3x-tree-view-effects-duration: var(--md-sys-motion-duration-fast-effects);
   --_yam3x-tree-view-effects-easing: var(--md-sys-motion-easing-fast-effects);
-  --_yam3x-tree-view-pressed: var(--md-sys-state-pressed-opacity);
   --_yam3x-tree-view-motion-duration: var(--md-sys-motion-duration-fast-spatial);
   --_yam3x-tree-view-motion-easing: var(--md-sys-motion-easing-fast-spatial);
   --_yam3x-tree-view-title-font: var(--md-sys-typescale-title-medium-font-family);
@@ -92,7 +94,7 @@
       var(--_yam3x-tree-view-leading-space) + var(--_yam3x-tree-view-label-min-width) +
       var(--_yam3x-tree-view-gap)
   );
-  padding-block: 4px;
+  padding-block: calc(4px * var(--md-sys-density-spacing-scale, 1));
   padding-inline: calc(
       var(--_yam3x-tree-view-padding) + (var(--_yam3x-tree-view-level) - 1) *
         var(--_yam3x-tree-view-indent)
@@ -158,7 +160,7 @@
 }
 .yam3x-tree-view__text {
   display: grid;
-  gap: 4px;
+  gap: calc(4px * var(--md-sys-density-spacing-scale, 1));
   flex: 1 1 auto;
   min-inline-size: var(--_yam3x-tree-view-label-min-width);
   overflow-wrap: anywhere;
@@ -188,7 +190,7 @@
   justify-self: start;
   min-block-size: 48px;
   min-inline-size: 48px;
-  padding: 8px;
+  padding: calc(8px * var(--md-sys-density-spacing-scale, 1));
   border: 0;
   background: transparent;
   color: inherit;
@@ -227,10 +229,6 @@
   .yam3x-tree-view__row:not(.yam3x-tree-view__row--disabled):hover::after {
     opacity: var(--_yam3x-tree-view-hover);
   }
-}
-.yam3x-tree-view__item[data-yam3x-pressed]
-  > .yam3x-tree-view__row:not(.yam3x-tree-view__row--disabled)::after {
-  opacity: var(--_yam3x-tree-view-pressed);
 }
 .yam3x-tree-view__row .yam3x-ripple {
   transition:
