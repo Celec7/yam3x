@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import LocalizationExample from './demos/LocalizationExample.vue'
+import LocalizationOverridesExample from './demos/LocalizationOverridesExample.vue'
+import ActionLocalizationExample from './demos/ActionLocalizationExample.vue'
 </script>
 
 # Localization
 
-`LocaleProvider` is a project extension that shares built-in UI language and message overrides across a Vue subtree. Use it to configure related components together while keeping application content and translations separate from component behavior.
+`LocaleProvider` is a project extension that shares built-in interface language and message overrides across a Vue subtree. It translates the text a component generates, such as action names, empty states, and validation prompts. It does not translate application labels, record data, or server errors.
 
-## Interactive example
+Use it to configure related components together. For a single instance, prefer the component's own `locale`, `messages`, or label props. Material does not define a localization provider; the component mapping and precedence rules are project decisions.
+
+## Examples
+
+### Provider and inheritance
 
 <div class="vp-raw yam3x-doc-demo-theme"><LocalizationExample /></div>
 
@@ -14,9 +20,33 @@ import LocalizationExample from './demos/LocalizationExample.vue'
 
 <<< ./demos/LocalizationExample.vue{vue}
 
+:::
+
+Switch the inherited language while page, file, number, selection, and form state stay unchanged. The nested English provider keeps its own pagination text even when the outer language changes. The demo also shows application labels that remain in the application's language while built-in text translates.
+
+### Component overrides
+
+<div class="vp-raw yam3x-doc-demo-theme"><LocalizationOverridesExample /></div>
+
+::: details View demo source
+
+<<< ./demos/LocalizationOverridesExample.vue{vue}
+
+:::
+
+One provider sets `en-US` and overrides the pagination `next` message. A component `locale` replaces the language for that instance, and a component `messages` entry replaces both. An omitted entry falls back; an empty string is an explicit override.
+
+### Action names
+
+<div class="vp-raw yam3x-doc-demo-theme"><ActionLocalizationExample /></div>
+
+::: details View demo source
+
 <<< ./demos/ActionLocalizationExample.vue{vue}
 
 :::
+
+The `actions` namespace supplies generated names and accessible labels for buttons, menu triggers, chips, badges, breadcrumbs, sliders, dialogs, and notifications. Changing language updates those names without restarting an open dialog edit, a snackbar timeout, or a range slider focus target.
 
 ## Use in your app
 
@@ -35,7 +65,7 @@ import { LocaleProvider, type LocaleOverrides } from './components/yam3x/localiz
 import { Pagination } from './components/yam3x/pagination'
 
 const locale = ref('zh-CN')
-const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
+const messages = ref<LocaleOverrides>({ pagination: { next: '继续浏览' } })
 </script>
 
 <template>
@@ -50,48 +80,107 @@ const messages: LocaleOverrides = { pagination: { next: '继续浏览' } }
 
 Keep application translations in your own files and pass a reactive message object. Functions in message entries retain their typed arguments, so an application can adapt an existing translation library without adding a library dependency to the copied components.
 
-## API
+::: details Server rendering
 
-| Prop       | Default                       | Use                                                                                                                                                                                                                                                                                                                             |
-| ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `locale`   | Parent provider, then `en-US` | BCP 47 language tag for built-in text selection and each component's existing locale-sensitive operations.                                                                                                                                                                                                                      |
-| `messages` | Inherited overrides           | `LocaleOverrides`, a partial object keyed by `actions`, `select`, `autocomplete`, `optionPanel`, `datePicker`, `timePicker`, `dateInput`, `calendar`, `numberField`, `pagination`, `form`, `fileUpload`, `dataTable`, `treeView`, `treeSelect`, `cascader`, and `descriptions`. Each namespace accepts partial message entries. |
+Choose one explicit locale for the server and the client:
 
-The default slot renders children without an extra DOM element. The provider has no models, events, or exposed methods. `LocaleMessages` describes the complete namespace contracts; existing component-specific message type exports remain available.
+```vue
+<script setup lang="ts">
+import { LocaleProvider } from './components/yam3x/localization'
+</script>
 
-Component-specific provider namespaces support [Select](/components/select), [Autocomplete](/components/autocomplete), [OptionPanel](/components/option), [Date pickers](/components/date-picker), [Time pickers](/components/time-picker), [Date input](/components/date-input), [Calendar](/components/calendar), [Number field](/components/number-field), [Pagination](/components/pagination), [Form](/components/form), [File upload](/components/file-upload), [Data table](/components/data-table), [Tree view](/components/tree-view), [TreeSelect](/components/tree-select), [Cascader](/components/cascader), and [Descriptions](/components/descriptions). Shared action and generated-name support is described below.
+<template>
+  <LocaleProvider locale="en-US">
+    <slot />
+  </LocaleProvider>
+</template>
+```
 
-`numberField` entries `rangeUnderflow(minimum)`, `rangeOverflow(maximum)`, `increment(label)`, and `decrement(label)` are functions receiving formatted bounds or the field label. The Number field component keeps its existing string-valued `messages`, which take precedence over provider text.
+Separate provider trees keep independent configuration during server rendering. Calendar, Date input, Date pickers, and Time pickers use a browser locale fallback without a provider; set the same explicit locale on both sides to avoid a hydration mismatch.
 
-`calendar` entries `choosePeriod(period)`, `chooseMonth(year)`, and `chooseYear(period)` receive a formatted period or year. Calendar's existing individual label props take precedence over provider text. Without a provider, Calendar retains its browser-locale default with an `en-US` server fallback; configure the same explicit locale for SSR.
-
-`dateInput` supports `date`, `time`, and `datetime` group labels, validation text, and optional `month`, `day`, `year`, `hour`, `minute`, `second`, and `period` segment-name overrides. Unspecified segment names come from `Intl.DisplayNames`; component `labels` take precedence.
-
-`timePicker` supports field, mode, action, and dialog labels, plus `dialValue({ value, unit, max })`, `invalidPart(unit)`, and `outsideRange` messages. `period` overrides the AM/PM group name; default group and option names come from `Intl`.
-
-`datePicker` supports field, range endpoint, navigation, mode-switch, action, and validation messages. `chooseMonth(month?)` and `chooseYear(year?)` receive formatted labels; omitted arguments produce listbox names. Existing individual label props take precedence over provider text.
-
-`select.noData` supplies empty-list text; `optionPanel` supplies `loading` and `noData`; `autocomplete` adds `results(count)`, `showSuggestions(label)`, `suggestions(label)`, and `selectionRequired`. Suggestion formatters receive the application's field label; result formatters receive a numeric count. An empty validation message retains a native fallback for required selection.
-
-`actions` shares common action and role names across Dialog, Side sheet, Bottom sheet, Drawer container, Navigation drawer, Navigation rail, Inline message, Search, App bar, Tabs, Menu, Fab menu, FilterChip, ExpandableListItem, Form field, and SnackbarProvider. Carousel item names also use this namespace. Each component accepts optional `locale`; existing label props override shared text. `searchResults(label)` receives the search field label; `carouselItem(position, total, label)` receives a one-based position, total count, and item label. See `LocaleMessages['actions']` for the complete key contract.
-
-`actions` also supplies generated names for InputChip, Badge, Breadcrumb, Split button, and Range slider. `removeItem(label)` receives the item label; `splitOptions(label?)` and `splitMoreOptions(label?)` receive the primary action label; `rangeMinimum(label?)` and `rangeMaximum(label?)` receive the range name. `newNotification` and `breadcrumb` supply default names; existing component label overrides retain priority.
+:::
 
 ## Behavior and accessibility
+
+### Resolution order
 
 For each supported component, configuration resolves in this order:
 
 1. Component `locale`, nearest provider `locale`, then the component's standalone default (`en-US` except Calendar, Date input, Date pickers, and Time pickers' browser locale).
 2. Built-in English messages, followed by the applicable built-in language messages.
-3. Inherited provider overrides for the same language, nearest provider overrides, then component `messages` or individual label/message props.
+3. Inherited provider overrides for the same language, nearest provider overrides, then component `messages` or individual label and message props.
 
-Built-in translations live in separate files under `localization/locales/`. English and Simplified Chinese cover all supported namespaces. Additional partial catalogs preserve Date input group labels for `ar`, `de`, `es`, `fr`, `it`, `ja`, `ko`, `pt`, and `ru`. Chinese language tags use the Simplified Chinese defaults; provide overrides when another Chinese translation is needed. Other valid tags retain their locale-sensitive formatting and use English text for untranslated entries. Invalid tags fall back to `en-US`. An omitted or `undefined` message entry falls back, while an empty string is an explicit override.
+A component with an explicit different language excludes provider messages from the other language. Nested providers inherit overrides when their language is the same, including different regions.
 
-Nested providers inherit message overrides when their language is the same, including different regions. Changing language starts with that language's defaults and does not carry a parent's differently translated overrides. A component with an explicit different language likewise excludes provider messages from the other language.
+### Catalogs and fallback
 
-Configuration updates reactively without remounting controls or resetting page, selection, check, queue, or form values. Stored error messages and adapter results remain snapshots from their source. Computed validation feedback, such as Date input's current error, follows the active catalog; changing language does not restart Form validation adapters or retry requests. Separate provider trees have independent configuration, including during server rendering.
+- Built-in translations live in separate files under `localization/locales/`. English and Simplified Chinese cover all supported namespaces.
+- Additional partial catalogs preserve Date input group labels for `ar`, `de`, `es`, `fr`, `it`, `ja`, `ko`, `pt`, and `ru`.
+- Chinese language tags use the Simplified Chinese defaults; provide overrides when another Chinese translation is needed.
+- Other valid tags retain their locale-sensitive formatting and use English text for untranslated entries. Invalid tags fall back to `en-US`.
+- An omitted or `undefined` message entry falls back. An empty string is an explicit override.
 
-The provider translates built-in UI messages, not application labels, row data, browser-native validation messages, or server errors. Set document or region `lang` and `dir` in the application; a wrapperless Vue provider does not modify DOM language or writing direction.
+### Reactivity
+
+Configuration updates reactively without remounting controls or resetting page, selection, check, queue, or form values. Stored error messages and adapter results remain snapshots from their source. Computed validation feedback, such as Date input's current error, follows the active catalog. Changing language does not restart Form validation adapters or retry requests.
+
+### Scope and SSR
+
+The provider translates built-in UI messages, not application labels, row data, browser-native validation messages, or server errors. Set the document or region `lang` and `dir` in the application; a wrapperless Vue provider does not modify DOM language or writing direction. Separate provider trees have independent configuration, including during server rendering.
+
+### Message namespaces
+
+The `LocaleOverrides` object is keyed by component namespace. Each namespace accepts partial entries; `LocaleMessages` describes the complete contracts.
+
+::: details Namespace map
+
+| Namespace       | Covers                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------- |
+| `actions`       | Shared action, generated-name, and role labels across dialogs, sheets, menus, tabs, chips, badges, breadcrumbs, sliders, forms, and snackbars. |
+| `select`        | Empty select text.                                                                      |
+| `autocomplete`  | Result counts, suggestion names, and required-selection text.                           |
+| `optionPanel`   | Loading and no-data text.                                                               |
+| `datePicker`    | Field, range, navigation, mode, action, and validation text.                            |
+| `timePicker`    | Field, mode, action, dialog, dial, and validation text.                                 |
+| `dateInput`     | Date, time, and datetime group labels plus validation and segment names.                |
+| `calendar`      | Navigation, period, and range text.                                                     |
+| `numberField`   | Range and step messages; functions receive formatted bounds or the field label.         |
+| `pagination`    | Label, page navigation, page size, pending, and range text.                             |
+| `form`          | Summary, validation, submission, success, and failure text.                             |
+| `fileUpload`    | Selection, queue, progress, actions, rejections, and summaries.                         |
+| `dataTable`     | Query, selection, loading, empty, error, and scroll text.                               |
+| `treeView`      | Instructions, expansion, checking, loading, failure, and empty text.                    |
+| `treeSelect`    | Search, empty, and no-result text.                                                      |
+| `cascader`      | Search, empty, no-result, and level text.                                               |
+| `descriptions`  | Empty and missing-value text.                                                           |
+
+Function entries receive typed arguments. For example, `numberField.rangeUnderflow(minimum)` and `rangeOverflow(maximum)` receive formatted bounds, while `pagination.range(start, end, total)` receives formatted counts.
+
+:::
+
+## API
+
+### Exports
+
+| Export           | Description                                              |
+| ---------------- | -------------------------------------------------------- |
+| `LocaleProvider` | Provides locale and message overrides to its descendants. |
+| `LocaleMessages`, `LocaleOverrides` | Complete namespace contracts and partial override map. |
+
+### Props
+
+| Prop       | Type             | Default                       | Use                                                                                              |
+| ---------- | ---------------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| `locale`   | `string`         | Parent provider, then `en-US` | BCP 47 language tag for built-in text and each component's locale-sensitive operations.          |
+| `messages` | `LocaleOverrides`| Inherited overrides           | Partial object keyed by component namespace. Each namespace accepts partial message entries.     |
+
+### Slots
+
+| Slot      | Use                                                        |
+| --------- | ---------------------------------------------------------- |
+| `default` | Renders children without an extra DOM element or wrapper.  |
+
+The provider has no models, events, or exposed methods. Existing component-specific message type exports remain available.
 
 ## Styling
 

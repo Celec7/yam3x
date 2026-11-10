@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import Button from '@registry/components/button/button.vue'
 import Dialog from '@registry/components/dialog/dialog.vue'
-import FormField from '@registry/components/form-field/form-field.vue'
 import { HorizontalDivider } from '@registry/components/divider'
-import { Icon } from '@registry/components/icon'
-import Select from '@registry/components/select/select.vue'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
@@ -13,15 +10,6 @@ const { t } = useDemoLocale()
 const open = ref(false)
 const returnValue = ref('')
 const dialog = ref<{ close: (value?: string) => void } | null>(null)
-const alertOpen = ref(false)
-const outsideLockedOpen = ref(false)
-const iconDialogOpen = ref(false)
-const formOpen = ref(false)
-const source = ref('index')
-const sourceOptions = computed(() => [
-  { value: 'index', label: t('Package index', '包索引') },
-  { value: 'github', label: 'GitHub' },
-])
 const preventNextClose = ref(false)
 const eventLog = ref<string[]>([])
 
@@ -39,35 +27,18 @@ function onClosing(event: Event): void {
 </script>
 
 <template>
-  <div class="yam3x-demo">
-    <Button @click="open = true">{{ t('Open dialog', '打开对话框') }}</Button>
-    <Button
-      variant="outlined"
-      @click="preventNextClose = true"
-      >{{ t('Prevent next close', '阻止下次关闭') }}</Button
-    >
-    <Button
-      variant="text"
-      @click="alertOpen = true"
-      >{{ t('Open urgent alert', '打开紧急提醒') }}</Button
-    >
-    <Button
-      variant="text"
-      @click="outsideLockedOpen = true"
-      >{{ t('Open outside-locked dialog', '打开禁止点击外部关闭的对话框') }}</Button
-    >
-    <Button
-      variant="outlined"
-      @click="iconDialogOpen = true"
-      >{{
-        t('Open dialog with icon and project close button', '打开带图标和项目关闭按钮的对话框')
-      }}</Button
-    >
-    <Button
-      variant="outlined"
-      @click="formOpen = true"
-      >{{ t('Open dialog with form controls', '打开带表单控件的对话框') }}</Button
-    >
+  <div
+    class="yam3x-demo"
+    data-testid="dialog-basic"
+  >
+    <div class="dialog-example__controls">
+      <Button @click="open = true">{{ t('Open dialog', '打开对话框') }}</Button>
+      <Button
+        variant="outlined"
+        @click="preventNextClose = true"
+        >{{ t('Prevent next close', '阻止下次关闭') }}</Button
+      >
+    </div>
     <Dialog
       ref="dialog"
       v-model:open="open"
@@ -76,6 +47,7 @@ function onClosing(event: Event): void {
       :description="
         t('You can continue editing this plan after saving.', '保存后，你可以继续编辑此计划。')
       "
+      :close-label="t('Close save dialog', '关闭保存对话框')"
       @opening="record('opening')"
       @opened="record('opened')"
       @cancel="record('cancel')"
@@ -96,85 +68,6 @@ function onClosing(event: Event): void {
         >
       </template>
     </Dialog>
-    <Dialog
-      v-model:open="iconDialogOpen"
-      :title="t('Delete workspace?', '删除工作区？')"
-      :description="t('This action can be undone later.', '之后仍可撤销此操作。')"
-      show-close-button
-      :close-label="t('Close delete dialog', '关闭删除对话框')"
-    >
-      <template #icon><Icon name="warning" /></template>
-      <template #default>{{
-        t(
-          'Archived workspaces can be restored from the administration panel.',
-          '归档后仍可在管理面板中恢复工作区。',
-        )
-      }}</template>
-      <template #actions>
-        <Button
-          variant="text"
-          @click="iconDialogOpen = false"
-          >{{ t('Cancel', '取消') }}</Button
-        >
-        <Button
-          variant="text"
-          @click="iconDialogOpen = false"
-          >{{ t('Continue', '继续') }}</Button
-        >
-      </template>
-    </Dialog>
-    <Dialog
-      v-model:open="alertOpen"
-      :title="t('Network connection lost', '网络连接已中断')"
-      :description="t('Reconnect to sync your changes.', '恢复连接后才能同步更改。')"
-      :dismiss-on-escape="false"
-      :dismiss-on-click-outside="true"
-    >
-      <template #actions
-        ><Button
-          variant="text"
-          @click="alertOpen = false"
-          >{{ t('Got it', '知道了') }}</Button
-        ></template
-      >
-    </Dialog>
-    <Dialog
-      v-model:open="outsideLockedOpen"
-      :title="t('Review your changes', '检查更改')"
-      :dismiss-on-escape="true"
-      :dismiss-on-click-outside="false"
-    >
-      <template #actions
-        ><Button
-          variant="text"
-          @click="outsideLockedOpen = false"
-          >{{ t('Done', '完成') }}</Button
-        ></template
-      >
-    </Dialog>
-    <Dialog
-      v-model:open="formOpen"
-      :title="t('Install extension', '安装扩展')"
-      :description="t('Choose an install source.', '选择安装来源。')"
-    >
-      <FormField
-        :label="t('Install source', '安装来源')"
-        float-label="always"
-        width="100%"
-      >
-        <Select
-          v-model="source"
-          :options="sourceOptions"
-        />
-      </FormField>
-      <template #actions>
-        <Button
-          variant="text"
-          @click="formOpen = false"
-          >{{ t('Close', '关闭') }}</Button
-        >
-      </template>
-    </Dialog>
     <p
       class="yam3x-demo__status"
       role="status"
@@ -189,3 +82,11 @@ function onClosing(event: Event): void {
     </p>
   </div>
 </template>
+
+<style scoped>
+.dialog-example__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+</style>
