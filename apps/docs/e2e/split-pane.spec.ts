@@ -152,14 +152,14 @@ test('SplitPane desktop divider follows physical pointer distance in LTR and RTL
   const startPane = root.locator('.yam3x-split-pane__start')
 
   for (const direction of ['ltr', 'rtl'] as const) {
-    await separator.scrollIntoViewIfNeeded()
+    await separator.evaluate((element) => element.scrollIntoView({ block: 'center' }))
     if (direction === 'rtl') await page.getByRole('checkbox', { name: 'RTL' }).check()
     await expect(page.locator('.split-pane-demo')).toHaveAttribute('dir', direction)
     const start = await startPane.boundingBox()
     const divider = await separator.boundingBox()
     expect(start).not.toBeNull()
     expect(divider).not.toBeNull()
-    await page.mouse.move(divider!.x + divider!.width / 2, divider!.y + divider!.height / 2)
+    await separator.hover()
     await page.mouse.down()
     await expect(root).toHaveClass(/yam3x-split-pane--dragging/)
     await page.mouse.move(

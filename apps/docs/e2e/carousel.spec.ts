@@ -33,6 +33,7 @@ test('all six carousel layouts render slides and use their documented snap defau
 test('mouse drag scrolls the horizontal carousel without activating an item', async ({ page }) => {
   const carousel = page.getByRole('group', { name: 'Featured places' })
   const track = carousel.locator('.yam3x-carousel__track')
+  await track.scrollIntoViewIfNeeded()
   const bounds = await track.boundingBox()
   expect(bounds).not.toBeNull()
   await page.mouse.move(bounds!.x + bounds!.width * 0.72, bounds!.y + bounds!.height / 2)

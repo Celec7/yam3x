@@ -99,7 +99,7 @@ test('OptionPanel follows its anchor, clamps its width, closes outside, and supp
   expect(panelBox).not.toBeNull()
   expect(Math.abs(anchorBox!.width - panelBox!.width)).toBeLessThanOrEqual(1)
   expect(Math.abs(anchorBox!.x - panelBox!.x)).toBeLessThanOrEqual(1)
-  await page.getByRole('heading', { name: 'Option' }).click()
+  await page.locator('h1').click()
   await expect(panel).toBeHidden()
 
   await panel.evaluate((element) =>
@@ -283,7 +283,7 @@ test('OptionPanel loading and empty states are statuses rather than selectable o
   await expect(panel).toHaveAttribute('aria-busy', 'true')
   await expect(panel.getByRole('status')).toHaveText('Loading…')
   await expect(panel.getByRole('option')).toHaveCount(0)
-  await page.getByRole('heading', { name: 'Option' }).click()
+  await page.locator('h1').click()
   await selectM3Option(page, mode, 'empty')
   await trigger.click()
   await expect(panel).not.toHaveAttribute('aria-busy', 'true')
@@ -308,7 +308,7 @@ test('Option remaining state, group, panel-bound, and sizing hooks affect render
   const first = page.getByRole('option', { name: 'All projects' })
   const enabled = page.getByRole('option', { name: 'Recently opened' })
   const disabled = page.getByRole('option', { name: 'Archived' })
-  const groupLabel = page.locator('.yam3x-option-group__label')
+  const groupLabel = page.locator('#option-panel-demo .yam3x-option-group__label')
   const panelBox = await panel.boundingBox()
   expect(panelBox).not.toBeNull()
   expect(Math.abs(panelBox!.width - 210)).toBeLessThanOrEqual(1)

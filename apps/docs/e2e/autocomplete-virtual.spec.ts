@@ -61,7 +61,7 @@ test('autocomplete.virtual.catalog: filters the full catalog and restores loadin
   await page.goto('/zh/components/autocomplete')
   const example = page.getByTestId('autocomplete-virtual')
   const input = example.getByRole('combobox', { name: '大型建议目录' })
-  await input.fill('Item 10000')
+  await input.fill('项目 10000')
   const list = example.getByRole('listbox')
   await expect(list.getByRole('option')).toHaveCount(1)
   await expect(list.getByRole('option')).toHaveAttribute('aria-posinset', '1')

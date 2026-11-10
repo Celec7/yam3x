@@ -256,6 +256,7 @@ test('shows held pointer and keyboard feedback only on the activated node row', 
   const design = tree.getByRole('treeitem', { name: 'Design', exact: true })
   const row = design.locator(':scope > .yam3x-tree-view__row')
   const label = row.locator('.yam3x-tree-view__label')
+  await label.scrollIntoViewIfNeeded()
   const bounds = await label.boundingBox()
   expect(bounds).not.toBeNull()
   await page.mouse.move(bounds!.x + 10, bounds!.y + 10)

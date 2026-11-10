@@ -14,16 +14,22 @@ test('four current variants keep their geometry, headline hierarchy, and Search 
   await expect(bar).toHaveAttribute('data-variant', 'search')
   await expect(bar).toHaveCSS('border-radius', '0px')
   await expect(page.getByRole('button', { name: 'Search inbox' })).toBeVisible()
-  await expect(page.locator('.yam3x-app-bar__search-container')).toHaveCSS('min-height', '56px')
-  await expect(page.locator('.yam3x-app-bar__search-container')).toHaveCSS(
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__search-container')).toHaveCSS(
+    'min-height',
+    '56px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__search-container')).toHaveCSS(
     'border-radius',
     '9999px',
   )
-  const searchGlyph = page.locator('.yam3x-app-bar__search-glyph')
+  const searchGlyph = page.getByTestId('app-bar').locator('.yam3x-app-bar__search-glyph')
   await expect(searchGlyph).toHaveClass(/yam3x-icon/)
   await expect(searchGlyph.locator('.yam3x-icon__ligature')).toHaveText('search')
   await expect(searchGlyph).toHaveCSS('font-family', /Material Symbols Outlined/)
-  await expect(page.locator('.yam3x-app-bar__search-trailing')).toHaveCSS('gap', '0px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__search-trailing')).toHaveCSS(
+    'gap',
+    '0px',
+  )
   const loadedSearchSymbol = await page.evaluate(async () => {
     await document.fonts.load('24px "Material Symbols Outlined"', 'search')
     return document.fonts.check('24px "Material Symbols Outlined"', 'search')
@@ -31,7 +37,7 @@ test('four current variants keep their geometry, headline hierarchy, and Search 
   expect(loadedSearchSymbol).toBe(true)
   await page.getByRole('button', { name: 'Search inbox' }).click()
   await expect(page.getByRole('status')).toContainText('Search view opened')
-  const searchContainer = page.locator('.yam3x-app-bar__search-container')
+  const searchContainer = page.getByTestId('app-bar').locator('.yam3x-app-bar__search-container')
   const surfaceContainerHighest = await page.evaluate(() => {
     const sample = document.createElement('span')
     sample.style.backgroundColor = 'var(--md-sys-color-surface-container-highest)'
@@ -56,32 +62,59 @@ test('four current variants keep their geometry, headline hierarchy, and Search 
   await selectM3Option(page, variant, 'small')
   await expect(bar).toHaveAttribute('data-variant', 'small')
   await expect(bar).toHaveCSS('border-radius', '0px')
-  await expect(page.locator('.yam3x-app-bar__small-row')).toHaveCSS('min-height', '64px')
-  await expect(page.locator('.yam3x-app-bar__title')).toHaveCSS('font-size', '22px')
-  await expect(page.locator('.yam3x-app-bar__subtitle')).toHaveCSS('font-size', '12px')
-  await expect(page.locator('.yam3x-app-bar__small-row .yam3x-app-bar__title')).toContainText(
-    'YAM3X',
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__small-row')).toHaveCSS(
+    'min-height',
+    '64px',
   )
-  await expect(page.locator('.yam3x-app-bar__small-row .yam3x-app-bar__title')).not.toContainText(
-    'Inbox',
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__title')).toHaveCSS(
+    'font-size',
+    '22px',
   )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__subtitle')).toHaveCSS(
+    'font-size',
+    '12px',
+  )
+  await expect(
+    page.getByTestId('app-bar').locator('.yam3x-app-bar__small-row .yam3x-app-bar__title'),
+  ).toContainText('YAM3X')
+  await expect(
+    page.getByTestId('app-bar').locator('.yam3x-app-bar__small-row .yam3x-app-bar__title'),
+  ).not.toContainText('Inbox')
 
   await selectM3Option(page, variant, 'medium-flexible')
   await expect(bar).toHaveCSS('border-radius', '0px')
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '136px')
-  await expect(page.locator('.yam3x-app-bar__title')).toHaveCSS('font-size', '28px')
-  await expect(page.locator('.yam3x-app-bar__subtitle')).toHaveCSS('font-size', '14px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '136px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__title')).toHaveCSS(
+    'font-size',
+    '28px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__subtitle')).toHaveCSS(
+    'font-size',
+    '14px',
+  )
 
   await selectM3Option(page, variant, 'large-flexible')
   await expect(bar).toHaveCSS('border-radius', '0px')
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '176px')
-  await expect(page.locator('.yam3x-app-bar__title')).toHaveCSS('font-size', '36px')
-  await expect(page.locator('.yam3x-app-bar__subtitle')).toHaveCSS('font-size', '16px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '176px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__title')).toHaveCSS(
+    'font-size',
+    '36px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__subtitle')).toHaveCSS(
+    'font-size',
+    '16px',
+  )
 })
 
 test('Search label maintains at least 3:1 contrast in light and dark themes', async ({ page }) => {
   // app-bar.search.contrast
-  const search = page.locator('.yam3x-app-bar__search-trigger')
+  const search = page.getByTestId('app-bar').locator('.yam3x-app-bar__search-trigger')
   const contrast = () =>
     search.evaluate((element) => {
       const parse = (value: string) => {
@@ -166,7 +199,7 @@ test('flexible headlines wrap to two lines, while Small stays on one line', asyn
   await widthControl.press('Home')
   const variant = page.getByRole('combobox', { name: 'App bar type' })
   await selectM3Option(page, variant, 'medium-flexible')
-  const title = page.locator('.yam3x-app-bar__title')
+  const title = page.getByTestId('app-bar').locator('.yam3x-app-bar__title')
   await title.evaluate((element) => {
     element.textContent =
       'Inbox: recent mail and calendar updates from every workspace, ready for quick action. This intentionally long title checks that flexible headlines wrap.'
@@ -183,7 +216,10 @@ test('flexible headlines wrap to two lines, while Small stays on one line', asyn
   expect(flexible.height).toBeLessThanOrEqual(flexible.lineHeight * 2 + 1)
 
   await selectM3Option(page, variant, 'small')
-  await expect(page.locator('.yam3x-app-bar__title')).toHaveCSS('white-space', 'nowrap')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__title')).toHaveCSS(
+    'white-space',
+    'nowrap',
+  )
 })
 
 test('Search width tracks its remaining slot across compact, medium, and desktop widths', async ({
@@ -245,10 +281,16 @@ test('flexible variants collapse after the selected scroll target moves and expa
   )
   const subtitleToggle = page.getByRole('checkbox', { name: 'Show subtitle' })
   await subtitleToggle.uncheck()
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '112px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '112px',
+  )
   await subtitleToggle.check()
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '136px')
-  const label = page.locator('.yam3x-app-bar__label')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '136px',
+  )
+  const label = page.getByTestId('app-bar').locator('.yam3x-app-bar__label')
   const expandedLabel = await label.boundingBox()
   expect(expandedLabel).not.toBeNull()
   const scroll = page.getByTestId('app-bar-scroll')
@@ -260,10 +302,16 @@ test('flexible variants collapse after the selected scroll target moves and expa
   await page.waitForTimeout(100)
   const intermediateLabel = await label.boundingBox()
   expect(intermediateLabel).not.toBeNull()
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '64px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '64px',
+  )
   const collapsedLabel = await label.boundingBox()
   expect(collapsedLabel).not.toBeNull()
-  const collapsedBar = await page.locator('.yam3x-app-bar__flexible').boundingBox()
+  const collapsedBar = await page
+    .getByTestId('app-bar')
+    .locator('.yam3x-app-bar__flexible')
+    .boundingBox()
   expect(collapsedBar?.height).toBe(64)
   await expect(bar).toHaveCSS('box-shadow', 'none')
   expect(intermediateLabel!.y).toBeGreaterThan(Math.min(expandedLabel!.y, collapsedLabel!.y))
@@ -272,14 +320,23 @@ test('flexible variants collapse after the selected scroll target moves and expa
     element.scrollTop = 0
   })
   await expect(bar).not.toHaveAttribute('data-collapsed')
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '136px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '136px',
+  )
 
   await selectM3Option(page, page.getByRole('combobox', { name: 'App bar type' }), 'large-flexible')
   await page.getByRole('checkbox', { name: 'Show subtitle' }).uncheck()
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '152px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '152px',
+  )
   await page.getByRole('checkbox', { name: 'Show subtitle' }).check()
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('min-height', '176px')
-  const largeTitle = page.locator('.yam3x-app-bar__title')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'min-height',
+    '176px',
+  )
+  const largeTitle = page.getByTestId('app-bar').locator('.yam3x-app-bar__title')
   await page.getByRole('slider', { name: 'Available app bar width' }).press('Home')
   await largeTitle.evaluate((element) => {
     element.textContent = 'Inbox: recent mail and updates from every workspace'
@@ -288,9 +345,9 @@ test('flexible variants collapse after the selected scroll target moves and expa
     (element) => element.getBoundingClientRect().height,
   )
   expect(twoLineTitleHeight).toBeGreaterThan(44)
-  expect((await page.locator('.yam3x-app-bar__flexible').boundingBox())!.height).toBeGreaterThan(
-    176,
-  )
+  expect(
+    (await page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible').boundingBox())!.height,
+  ).toBeGreaterThan(176)
 })
 
 test('scroll behavior presets pin, hide and reveal, or collapse flexible variants', async ({
@@ -354,7 +411,7 @@ test('keyboard order, centered labels, and RTL preserve action placement', async
     page.getByRole('combobox', { name: 'App bar type' }),
     'medium-flexible',
   )
-  const title = page.locator('.yam3x-app-bar__label')
+  const title = page.getByTestId('app-bar').locator('.yam3x-app-bar__label')
   await expect(title).toHaveCSS('text-align', 'center')
   await page.getByRole('checkbox', { name: 'RTL' }).check()
   const positions = await page.getByTestId('app-bar').evaluate((element) => {
@@ -383,10 +440,22 @@ test('documented custom properties, reduced motion, and forced colors remain usa
     style.setProperty('--yam3x-app-bar-small-subtitle-text-tracking', '1px')
     style.setProperty('--yam3x-app-bar-title-text-color', 'rgb(1, 2, 3)')
   })
-  await expect(page.locator('.yam3x-app-bar__small-row')).toHaveCSS('min-height', '72px')
-  await expect(page.locator('.yam3x-app-bar__title')).toHaveCSS('font-size', '24px')
-  await expect(page.locator('.yam3x-app-bar__title')).toHaveCSS('color', 'rgb(1, 2, 3)')
-  await expect(page.locator('.yam3x-app-bar__label')).toHaveCSS('padding-left', '9px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__small-row')).toHaveCSS(
+    'min-height',
+    '72px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__title')).toHaveCSS(
+    'font-size',
+    '24px',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__title')).toHaveCSS(
+    'color',
+    'rgb(1, 2, 3)',
+  )
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__label')).toHaveCSS(
+    'padding-left',
+    '9px',
+  )
 
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await selectM3Option(
@@ -394,9 +463,15 @@ test('documented custom properties, reduced motion, and forced colors remain usa
     page.getByRole('combobox', { name: 'App bar type' }),
     'medium-flexible',
   )
-  await expect(page.locator('.yam3x-app-bar__flexible')).toHaveCSS('transition-property', 'none')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__flexible')).toHaveCSS(
+    'transition-property',
+    'none',
+  )
   await page.emulateMedia({ forcedColors: 'active' })
   await selectM3Option(page, page.getByRole('combobox', { name: 'App bar type' }), 'search')
   await expect(bar).toHaveCSS('outline-style', 'solid')
-  await expect(page.locator('.yam3x-app-bar__search-container')).toHaveCSS('border-width', '1px')
+  await expect(page.getByTestId('app-bar').locator('.yam3x-app-bar__search-container')).toHaveCSS(
+    'border-width',
+    '1px',
+  )
 })

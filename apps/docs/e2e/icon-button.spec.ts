@@ -84,6 +84,7 @@ test('expanded round target follows the icon button corner shape', async ({ page
   await button.evaluate((element) => {
     element.addEventListener('click', () => element.setAttribute('data-activated', 'true'))
   })
+  await button.evaluate((element) => element.scrollIntoView({ block: 'center' }))
   const bounds = await button.boundingBox()
   if (!bounds) throw new Error('Icon button has no rendered bounds')
 

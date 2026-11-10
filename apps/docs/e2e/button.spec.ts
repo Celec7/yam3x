@@ -282,6 +282,7 @@ test('button labels remain fully visible at 2x text size and fit a narrow viewpo
 test('small visual buttons keep a 48px interactive target', async ({ page }) => {
   await page.goto('/components/button')
   const button = page.locator('.yam3x-demo__row').first().locator('.yam3x-button').first()
+  await button.evaluate((element) => element.scrollIntoView({ block: 'center' }))
 
   // button.a11y.small-hit-target
   const target = await button.evaluate((element) => {

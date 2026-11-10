@@ -383,6 +383,7 @@ test('auto mode follows compact, medium, and expanded widths without losing open
   await frame.evaluate((element) => {
     ;(element as HTMLElement).setAttribute('dir', 'rtl')
   })
+  await frame.scrollIntoViewIfNeeded()
   const frameBox = (await frame.boundingBox())!
   await expect
     .poll(async () => {

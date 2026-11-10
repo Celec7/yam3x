@@ -340,6 +340,7 @@ test('Autocomplete reacts to live option updates and native disabled/read-only s
     'aria-disabled',
     'true',
   )
+  await dynamic.press('ArrowDown')
   await expect(dynamicHost.getByRole('option', { name: 'Apricot' })).toHaveAttribute(
     'aria-selected',
     'true',

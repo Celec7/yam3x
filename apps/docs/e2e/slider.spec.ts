@@ -203,6 +203,7 @@ test('stops snap, labels show on focus, and disabled blocks input', async ({ pag
 test('pointer drag emits cancelable updates and commits once', async ({ page }) => {
   const slider = page.getByTestId('slider')
   const track = slider.locator('.yam3x-slider__track')
+  await track.scrollIntoViewIfNeeded()
   const rect = await track.boundingBox()
   expect(rect).toBeTruthy()
   await slider.evaluate((element) => {
