@@ -19,9 +19,9 @@ const viewport = ref<'compact' | 'medium' | 'expanded'>('compact')
 const selected = ref('document')
 const primaryActionCount = ref(0)
 const isRtl = ref(false)
-const formSubmitCount = ref(0)
+const positionX = ref<'after' | 'before'>('after')
+const positionY = ref<'below' | 'above'>('below')
 const menuTransitions = ref<string[]>([])
-const blockedMenuOpen = ref(true)
 let compactQuery: MediaQueryList | undefined
 let expandedQuery: MediaQueryList | undefined
 
@@ -136,6 +136,30 @@ onBeforeUnmount(stopListeningForViewport)
         v-model="isRtl"
         :label="t('Right-to-left (RTL)', '从右到左 (RTL)')"
       />
+      <label
+        >{{ t('Menu edge', '菜单对齐边') }}
+        <Select
+          v-model="positionX"
+          :aria-label="t('Menu edge', '菜单对齐边')"
+          ><Option
+            value="after"
+            :label="t('Trailing edge', '行末边')" /><Option
+            value="before"
+            :label="t('Leading edge', '行首边')"
+        /></Select>
+      </label>
+      <label
+        >{{ t('Menu side', '菜单方向') }}
+        <Select
+          v-model="positionY"
+          :aria-label="t('Menu side', '菜单方向')"
+          ><Option
+            value="below"
+            :label="t('Below', '下方')" /><Option
+            value="above"
+            :label="t('Above', '上方')"
+        /></Select>
+      </label>
     </div>
 
     <div class="split-demo__row">
@@ -148,6 +172,8 @@ onBeforeUnmount(stopListeningForViewport)
         :shape="shape"
         :menu-label="t('Save options', '保存选项')"
         :group-label="t('Save actions', '保存操作')"
+        :position-x="positionX"
+        :position-y="positionY"
         @click="runPrimaryAction"
         @toggle="(event) => recordMenuTransition(event.detail.open)"
         @select="
@@ -199,52 +225,6 @@ onBeforeUnmount(stopListeningForViewport)
         >{{ t('Close menu externally', '外部关闭菜单') }}</Button
       >
     </div>
-
-    <div class="split-demo__row split-demo__disabled">
-      <SplitButton
-        :label="t('Primary action disabled', '主操作禁用')"
-        :items="items"
-        primary-disabled
-      />
-      <SplitButton
-        :label="t('Menu disabled', '菜单禁用')"
-        :items="items"
-        menu-disabled
-      />
-      <SplitButton
-        v-model:open="blockedMenuOpen"
-        :label="t('All disabled', '全部禁用')"
-        :items="items"
-        disabled
-      />
-    </div>
-
-    <form
-      class="split-demo__row"
-      @submit.prevent="formSubmitCount++"
-    >
-      <SplitButton
-        :label="t('Submit', '提交')"
-        :items="items"
-        type="submit"
-        name="action"
-        value="primary"
-      />
-      <output>{{ t('Form submitted', '表单已提交') }} {{ formSubmitCount }}</output>
-    </form>
-    <div class="split-demo__row">
-      <SplitButton
-        :label="t('View help', '查看帮助')"
-        :href="t('/components/split-button#api', '/zh/components/split-button#api')"
-        :items="items"
-      />
-      <SplitButton
-        :aria-label="t('Create blank document', '创建空白文档')"
-        :items="items"
-      >
-        <template #icon><Icon name="add" /></template>
-      </SplitButton>
-    </div>
   </div>
 </template>
 
@@ -287,9 +267,5 @@ onBeforeUnmount(stopListeningForViewport)
 }
 .split-demo output {
   color: var(--md-sys-color-on-surface-variant);
-}
-.split-demo__disabled {
-  padding-block-start: 8px;
-  border-block-start: 1px solid var(--md-sys-color-outline-variant);
 }
 </style>

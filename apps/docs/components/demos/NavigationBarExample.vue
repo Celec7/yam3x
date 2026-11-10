@@ -100,7 +100,7 @@ const localizedItems = [
       v-model="active"
       class="navigation-bar-example__rail"
       :items="localizedItems"
-      :label="t('Documentation navigation', '文档导航')"
+      :label="t('Documentation rail', '文档导航轨')"
       mode="auto"
       :show-menu="false"
     >

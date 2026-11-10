@@ -13,7 +13,6 @@ import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
-import FormRulesExample from './FormRulesExample.vue'
 import { useDemoLocale } from './use-demo-locale'
 
 const { locale, t } = useDemoLocale()
@@ -80,23 +79,59 @@ function onLoad() {
 </script>
 
 <template>
-  <div class="form-demo">
-    <div class="form-demo__tools">
-      <Checkbox
-        v-model="showContact"
-        :label="t('Show contact fields', '显示联系方式字段')"
-      />
-      <Checkbox
-        v-model="hold"
-        :label="t('Hold server response', '暂缓服务端响应')"
-      />
-      <Button
-        variant="outlined"
-        :disabled="Boolean(response)"
-        @click="onLoad"
-        >{{ t('Load another record', '加载另一条记录') }}</Button
-      >
-    </div>
+  <div
+    class="form-demo"
+    data-testid="form-example"
+  >
+    <section class="form-demo__scenarios">
+      <div class="form-demo__scenario">
+        <p class="form-demo__caption">{{ t('Validation and success', '校验与成功提交') }}</p>
+        <p class="form-demo__note">
+          {{
+            t(
+              'Submit with an empty field to see the summary and the local error, then complete the required fields.',
+              '在字段为空时提交，可查看摘要与字段内错误，然后补全必填项。',
+            )
+          }}
+        </p>
+        <Checkbox
+          v-model="showContact"
+          :label="t('Show contact fields', '显示联系方式字段')"
+        />
+      </div>
+      <div class="form-demo__scenario">
+        <p class="form-demo__caption">{{ t('Stale submission', '过期提交') }}</p>
+        <p class="form-demo__note">
+          {{
+            t(
+              'Hold the server response, edit a value, then release the reply to see it discarded.',
+              '暂缓服务端响应，修改某个值，再放行响应即可看到它被丢弃。',
+            )
+          }}
+        </p>
+        <Checkbox
+          v-model="hold"
+          :label="t('Hold server response', '暂缓服务端响应')"
+        />
+      </div>
+      <div class="form-demo__scenario">
+        <p class="form-demo__caption">{{ t('Reset and reload', '重置与重新加载') }}</p>
+        <p class="form-demo__note">
+          {{
+            t(
+              'Reset restores the mounted record; loading another record starts a new form session.',
+              '重置会恢复当前记录；加载另一条记录会建立新的表单会话。',
+            )
+          }}
+        </p>
+        <Button
+          variant="outlined"
+          :disabled="Boolean(response)"
+          @click="onLoad"
+          >{{ t('Load another record', '加载另一条记录') }}</Button
+        >
+      </div>
+    </section>
     <Form
       id="settings-form"
       :key="record"
@@ -195,7 +230,7 @@ function onLoad() {
           )
         }}
       </p>
-      <div class="form-demo__tools">
+      <div class="form-demo__response-actions">
         <Button @click="onComplete">{{ t('Return success', '返回成功') }}</Button
         ><Button
           variant="outlined"
@@ -204,19 +239,29 @@ function onLoad() {
         >
       </div>
     </div>
-    <p class="form-demo__result">
-      {{ t('Latest request:', '最近一次请求：') }}
-      <code data-testid="form-request">{{ latestRequest || '—' }}</code>
-    </p>
-    <p class="form-demo__result">
-      {{ t('Requests sent:', '已发送请求：') }}
-      <span data-testid="form-requests">{{ requests }}</span> ·
-      {{ t('Successful submissions:', '成功提交次数：') }}
-      <span data-testid="form-successes">{{ successes }}</span> ·
-      {{ t('Obsolete replies ignored:', '已忽略过期响应：') }}
-      <span data-testid="form-outdated">{{ outdated }}</span>
-    </p>
-    <FormRulesExample />
+    <dl
+      class="form-demo__log"
+      :aria-label="t('Scenario log', '场景记录')"
+    >
+      <div>
+        <dt>{{ t('Submissions sent', '已发送提交') }}</dt>
+        <dd data-testid="form-requests">{{ requests }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('Accepted submissions', '已接受提交') }}</dt>
+        <dd data-testid="form-successes">{{ successes }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('Stale replies discarded', '已丢弃过期响应') }}</dt>
+        <dd data-testid="form-outdated">{{ outdated }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('Latest request snapshot', '最近一次请求快照') }}</dt>
+        <dd>
+          <code data-testid="form-request">{{ latestRequest || '—' }}</code>
+        </dd>
+      </div>
+    </dl>
   </div>
 </template>
 
@@ -225,19 +270,52 @@ function onLoad() {
   display: grid;
   gap: 24px;
 }
-.form-demo__tools {
+.form-demo__scenarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 24px;
+}
+.form-demo__scenario {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-inline-size: 0;
+}
+.form-demo__caption {
+  margin: 0;
+  font-weight: 500;
+}
+.form-demo__note,
+.form-demo__response p {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  overflow-wrap: anywhere;
 }
 .form-demo__response {
   display: grid;
   gap: 16px;
 }
-.form-demo__response p,
-.form-demo__result {
+.form-demo__response-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.form-demo__log {
+  display: grid;
+  gap: 8px;
   margin: 0;
   overflow-wrap: anywhere;
+}
+.form-demo__log div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.form-demo__log dt {
+  color: var(--md-sys-color-on-surface-variant);
+}
+.form-demo__log dd {
+  margin: 0;
 }
 </style>

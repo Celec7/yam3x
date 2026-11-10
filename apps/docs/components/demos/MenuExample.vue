@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Button } from '@registry/components/button'
+import { Checkbox } from '@registry/components/checkbox'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { Menu, type MenuItem } from '@registry/components/menu'
@@ -12,6 +13,10 @@ const open = ref(false)
 const checked = ref(['grid'])
 const selected = ref<Record<string, string>>({ density: 'comfortable' })
 const variant = ref<'standard' | 'vibrant'>('standard')
+const dense = ref(false)
+const direction = ref<'ltr' | 'rtl'>('ltr')
+const positionX = ref<'after' | 'before'>('after')
+const positionY = ref<'below' | 'above'>('below')
 const events = ref<string[]>([])
 const menuApi = ref<{ show(anchor?: HTMLElement): void } | null>(null)
 const items: MenuItem[] = [
@@ -80,7 +85,10 @@ function hasTrailingIcon(item: MenuItem) {
 </script>
 
 <template>
-  <div class="yam3x-demo menu-demo">
+  <div
+    class="yam3x-demo menu-demo"
+    :dir="direction"
+  >
     <label
       >{{ t('Color', '颜色') }}
       <Select
@@ -92,6 +100,43 @@ function hasTrailingIcon(item: MenuItem) {
           value="vibrant"
           :label="t('Vibrant', '鲜明')" /></Select
     ></label>
+    <label
+      >{{ t('Horizontal', '水平') }}
+      <Select
+        v-model="positionX"
+        :aria-label="t('Horizontal placement', '水平位置')"
+        ><Option
+          value="after"
+          :label="t('After', '之后')" /><Option
+          value="before"
+          :label="t('Before', '之前')" /></Select
+    ></label>
+    <label
+      >{{ t('Vertical', '垂直') }}
+      <Select
+        v-model="positionY"
+        :aria-label="t('Vertical placement', '垂直位置')"
+        ><Option
+          value="below"
+          :label="t('Below', '下方')" /><Option
+          value="above"
+          :label="t('Above', '上方')" /></Select
+    ></label>
+    <label
+      >{{ t('Direction', '方向') }}
+      <Select
+        v-model="direction"
+        :aria-label="t('Menu direction', '菜单方向')"
+        ><Option
+          value="ltr"
+          :label="t('Left to right', '从左到右')" /><Option
+          value="rtl"
+          :label="t('Right to left', '从右到左')" /></Select
+    ></label>
+    <Checkbox
+      v-model="dense"
+      :label="t('Dense menu', '紧凑菜单')"
+    />
     <Menu
       ref="menuApi"
       v-model:open="open"
@@ -99,6 +144,9 @@ function hasTrailingIcon(item: MenuItem) {
       v-model:selected="selected"
       :items="items"
       :variant="variant"
+      :dense="dense"
+      :position-x="positionX"
+      :position-y="positionY"
       :label="t('Layer actions', '图层操作')"
       :trigger-label="t('Open layer actions', '打开图层操作')"
       @toggle="log($event.detail.open ? t('Open', '打开') : t('Close', '关闭'))"
@@ -111,6 +159,9 @@ function hasTrailingIcon(item: MenuItem) {
     <Menu
       :items="groupedItems"
       :variant="variant"
+      :dense="dense"
+      :position-x="positionX"
+      :position-y="positionY"
       :label="t('Grouped actions', '分组操作')"
       :trigger-label="t('Open grouped menu', '打开分组菜单')"
     >

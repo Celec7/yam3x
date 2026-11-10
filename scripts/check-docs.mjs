@@ -42,7 +42,7 @@ for (const page of pages) {
   const enPath = path.join(components, page)
   const zhPath = path.join(zhComponents, page)
   const en = await readFile(enPath, 'utf8')
-  let zh = ''
+  let zh
   try {
     zh = await readFile(zhPath, 'utf8')
   } catch {

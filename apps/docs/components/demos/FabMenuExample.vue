@@ -11,6 +11,7 @@ import {
 import { Icon } from '@registry/components/icon'
 import { Option } from '@registry/components/option'
 import { Select } from '@registry/components/select'
+import Switch from '@registry/components/switch/switch.vue'
 import { useDemoLocale } from './use-demo-locale'
 
 const { t } = useDemoLocale()
@@ -21,6 +22,7 @@ const horizontalAlignment = ref<FabMenuHorizontalAlignment>('end')
 const presentation = ref<FabMenuPresentation>('pill-stack')
 const expanded = ref(false)
 const result = ref('')
+const menuDisabled = ref(false)
 function setVariant(value: string | string[] | null) {
   if (value === 'primary' || value === 'secondary' || value === 'tertiary') variant.value = value
 }
@@ -141,6 +143,13 @@ const iconNames: Record<string, string> = {
           />
         </Select>
       </div>
+      <div class="fab-menu-demo__control">
+        <Switch
+          v-model="menuDisabled"
+          :label="t('Disable menu', '禁用菜单')"
+          data-testid="fab-menu-disabled"
+        />
+      </div>
       <output data-testid="fab-menu-result">{{
         result || t('No action selected', '尚未选择操作')
       }}</output>
@@ -153,6 +162,7 @@ const iconNames: Record<string, string> = {
       :trigger-size="triggerSize"
       :horizontal-alignment="horizontalAlignment"
       :presentation="presentation"
+      :disabled="menuDisabled"
       :label="t('Create actions', '创建操作')"
       :trigger-label="t('Create', '创建')"
       @select="result = `${t('Selected:', '已选择：')} ${$event.item.label}`"

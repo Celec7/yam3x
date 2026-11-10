@@ -1,26 +1,18 @@
-<script setup lang="ts">
-import FormFieldExample from './demos/FormFieldExample.vue'
-</script>
-
 # Text fields
 
-Use `FormField` with a native input to create a filled or outlined text field. The input and its form own the value and submission.
+Text fields let users enter text into a UI. They typically appear in forms and dialogs.
 
-## Interactive example
-
-<div class="vp-raw yam3x-doc-demo-theme"><FormFieldExample /></div>
-
-::: details View demo source
-
-<<< ./demos/FormFieldExample.vue{vue}
-
-:::
+This project does not export a separate `TextField` component. Compose [Form field](/components/form-field) with a native `input`, `textarea`, or `select`, and pick the `outlined` or `filled` variant.
 
 ## Use in your app
 
 ```vue
 <script setup lang="ts">
+import { ref } from 'vue'
 import { FormField } from './components/yam3x/form-field'
+
+const email = ref('')
+const displayName = ref('')
 </script>
 
 <template>
@@ -29,16 +21,28 @@ import { FormField } from './components/yam3x/form-field'
     hint="Used for account notifications"
   >
     <input
+      v-model="email"
       type="email"
       name="email"
       autocomplete="email"
       required
     />
   </FormField>
+
+  <FormField
+    label="Display name"
+    variant="filled"
+  >
+    <input
+      v-model="displayName"
+      name="display-name"
+      autocomplete="name"
+    />
+  </FormField>
 </template>
 ```
 
-This project does not export a separate `TextField` component. See [Form field](/components/form-field) for the wrapper's API and behavior. The native control and consuming form own validation.
+The first field uses the default `outlined` variant; the second sets `variant="filled"`. The wrapper owns the label, supporting text, and error presentation. The native control and the consuming form own the value and validation. See [Form field](/components/form-field) for its props, slots, behavior, and styling hooks.
 
 ## Material references
 

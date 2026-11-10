@@ -19,6 +19,7 @@ const standardDetent = ref<BottomSheetDetent>('fit')
 const modalDetent = ref<BottomSheetDetent>('partially-expanded')
 const modalClosable = ref(true)
 const showHandle = ref(true)
+const standardHideable = ref(false)
 const events = ref<string[]>([])
 function record(event: string): void {
   events.value.push(event)
@@ -35,11 +36,16 @@ function guardClose(event: Event): void {
       v-model="showHandle"
       :label="t('Show drag handle', '显示拖动手柄')"
     />
+    <Checkbox
+      v-model="standardHideable"
+      :label="t('Allow hiding the standard sheet', '允许隐藏标准底部表单')"
+    />
     <BottomSheet
       v-model:open="standardOpen"
       v-model:detent="standardDetent"
       :detents="['fit', 'partially-expanded', 'expanded']"
       :handle="showHandle"
+      :hideable="standardHideable"
       :label="t('Supporting panel', '辅助面板')"
       @opening="record('opening')"
       @opened="record('opened')"

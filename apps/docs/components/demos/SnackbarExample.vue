@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Button } from '@registry/components/button'
+import { Checkbox } from '@registry/components/checkbox'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { Slider } from '@registry/components/slider'
@@ -63,13 +64,11 @@ const anchorElement = ref<HTMLElement | null>(null)
           </Button>
         </div>
       </SnackbarControls>
-      <label class="yam3x-snackbar-demo__anchor-toggle">
-        <input
-          v-model="anchorEnabled"
-          type="checkbox"
-        />
-        {{ t('Anchor snackbar above demo button', '在示例按钮上方显示通知') }}
-      </label>
+      <Checkbox
+        v-model="anchorEnabled"
+        class="yam3x-snackbar-demo__anchor-toggle"
+        :label="t('Anchor snackbar above demo button', '在示例按钮上方显示通知')"
+      />
     </SnackbarProvider>
   </div>
 </template>

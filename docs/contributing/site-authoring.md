@@ -88,6 +88,8 @@ Rules:
 - Keep family members in separate API tables. Do not merge them into one table.
 - Keep the page scannable: short paragraphs, bullets, and tables. Avoid paragraphs longer than roughly four lines.
 
+Run `pnpm docs:check` after changing page structure or demo imports. It verifies bilingual section parity, required sections, demo references, and consumer code fences.
+
 ### Page types
 
 | Type                  | Examples                                  | Additional structure                                        |

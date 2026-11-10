@@ -5,11 +5,19 @@ import FabMenuCompositionExample from '../../components/demos/FabMenuComposition
 
 # FAB menu
 
-FAB menu 将 floating action button 展开为一组相关操作。组内操作应服务于同一任务，并为触发器和每个项目提供清晰名称。
+浮动操作按钮（FAB）菜单从 FAB 打开，用于显示多个相关操作。
 
-## 交互示例
+需要数据驱动的操作列表时使用 `FabMenu`；需要直接控制触发器或项目内容时，用 `FloatingActionButtonMenu` 组合 `FloatingActionButtonMenuItem` 与 `ToggleFloatingActionButton`。FAB 菜单从 FAB 打开，在屏幕上浮动显示 2–6 个相关操作。FAB 菜单不用于 extended FAB，并提供 primary、secondary、tertiary 三组颜色。
 
-<div class="vp-raw yam3x-doc-demo-theme"><FabMenuExample /></div>
+## 示例
+
+### 基础
+
+`FabMenu` 渲染标准触发器，并管理展开状态、定位、焦点和键盘导航。所有尺寸的 FAB 共用一种 FAB 菜单尺寸；菜单不提供 extended FAB 尺寸。
+
+<div class="vp-raw yam3x-doc-demo-theme">
+  <FabMenuExample />
+</div>
 
 ::: details 查看演示源码
 
@@ -17,7 +25,23 @@ FAB menu 将 floating action button 展开为一组相关操作。组内操作�
 
 :::
 
-## 在应用中导入
+### 组合
+
+组合 API 暴露触发插槽、展开模型，以及公开的 `open`、`close`、`toggle` 方法。此演示还展示禁用组合菜单以及外部打开、关闭控件。
+
+<div class="vp-raw yam3x-doc-demo-theme">
+  <FabMenuCompositionExample />
+</div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/FabMenuCompositionExample.vue{vue}
+
+:::
+
+## 在应用中使用
+
+先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">
@@ -38,17 +62,9 @@ const actions: FabMenuItem[] = [
 </template>
 ```
 
-## 组合菜单
+::: details 组合用法
 
-需要直接控制触发器或操作内容时，使用组合 API。`FloatingActionButtonMenu` 管理展开状态、浮层定位、焦点和键盘导航。通过 `#trigger` 提供触发器并绑定 `triggerProps`，再把 `FloatingActionButtonMenuItem` 放入默认插槽。与 `ToggleFloatingActionButton` 组合后，可获得加号到关闭图标的标准过渡；其他自定义触发器需要在激活时调用 `toggle`。
-
-<div class="vp-raw yam3x-doc-demo-theme"><FabMenuCompositionExample /></div>
-
-::: details 查看组合演示源码
-
-<<< ../../components/demos/FabMenuCompositionExample.vue{vue}
-
-:::
+将 `triggerProps` 绑定到触发器，以获得菜单语义和键盘行为。`FloatingActionButtonMenu` 不会在 `triggerProps` 中加入点击处理；请通过 `v-model:checked` 与 `ToggleFloatingActionButton` 共享模型，或在使用其他触发器时调用 `toggle`。
 
 ```vue
 <script setup lang="ts">
@@ -83,21 +99,218 @@ const expanded = ref(false)
 </template>
 ```
 
-## API
-
-`FabMenu` 和 `FloatingActionButtonMenu` 的内置界面文案可继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置。可用 `locale` 覆盖语言，默认使用 provider，再回退到 `en-US`；现有标签属性优先于对应的共享默认文案。
-
-`FloatingActionButtonMenu` 使用 `v-model:expanded` 控制展开状态，接受 `label`、`variant`（`primary`、`secondary`、`tertiary`）、`presentation`（`pill-stack`、`web-menu`）、`horizontal-alignment`（`start`、`center`、`end`）和 `disabled`。`#trigger` 插槽接收 `expanded`、`toggle`、`setExpanded` 和 `triggerProps`；将 `triggerProps` 绑定到触发器上，以提供菜单语义和键盘行为。`triggerProps` 不包含点击处理：`ToggleFloatingActionButton` 可通过 `v-model:checked` 与菜单共用状态，其他触发器需要在激活时调用 `toggle`。触发器的颜色 variant 应与菜单的 `variant` 匹配。`FloatingActionButtonMenuItem` 接受 `value`、`label`、`disabled`、`selected` 和原生链接属性，提供默认插槽和 `#icon` 插槽。作为项目扩展，`selected` 由调用者控制，仅在 `web-menu` 中显示 baseline Menu 选中外观；它不会改变激活或关闭行为。项目会发出 `click`；启用的项目激活后，菜单会发出 `select` 并关闭。FAB menu 的 `disabled` 操作是项目扩展：它们保持可见、无法激活、会被键盘导航跳过，并在两种 API 中使用相同的弱化容器与内容样式。Material 的 FAB menu API 未定义禁用操作。胶囊堆叠样式默认在触发器上方展开；只有上方不足以容纳 2 项操作且下方仍有空间时才改为向下展开，正好容纳 2 项时仍向上，并会随页面滚动重新判断位置。
-
-`ToggleFloatingActionButton` 接受 `v-model:checked`、`size`（`small`、`default`、`medium`、`large`）、`variant`（`primary`、`secondary`、`tertiary`）和 `disabled`。默认尺寸为 56px，medium 和 large 分别为 80px 和 96px。small 仍可使用，但 Material 3 Expressive 不推荐使用。它的 `#icon` 插槽接收 `checked` 和动画 `progress`。
-
-`FabMenu` 保留为基于 `items` 数据的便利封装，接受 `variant`、`trigger-size`、`horizontal-alignment` 和 `presentation`。`presentation`（`pill-stack` 或 `web-menu`）以及默认胶囊堆叠样式均为项目决策；布局不会按视口自动切换。项目扩展支持在 `FabMenuItem` 上设置 `selected: true`，以在 `web-menu` 中显示 baseline Menu 选中外观；这不会改变激活或关闭行为。操作列表会在可用高度内滚动，不会遮挡触发器。`beforeselect` 是可取消的项目事件。Material 规定菜单包含 2–6 项操作，并提供 primary、secondary、tertiary 三组颜色；Extended FAB 尺寸不适用于菜单。
+:::
 
 ## 行为与无障碍
 
-打开后焦点保留在触发器；Arrow Down/Up 可进入并移动操作项，Home/End 跳到首尾可用项，Escape 关闭并恢复焦点，Tab 关闭并继续页面顺序。
+### 键盘
 
-`horizontal-alignment="start"` 和 `"center"` 是项目定位选项；默认 `end` 遵循尾侧对齐。弹出层会传送到 `body`。展开期间，弹出层会从最近的 `[data-theme]` 祖先读取 System token，并同步该主题目标的更新。可在菜单根元素上设置公开的 FAB menu CSS 自定义属性来调整弹出层和菜单项。
+- Tab 可到达触发器。Enter 或 Space 会切换菜单。
+- 菜单关闭时，在触发器上按 Arrow Down 或 Arrow Up 会打开菜单，并移到第一个或最后一个启用操作。
+- 菜单打开时，Arrow Down 与 Arrow Up 在启用操作间移动并循环；Home 与 End 跳到首尾启用操作。
+- Escape 关闭菜单，并将焦点恢复到触发器。
+- Tab 关闭菜单，并按页面顺序继续。
+- 禁用操作保持可见，但会被焦点跳过且无法激活。
+- 激活启用操作会发出 `select`、关闭菜单，并将焦点恢复到触发器。
+
+### 焦点与关闭
+
+- 打开后焦点保留在触发器。
+- 点击触发器与浮层之外的区域会关闭菜单。
+- `FabMenu` 在改变状态前于根元素派发可取消的 `beforetoggle` DOM 事件。`FloatingActionButtonMenu` 发出 `beforetoggle`，并提供 `open`、`close`、`toggle`。
+- `beforeselect` 可取消；调用 `preventDefault()` 会保持菜单打开。
+- 禁用菜单会关闭且无法打开；调用 `close()` 仍然安全。
+
+### 定位与响应式
+
+- 胶囊堆叠默认向上打开。仅当上方放不下两个操作且下方有空间时向下打开；恰好能放下两个操作时保持向上。页面滚动时会重新计算定位。
+- `presentation` 选择 `pill-stack` 或 `web-menu`。这是项目决策；布局不会按视口尺寸自动切换。
+- `horizontal-alignment` 默认为 `end`；`start` 与 `center` 是项目定位选项。
+- 浮层会传送到 `body`，随文档方向镜像，并从最近的 `[data-theme]` 祖先读取 System token。
+- 操作列表会在可用空间内滚动，不会遮挡触发器。
+
+### 状态所有权
+
+- `v-model:expanded` 是状态来源。`FabMenu` 还可通过公开方法打开和关闭。
+- `FloatingActionButtonMenuItem.selected` 是项目扩展，由调用者控制。它仅在 `web-menu` 中显示 baseline Menu 选中外观，不会改变激活或关闭行为。
+- 禁用操作是项目扩展。两种 API 中它们都保持可见、使用相同的弱化容器与内容样式，并被键盘导航跳过。Material 的 FAB menu API 不定义禁用操作。
+- 原生 `href`、`target`、`rel` 与 `download` 会渲染为链接。禁用项会省略链接且无法激活。
+- 触发器的颜色 variant 应与菜单的 `variant` 匹配。
+
+## API
+
+### 导出
+
+`FabMenu`、`FloatingActionButtonMenu`、`FloatingActionButtonMenuItem`，以及类型 `FabMenuItem`、`FabMenuVariant`、`FabMenuPresentation`、`FabMenuHorizontalAlignment`、`FabMenuTriggerSize` 和 `FabMenuSelectionSource`。标准触发器是从 FAB 入口导出的 `ToggleFloatingActionButton`。
+
+### 属性与模型
+
+`FabMenu` 与 `FloatingActionButtonMenu` 的内置界面文案继承 [LocaleProvider](/zh/components/localization) 的 `actions` 命名空间。`locale` 覆盖 provider 语言，并回退到 `en-US`；`label` 与 `triggerLabel` 优先于共享默认文案。
+
+#### `FabMenu`
+
+| 属性                  | 类型                                          | 默认值         | 说明                                         |
+| --------------------- | --------------------------------------------- | -------------- | -------------------------------------------- |
+| `items`               | `FabMenuItem[]`                               | 必填           | 菜单中的操作与链接。                         |
+| `label`               | `string`                                      | LocaleProvider | 菜单的可访问名称。                           |
+| `triggerLabel`        | `string`                                      | LocaleProvider | 默认触发器的可访问名称。                     |
+| `variant`             | `'primary' \| 'secondary' \| 'tertiary'`      | `'primary'`    | 触发器与胶囊堆叠项目的颜色组。               |
+| `presentation`        | `'pill-stack' \| 'web-menu'`                  | `'pill-stack'` | 操作列表的项目呈现方式。                     |
+| `horizontalAlignment` | `'start' \| 'center' \| 'end'`                | `'end'`        | 浮层相对触发器的对齐方式。                   |
+| `triggerSize`         | `'small' \| 'default' \| 'medium' \| 'large'` | `'medium'`     | 默认触发器 FAB 的尺寸。                      |
+| `disabled`            | `boolean`                                     | `false`        | 禁用触发器、关闭菜单并阻止打开。             |
+| `locale`              | `string`                                      | Provider       | 覆盖 LocaleProvider 语言，再回退到 `en-US`。 |
+| `expanded`            | `boolean`（`v-model:expanded`）               | `false`        | 展开状态。                                   |
+
+#### `FabMenuItem`
+
+| 字段       | 类型                | 默认值  | 说明                                    |
+| ---------- | ------------------- | ------- | --------------------------------------- |
+| `value`    | `string`            | 必填    | 稳定唯一的操作值。                      |
+| `label`    | `string`            | 必填    | 可见操作标签。                          |
+| `disabled` | `boolean`           | `false` | 保持可见，但阻止激活与聚焦。            |
+| `selected` | `boolean`           | `false` | `web-menu` 中的选中外观；由调用者控制。 |
+| `href`     | `string`            | —       | 使用原生链接 URL 代替按钮操作。         |
+| `target`   | `string`            | —       | 原生链接目标。                          |
+| `rel`      | `string`            | —       | 原生链接关系。                          |
+| `download` | `boolean \| string` | —       | 原生下载属性。                          |
+
+#### `FloatingActionButtonMenu`
+
+| 属性                  | 类型                                     | 默认值         | 说明                                         |
+| --------------------- | ---------------------------------------- | -------------- | -------------------------------------------- |
+| `label`               | `string`                                 | LocaleProvider | 菜单的可访问名称。                           |
+| `variant`             | `'primary' \| 'secondary' \| 'tertiary'` | `'primary'`    | 传给浮层与项目的颜色组。                     |
+| `presentation`        | `'pill-stack' \| 'web-menu'`             | `'pill-stack'` | 插槽项目的项目呈现方式。                     |
+| `horizontalAlignment` | `'start' \| 'center' \| 'end'`           | `'end'`        | 浮层相对触发器的对齐方式。                   |
+| `disabled`            | `boolean`                                | `false`        | 关闭菜单并阻止打开。                         |
+| `locale`              | `string`                                 | Provider       | 覆盖 LocaleProvider 语言，再回退到 `en-US`。 |
+| `expanded`            | `boolean`（`v-model:expanded`）          | `false`        | 展开状态。                                   |
+
+#### `FloatingActionButtonMenuItem`
+
+| 属性       | 类型                | 默认值  | 说明                                    |
+| ---------- | ------------------- | ------- | --------------------------------------- |
+| `value`    | `string`            | 必填    | 稳定唯一的操作值。                      |
+| `label`    | `string`            | 必填    | 可见操作标签及默认插槽内容。            |
+| `disabled` | `boolean`           | `false` | 保持可见，但阻止激活与聚焦。            |
+| `selected` | `boolean`           | `false` | `web-menu` 中的选中外观；由调用者控制。 |
+| `href`     | `string`            | —       | 使用原生链接 URL 代替按钮操作。         |
+| `target`   | `string`            | —       | 原生链接目标。                          |
+| `rel`      | `string`            | —       | 原生链接关系。                          |
+| `download` | `boolean \| string` | —       | 原生下载属性。                          |
+
+#### `ToggleFloatingActionButton`
+
+| 属性       | 类型                                          | 默认值      | 说明                                                                     |
+| ---------- | --------------------------------------------- | ----------- | ------------------------------------------------------------------------ |
+| `size`     | `'small' \| 'default' \| 'medium' \| 'large'` | `'default'` | 关闭尺寸：40px、56px、80px 或 96px。Material 3 Expressive 不推荐 small。 |
+| `variant`  | `'primary' \| 'secondary' \| 'tertiary'`      | `'primary'` | FAB 颜色组。                                                             |
+| `disabled` | `boolean`                                     | `false`     | 禁用触发器。                                                             |
+| `type`     | `'button' \| 'submit' \| 'reset'`             | `'button'`  | 原生按钮类型。                                                           |
+| `checked`  | `boolean`（`v-model:checked`）                | `false`     | 与菜单共享的展开状态。                                                   |
+
+### 事件
+
+#### `FabMenu`
+
+| 事件           | 载荷                                                        | 说明                                              |
+| -------------- | ----------------------------------------------------------- | ------------------------------------------------- |
+| `toggle`       | `{ expanded: boolean }`                                     | 展开状态已变化。                                  |
+| `open`         | —                                                           | 菜单已打开。                                      |
+| `close`        | —                                                           | 菜单已关闭。                                      |
+| `beforeselect` | `(item: FabMenuItem, event: CustomEvent<{ item, source }>)` | 可取消的选择请求；`preventDefault()` 会保持打开。 |
+| `select`       | `{ item: FabMenuItem, source: 'pointer' \| 'keyboard' }`    | 启用操作已被激活。                                |
+
+#### `FloatingActionButtonMenu`
+
+| 事件           | 载荷                                                                | 说明                 |
+| -------------- | ------------------------------------------------------------------- | -------------------- |
+| `beforetoggle` | `CustomEvent<{ expanded: boolean }>`                                | 可取消的可见性请求。 |
+| `toggle`       | `{ expanded: boolean }`                                             | 展开状态已变化。     |
+| `open`         | —                                                                   | 菜单已打开。         |
+| `close`        | —                                                                   | 菜单已关闭。         |
+| `select`       | `{ value: string, label: string, source: 'pointer' \| 'keyboard' }` | 启用项目已被激活。   |
+
+#### `FloatingActionButtonMenuItem` 与 `ToggleFloatingActionButton`
+
+| 组件                           | 事件    | 载荷         | 说明           |
+| ------------------------------ | ------- | ------------ | -------------- |
+| `FloatingActionButtonMenuItem` | `click` | `MouseEvent` | 项目被点击。   |
+| `ToggleFloatingActionButton`   | `click` | `MouseEvent` | 触发器被点击。 |
+
+### 插槽
+
+#### `FabMenu`
+
+| 插槽           | 属性                                           | 说明                                          |
+| -------------- | ---------------------------------------------- | --------------------------------------------- |
+| `trigger`      | `{ expanded, toggle, triggerProps, progress }` | 替换默认触发器；`triggerProps` 包含点击处理。 |
+| `trigger-icon` | `{ expanded: boolean, progress: number }`      | 替换默认触发器图标与动画。                    |
+| `icon`         | `{ item: FabMenuItem }`                        | 每个项目的前置图标。                          |
+| `item`         | `{ item, expanded, activate, itemProps }`      | 替换项目内容。                                |
+
+#### `FloatingActionButtonMenu`
+
+| 插槽      | 属性                                              | 说明                                      |
+| --------- | ------------------------------------------------- | ----------------------------------------- |
+| `default` | —                                                 | `FloatingActionButtonMenuItem` 子项。     |
+| `trigger` | `{ expanded, toggle, setExpanded, triggerProps }` | 必填触发器；`triggerProps` 不含点击处理。 |
+
+#### `FloatingActionButtonMenuItem`
+
+| 插槽      | 属性 | 说明           |
+| --------- | ---- | -------------- |
+| `default` | —    | 替换可见标签。 |
+| `icon`    | —    | 前置图标。     |
+
+#### `ToggleFloatingActionButton`
+
+| 插槽   | 属性                                     | 说明                 |
+| ------ | ---------------------------------------- | -------------------- |
+| `icon` | `{ checked: boolean, progress: number }` | 替换加号与关闭图标。 |
+
+### 方法
+
+#### `FabMenu`
+
+| 方法       | 说明           |
+| ---------- | -------------- |
+| `open()`   | 请求展开状态。 |
+| `close()`  | 请求折叠状态。 |
+| `toggle()` | 翻转展开状态。 |
+
+#### `FloatingActionButtonMenu`
+
+| 方法       | 说明           |
+| ---------- | -------------- |
+| `open()`   | 请求展开状态。 |
+| `close()`  | 请求折叠状态。 |
+| `toggle()` | 翻转展开状态。 |
+
+#### `ToggleFloatingActionButton`
+
+| 属性      | 说明                      |
+| --------- | ------------------------- |
+| `element` | 底层按钮元素，或 `null`。 |
+
+## 样式
+
+在菜单根元素上设置公开的 FAB 菜单属性。菜单会把它们复制到传送后的浮层与项目。
+
+::: details 样式属性
+
+| 区域               | 属性                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 菜单几何           | `--yam3x-fab-menu-spacing`、`--yam3x-fab-menu-max-width`                                                                                                                                                                                                                                                                                                                                                                                 |
+| 项目表面           | `--yam3x-fab-menu-item-container-color`、`--yam3x-fab-menu-item-content-color`                                                                                                                                                                                                                                                                                                                                                           |
+| Primary FAB 角色   | `--yam3x-primary-fab-color`、`--yam3x-primary-fab-container-color`、`--yam3x-primary-fab-hover-color`、`--yam3x-primary-fab-focus-color`、`--yam3x-primary-fab-ripple-color`                                                                                                                                                                                                                                                             |
+| Secondary FAB 角色 | `--yam3x-secondary-fab-color`、`--yam3x-secondary-fab-container-color`、`--yam3x-secondary-fab-hover-color`、`--yam3x-secondary-fab-focus-color`、`--yam3x-secondary-fab-ripple-color`                                                                                                                                                                                                                                                   |
+| Tertiary FAB 角色  | `--yam3x-tertiary-fab-color`、`--yam3x-tertiary-fab-container-color`、`--yam3x-tertiary-fab-hover-color`、`--yam3x-tertiary-fab-focus-color`、`--yam3x-tertiary-fab-ripple-color`                                                                                                                                                                                                                                                        |
+| 项目尺寸           | `--yam3x-fab-menu-item-height`、`--yam3x-fab-menu-item-font-size`、`--yam3x-fab-menu-item-font-weight`、`--yam3x-fab-menu-item-line-height`、`--yam3x-fab-menu-item-tracking`、`--yam3x-fab-menu-item-shape`、`--yam3x-fab-menu-item-leading-space`、`--yam3x-fab-menu-item-trailing-space`、`--yam3x-fab-menu-item-top-space`、`--yam3x-fab-menu-item-bottom-space`、`--yam3x-fab-menu-item-spacing`、`--yam3x-fab-menu-item-icon-size` |
+| 禁用操作           | `--yam3x-fab-menu-item-disabled-container-color`、`--yam3x-fab-menu-item-disabled-container-opacity`、`--yam3x-fab-menu-item-disabled-color`、`--yam3x-fab-menu-item-disabled-opacity`                                                                                                                                                                                                                                                   |
+
+:::
 
 ## Material 参考
 

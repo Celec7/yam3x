@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import NavigationBarExample from '../../components/demos/NavigationBarExample.vue'
+import NavigationBarNavigateExample from '../../components/demos/NavigationBarNavigateExample.vue'
+import NavigationBarStatesExample from '../../components/demos/NavigationBarStatesExample.vue'
 </script>
 
 # Navigation bar
 
-Navigation bar 用于在紧凑布局中切换顶层目的地。应使用少量同级目的地，并确保每项的图标、标签和选中状态易于理解。
+Navigation bar 让人们在较小的设备上切换界面视图，是手持屏幕中常见的导航组件。
 
-## 交互示例
+`NavigationBar` 渲染带原生链接的导航地标，用于 compact 与 medium 窗口；更宽的布局应使用 [Navigation rail](/zh/components/navigation-rail)。
+
+## 示例
+
+### 基础
+
+Navigation bar 可包含三到五个目的地。此演示在任何视口宽度都保留导航栏；960px 及以上出现的 navigation rail 只是独立的替代示例。
 
 <div class="vp-raw yam3x-doc-demo-theme">
   <NavigationBarExample />
@@ -18,7 +26,35 @@ Navigation bar 用于在紧凑布局中切换顶层目的地。应使用少量�
 
 :::
 
-## 在应用中导入
+### 状态
+
+`disabled` 会将项目移出顺序键盘焦点。`disabledInteractive` 保留可聚焦能力以便用户发现，但仍保持禁用语义；两种状态都不会导航或改变选择。
+
+<div class="vp-raw yam3x-doc-demo-theme">
+  <NavigationBarStatesExample />
+</div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/NavigationBarStatesExample.vue{vue}
+
+:::
+
+### 取消导航
+
+`navigate` 在 `v-model` 更新之前触发。在其事件上调用 `preventDefault()` 会同时取消选择更新和原生链接导航。
+
+<div class="vp-raw yam3x-doc-demo-theme">
+  <NavigationBarNavigateExample />
+</div>
+
+::: details 查看演示源码
+
+<<< ../../components/demos/NavigationBarNavigateExample.vue{vue}
+
+:::
+
+## 在应用中使用
 
 先按[安装指南](/zh/guide/installation)复制组件，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
 
@@ -29,53 +65,124 @@ import { NavigationBar, NavigationBarItem } from './components/yam3x/navigation-
 import { Icon } from './components/yam3x/icon'
 
 const current = ref('home')
+
+function guardNavigation(destination: { value: string }, event: MouseEvent) {
+  if (destination.value === 'saved') event.preventDefault()
+}
 </script>
 
 <template>
   <NavigationBar
     v-model="current"
     label="主导航"
+    @navigate="guardNavigation"
   >
     <NavigationBarItem
       value="home"
       label="首页"
       href="/"
     >
-      <template #icon><Icon name="home" /></template>
+      <template #icon="{ selected }">
+        <Icon
+          name="home"
+          :filled="selected"
+        />
+      </template>
     </NavigationBarItem>
     <NavigationBarItem
       value="saved"
       label="收藏"
       href="/saved"
     >
-      <template #icon><Icon name="bookmark" /></template>
+      <template #icon="{ selected }">
+        <Icon
+          name="bookmark"
+          :filled="selected"
+        />
+      </template>
     </NavigationBarItem>
   </NavigationBar>
 </template>
 ```
 
-## API
-
-| 属性                          | 类型                                   | 默认值   | 说明                                               |
-| ----------------------------- | -------------------------------------- | -------- | -------------------------------------------------- |
-| `label`                       | `string`                               | 必填     | navigation landmark 的可访问名称。                 |
-| `modelValue`                  | `v-model: string`                      | `''`     | 当前目的地的 `value`。                             |
-| `layout`                      | `'vertical' \| 'horizontal' \| 'auto'` | `'auto'` | 项目上下或左右排列；`auto` 在项目 600px 阈值切换。 |
-| `NavigationBarItem.value`     | `string`                               | 必填     | 稳定唯一的目的地值。                               |
-| `NavigationBarItem.label`     | `string`                               | 必填     | 可见目的地标签。                                   |
-| `NavigationBarItem.href`      | `string`                               | 必填     | 原生目的地 URL。                                   |
-| `NavigationBarItem.ariaLabel` | `string`                               | —        | 可见标签含义需要补充时使用的可访问名称。           |
-| `disabled`                    | item 上的 `boolean`                    | `false`  | 禁止导航并移出顺序键盘焦点。                       |
-| `disabledInteractive`         | item 上的 `boolean`                    | `false`  | 显示禁用语义但保留 Tab 焦点；不导航、不改变选择。  |
-| `target` / `rel` / `download` | item 上的原生链接属性                  | —        | 启用链接时透传；禁用项不渲染这些属性。             |
-
-在默认插槽中组合多个 `NavigationBarItem`。单项的 `#icon` 接收 `{ selected }`；可选的 `#selected-icon` 在选中时替代它；`#badge` 接收 `{ selected }`，用于在图标旁放置点状或计数徽标。根组件先发出 `navigate(destination, MouseEvent)`，再更新 `v-model`；在事件上调用 `preventDefault()` 会同时取消选择和原生导航。修饰键和鼠标中键保留原生链接行为，且不会改变当前选择。
-
 ## 行为与无障碍
 
-键盘上 Enter 与 Space 都会激活链接，Space 不触发页面滚动。选中项使用加粗标签和填充图标/`#selected-icon`；文本在 2× 缩放下可换行且保持完整。
+### 键盘
 
-`auto` 在 600px 处将导航栏由垂直形态切换为水平形态。该断点是项目决策，并非 Material 官方断点。页面在 960px 及以上组合 Navigation rail 替代导航栏；两个组件不会自动互相切换。
+- Enter 与 Space 都会激活链接；Space 不会滚动页面。
+- Tab 按顺序到达每个启用项。`disabled` 项会被跳过；`disabledInteractive` 项仍保留在 Tab 顺序中。
+- 修饰键点击与鼠标中键保留原生链接行为，且不会改变当前选择。
+
+### 焦点与激活
+
+- 选中项使用 `aria-current="page"`、加粗标签，以及你提供的填充图标或 `#selected-icon`。
+- 禁用项渲染 `aria-disabled="true"`，省略 `href`、`target`、`rel` 和 `download`，且无法激活。
+- 修饰键点击、非主键点击或已被阻止的事件不会发出 `navigate`；此时 `v-model` 也不会改变。
+
+### 响应式与 RTL
+
+- `layout="auto"` 在视口宽度达到 600px 时由垂直项目切换为水平项目。该断点是项目决策，并非 Material 官方断点。
+- 导航栏会横向滚动而不是换行。标签保持完整可见，并可在 2× 缩放下换行。
+- 图标、标签和徽标会随文档方向镜像；组件不会根据 `dir` 切换布局。
+
+### 状态所有权
+
+- `v-model` 拥有当前目的地，并应与路由保持同步。
+- 每个项目的 `href` 执行原生导航。路由变化时，由路由器或路由侦听器更新模型。
+- 页面决定何时用 navigation rail 替换导航栏；两个组件不会自动互相切换。
+
+## API
+
+### 导出
+
+`NavigationBar`、`NavigationBarItem`、`NavigationBarDestination` 和 `NavigationBarLayout`。
+
+### `NavigationBar`
+
+| 属性         | 类型                                   | 默认值   | 说明                                           |
+| ------------ | -------------------------------------- | -------- | ---------------------------------------------- |
+| `label`      | `string`                               | 必填     | 导航地标的可访问名称。                         |
+| `layout`     | `'vertical' \| 'horizontal' \| 'auto'` | `'auto'` | 项目排列方式；`auto` 在 600px 视口切换为水平。 |
+| `modelValue` | `string`（`v-model`）                  | `''`     | 当前目的地的 `value`。                         |
+
+### `NavigationBarItem`
+
+| 属性                  | 类型                | 默认值  | 说明                                                |
+| --------------------- | ------------------- | ------- | --------------------------------------------------- |
+| `value`               | `string`            | 必填    | 稳定唯一的目的地值。                                |
+| `label`               | `string`            | 必填    | 可见目的地标签。                                    |
+| `href`                | `string`            | 必填    | 原生目的地 URL。                                    |
+| `ariaLabel`           | `string`            | —       | 可见标签含义需要补充时使用的可访问名称。            |
+| `disabled`            | `boolean`           | `false` | 禁止导航并移出顺序键盘焦点。                        |
+| `disabledInteractive` | `boolean`           | `false` | 显示禁用语义但保留 Tab 焦点；不导航、不改变选择。   |
+| `target`              | `string`            | —       | 原生链接目标；禁用或 disabledInteractive 项不渲染。 |
+| `rel`                 | `string`            | —       | 原生链接关系；禁用或 disabledInteractive 项不渲染。 |
+| `download`            | `boolean \| string` | —       | 原生下载属性；禁用或 disabledInteractive 项不渲染。 |
+
+### 事件
+
+| 事件       | 载荷                                                         | 说明                                                             |
+| ---------- | ------------------------------------------------------------ | ---------------------------------------------------------------- |
+| `navigate` | `(destination: NavigationBarDestination, event: MouseEvent)` | 在模型更新前发出；调用 `preventDefault()` 会取消选择和原生导航。 |
+
+`NavigationBarItem` 不发出组件事件；`click` 等原生侦听器会透传到其锚点元素。
+
+### 插槽
+
+| 组件                | 插槽            | 属性                    | 说明                                       |
+| ------------------- | --------------- | ----------------------- | ------------------------------------------ |
+| `NavigationBar`     | `default`       | —                       | `NavigationBarItem` 子项。                 |
+| `NavigationBarItem` | `icon`          | `{ selected: boolean }` | 目的地图标；可用 `selected` 渲染填充变体。 |
+| `NavigationBarItem` | `selected-icon` | —                       | 选中时替代 `icon`。                        |
+| `NavigationBarItem` | `badge`         | `{ selected: boolean }` | 位于图标旁的点状或计数徽标。               |
+
+### 方法
+
+`NavigationBar` 与 `NavigationBarItem` 不暴露公开方法。
+
+## 样式
+
+组件没有公开的专用 CSS 自定义属性。颜色、形状、排版和状态层遵循 System token；请通过主题全局修改。需要一次性调整布局时，可为导航栏或项目传入 class。
 
 ## Material 参考
 

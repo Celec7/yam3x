@@ -4,6 +4,8 @@ import { Button } from '@registry/components/button'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { Checkbox } from '@registry/components/checkbox'
+import IconButton from '@registry/components/icon-button/icon-button.vue'
+import { Icon } from '@registry/components/icon'
 import { SideSheet } from '@registry/components/side-sheet'
 import { useDemoLocale } from './use-demo-locale'
 
@@ -12,12 +14,21 @@ const { t } = useDemoLocale()
 const open = ref(false)
 const mode = ref<'adaptive' | 'modal' | 'standard'>('adaptive')
 const direction = ref<'ltr' | 'rtl'>('ltr')
-const previewSize = ref<'container' | 'medium' | 'expanded'>('container')
+const previewSize = ref<'container' | 'compact' | 'medium' | 'expanded'>('container')
 const showPageTitle = ref(true)
+const showBack = ref(false)
 const density = ref<'standard' | 'compact'>('standard')
+const step = ref<'root' | 'advanced'>('root')
+const lastChange = ref('')
 const previewInlineSize = computed(
-  () => ({ container: '100%', medium: '640px', expanded: '960px' })[previewSize.value],
+  () =>
+    ({ container: '100%', compact: '420px', medium: '640px', expanded: '960px' })[
+      previewSize.value
+    ],
 )
+function recordChange(value: boolean, reason: 'toggle' | 'dismiss'): void {
+  lastChange.value = `${value ? t('open', '打开') : t('closed', '关闭')} · ${reason}`
+}
 </script>
 
 <template>
@@ -69,6 +80,10 @@ const previewInlineSize = computed(
           :label="t('Current container width', '当前容器宽度')"
         />
         <Option
+          value="compact"
+          :label="`${t('Compact', '紧凑')} · 420px`"
+        />
+        <Option
           value="medium"
           :label="`${t('Medium', '中等')} · 640px`"
         />
@@ -78,6 +93,16 @@ const previewInlineSize = computed(
         />
       </Select>
     </label>
+    <Checkbox
+      v-model="showBack"
+      :label="t('Back affordance', '返回入口')"
+    />
+    <output
+      class="side-sheet-demo__status"
+      aria-live="polite"
+      data-testid="side-sheet-change"
+      >{{ lastChange || t('No change yet', '暂无变化') }}</output
+    >
     <div
       class="side-sheet-demo__scroll"
       role="region"
@@ -94,7 +119,22 @@ const previewInlineSize = computed(
           :mode="mode"
           :label="t('Page settings', '页面设置')"
           :close-label="t('Close page settings', '关闭页面设置')"
+          :back-label="t('Back to page settings', '返回页面设置')"
+          @change="recordChange"
         >
+          <template
+            v-if="showBack"
+            #back="{ backLabel }"
+          >
+            <IconButton
+              variant="standard"
+              size="small"
+              :aria-label="backLabel"
+              @click="step = 'root'"
+            >
+              <Icon name="arrow_back" />
+            </IconButton>
+          </template>
           <template #toggle="{ expanded, controls, toggle }">
             <Button
               type="button"
@@ -128,7 +168,7 @@ const previewInlineSize = computed(
           </main>
           <template #headline>{{ t('Page settings', '页面设置') }}</template>
           <template #sheet>
-            <p>
+            <p v-if="step === 'root'">
               {{
                 t(
                   'A side sheet holds supporting settings in context with the current page.',
@@ -136,10 +176,26 @@ const previewInlineSize = computed(
                 )
               }}
             </p>
+            <p v-else>
+              {{
+                t(
+                  'The back affordance returned to this section. It is an optional #back slot.',
+                  '返回入口回到了此分区；它是可选的 #back 插槽。',
+                )
+              }}
+            </p>
             <Checkbox
               v-model="showPageTitle"
               :label="t('Show page title', '显示页面标题')"
             />
+            <p v-if="step === 'root'">
+              <Button
+                type="button"
+                variant="text"
+                @click="step = 'advanced'"
+                >{{ t('Show advanced settings', '显示高级设置') }}</Button
+              >
+            </p>
             <p>
               <label
                 >{{ t('Density', '密度') }}
@@ -176,6 +232,11 @@ const previewInlineSize = computed(
   display: flex;
   align-items: center;
   gap: 12px;
+}
+.side-sheet-demo__status {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font: inherit;
 }
 .side-sheet-demo__scroll {
   max-inline-size: 100%;
