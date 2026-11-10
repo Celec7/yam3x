@@ -8,3 +8,5 @@ packages/cli/LICENSE
 .DS_Store
 .references/
 .local/
+docs/agents/local/work/*
+!docs/agents/local/work/.gitkeep

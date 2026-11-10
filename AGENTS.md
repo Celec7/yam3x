@@ -19,6 +19,8 @@
 ## Canonical documentation
 
 - Keep each fact with its canonical owner, link to existing source material instead of duplicating inventories or API details, and avoid temporary status or history in evergreen guidance.
+- Durable architecture decisions live in `docs/agents/notes/{proposed,implemented,rejected,archived}/` and follow the `adr` skill. Create a lifecycle directory only when its first record exists.
+- Local temporary work records live in `docs/agents/local/work/` and are git-ignored. Inspect them explicitly when resuming local work; do not link them from maintained documentation.
 - For documentation work, follow the `canonical-docs` skill when available; these repository rules identify the local owners and source boundaries.
 - Keep maintained repository documentation in English. The public docs site remains bilingual; English is the source page and Chinese pages should match its structure and meaning.
 - Use official Material 3 Expressive names for mapped components. Clearly and consistently identify project-defined extensions without presenting them as official Material components.

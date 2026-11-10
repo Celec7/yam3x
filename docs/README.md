@@ -33,10 +33,10 @@
 
 ## Architecture decisions
 
-Records live under [`decisions/`](decisions/), grouped by lifecycle status. A proposed record names an accepted direction awaiting implementation. Move it to `implemented` with its code and verification evidence, and repair inbound links.
+Records live under [`agents/notes/`](agents/notes/), grouped by lifecycle status. Proposed records retain open questions, risks, and acceptance criteria. On implementation, move the record to `implemented`, rewrite the proposal as a present-tense decision, and add consequences and verification. Rejected records keep the problem and alternatives with a reason. Archived records are frozen history.
 
-- [Remove Tailwind from development and distribution](decisions/implemented/2026-11-08-remove-tailwind.md)
-- [Order floating overlays by open sequence](decisions/implemented/2026-11-08-overlay-layer-stack.md)
+- [Remove Tailwind from development and distribution](agents/notes/implemented/2026-11-08-remove-tailwind.md)
+- [Order floating overlays by open sequence](agents/notes/implemented/2026-11-08-overlay-layer-stack.md)
 
 ## Fact ownership
 
@@ -46,4 +46,5 @@ Installable components come from entrypoints under [`registry/components/`](../r
 - Current API and behavior: `registry/`.
 - Public usage: `apps/docs/`.
 - Verification evidence: tests, browser checks, and CLI checks.
-- Architecture rationale: ADRs under `docs/decisions/`.
+- Architecture rationale: ADRs under `docs/agents/notes/`.
+- Local temporary work: `docs/agents/local/work/` (git-ignored).
