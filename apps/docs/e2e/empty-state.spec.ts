@@ -70,3 +70,30 @@ test('wraps enlarged text and actions in narrow RTL regions without adding a bac
   await page.getByRole('button', { name: '清除搜索', exact: true }).click()
   await expect(page.getByRole('searchbox', { name: '搜索文档', exact: true })).toHaveValue('')
 })
+
+test('uses the On Surface Variant illustration role and allows a local override', async ({
+  page,
+}) => {
+  const empty = page.locator('.yam3x-empty-state').filter({ hasText: 'No documents yet' })
+  const illustration = empty.locator('.yam3x-empty-state__illustration')
+  const colors = await illustration.evaluate((element) => {
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--md-sys-color-on-surface-variant)'
+    element.append(probe)
+    const expected = getComputedStyle(probe).color
+    probe.remove()
+    return { actual: getComputedStyle(element).color, expected }
+  })
+  expect(colors.actual).toBe(colors.expected)
+  await empty.evaluate((element) => {
+    ;(element as HTMLElement).style.setProperty(
+      '--yam3x-empty-state-illustration-color',
+      'rgb(7, 8, 9)',
+    )
+  })
+  await expect(illustration).toHaveCSS('color', 'rgb(7, 8, 9)')
+  await expect(empty.locator('.yam3x-empty-state__description')).not.toHaveCSS(
+    'color',
+    'rgb(7, 8, 9)',
+  )
+})

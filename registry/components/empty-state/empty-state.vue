@@ -64,6 +64,7 @@ defineSlots<{ default?(): unknown; illustration?(): unknown; actions?(): unknown
 .yam3x-empty-state {
   --_yam3x-empty-state-title-color: var(--md-sys-color-on-surface);
   --_yam3x-empty-state-description-color: var(--md-sys-color-on-surface-variant);
+  --_yam3x-empty-state-illustration-color: var(--md-sys-color-on-surface-variant);
   --_yam3x-empty-state-padding: calc(24px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-empty-state-gap: calc(16px * var(--md-sys-density-spacing-scale, 1));
   --_yam3x-empty-state-text-gap: calc(8px * var(--md-sys-density-spacing-scale, 1));
@@ -108,7 +109,7 @@ defineSlots<{ default?(): unknown; illustration?(): unknown; actions?(): unknown
 }
 .yam3x-empty-state__illustration {
   max-inline-size: 100%;
-  color: var(--_yam3x-empty-state-description-color);
+  color: var(--yam3x-empty-state-illustration-color, var(--_yam3x-empty-state-illustration-color));
 }
 .yam3x-empty-state__illustration :deep(img),
 .yam3x-empty-state__illustration :deep(svg) {

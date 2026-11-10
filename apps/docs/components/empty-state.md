@@ -59,7 +59,7 @@ Actions wrap, text can grow, and start alignment follows writing direction. Appe
 
 ## Styling
 
-Typography, spacing, and foregrounds use the shared Material roles. The region has 24 px padding, 16 px between its main parts, and 8 px between title and description. The text block is limited to about 40 characters where space allows. Apply `class` or `style` to size the containing region; allow its height to follow the content.
+Typography, spacing, and foregrounds use the shared Material roles. The optional decorative illustration uses On Surface Variant; override `--yam3x-empty-state-illustration-color` for current-color artwork that needs a different role. The region has 24 px padding, 16 px between its main parts, and 8 px between title and description. The text block is limited to about 40 characters where space allows. Apply `class` or `style` to size the containing region; allow its height to follow the content.
 
 ## Material references
 

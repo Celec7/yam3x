@@ -59,7 +59,7 @@ import { Button } from './components/yam3x/button'
 
 ## 样式
 
-排版、间距和前景色使用共享 Material 角色。区域内边距为 24 px，主要部分之间为 16 px，标题与描述之间为 8 px。空间允许时文字块约限制在 40 个字符宽度。可通过 `class` 或 `style` 调整所在区域尺寸，保持高度随内容增长。
+排版、间距和前景色使用共享 Material 角色。可选的装饰插画使用 On Surface Variant；如果当前色插画需要其他角色，可覆盖 `--yam3x-empty-state-illustration-color`。区域内边距为 24 px，主要部分之间为 16 px，标题与描述之间为 8 px。空间允许时文字块约限制在 40 个字符宽度。可通过 `class` 或 `style` 调整所在区域尺寸，保持高度随内容增长。
 
 ## Material 参考
 

@@ -18,6 +18,7 @@
 
 ### Fixed
 
+- Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
 - Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
 - Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
 - Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
@@ -99,6 +100,7 @@ Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/bad
 
 ### Fixed
 
+- Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
 - Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
 - Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
 - Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
@@ -143,6 +145,7 @@ When updating an existing app, merge the new `src/styles/yam3x-tokens.css` and r
 
 ### Fixed
 
+- Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
 - Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
 - Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
 - Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
