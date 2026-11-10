@@ -83,7 +83,7 @@ import { ActionList, ListAction } from './components/yam3x/list'
 
 ## 样式
 
-标准列表需要显式水平分隔线时，可在 `<li class="yam3x-list-divider" role="separator">` 中放置[分隔线](/zh/components/divider)。默认逻辑起始和末尾内缩量均为 16px。分段列表改用条目间距。一个分段列表代表一个视觉分组；多个分组应使用各自带标签的列表。条目填满父容器宽度；周围布局负责列数、分组间距和文本行长。Expressive 前置和后置图标以 20px 渲染；前置图片和视频使用 8px 小圆角。
+标准列表需要显式水平分隔线时，可在 `<li class="yam3x-list-divider" role="separator">` 中放置[分隔线](/zh/components/divider)。默认逻辑起始和末尾内缩量均为 16px。分段列表改用条目间距。一个分段列表代表一个视觉分组；多个分组应使用各自带标签的列表。条目填满父容器宽度；周围布局负责列数、分组间距和文本行长。Expressive 前置和后置图标以 20px 渲染；前置图片和视频使用 8px 小圆角。前置首字母使用 Avatar 组合及完整的 `title-medium` 字体角色，不应改用更小字号或单独的字距。
 
 ## Material 参考
 

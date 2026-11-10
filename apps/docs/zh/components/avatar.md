@@ -60,6 +60,7 @@ import Avatar from './components/yam3x/avatar/avatar.vue'
 | `--yam3x-avatar-shape`       | System `corner-full`           | 内容裁剪形状。       |
 | `--yam3x-avatar-color`       | System `primary-container`     | 首字母和图标背景色。 |
 | `--yam3x-avatar-label-color` | System `on-primary-container`  | 首字母和图标前景色。 |
+| `--yam3x-avatar-font-family` | System `title-medium` 字体族   | 首字母字体族。       |
 | `--yam3x-avatar-font-size`   | System `title-medium` 字号     | 首字母字号。         |
 | `--yam3x-avatar-font-weight` | System `title-medium` 字重     | 首字母字重。         |
 | `--yam3x-avatar-line-height` | System `title-medium` 行高     | 首字母行高。         |

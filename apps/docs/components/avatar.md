@@ -60,6 +60,7 @@ These project extension overrides are available on the Avatar root. Color defaul
 | `--yam3x-avatar-shape`       | System `corner-full`                 | Shape of the clipped content. |
 | `--yam3x-avatar-color`       | System `primary-container`           | Initials and icon background. |
 | `--yam3x-avatar-label-color` | System `on-primary-container`        | Initials and icon foreground. |
+| `--yam3x-avatar-font-family` | System `title-medium` font family    | Initials font family.         |
 | `--yam3x-avatar-font-size`   | System `title-medium` font size      | Initials font size.           |
 | `--yam3x-avatar-font-weight` | System `title-medium` font weight    | Initials font weight.         |
 | `--yam3x-avatar-line-height` | System `title-medium` line height    | Initials line height.         |

@@ -29,6 +29,15 @@ test('initials, icon, and image content stay passive and fit the default square'
   await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('font-weight', '500')
   await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('line-height', '24px')
   await expect(initials.locator('.yam3x-avatar__base')).toHaveCSS('letter-spacing', '0.2px')
+  const family = await initials.locator('.yam3x-avatar__base').evaluate((element) => {
+    const probe = document.createElement('span')
+    probe.style.fontFamily = 'var(--md-sys-typescale-title-medium-font-family)'
+    element.append(probe)
+    const expected = getComputedStyle(probe).fontFamily
+    probe.remove()
+    return { actual: getComputedStyle(element).fontFamily, expected }
+  })
+  expect(family.actual).toBe(family.expected)
 
   // avatar.extension.accessible-name
   await expect(avatars.nth(1)).toHaveAttribute('role', 'img')
@@ -74,6 +83,7 @@ test('all avatar custom properties override geometry, shape, type, and color', a
     const style = (element as HTMLElement).style
     style.setProperty('--yam3x-avatar-size', '56px')
     style.setProperty('--yam3x-avatar-shape', '10px')
+    style.setProperty('--yam3x-avatar-font-family', 'serif')
     style.setProperty('--yam3x-avatar-font-size', '20px')
     style.setProperty('--yam3x-avatar-font-weight', '700')
     style.setProperty('--yam3x-avatar-line-height', '28px')
@@ -84,6 +94,7 @@ test('all avatar custom properties override geometry, shape, type, and color', a
   await expect(avatar).toHaveCSS('width', '56px')
   await expect(avatar).toHaveCSS('height', '56px')
   await expect(base).toHaveCSS('border-radius', '10px')
+  await expect(base).toHaveCSS('font-family', 'serif')
   await expect(base).toHaveCSS('font-size', '20px')
   await expect(base).toHaveCSS('font-weight', '700')
   await expect(base).toHaveCSS('line-height', '28px')
@@ -99,4 +110,49 @@ test('native hidden and forced colors preserve a visible boundary', async ({ pag
   await avatar.evaluate((element) => element.removeAttribute('hidden'))
   await page.emulateMedia({ forcedColors: 'active' })
   await expect(avatar.locator('.yam3x-avatar__base')).toHaveCSS('outline-width', '1px')
+})
+
+test('matches List leading avatar typography to the shared title-medium roles', async ({
+  page,
+}) => {
+  await page.goto('/components/list')
+  const avatar = page
+    .getByRole('list', { name: 'Recent contacts' })
+    .locator('[data-leading-type="avatar"] .yam3x-avatar__base')
+    .first()
+  const typography = await avatar.evaluate((element) => {
+    const probe = document.createElement('span')
+    element.append(probe)
+    const read = (
+      property: 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing',
+    ) => {
+      probe.style.setProperty(
+        property,
+        `var(--md-sys-typescale-title-medium-${property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)})`,
+      )
+      return getComputedStyle(probe)[property]
+    }
+    const expected = {
+      fontFamily: read('fontFamily'),
+      fontSize: read('fontSize'),
+      fontWeight: read('fontWeight'),
+      lineHeight: read('lineHeight'),
+      letterSpacing: read('letterSpacing'),
+    }
+    probe.remove()
+    const style = getComputedStyle(element)
+    return {
+      expected,
+      actual: {
+        fontFamily: style.fontFamily,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        lineHeight: style.lineHeight,
+        letterSpacing: style.letterSpacing,
+      },
+    }
+  })
+  expect(typography.actual).toEqual(typography.expected)
+  await expect(avatar).toHaveCSS('font-size', '16px')
+  await expect(avatar).toHaveCSS('letter-spacing', '0.2px')
 })

@@ -8,6 +8,7 @@ Lists present related content, destinations, or actions as rows. Choose the item
 
 - Use the Expressive list treatment for new designs. Use the variants and grouping shown in [Lists guidelines](https://m3.material.io/components/lists/guidelines) when the content hierarchy calls for a standard or segmented configuration.
 - `list.geometry.rows`: Use the documented list-item anatomy, line configurations, spacing, and dimensions shown in [Lists specifications](https://m3.material.io/components/lists/specs). Keep primary text prominent, supporting content secondary, and trailing information aligned.
+- `list.geometry.avatar`: Leading initials use the Avatar composition and the full `title-medium` role, including family, size, weight, line height, and tracking. Do not restyle the same initials with a smaller size or separate tracking.
 - `list.geometry.media`: Use the official small corner shape for leading video and Expressive leading image media. The baseline image token has no rounding; the Expressive image variant uses `shape.corner.small`.
 - `list.geometry.icons`: Use the 20dp Expressive size for leading and trailing icons. The baseline icon size remains 24dp.
 - Limit supporting text to three lines and truncate it responsively when it exceeds the available space, following [Lists guidelines](https://m3.material.io/components/lists/guidelines).

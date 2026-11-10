@@ -5,6 +5,7 @@ import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import { List, ListItem, type ListVariant } from '@registry/components/list'
 import { HorizontalDivider } from '@registry/components/divider'
+import Avatar from '@registry/components/avatar/avatar.vue'
 import { Icon } from '@registry/components/icon'
 import { useDemoLocale } from './use-demo-locale'
 
@@ -49,7 +50,7 @@ const showDraggedState = ref(false)
             :dragged="showDraggedState"
           >
             Ada Lovelace
-            <template #leading><span class="yam3x-list-demo__avatar">AL</span></template>
+            <template #leading><Avatar>AL</Avatar></template>
             <template #supporting-text>{{
               t(
                 'Last active: today; the latest message mentioned the new release and team plans.',
@@ -60,7 +61,7 @@ const showDraggedState = ref(false)
           </ListItem>
           <ListItem leading-type="avatar">
             Grace Hopper
-            <template #leading><span class="yam3x-list-demo__avatar">GH</span></template>
+            <template #leading><Avatar>GH</Avatar></template>
             <template #overline>{{ t('Team updates', '团队更新') }}</template>
             <template #supporting-text>{{
               t('Last active: yesterday', '上次活动：昨天')
@@ -174,16 +175,6 @@ const showDraggedState = ref(false)
   inline-size: 24px;
   block-size: 24px;
   font-size: 20px;
-}
-.yam3x-list-demo__avatar {
-  display: grid;
-  place-items: center;
-  inline-size: 40px;
-  block-size: 40px;
-  border-radius: 50%;
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  font-size: 13px;
 }
 @container (min-width: 760px) {
   .yam3x-list-demo__columns {

@@ -12,7 +12,7 @@ Material 3 does not define a standalone Avatar component or an avatar-specific v
 ## Project decisions
 
 - Project-defined extension: An Avatar may use an image, initials, or an icon as its identity cue because Material does not prescribe an Avatar component.
-- Project-defined visual mapping: Use the full system corner, `primary-container` with `on-primary-container`, and `title-medium` for initials. These are coherent shared tokens selected for this extension; they are not official Avatar component tokens.
+- Project-defined visual mapping: Use the full system corner, `primary-container` with `on-primary-container`, and the complete `title-medium` role, including its font family, size, weight, line height, and tracking, for initials. These are coherent shared tokens selected for this extension; they are not official Avatar component tokens.
 - Project-defined default size: Use a 40px square box as a compact identity marker. Consumers may intentionally override its size and appearance.
 - Project-defined: Crop identity images consistently while keeping the subject recognizable; use legible text and sufficient contrast for initials, and do not rely on color alone to identify a person or state.
 - `avatar.extension.accessible-name` (project-defined): Give an informative Avatar an accessible name; treat it as decorative when nearby text already supplies the same identity, avoiding a duplicate announcement.

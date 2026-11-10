@@ -387,13 +387,26 @@
   border-radius: var(--_yam3x-list-item-avatar-shape, 50%);
   background: var(--_yam3x-list-item-avatar-color, var(--_yam3x-list-color-primary-container));
   color: var(--_yam3x-list-item-avatar-label-color, var(--_yam3x-list-color-on-primary-container));
-  font-size: var(--_yam3x-list-item-avatar-font-size, 16px);
-  font-weight: var(--_yam3x-list-item-avatar-font-weight, 500);
-  line-height: calc(
-    (var(--_yam3x-list-item-avatar-line-height, 24px)) *
-      var(--_yam3x-list-typescale-line-height-scale, 1.07)
+  font-family: var(
+    --_yam3x-list-item-avatar-font-family,
+    var(--md-sys-typescale-title-medium-font-family)
   );
-  letter-spacing: var(--_yam3x-list-item-avatar-tracking, 0.1px);
+  font-size: var(
+    --_yam3x-list-item-avatar-font-size,
+    var(--md-sys-typescale-title-medium-font-size, 16px)
+  );
+  font-weight: var(
+    --_yam3x-list-item-avatar-font-weight,
+    var(--md-sys-typescale-title-medium-font-weight, 500)
+  );
+  line-height: var(
+    --_yam3x-list-item-avatar-line-height,
+    var(--md-sys-typescale-title-medium-line-height, 24px)
+  );
+  letter-spacing: var(
+    --_yam3x-list-item-avatar-tracking,
+    var(--md-sys-typescale-title-medium-tracking, 0.2px)
+  );
 }
 .yam3x-list-item__leading[data-leading-type='image'] {
   inline-size: var(--_yam3x-list-item-image-width, 56px);

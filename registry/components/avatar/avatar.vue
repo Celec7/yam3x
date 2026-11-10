@@ -10,6 +10,7 @@
   --_yam3x-avatar-shape: var(--md-sys-shape-corner-full);
   --_yam3x-avatar-container-color: var(--md-sys-color-primary-container);
   --_yam3x-avatar-label-color: var(--md-sys-color-on-primary-container);
+  --_yam3x-avatar-font-family: var(--md-sys-typescale-title-medium-font-family);
   --_yam3x-avatar-font-size: var(--md-sys-typescale-title-medium-font-size);
   --_yam3x-avatar-font-weight: var(--md-sys-typescale-title-medium-font-weight);
   --_yam3x-avatar-line-height: var(--md-sys-typescale-title-medium-line-height);
@@ -34,6 +35,7 @@
   border-radius: var(--yam3x-avatar-shape, var(--_yam3x-avatar-shape));
   background-color: var(--yam3x-avatar-color, var(--_yam3x-avatar-container-color));
   color: var(--yam3x-avatar-label-color, var(--_yam3x-avatar-label-color));
+  font-family: var(--yam3x-avatar-font-family, var(--_yam3x-avatar-font-family));
   font-size: var(--yam3x-avatar-font-size, var(--_yam3x-avatar-font-size));
   font-weight: var(--yam3x-avatar-font-weight, var(--_yam3x-avatar-font-weight));
   line-height: var(--yam3x-avatar-line-height, var(--_yam3x-avatar-line-height));
