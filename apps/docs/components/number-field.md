@@ -52,7 +52,7 @@ The gallery shows a German amount with prefix and suffix text, a decimal weight,
 
 ## Use in your app
 
-After [installation](/guide/start/installation), copy the Form field and Icon button dependencies with the component, then import it from your app. Use consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
+After [installation](/guide/start/installation), add `number-field` with the CLI. It copies the component and its internal Form field, Icon button, Icon, and localization dependencies, and declares the required packages. Then import it from your app using consumer paths such as `./components/yam3x/`; `@registry` paths in demo source are site-specific.
 
 ```vue
 <script setup lang="ts">

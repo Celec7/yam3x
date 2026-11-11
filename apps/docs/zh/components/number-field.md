@@ -52,7 +52,7 @@ import NumberFieldStatesExample from '../../components/demos/NumberFieldStatesEx
 
 ## 在应用中导入
 
-先按[安装指南](/zh/guide/start/installation)复制组件及其 Form field 与 Icon button 依赖，再从应用中导入。使用 `./components/yam3x/` 等消费端路径；演示源码中的 `@registry` 是站点专用路径。
+先按[安装指南](/zh/guide/start/installation)使用 CLI 添加 `number-field`。CLI 会复制组件及其内部的 Form field、Icon button、Icon 和 localization 依赖，并声明所需软件包。然后使用 `./components/yam3x/` 等消费端路径从应用中导入；演示源码中的 `@registry` 是站点专用路径。
 
 ```vue
 <script setup lang="ts">
