@@ -2,113 +2,68 @@
 
 ## Unreleased
 
+This release aligns the component set with Material 3 Expressive, removes Tailwind and deprecated compatibility layers, and moves registry dependency management into the CLI build.
+
 ### Breaking changes
 
-- Vue is now a peer dependency of the registry. The CLI validates its declared and installed version but no longer adds Vue to the application's runtime dependencies.
-- Registry dependency metadata is generated into the published CLI package at pack time instead of being committed as `registry/registry.json`. Use `pnpm registry:check` to validate the derived model.
-- DateInput removes the controlled `value` and `update:value` compatibility aliases. Use `v-model`, `modelValue`, and `update:modelValue` instead.
-- Empty state and Inline message titles now render as level-3 headings by default, with `headingLevel` overrides; Cascader dialog titles use level 2.
-- FormField resolves form controls through native form elements or `data-form-field-control`; external custom-element tags are no longer special-cased.
-- Remove the mandatory Tailwind CSS dependency. Copied components now use standard CSS without Tailwind or its Vite plugin, and the published Tailwind theme aliases (`bg-yam3x-*`, `text-yam3x-*`, `font-yam3x-*`, `rounded-yam3x-*`, `p-yam3x-*`, `gap-yam3x-*`, and other generated utilities) are no longer provided. Replace them with application-owned CSS using the retained semantic `--md-sys-*` custom properties.
-- Button variants no longer use `tailwind-variants`. The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
-- FloatingActionButton and ExtendedFloatingActionButton remove the deprecated `disabled` and `disabledInteractive` props; omit the control when its action is unavailable. FloatingActionButton, ToggleFloatingActionButton, and FabMenu trigger sizes remove the baseline `small` size. ExtendedFloatingActionButton keeps its Expressive 56 px `small` size.
-- Remove the undocumented `yam3x-elevation-1` through `yam3x-elevation-5` helper classes. Use the `--md-sys-elevation-level1` through `--md-sys-elevation-level5` tokens in application CSS.
-- NavigationRail `auto` mode now follows Material's Expanded breakpoint. It is hidden below 840px and expanded at 840px instead of switching at 960px.
+- **Tailwind is no longer required.** Copied components use standard CSS without Tailwind or its Vite plugin. The published Tailwind theme aliases (`bg-yam3x-*`, `text-yam3x-*`, `font-yam3x-*`, `rounded-yam3x-*`, `p-yam3x-*`, `gap-yam3x-*`, and other generated utilities) are removed. Replace them with application-owned CSS using the retained semantic `--md-sys-*` custom properties.
+- **Button variants no longer use `tailwind-variants`.** The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
+- **The CLI dependency model changed.** Vue is now a peer dependency: the CLI validates its declared and installed version but does not add it to runtime dependencies. Registry metadata is generated into the published package at pack time instead of being committed as `registry/registry.json`; use `pnpm registry:check` to validate the derived model.
+- **DateInput removes the controlled `value` and `update:value` aliases.** Use `v-model`, `modelValue`, and `update:modelValue` instead.
+- **Heading defaults changed.** Empty state and Inline message titles render as level-3 headings by default, with `headingLevel` overrides; Cascader dialog titles use level 2.
+- **FormField resolves controls through native form elements or `data-form-field-control`.** External custom-element tags are no longer special-cased.
+- **FloatingActionButton APIs were narrowed.** FloatingActionButton and ExtendedFloatingActionButton remove the deprecated `disabled` and `disabledInteractive` props; omit the control when its action is unavailable. FloatingActionButton, ToggleFloatingActionButton, and FabMenu trigger sizes remove the baseline `small` size. ExtendedFloatingActionButton keeps its Expressive 56 px `small` size.
+- **Elevation helper classes were removed.** Use the `--md-sys-elevation-level1` through `--md-sys-elevation-level5` tokens in application CSS instead of `yam3x-elevation-1` through `yam3x-elevation-5`.
+- **NavigationRail `auto` mode follows the Expanded breakpoint.** It is hidden below 840px and expanded at 840px instead of switching at 960px. Navigation examples swap at 840px instead of rendering a bar and rail simultaneously.
 
 ### Added
 
-- Add the installable `yam3x` Agent Skill and the repository-only `yam3x-component-alignment` skill. `pnpm docs:check` validates skill frontmatter, reference files, and links.
-- Foundation CSS exposes read-only pointer capability flags for primary pointer, any-pointer, hover, and any-hover. Components use the primary pointer for layout sizing so hybrid devices stay stable.
-- Date pickers accept `closeLabel` and `saveLabel` for the full-screen modal actions. `DatePickerMessages` gains matching `close` and `save` messages.
-- InlineMessage accepts `headingLevel` for its optional title.
-- `pnpm breakpoints:check` enforces the shared responsive breakpoint contract in CI.
-- Add `yam3x status` for read-only dependency reconciliation and `yam3x sync` for updating dependency declarations of installed components without modifying copied source.
-- Add `pnpm deps:update` to refresh compatible catalog ranges and resolved dependencies, then rerun registry and CLI checks.
+- **Agent skills.** Add the installable `yam3x` Agent Skill and the repository-only `yam3x-component-alignment` skill. `pnpm docs:check` validates skill frontmatter, references, and links.
+- **CLI dependency reconciliation.** `yam3x status` reports missing, unsafe, or outdated dependency declarations without writing files. `yam3x sync` updates declarations for installed components without modifying copied source. Compatibility uses range inclusion instead of intersection, and `add` preflights every requested component before writing.
+- **Responsive breakpoint contract.** `pnpm breakpoints:check` enforces the shared Material breakpoints (`600`, `840`, `1200`, `1600`), their fractional lower bounds, and documented component-specific exceptions in CI.
+- **Pointer capability flags.** Foundation CSS exposes read-only primary-pointer, any-pointer, hover, and any-hover flags. Components use the primary pointer for layout sizing so hybrid devices stay stable.
+- **Date picker actions.** Date pickers accept `closeLabel` and `saveLabel` for full-screen modal actions, with matching `close` and `save` messages in `DatePickerMessages`.
+- **InlineMessage headings.** InlineMessage accepts `headingLevel` for its optional title.
 
-### Fixed
+### Component alignment
 
-- Dependency compatibility uses range inclusion instead of intersection, so a consumer declaration that permits untested versions is reported as unsafe.
-- `yam3x add` preflights every requested component before copying files or changing `package.json`, preventing a partial install when a later component has an incompatible dependency.
-- Responsive rules use the compact boundary below 600px consistently, removing the fractional gap between 599px and 600px in component media queries.
-- Descriptions scopes its styles, scales the remaining item and inline gaps with density, and records the outlined border, corner, and padding.
-- Inline messages record their fixed 2px leading-icon optical offset and which Button variants inherit the message foreground.
-- Empty state records its On Surface Variant illustration color and exposes an illustration-color override.
-- Avatar applies the complete `title-medium` font family, and List leading initials share the same typography instead of a reduced size and separate tracking.
-- Icon clamps finite `opticalSize` values to the Material Symbols 20–48 range, documents explicit grade mapping, and records weight fallback behavior.
-- Number field documents its Form field block padding overrides and records the 48×40 minimum step boxes, 4px action gap, and editor-only Tab stop.
-- Data tables derive the selection column from the shared touch target plus both inline paddings, use spacing tokens for filterable header insets, and keep sort icon geometry explicit.
-- Select batches slotted option registration in DOM order and reuses catalog filtering, avoiding quadratic registration work for large non-virtual catalogs.
-- Linear progress value updates reuse measured geometry without allocating probes or reading layout; CSS geometry overrides and container resizing remain reactive.
-- Badges share anchor observation within each document or shadow root and ignore unrelated DOM changes, while retaining dynamic anchors, direction changes, and slot content updates.
-- Pan and Swipe retain only the samples needed for motion metrics, keeping per-update work and gesture storage bounded without changing reported movement or velocity.
-- Tree view shares incremental cascade-check summaries and resolves expanded visibility in one pass; virtual windows reuse key indexes for distant navigation and row offsets.
-- Documentation demo themes observe DOM changes only while active and update changed demo subtrees without rescanning the full page for unrelated mutations.
-- Date pickers separate docked month and year controls into their own dropdown-and-arrow groups. Docked month and year menus are vertical 48px listboxes with a selected-row check; the selected row scrolls into view when opened.
-- Modal date pickers combine month and year into one dropdown with adjacent month arrows, keep the headline to one short line, and use the full localized date as its accessible name.
-- Modal range calendars share one visible weekday row above the continuous month sequence, omit month paging controls, and keep hidden weekday headers for each month grid.
-- Date picker weekday headers use narrow one-character labels, while today uses a `primary` label and 1dp outline. Modal year options use the unselected `on-surface-variant` label role.
-- Hovering a selected date range endpoint keeps its primary fill and layers the state tint above it, instead of replacing the selected surface with a translucent hover circle.
-- Docked date fields draw a notched 3px focus outline without shifting layout or drawing a second ring inside the input.
-- Full-screen date picker modals expose localized close and Save actions in the header.
-- Docked range values use symmetric 16px block padding and center vertically in the 56px field.
-- Data tables apply On Surface to static column headings explicitly, so ambient table styles cannot replace the project heading role.
-- Compact Navigation Bar items reserve 8px between the icon row and label, keeping 4px clearance below the 32px active indicator.
-- Filled FormFields center empty labels and icons in the 56px field and place the value row below the floating label with the official 8px bottom padding. Icon slots no longer raise the container height; leading and trailing icons use 12px edge padding and 16px text spacing.
-- Empty invalid FormFields keep the label centered until focus or content floats it. Filled disabled active indicators use the 38% on-surface role instead of the outlined 12% stroke.
-- Focusing a filled FormField no longer shifts its label or content horizontally.
-- Floating FormField labels use the populated 16px line box and center on the outlined border at the scaled 12px type size.
-- Checkbox keyboard focus uses the Material Web focus-ring treatment: a 44px circular `secondary` ring with a 3px stroke instead of an outline around the 18px box.
-- Radio buttons use the same 44px circular focus ring and keep the 40px state layer for hover and pressed feedback.
-- Switch focus now surrounds the 52px track with the 3px `secondary` indicator, unselected handles center at 16px from the track edge, icon handles stay 24px when disabled, and the pressed handle size grows over a 100ms linear transition.
-- Time pickers place the dial/input toggle in the bottom action row with the keyboard icon, use the 3px `secondary` focus indicator on selectors and period options, and focus input fields with a 2px `primary` outline and `primary-container` fill. One-digit input stays editable until the second digit is typed and is padded on blur.
-- Basic dialogs size to their content between 280px and 560px instead of always filling the maximum width. The project close button uses a 40px state layer and an inset 3px `secondary` focus ring so the indicator stays visible inside the container.
-- Secondary tabs span the full selected tab width with their 2px active indicator; the 2px side insets remain specific to Primary tabs.
-- Snackbar action and close controls add the official 10% focus state layer alongside the 3px focus ring; hover remains 8%.
-- Actionable cards use the official 3px `secondary` focus indicator with a 2px offset instead of the shared 3px offset.
-- Badges keep the official 11px label metrics for one- to three-character counts; only four-character labels use the compact 10px metrics required to stay within the 16×34px maximum container.
-- Modal side sheets are now detached from the window by the official 16px margin on the top, trailing, and bottom edges and use a 16px corner radius; standard sheets stay attached.
-- Segmented button focus now surrounds the 40px visual segment with the official 3px `secondary` ring and 2px gap, instead of the larger 48px touch target.
-- Buttons use the Material 2px focus-ring offset instead of the shared 3px offset.
-- Selected round icon buttons use their size's square corner instead of an oversized radius; selected square toggles still become fully rounded.
-- Opening the trailing menu makes the Split button segment fully rounded, including square-styled Split buttons, while the leading segment keeps its shape.
-- Connected Button Groups round only their inner corners on hover, focus, and selection; square outer corners stay square. The scrollport reserves space for the full focus ring so first and last controls no longer clip it.
-- Selected Navigation Bar labels keep the Label Medium weight from the official token set instead of switching to bold.
-- Expanded Navigation Rails keep the 20px surface inset before destination rows, placing the active indicator 36px from the rail edge and aligning menu and destination icon axes.
-- Compact docked Toolbars distribute equal space between actions while keeping the 16px minimum outer padding, instead of adding extra edge spacing.
-- Slider value indicators use the official 14px/20px label metrics with 400 weight and 0.5px tracking.
-- Foundation typography tracking now matches the Material baseline and emphasized roles for Display Large, Title Medium, Body Medium, and their emphasized variants. The global focus fallback uses the shared 3px/2px focus-indicator tokens, and strong focus now keeps the ring visible for pointer focus.
-- Horizontal carousels now support primary-button mouse dragging with click suppression after a drag; touch and trackpad scrolling remain native.
-- FAB menu close buttons now scale their icon from the closed FAB size to the official 20px close icon. Pill-stack items use the `secondary` focus ring and their elevation tokens: level 0 at rest, level 4 on hover, and level 3 on focus and press.
-- FABs now draw the 3px `secondary` focus indicator with the official outer offset, including Extended FAB and toggle FABs. Lowered FABs use the token-defined level 1 elevation at rest, focus, and press, and level 2 on hover.
-- Search bar action targets keep the official 48px size, 4px container inset, and zero gap between adjacent trailing actions instead of inheriting action margins. The focused back target and input text now align to the same 4px/48px measurements as the unfocused bar, and contained bar width and margin changes use the fast spatial spring.
-- Slider stops now use the Compose cap-center span, with interior thumbs aligned to the same grid and endpoint thumbs kept at the physical track ends. Standard sliders keep the first tick and replace the last tick with an inactive-end stop; centered and range sliders use an end stop at each visible inactive end. The active handle value omits its tick, disabled active stops use `inverse-on-surface`, and active track segments use the official 2px inner corners.
-- Expressive Lists use the small 8px corner shape for leading images and videos, and render leading and trailing icons at 20px. Selected rows switch their leading and trailing icons to `on-surface` on hover, focus, and press while the label keeps the selected role.
-- Menu enter and exit motion now scales from the trigger-facing edge instead of clipping the surface, so the elevation shadow stays attached to the container and follows its rounded corners. The container shadow uses the shared elevation level 2.
-- Dialog bodies reserve top inset for floating field labels, so the first label is no longer clipped by the scrollport's top edge.
-- Select option panels keep receiving pointer input when a modal dialog locks the body, so options work with pointer and keyboard input.
-- Outlined FormField labels sit in a transparent gap in the outline and keep their position on focus. The focused 3px stroke is drawn without changing layout, and Select defers the focus indicator to a wrapping FormField.
-- Option rows use a 44px visual surface inside the 48px interaction target, a 3px `secondary` focus ring that preserves the row radius, level 2 panel elevation, label-large text, and 32px group labels. A fine primary pointer uses 16px start / 10px end and a 12px icon gap; a coarse pointer uses 12px / 12px and 8px.
-- Select keeps the accepted value on-surface while its menu is open and applies primary only to the trailing arrow. Multiple-selection chips use an 8px row gap without extra per-chip margins and reserve 4px above the first row for floating-label clearance, and the standalone focus fallback uses the 3px field outline.
-- Autocomplete keeps an outlined field with a 3px primary focus outline, exposes hint and error supporting text, and aligns suggestions to the shared menu language: 44px visual rows inside 48px targets, a 3px secondary focus ring, label-large text, pointer-aware insets, and level 2 popup elevation.
-- Cascader resets the inherited OptionPanel menu padding so its own density-scaled 12px dialog padding is the single content inset; option surfaces now align with the title, search field, and footer while retaining the shared 44px visual rows inside 48px targets.
-- TreeSelect resets the inherited OptionPanel menu padding, uses density-scaled section gaps, aligns the search field, tree, and footer to one 12px content edge, and gives the multiple-selection disclosure a 48x48px target.
-- Pagination now uses the shared touch-target token for page actions and the shared 8px spacing token with an 8px floor.
-- File upload now uses a single drop boundary while dragging and applies a resolved disabled surface for both the prop and an ancestor fieldset, including hiding the drop instruction.
-- FilterChipSet now exposes a labeled toolbar of toggle buttons instead of a single-row grid, supports `ariaLabelledby` for a visible heading, keeps selected chips visible in forced colors, and centers the leading icon with an 8px label gap.
-- Tree view now uses the container density scale for row height with a 48px floor, spacing density for padding and internal gaps, and ripple-only pressed feedback instead of stacking a static pressed fill.
-- Split pane ends its settling state on the grid transition instead of a 320ms cutoff, skips settling under reduced motion, uses the 500ms spring fallback, and applies the shared 3px secondary focus ring and full corner token to the handle.
-- Drawer reduced motion now removes the scrim transition instead of targeting the unused animation duration, and the motion fallback matches the 500ms System spatial token.
-- Calendar renders a same-day range as one selected endpoint without a trailing range bar.
-- Calendar now follows the Date picker calendar contract: narrow weekday labels, three-column month/year options matched by keyboard rows, focus on the 40px date indicator, full-opacity outside days, pseudo-element range bars, and system motion with RTL support. The selected/special focus and ripple color hooks are removed; `aria-pressed` is no longer duplicated on date cells.
-- DateInput uses the shared text-field visual states: a 3px primary inset focus outline, Label Large/Body Large/Body Small typography, a `hint` that yields to the error, deferred validation until interaction, and complete disabled label, literal, and border treatment.
-- Breadcrumb uses one shared state layer instead of stacking local feedback, distinguishes the current page from ancestor links, gives non-link items the default cursor, and keeps a 40px visual pill inside a 48px target with a 3px secondary focus ring. It resets host list-item margins, applies a 1px optical adjustment to labels and separators, and replaces the six per-state state-layer color hooks with `--yam3x-breadcrumb-item-label-state-layer-color` and `--yam3x-breadcrumb-item-icon-state-layer-color`; `--yam3x-breadcrumb-item-container-height` now controls the visual pill height.
-- Dialogs, menus, option panels, autocomplete, search, date pickers, time pickers, tooltips, FAB menus, bottom sheets, full-screen list panels, and modal navigation rails share an open-order layer stack. A new dialog closes popups from lower surfaces and takes a higher layer; popups opened inside it render above it.
+- **Foundations:** typography tracking now follows the Material baseline and emphasized roles for Display Large, Title Medium, Body Medium, and their emphasized variants. The global focus fallback uses the shared 3px/2px tokens and remains visible for pointer focus. Responsive rules use the compact boundary below 600px consistently.
+- **Form fields and inputs:** filled and outlined FormFields keep their label, value, icon, and focus geometry stable, including empty invalid and disabled states. Checkbox, Radio, and Switch use the Material focus rings and state layers. NumberField records its padding and 48×40 step targets. FileUpload uses one drop boundary and a resolved disabled surface. FilterChipSet exposes a labeled toolbar. Search keeps its 48px action targets, 4px inset, and contained-bar motion.
+- **Date and time:** DatePicker separates docked month and year controls, aligns modal month/year selection, shares one modal range weekday row, and keeps range hover, 3px focus, 16px range padding, and localized Save actions. Calendar follows the Date picker contract for weekday labels, month/year keyboard rows, focus, outside days, range bars, motion, and RTL; same-day ranges use one endpoint. DateInput uses the shared text-field states with deferred validation. TimePicker moves the dial/input toggle into the action row, uses the shared focus indicators, and keeps one-digit input editable until the second digit.
+- **Navigation and layout:** Compact NavigationBar items reserve 8px between icon and label, and selected labels keep Label Medium. Expanded NavigationRail keeps its 20px surface inset and aligns menu and destination icon axes. Secondary Tabs span the selected tab width. Pagination uses the shared touch-target and 8px spacing tokens. Compact docked Toolbars distribute actions evenly with 16px outer padding. Breadcrumb uses one shared state layer, distinguishes current, static, and link items, and keeps a 40px pill inside a 48px target.
+- **Overlays and menus:** Dialogs, menus, option panels, autocomplete, search, date/time pickers, tooltips, FAB menus, bottom sheets, full-screen list panels, and modal navigation rails share an open-order layer stack. Dialog sizing, close-button focus, and body label insets were corrected. Menu motion scales from the trigger-facing edge. Select, Option, Autocomplete, Cascader, and TreeSelect share row geometry, focus rings, elevation, and pointer-aware insets; Select options remain interactive while a modal dialog locks the body. Modal side sheets gain the official 16px detached margin and corner radius. Snackbar actions add focus state layers. Drawer reduced motion removes the scrim transition. Split pane settles on the grid transition and uses the shared focus ring.
+- **Actions and selection:** Buttons use the Material 2px focus-ring offset. Selected round icon buttons keep their square corner; selected square toggles stay fully rounded. Split button trailing segments become fully rounded when the menu opens. Connected Button Groups round only inner corners and reserve space for the focus ring. Segmented button focus surrounds the visual segment instead of the 48px target. Slider value indicators and stop geometry follow the Compose cap-center grid. Actionable cards use the official focus offset.
+- **Content display:** Descriptions scope their styles and density gaps. Inline messages record their icon offset and inherited foreground. Empty state records its illustration color. Avatar and List initials share Title Medium. Icon clamps optical size and documents grade/weight fallback. Data tables derive selection geometry from shared targets and keep headings on-surface. Badges preserve official label metrics and share anchor observation. Lists use small leading-media corners, 20px icons, and selected-row icon roles. Carousels support primary-button drag with click suppression. Tree view applies container density, bounded row height, and ripple-only pressed feedback. FAB menu close icons scale to 20px, and pill-stack items use the secondary focus ring and elevation tokens. FABs draw the 3px secondary focus indicator with the official offset; lowered FABs use the token elevations.
+
+### Performance
+
+- Select batches slotted option registration in DOM order and reuses catalog filtering, avoiding quadratic registration for large non-virtual catalogs.
+- Linear progress reuses measured geometry without allocating probes or reading layout; CSS geometry overrides and container resizing remain reactive.
+- Badges share anchor observation within each document or shadow root and ignore unrelated DOM changes while retaining dynamic anchors, direction changes, and slot updates.
+- Pan and Swipe retain only the samples needed for motion metrics, keeping per-update work and gesture storage bounded.
+- Tree view shares incremental cascade summaries and resolves expanded visibility in one pass; virtual windows reuse key indexes for distant navigation and row offsets.
+- Documentation demo themes observe DOM changes only while active and update changed demo subtrees without rescanning the page.
+
+### Tooling and documentation
+
+- The component guides, demos, and bilingual navigation were rewritten around the current API and Material guidance. `pnpm docs:check` validates page structure, English/Chinese heading parity, demo coverage, and skill links.
+- Registry metadata is generated in memory by `scripts/generate-registry.mjs` and written to the ignored CLI package directory at pack time. Dependency declarations use one package table with `runtime`, `peer`, and `dev` kinds.
+- `pnpm deps:update` refreshes compatible catalog ranges and resolved versions, then reruns the registry and CLI checks.
+- Workspace dependencies were refreshed to Vue 3.5.45, Ark UI 5.40.0, Vite 8.3.7, Vitest 5.1.0, Playwright 1.65.0, and current ESLint tooling. TypeScript 7 and happy-dom 21 remain on their prior majors pending separate review.
 
 ### Updating copied source
 
-Merge the new `src/yam3x.css`, `src/styles/yam3x-tokens.css`, `src/styles/yam3x-pointer.css`, `src/styles/yam3x-base.css`, and affected component files, including `src/components/yam3x/form-field/`, `src/components/yam3x/select/`, `src/components/yam3x/dialog/`, `src/components/yam3x/menu/`, `src/components/yam3x/bottom-sheet/`, `src/components/yam3x/fab-menu/`, `src/components/yam3x/autocomplete/`, `src/components/yam3x/search/`, `src/components/yam3x/time-picker/`, `src/components/yam3x/date-picker/`, `src/components/yam3x/date-input/`, `src/components/yam3x/list/`, `src/components/yam3x/navigation-rail/`, `src/components/yam3x/tooltip/`, `src/components/yam3x/option/`, and `src/components/yam3x/_shared/overlay-layer.ts` for the current interaction fixes. Remove `@tailwindcss/vite` from the app's Vite plugins and the Tailwind packages if nothing else uses them. Rewrite application styles that used YAM3X utility aliases with your own CSS; no compatibility aliases are provided. See the [source update guide](https://yam3x.iscccc.cc/guide/maintain/updating).
+This release changes copied internals across foundations, form fields, date/time, navigation, overlays, actions, and content. The CLI still preserves existing files; merge the affected source manually and keep application edits.
 
-Also merge `src/components/yam3x/progress-indicator/`, `src/components/yam3x/badge/` including the new `anchor-observer.ts`, `src/components/yam3x/tree-view/`, `src/components/yam3x/_shared/use-virtual-list.ts`, and `src/lib/yam3x/gestures/pointer-tracker.ts` for the performance fixes. No prop or event migrations are required.
+1. Update the CLI, then check and align dependency declarations:
+   ```sh
+   pnpm dlx @celec7/yam3x@latest status
+   pnpm dlx @celec7/yam3x@latest sync
+   ```
+2. Merge `src/yam3x.css`, `src/styles/yam3x-*.css`, `src/lib/yam3x/`, and the affected `src/components/yam3x/` files. The [source update guide](https://yam3x.iscccc.cc/guide/maintain/updating) covers the merge workflow.
+3. Run your type check and build, then verify the affected interactions in a browser.
+
+`status` reports missing or unsafe declarations; `sync` adds missing runtime and development dependencies and narrows ranges that permit versions outside the registry requirement. It does not overwrite copied source or remove dependencies. The component and performance fixes require no prop or event migrations beyond the breaking changes above.
 
 ## 0.3.1
 
