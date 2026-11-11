@@ -138,19 +138,20 @@ Use the default slot to compose custom controls. `ButtonGroup` provides `#overfl
 
 ### `ButtonGroupSelection`
 
-| Prop                  | Type                                                                       | Default        | Description                                      |
-| --------------------- | -------------------------------------------------------------------------- | -------------- | ------------------------------------------------ |
-| `options`             | `{ label, value, kind?, disabled?, buttonVariant?, iconButtonVariant? }[]` | Required       | Choice definitions; values must be unique.       |
-| `label`               | `string`                                                                   | Required       | Accessible group name.                           |
-| `variant`             | `standard \| connected`                                                    | `standard`     | Group layout.                                    |
-| `selection-mode`      | `single \| multiple`                                                       | `single`       | Model shape and selection behavior.              |
-| `selection-required`  | `boolean`                                                                  | `false`        | Keeps an enabled choice selected when available. |
-| `button-variant`      | ToggleButton variant                                                       | `filled-tonal` | Default option button style.                     |
-| `icon-button-variant` | IconButton variant                                                         | `tonal`        | Default icon option style.                       |
-| `size`                | Button size                                                                | `small`        | Size passed to the group and each option.        |
-| `shape`               | Button shape                                                               | `round`        | Shape passed to the group and each option.       |
-| `overflow`            | `none \| menu`                                                             | `none`         | Enables the custom overflow slot.                |
-| `gap`                 | `string \| number`                                                         | —              | Overrides spacing between items.                 |
+| Prop                  | Type                                                                       | Default        | Description                                                               |
+| --------------------- | -------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------- |
+| `v-model`             | `string \| string[]`                                                       | `''`           | Accepted selection; a string in single mode or an array in multiple mode. |
+| `options`             | `{ label, value, kind?, disabled?, buttonVariant?, iconButtonVariant? }[]` | Required       | Choice definitions; values must be unique.                                |
+| `label`               | `string`                                                                   | Required       | Accessible group name.                                                    |
+| `variant`             | `standard \| connected`                                                    | `standard`     | Group layout.                                                             |
+| `selection-mode`      | `single \| multiple`                                                       | `single`       | Model shape and selection behavior.                                       |
+| `selection-required`  | `boolean`                                                                  | `false`        | Keeps an enabled choice selected when available.                          |
+| `button-variant`      | ToggleButton variant                                                       | `filled-tonal` | Default option button style.                                              |
+| `icon-button-variant` | IconButton variant                                                         | `tonal`        | Default icon option style.                                                |
+| `size`                | Button size                                                                | `small`        | Size passed to the group and each option.                                 |
+| `shape`               | Button shape                                                               | `round`        | Shape passed to the group and each option.                                |
+| `overflow`            | `none \| menu`                                                             | `none`         | Enables the custom overflow slot.                                         |
+| `gap`                 | `string \| number`                                                         | —              | Overrides spacing between items.                                          |
 
 ### Events
 

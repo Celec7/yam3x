@@ -138,19 +138,20 @@ const view = ref('list')
 
 ### `ButtonGroupSelection`
 
-| 属性                  | 类型                                                                       | 默认值         | 说明                         |
-| --------------------- | -------------------------------------------------------------------------- | -------------- | ---------------------------- |
-| `options`             | `{ label, value, kind?, disabled?, buttonVariant?, iconButtonVariant? }[]` | 必填           | 选项定义；值必须唯一。       |
-| `label`               | `string`                                                                   | 必填           | 组的可访问名称。             |
-| `variant`             | `standard \| connected`                                                    | `standard`     | 组布局。                     |
-| `selection-mode`      | `single \| multiple`                                                       | `single`       | 模型类型与选择行为。         |
-| `selection-required`  | `boolean`                                                                  | `false`        | 有可用项时保持一个项目选中。 |
-| `button-variant`      | ToggleButton 变体                                                          | `filled-tonal` | 普通选项的默认按钮样式。     |
-| `icon-button-variant` | IconButton 变体                                                            | `tonal`        | 图标选项的默认样式。         |
-| `size`                | Button 尺寸                                                                | `small`        | 传给按钮组和每个选项。       |
-| `shape`               | Button 形状                                                                | `round`        | 传给按钮组和每个选项。       |
-| `overflow`            | `none \| menu`                                                             | `none`         | 启用自定义溢出插槽。         |
-| `gap`                 | `string \| number`                                                         | —              | 覆盖项目之间的间距。         |
+| 属性                  | 类型                                                                       | 默认值         | 说明                                             |
+| --------------------- | -------------------------------------------------------------------------- | -------------- | ------------------------------------------------ |
+| `v-model`             | `string \| string[]`                                                       | `''`           | 接受的选择值；单选模式为字符串，多选模式为数组。 |
+| `options`             | `{ label, value, kind?, disabled?, buttonVariant?, iconButtonVariant? }[]` | 必填           | 选项定义；值必须唯一。                           |
+| `label`               | `string`                                                                   | 必填           | 组的可访问名称。                                 |
+| `variant`             | `standard \| connected`                                                    | `standard`     | 组布局。                                         |
+| `selection-mode`      | `single \| multiple`                                                       | `single`       | 模型类型与选择行为。                             |
+| `selection-required`  | `boolean`                                                                  | `false`        | 有可用项时保持一个项目选中。                     |
+| `button-variant`      | ToggleButton 变体                                                          | `filled-tonal` | 普通选项的默认按钮样式。                         |
+| `icon-button-variant` | IconButton 变体                                                            | `tonal`        | 图标选项的默认样式。                             |
+| `size`                | Button 尺寸                                                                | `small`        | 传给按钮组和每个选项。                           |
+| `shape`               | Button 形状                                                                | `round`        | 传给按钮组和每个选项。                           |
+| `overflow`            | `none \| menu`                                                             | `none`         | 启用自定义溢出插槽。                             |
+| `gap`                 | `string \| number`                                                         | —              | 覆盖项目之间的间距。                             |
 
 ### 事件
 
