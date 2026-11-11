@@ -96,6 +96,21 @@ Use the default slot to compose custom controls. `ButtonGroup` provides `#overfl
 
 ## API
 
+### Exports
+
+| Export                                                     | Kind      | Use                                                                    |
+| ---------------------------------------------------------- | --------- | ---------------------------------------------------------------------- |
+| `ButtonGroup`                                              | Component | Standard or connected container for grouped actions.                   |
+| `ButtonGroupItem`                                          | Component | One action in a standard group.                                        |
+| `ButtonGroupSelection`                                     | Component | Connected single- or multiple-choice group.                            |
+| `ButtonGroupVariant`                                       | Type      | `'standard' \| 'connected'`.                                           |
+| `ButtonGroupSelectionMode`                                 | Type      | `'single' \| 'multiple'`.                                              |
+| `ButtonGroupValue`                                         | Type      | `string \| string[]`.                                                  |
+| `ButtonGroupOption`                                        | Type      | One selection option, including its kind and per-option button styles. |
+| `ButtonGroupOverflowItem`                                  | Type      | Item exposed to the overflow-indicator slot.                           |
+| `ButtonGroupItemActivateEvent`                             | Type      | `{ value, source, event? }` emitted by the group.                      |
+| `ButtonGroupButtonVariant`, `ButtonGroupIconButtonVariant` | Type      | Default button styles for selection options.                           |
+
 ### `ButtonGroup`
 
 | Prop       | Type                                                    | Default    | Description                                                 |
@@ -136,6 +151,24 @@ Use the default slot to compose custom controls. `ButtonGroup` provides `#overfl
 | `shape`               | Button shape                                                               | `round`        | Shape passed to the group and each option.       |
 | `overflow`            | `none \| menu`                                                             | `none`         | Enables the custom overflow slot.                |
 | `gap`                 | `string \| number`                                                         | —              | Overrides spacing between items.                 |
+
+### Events
+
+| Component              | Event      | Payload                                                                 | Description                                            |
+| ---------------------- | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------ |
+| `ButtonGroup`          | `activate` | `{ value: string, source: 'button' \| 'overflow', event?: MouseEvent }` | An enabled item was activated.                         |
+| `ButtonGroupItem`      | `activate` | `MouseEvent`                                                            | The slotted control was activated.                     |
+| `ButtonGroupSelection` | `select`   | `(value: string \| string[], option: ButtonGroupOption)`                | The accepted selection and the option that changed it. |
+
+### Slots
+
+| Component              | Slot                 | Scope                            | Description                                    |
+| ---------------------- | -------------------- | -------------------------------- | ---------------------------------------------- |
+| `ButtonGroup`          | `default`            | —                                | `ButtonGroupItem` children or custom controls. |
+| `ButtonGroup`          | `overflow-indicator` | `{ items, activate }`            | Overflow menu content when `overflow="menu"`.  |
+| `ButtonGroupItem`      | `default`            | —                                | The control rendered for this item.            |
+| `ButtonGroupSelection` | `option`             | `{ option, selected, disabled }` | Replaces one option's content.                 |
+| `ButtonGroupSelection` | `overflow-indicator` | `{ items, activate }`            | Overflow menu content for selection options.   |
 
 ## Styling
 

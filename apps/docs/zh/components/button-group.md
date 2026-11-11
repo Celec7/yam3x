@@ -96,6 +96,21 @@ const view = ref('list')
 
 ## API
 
+### 导出
+
+| 导出                                                       | 类型 | 用途                                     |
+| ---------------------------------------------------------- | ---- | ---------------------------------------- |
+| `ButtonGroup`                                              | 组件 | 用于分组操作的标准或连接容器。           |
+| `ButtonGroupItem`                                          | 组件 | Standard 组中的一个操作。                |
+| `ButtonGroupSelection`                                     | 组件 | Connected 单选或多选组。                 |
+| `ButtonGroupVariant`                                       | 类型 | `'standard' \| 'connected'`。            |
+| `ButtonGroupSelectionMode`                                 | 类型 | `'single' \| 'multiple'`。               |
+| `ButtonGroupValue`                                         | 类型 | `string \| string[]`。                   |
+| `ButtonGroupOption`                                        | 类型 | 一个选择项，包括项目类型和单项按钮样式。 |
+| `ButtonGroupOverflowItem`                                  | 类型 | 暴露给 overflow-indicator 插槽的项目。   |
+| `ButtonGroupItemActivateEvent`                             | 类型 | 组发出的 `{ value, source, event? }`。   |
+| `ButtonGroupButtonVariant`、`ButtonGroupIconButtonVariant` | 类型 | 选择项的默认按钮样式。                   |
+
 ### `ButtonGroup`
 
 | 属性       | 类型                                                    | 默认值     | 说明                                        |
@@ -136,6 +151,24 @@ const view = ref('list')
 | `shape`               | Button 形状                                                                | `round`        | 传给按钮组和每个选项。       |
 | `overflow`            | `none \| menu`                                                             | `none`         | 启用自定义溢出插槽。         |
 | `gap`                 | `string \| number`                                                         | —              | 覆盖项目之间的间距。         |
+
+### 事件
+
+| 组件                   | 事件       | 载荷                                                                    | 说明                             |
+| ---------------------- | ---------- | ----------------------------------------------------------------------- | -------------------------------- |
+| `ButtonGroup`          | `activate` | `{ value: string, source: 'button' \| 'overflow', event?: MouseEvent }` | 一个可用项目被激活。             |
+| `ButtonGroupItem`      | `activate` | `MouseEvent`                                                            | 插槽控件被激活。                 |
+| `ButtonGroupSelection` | `select`   | `(value: string \| string[], option: ButtonGroupOption)`                | 接受的选择值以及触发变化的选项。 |
+
+### 插槽
+
+| 组件                   | 插槽                 | 作用域                           | 说明                                 |
+| ---------------------- | -------------------- | -------------------------------- | ------------------------------------ |
+| `ButtonGroup`          | `default`            | —                                | `ButtonGroupItem` 子项或自定义控件。 |
+| `ButtonGroup`          | `overflow-indicator` | `{ items, activate }`            | `overflow="menu"` 时的溢出菜单内容。 |
+| `ButtonGroupItem`      | `default`            | —                                | 该项目的控件。                       |
+| `ButtonGroupSelection` | `option`             | `{ option, selected, disabled }` | 替换单个选项的内容。                 |
+| `ButtonGroupSelection` | `overflow-indicator` | `{ items, activate }`            | 选择项的溢出菜单内容。               |
 
 ## 样式
 
