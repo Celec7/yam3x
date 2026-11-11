@@ -491,8 +491,8 @@ function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
     return
   }
   validationIssue.value = null
-  // A completed two-digit part normalizes immediately; one-digit edits stay open for the next digit.
-  if (raw.length >= 2) editingPart.value = null
+  // Inline input commits as it types; a dialog draft keeps the raw part until confirmation.
+  if (!props.showActions && raw.length >= 2) editingPart.value = null
   draft.value = next
   publish()
 }
