@@ -7,13 +7,13 @@ import FabStatesExample from '../../components/demos/FabStatesExample.vue'
 
 浮动操作按钮（FAB）突出页面中最重要的构建性操作。`FloatingActionButton` 是 Material 3 Expressive 的纯图标 FAB。当简短的可见标签更能说明操作时，请使用 [Extended FAB](/zh/components/extended-fab)；当一个控件需要展开多个相关操作时，请使用 [FAB menu](/zh/components/fab-menu)。
 
-Material 定义了 FAB 尺寸、六种 Expressive 颜色样式和高度。本项目仍以 56 px 基础尺寸作为默认值，并将 medium 与 large 作为独立尺寸提供。`lowered` 是项目扩展，用于选择较低的高度。
+Material 定义了 FAB 尺寸、六种 Expressive 颜色样式和高度。本项目默认使用 56 px 尺寸，并将 medium 与 large 作为独立尺寸提供。`lowered` 是项目扩展，用于选择较低的高度。
 
 ## 示例
 
 ### 尺寸与颜色
 
-演示先对比 default、medium 和 large 三种纯图标 FAB 尺寸，再展示六种 Expressive 颜色样式。small 仍然可用，但已不再推荐。
+演示先对比 default、medium 和 large 三种纯图标 FAB 尺寸，再展示六种 Expressive 颜色样式。
 
 <div class="vp-raw yam3x-doc-demo-theme"><FabExample /></div>
 
@@ -23,9 +23,9 @@ Material 定义了 FAB 尺寸、六种 Expressive 颜色样式和高度。本项
 
 :::
 
-### 状态、链接与可用性
+### 状态与链接
 
-lowered 样式使用项目定义的较低高度。`href` 渲染原生链接；兼容示例让不可用的 FAB 保持可聚焦，同时取消激活。
+lowered 样式使用项目定义的较低高度。`href` 渲染原生链接。
 
 <div class="vp-raw yam3x-doc-demo-theme"><FabStatesExample /></div>
 
@@ -106,7 +106,7 @@ import { Icon } from './components/yam3x/icon'
 
 ### 尺寸与颜色
 
-- `default` 是 56 px 基础 FAB。`medium` 使用 80 px，`large` 使用 96 px，各自拥有对应的图标尺寸与字体样式。`small` 为兼容而保留，但已不再推荐。
+- `default` 是 56 px FAB。`medium` 使用 80 px，`large` 使用 96 px，各自拥有对应的图标尺寸与字体样式。
 - 六种颜色样式选择 `primary`、`secondary` 或 `tertiary`，可使用容器角色对或直接颜色角色。旧的 surface 样式不再提供。
 - 高度随颜色样式变化：静止为 level 3，hover 提升到 level 4，focus 与 pressed 回到静止层级。
 
@@ -118,13 +118,12 @@ import { Icon } from './components/yam3x/icon'
 
 ### 可用性与高度
 
-- 操作不可用时应省略 FAB。`disabled` 与 `disabledInteractive` 仅为兼容既有流程而保留；Material 建议省略 FAB 而不是显示禁用状态。
-- `disabledInteractive` 让控件保留在 Tab 顺序中，暴露 `aria-disabled="true"`，并取消激活且不发出 `click`。
+- 操作不可用时应省略 FAB。Material 不定义禁用 FAB。
 - `lowered` 是项目扩展。静止、focus 和 pressed 时使用 level 1 高度，hover 时使用 level 2。
 
 ### 链接与表单
 
-- `href` 渲染具有链接语义的原生锚点。禁用链接保留 `role="link"`、暴露 `aria-disabled`、移除 `href` 并离开 Tab 顺序；`disabledInteractive` 链接保持可聚焦，但仍会阻止导航。
+- `href` 渲染具有链接语义的原生锚点。
 - `type`、`id`、`name`、`value` 和 `form` 仅在 button 模式下生效，此时 FAB 参与原生表单提交。
 - 焦点使用共享的 3 px `secondary` 指示器，偏移 2 px，并沿用该尺寸的容器形状。
 
@@ -141,14 +140,12 @@ import { Icon } from './components/yam3x/icon'
 
 ### `FloatingActionButton` 属性与模型
 
-| 属性 / 模型           | 类型                                                                                                             | 默认值                | 说明                                     |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ---------------------------------------- |
-| `size`                | `'small' \| 'default' \| 'medium' \| 'large'`                                                                    | `'default'`           | 容器高度、图标尺寸、字体样式和圆角形状。 |
-| `variant`             | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | 六种 Expressive 颜色样式之一。           |
-| `lowered`             | `boolean`                                                                                                        | `false`               | 项目扩展，选择较低的高度处理。           |
-| `href`                | `string`                                                                                                         | 未定义                | 定义时渲染原生链接。                     |
-| `disabled`            | `boolean`                                                                                                        | `false`               | 已弃用的兼容状态，阻止激活。             |
-| `disabledInteractive` | `boolean`                                                                                                        | `false`               | 已弃用；让不可用的 FAB 保持可聚焦。      |
+| 属性 / 模型 | 类型                                                                                                             | 默认值                | 说明                                     |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ---------------------------------------- |
+| `size`      | `'default' \| 'medium' \| 'large'`                                                                               | `'default'`           | 容器高度、图标尺寸、字体样式和圆角形状。 |
+| `variant`   | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | 六种 Expressive 颜色样式之一。           |
+| `lowered`   | `boolean`                                                                                                        | `false`               | 项目扩展，选择较低的高度处理。           |
+| `href`      | `string`                                                                                                         | 未定义                | 定义时渲染原生链接。                     |
 
 ::: details 原生按钮属性
 

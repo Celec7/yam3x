@@ -190,37 +190,6 @@ describe('native Material components', () => {
     link.unmount()
   })
 
-  it('keeps disabled FAB links unavailable and disabled-interactive buttons focusable', async () => {
-    const onClick = vi.fn()
-    const disabledLink = mount(ExtendedFloatingActionButton, {
-      props: { href: '#target', disabled: true, onClick },
-      attrs: { 'aria-label': 'Unavailable action' },
-      slots: { default: 'Create' },
-    })
-    const explainedButton = mount(FloatingActionButton, {
-      props: { disabledInteractive: true, onClick },
-      attrs: { 'aria-label': 'Unavailable but explained' },
-      slots: { default: '<svg></svg>' },
-    })
-
-    expect(disabledLink.element.tagName).toBe('A')
-    expect(disabledLink.attributes()).toMatchObject({
-      role: 'link',
-      tabindex: '-1',
-      'aria-disabled': 'true',
-    })
-    expect(disabledLink.attributes('href')).toBeUndefined()
-    expect(explainedButton.element.tagName).toBe('BUTTON')
-    expect(explainedButton.attributes('disabled')).toBeUndefined()
-    expect(explainedButton.attributes('aria-disabled')).toBe('true')
-
-    await disabledLink.trigger('click')
-    await explainedButton.trigger('click')
-    expect(onClick).not.toHaveBeenCalled()
-    disabledLink.unmount()
-    explainedButton.unmount()
-  })
-
   it('renders caller-owned avatar content and passes attributes through without adding a role', () => {
     const wrapper = mount(Avatar, {
       attrs: { 'aria-label': 'User: Jordan', hidden: true },

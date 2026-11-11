@@ -149,18 +149,18 @@ const expanded = ref(false)
 
 #### `FabMenu`
 
-| Prop                  | Type                                          | Default        | Description                                                    |
-| --------------------- | --------------------------------------------- | -------------- | -------------------------------------------------------------- |
-| `items`               | `FabMenuItem[]`                               | Required       | Actions and links shown in the menu.                           |
-| `label`               | `string`                                      | LocaleProvider | Accessible name of the menu.                                   |
-| `triggerLabel`        | `string`                                      | LocaleProvider | Accessible name of the default trigger.                        |
-| `variant`             | `'primary' \| 'secondary' \| 'tertiary'`      | `'primary'`    | Color set for the trigger and pill-stack items.                |
-| `presentation`        | `'pill-stack' \| 'web-menu'`                  | `'pill-stack'` | Project presentation for the action list.                      |
-| `horizontalAlignment` | `'start' \| 'center' \| 'end'`                | `'end'`        | Popup alignment against the trigger.                           |
-| `triggerSize`         | `'small' \| 'default' \| 'medium' \| 'large'` | `'medium'`     | Size of the default trigger FAB.                               |
-| `disabled`            | `boolean`                                     | `false`        | Disables the trigger, closes the menu, and prevents opening.   |
-| `locale`              | `string`                                      | Provider       | Overrides LocaleProvider language, then falls back to `en-US`. |
-| `expanded`            | `boolean` (`v-model:expanded`)                | `false`        | Expanded state.                                                |
+| Prop                  | Type                                     | Default        | Description                                                    |
+| --------------------- | ---------------------------------------- | -------------- | -------------------------------------------------------------- |
+| `items`               | `FabMenuItem[]`                          | Required       | Actions and links shown in the menu.                           |
+| `label`               | `string`                                 | LocaleProvider | Accessible name of the menu.                                   |
+| `triggerLabel`        | `string`                                 | LocaleProvider | Accessible name of the default trigger.                        |
+| `variant`             | `'primary' \| 'secondary' \| 'tertiary'` | `'primary'`    | Color set for the trigger and pill-stack items.                |
+| `presentation`        | `'pill-stack' \| 'web-menu'`             | `'pill-stack'` | Project presentation for the action list.                      |
+| `horizontalAlignment` | `'start' \| 'center' \| 'end'`           | `'end'`        | Popup alignment against the trigger.                           |
+| `triggerSize`         | `'default' \| 'medium' \| 'large'`       | `'medium'`     | Size of the default trigger FAB.                               |
+| `disabled`            | `boolean`                                | `false`        | Disables the trigger, closes the menu, and prevents opening.   |
+| `locale`              | `string`                                 | Provider       | Overrides LocaleProvider language, then falls back to `en-US`. |
+| `expanded`            | `boolean` (`v-model:expanded`)           | `false`        | Expanded state.                                                |
 
 #### `FabMenuItem`
 
@@ -202,13 +202,13 @@ const expanded = ref(false)
 
 #### `ToggleFloatingActionButton`
 
-| Prop       | Type                                          | Default     | Description                                                                                |
-| ---------- | --------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
-| `size`     | `'small' \| 'default' \| 'medium' \| 'large'` | `'default'` | Closed size: 40px, 56px, 80px, or 96px. Small is not recommended by Material 3 Expressive. |
-| `variant`  | `'primary' \| 'secondary' \| 'tertiary'`      | `'primary'` | FAB color set.                                                                             |
-| `disabled` | `boolean`                                     | `false`     | Disables the trigger.                                                                      |
-| `type`     | `'button' \| 'submit' \| 'reset'`             | `'button'`  | Native button type.                                                                        |
-| `checked`  | `boolean` (`v-model:checked`)                 | `false`     | Expanded state shared with the menu.                                                       |
+| Prop       | Type                                     | Default     | Description                          |
+| ---------- | ---------------------------------------- | ----------- | ------------------------------------ |
+| `size`     | `'default' \| 'medium' \| 'large'`       | `'default'` | Closed size: 56px, 80px, or 96px.    |
+| `variant`  | `'primary' \| 'secondary' \| 'tertiary'` | `'primary'` | FAB color set.                       |
+| `disabled` | `boolean`                                | `false`     | Disables the trigger.                |
+| `type`     | `'button' \| 'submit' \| 'reset'`        | `'button'`  | Native button type.                  |
+| `checked`  | `boolean` (`v-model:checked`)            | `false`     | Expanded state shared with the menu. |
 
 ### Events
 

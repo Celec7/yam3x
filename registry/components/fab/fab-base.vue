@@ -21,10 +21,6 @@ const props = withDefaults(
     name?: string
     value?: string
     form?: string
-    /** @deprecated Material recommends omitting the FAB while its action is unavailable. */
-    disabled?: boolean
-    /** @deprecated Material recommends omitting the FAB while its action is unavailable. */
-    disabledInteractive?: boolean
     lowered?: boolean
     expanded?: boolean
     hasIcon?: boolean
@@ -37,8 +33,6 @@ const props = withDefaults(
     name: undefined,
     value: undefined,
     form: undefined,
-    disabled: false,
-    disabledInteractive: false,
     lowered: false,
     expanded: true,
     hasIcon: false,
@@ -47,7 +41,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{ click: [event: MouseEvent] }>()
 const isLink = computed(() => props.href !== undefined)
-const isDisabled = computed(() => props.disabled || props.disabledInteractive)
 const isExtended = computed(() => props.kind === 'extended')
 const size = computed(() => props.size ?? (isExtended.value ? 'medium' : 'default'))
 
@@ -66,7 +59,8 @@ const sizeProperties = [
 ] as const
 type SizeProperty = (typeof sizeProperties)[number]
 type SizeTokens = Record<SizeProperty, string>
-type FabSize = 'small' | 'default' | 'medium' | 'large'
+type StandardFabSize = 'default' | 'medium' | 'large'
+type ExtendedFabSize = 'small' | 'medium' | 'large'
 const variantProperties = [
   'label-text-color',
   'icon-color',
@@ -101,20 +95,7 @@ const variantProperties = [
   'lowered-pressed-container-elevation',
 ] as const
 
-const standardSizeDefaults: Record<FabSize, SizeTokens> = {
-  small: {
-    'container-height': '40px',
-    'label-text-font-family': 'inherit',
-    'label-text-font-size': '16px',
-    'label-text-font-weight': '500',
-    'label-text-line-height': '24px',
-    'label-text-tracking': '0.1px',
-    'icon-size': '24px',
-    shape: '12px',
-    'leading-space': '8px',
-    'trailing-space': '8px',
-    'icon-label-space': '8px',
-  },
+const standardSizeDefaults: Record<StandardFabSize, SizeTokens> = {
   default: {
     'container-height': '56px',
     'label-text-font-family': 'inherit',
@@ -156,7 +137,7 @@ const standardSizeDefaults: Record<FabSize, SizeTokens> = {
   },
 }
 
-const extendedSizeDefaults: Record<'small' | 'medium' | 'large', SizeTokens> = {
+const extendedSizeDefaults: Record<ExtendedFabSize, SizeTokens> = {
   small: {
     'container-height': '56px',
     'label-text-font-family': 'var(--md-sys-typescale-title-medium-font-family)',
@@ -213,8 +194,8 @@ const componentStyle = computed<Record<string, string>>(() => {
   const componentPrefix = isExtended.value ? 'extended-fab' : 'floating-action-button'
   const sizePrefix = `--yam3x-${componentPrefix}-${currentSize}-`
   const defaults = isExtended.value
-    ? extendedSizeDefaults[currentSize as keyof typeof extendedSizeDefaults]
-    : standardSizeDefaults[currentSize]
+    ? extendedSizeDefaults[currentSize as ExtendedFabSize]
+    : standardSizeDefaults[currentSize === 'small' ? 'default' : currentSize]
   for (const property of sizeProperties) {
     const common = `var(--yam3x-${componentPrefix}-${property}, ${defaults[property]})`
     style[`--_yam3x-fab-${property}`] = `var(${sizePrefix}${property}, ${common})`
@@ -263,13 +244,6 @@ const componentStyle = computed<Record<string, string>>(() => {
 })
 
 function onClick(event: MouseEvent) {
-  if (isDisabled.value) {
-    event.preventDefault()
-    event.stopPropagation()
-    event.stopImmediatePropagation()
-    return
-  }
-
   emit('click', event)
 }
 </script>
@@ -291,15 +265,11 @@ function onClick(event: MouseEvent) {
       { 'yam3x-extended-fab--collapsed': isExtended && !expanded && hasIcon },
     ]"
     :style="componentStyle"
-    :href="isLink && !isDisabled ? href : undefined"
+    :href="isLink ? href : undefined"
     :type="isLink ? undefined : type"
     :name="isLink ? undefined : name"
     :value="isLink ? undefined : value"
     :form="isLink ? undefined : form"
-    :disabled="isLink ? undefined : disabled && !disabledInteractive"
-    :role="isLink && isDisabled ? 'link' : undefined"
-    :tabindex="isLink && disabled ? -1 : isLink && disabledInteractive ? 0 : undefined"
-    :aria-disabled="isDisabled ? 'true' : undefined"
     @click="onClick"
   >
     <span class="yam3x-fab__content">

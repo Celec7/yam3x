@@ -106,11 +106,11 @@ The consuming layout owns placement. Keep one FAB-family control per screen and 
 - `expanded` defaults to `true`. Setting it to `false` visually collapses the label of an icon-bearing FAB into the icon-only form; the accessible name still includes the label. A text-only Extended FAB ignores the collapse and stays expanded.
 - The component renders one button or link; expanding and collapsing do not create a second control or change the accessible name.
 - `lowered` is a project extension that uses level 1 elevation at rest, focus, and pressed, and level 2 on hover.
-- `disabled` and `disabledInteractive` remain for compatibility, but Material recommends omitting the control while its action is unavailable.
+- Omit the control while its action is unavailable. Material does not define a disabled Extended FAB.
 
 ### Links and forms
 
-- `href` renders a native anchor. A disabled link keeps link semantics, removes `href`, and leaves the tab order; a `disabledInteractive` link stays focusable and suppresses navigation.
+- `href` renders a native anchor.
 - `type`, `id`, `name`, `value`, and `form` apply only in button mode.
 - Focus uses the shared 3 px `secondary` indicator with a 2 px offset and the size's container shape.
 
@@ -127,15 +127,13 @@ The consuming layout owns placement. Keep one FAB-family control per screen and 
 
 ### `ExtendedFloatingActionButton` props and models
 
-| Prop / model          | Type                                                                                                             | Default               | Description                                                   |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------- |
-| `size`                | `'small' \| 'medium' \| 'large'`                                                                                 | `'medium'`            | Container height, icon size, typography, and corner shape.    |
-| `expanded`            | `boolean`                                                                                                        | `true`                | Collapses the label visually when an icon is present.         |
-| `variant`             | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | One of the six expressive color styles.                       |
-| `lowered`             | `boolean`                                                                                                        | `false`               | Project extension that selects the lower elevation treatment. |
-| `href`                | `string`                                                                                                         | Undefined             | Renders a native link when defined.                           |
-| `disabled`            | `boolean`                                                                                                        | `false`               | Deprecated compatibility state that prevents activation.      |
-| `disabledInteractive` | `boolean`                                                                                                        | `false`               | Deprecated; keeps an unavailable Extended FAB focusable.      |
+| Prop / model | Type                                                                                                             | Default               | Description                                                   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------- |
+| `size`       | `'small' \| 'medium' \| 'large'`                                                                                 | `'medium'`            | Container height, icon size, typography, and corner shape.    |
+| `expanded`   | `boolean`                                                                                                        | `true`                | Collapses the label visually when an icon is present.         |
+| `variant`    | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | One of the six expressive color styles.                       |
+| `lowered`    | `boolean`                                                                                                        | `false`               | Project extension that selects the lower elevation treatment. |
+| `href`       | `string`                                                                                                         | Undefined             | Renders a native link when defined.                           |
 
 ::: details Native button attributes
 

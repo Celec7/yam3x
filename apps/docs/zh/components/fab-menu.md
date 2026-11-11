@@ -149,18 +149,18 @@ const expanded = ref(false)
 
 #### `FabMenu`
 
-| 属性                  | 类型                                          | 默认值         | 说明                                         |
-| --------------------- | --------------------------------------------- | -------------- | -------------------------------------------- |
-| `items`               | `FabMenuItem[]`                               | 必填           | 菜单中的操作与链接。                         |
-| `label`               | `string`                                      | LocaleProvider | 菜单的可访问名称。                           |
-| `triggerLabel`        | `string`                                      | LocaleProvider | 默认触发器的可访问名称。                     |
-| `variant`             | `'primary' \| 'secondary' \| 'tertiary'`      | `'primary'`    | 触发器与胶囊堆叠项目的颜色组。               |
-| `presentation`        | `'pill-stack' \| 'web-menu'`                  | `'pill-stack'` | 操作列表的项目呈现方式。                     |
-| `horizontalAlignment` | `'start' \| 'center' \| 'end'`                | `'end'`        | 浮层相对触发器的对齐方式。                   |
-| `triggerSize`         | `'small' \| 'default' \| 'medium' \| 'large'` | `'medium'`     | 默认触发器 FAB 的尺寸。                      |
-| `disabled`            | `boolean`                                     | `false`        | 禁用触发器、关闭菜单并阻止打开。             |
-| `locale`              | `string`                                      | Provider       | 覆盖 LocaleProvider 语言，再回退到 `en-US`。 |
-| `expanded`            | `boolean`（`v-model:expanded`）               | `false`        | 展开状态。                                   |
+| 属性                  | 类型                                     | 默认值         | 说明                                         |
+| --------------------- | ---------------------------------------- | -------------- | -------------------------------------------- |
+| `items`               | `FabMenuItem[]`                          | 必填           | 菜单中的操作与链接。                         |
+| `label`               | `string`                                 | LocaleProvider | 菜单的可访问名称。                           |
+| `triggerLabel`        | `string`                                 | LocaleProvider | 默认触发器的可访问名称。                     |
+| `variant`             | `'primary' \| 'secondary' \| 'tertiary'` | `'primary'`    | 触发器与胶囊堆叠项目的颜色组。               |
+| `presentation`        | `'pill-stack' \| 'web-menu'`             | `'pill-stack'` | 操作列表的项目呈现方式。                     |
+| `horizontalAlignment` | `'start' \| 'center' \| 'end'`           | `'end'`        | 浮层相对触发器的对齐方式。                   |
+| `triggerSize`         | `'default' \| 'medium' \| 'large'`       | `'medium'`     | 默认触发器 FAB 的尺寸。                      |
+| `disabled`            | `boolean`                                | `false`        | 禁用触发器、关闭菜单并阻止打开。             |
+| `locale`              | `string`                                 | Provider       | 覆盖 LocaleProvider 语言，再回退到 `en-US`。 |
+| `expanded`            | `boolean`（`v-model:expanded`）          | `false`        | 展开状态。                                   |
 
 #### `FabMenuItem`
 
@@ -202,13 +202,13 @@ const expanded = ref(false)
 
 #### `ToggleFloatingActionButton`
 
-| 属性       | 类型                                          | 默认值      | 说明                                                                     |
-| ---------- | --------------------------------------------- | ----------- | ------------------------------------------------------------------------ |
-| `size`     | `'small' \| 'default' \| 'medium' \| 'large'` | `'default'` | 关闭尺寸：40px、56px、80px 或 96px。Material 3 Expressive 不推荐 small。 |
-| `variant`  | `'primary' \| 'secondary' \| 'tertiary'`      | `'primary'` | FAB 颜色组。                                                             |
-| `disabled` | `boolean`                                     | `false`     | 禁用触发器。                                                             |
-| `type`     | `'button' \| 'submit' \| 'reset'`             | `'button'`  | 原生按钮类型。                                                           |
-| `checked`  | `boolean`（`v-model:checked`）                | `false`     | 与菜单共享的展开状态。                                                   |
+| 属性       | 类型                                     | 默认值      | 说明                           |
+| ---------- | ---------------------------------------- | ----------- | ------------------------------ |
+| `size`     | `'default' \| 'medium' \| 'large'`       | `'default'` | 关闭尺寸：56px、80px 或 96px。 |
+| `variant`  | `'primary' \| 'secondary' \| 'tertiary'` | `'primary'` | FAB 颜色组。                   |
+| `disabled` | `boolean`                                | `false`     | 禁用触发器。                   |
+| `type`     | `'button' \| 'submit' \| 'reset'`        | `'button'`  | 原生按钮类型。                 |
+| `checked`  | `boolean`（`v-model:checked`）           | `false`     | 与菜单共享的展开状态。         |
 
 ### 事件
 

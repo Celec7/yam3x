@@ -7,13 +7,13 @@ import FabStatesExample from './demos/FabStatesExample.vue'
 
 A floating action button (FAB) emphasizes the single most important constructive action on a screen. `FloatingActionButton` is the Material 3 Expressive icon-only FAB. Use an [Extended FAB](/components/extended-fab) when a short visible label makes the action clearer, and a [FAB menu](/components/fab-menu) when one control must reveal several related actions.
 
-Material defines the FAB sizes, six expressive color styles, and elevation. The baseline 56 px size remains this project's default, with medium and large exposed as distinct sizes. `lowered` is a project extension that selects a lower elevation.
+Material defines the FAB sizes, six expressive color styles, and elevation. This project defaults to the 56 px size, with medium and large exposed as distinct sizes. `lowered` is a project extension that selects a lower elevation.
 
 ## Examples
 
 ### Sizes and colors
 
-The demo compares the default, medium, and large icon-only FAB sizes and then the six expressive color styles. Small remains available but is no longer recommended.
+The demo compares the default, medium, and large icon-only FAB sizes and then the six expressive color styles.
 
 <div class="vp-raw yam3x-doc-demo-theme"><FabExample /></div>
 
@@ -23,9 +23,9 @@ The demo compares the default, medium, and large icon-only FAB sizes and then th
 
 :::
 
-### States, links, and availability
+### States and links
 
-The lowered style uses the project's lower elevation. `href` renders a native link, and the compatibility example keeps an unavailable FAB focusable while cancelling activation.
+The lowered style uses the project's lower elevation. `href` renders a native link.
 
 <div class="vp-raw yam3x-doc-demo-theme"><FabStatesExample /></div>
 
@@ -106,7 +106,7 @@ The consuming layout owns placement and decides where the FAB sits relative to o
 
 ### Size and color
 
-- `default` is the 56 px baseline FAB. `medium` uses 80 px and `large` uses 96 px, each with its own icon size and typography. `small` is available for compatibility but is no longer recommended.
+- `default` is the 56 px FAB. `medium` uses 80 px and `large` uses 96 px, each with its own icon size and typography.
 - The six color styles select `primary`, `secondary`, or `tertiary`, either as the container role pair or as the direct color role. The legacy surface style is not exposed.
 - Elevation follows the color style: level 3 at rest, hover raises it to level 4, and focus and pressed return to the resting level.
 
@@ -118,13 +118,12 @@ The consuming layout owns placement and decides where the FAB sits relative to o
 
 ### Availability and elevation
 
-- Omit the FAB while its action is unavailable. `disabled` and `disabledInteractive` remain for compatibility with existing flows; they are deprecated because Material recommends omission instead of a disabled FAB.
-- `disabledInteractive` keeps the control in the tab order, exposes `aria-disabled="true"`, and cancels activation without emitting `click`.
+- Omit the FAB while its action is unavailable. Material does not define a disabled FAB.
 - `lowered` is a project extension. It uses level 1 elevation at rest, on focus, and when pressed, and level 2 on hover.
 
 ### Links and forms
 
-- `href` renders a native anchor with link semantics. A disabled link keeps `role="link"`, exposes `aria-disabled`, removes `href`, and leaves the tab order; a `disabledInteractive` link stays focusable and still suppresses navigation.
+- `href` renders a native anchor with link semantics.
 - `type`, `id`, `name`, `value`, and `form` apply only in button mode, where the FAB participates in native form submission.
 - Focus uses the shared 3 px `secondary` indicator with a 2 px offset and the size's container shape.
 
@@ -141,14 +140,12 @@ The consuming layout owns placement and decides where the FAB sits relative to o
 
 ### `FloatingActionButton` props and models
 
-| Prop / model          | Type                                                                                                             | Default               | Description                                                   |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------- |
-| `size`                | `'small' \| 'default' \| 'medium' \| 'large'`                                                                    | `'default'`           | Container height, icon size, typography, and corner shape.    |
-| `variant`             | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | One of the six expressive color styles.                       |
-| `lowered`             | `boolean`                                                                                                        | `false`               | Project extension that selects the lower elevation treatment. |
-| `href`                | `string`                                                                                                         | Undefined             | Renders a native link when defined.                           |
-| `disabled`            | `boolean`                                                                                                        | `false`               | Deprecated compatibility state that prevents activation.      |
-| `disabledInteractive` | `boolean`                                                                                                        | `false`               | Deprecated; keeps an unavailable FAB focusable.               |
+| Prop / model | Type                                                                                                             | Default               | Description                                                   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------- |
+| `size`       | `'default' \| 'medium' \| 'large'`                                                                               | `'default'`           | Container height, icon size, typography, and corner shape.    |
+| `variant`    | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | One of the six expressive color styles.                       |
+| `lowered`    | `boolean`                                                                                                        | `false`               | Project extension that selects the lower elevation treatment. |
+| `href`       | `string`                                                                                                         | Undefined             | Renders a native link when defined.                           |
 
 ::: details Native button attributes
 

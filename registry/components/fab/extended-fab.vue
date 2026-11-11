@@ -21,10 +21,6 @@ const props = withDefaults(
     name?: string
     value?: string
     form?: string
-    /** @deprecated Material recommends omitting the Extended FAB while its action is unavailable. */
-    disabled?: boolean
-    /** @deprecated Material recommends omitting the Extended FAB while its action is unavailable. */
-    disabledInteractive?: boolean
     lowered?: boolean
   }>(),
   {
@@ -32,8 +28,6 @@ const props = withDefaults(
     expanded: true,
     variant: 'primary-container',
     type: 'button',
-    disabled: false,
-    disabledInteractive: false,
     lowered: false,
   },
 )

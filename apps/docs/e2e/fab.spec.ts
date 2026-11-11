@@ -4,21 +4,6 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/components/fab')
 })
 
-test('disabled-interactive FAB remains focusable and blocks activation', async ({ page }) => {
-  await page.getByText('Compatibility example: unavailable FAB', { exact: true }).click()
-  const fab = page.getByRole('button', { name: 'Cannot create project; sign in first' })
-  await expect(fab).toHaveAttribute('aria-disabled', 'true')
-  await expect(fab).toHaveJSProperty('disabled', false)
-  await fab.focus()
-  await expect(fab).toBeFocused()
-
-  await fab.evaluate((element) => {
-    element.addEventListener('click', () => element.setAttribute('data-activated', 'true'))
-  })
-  await fab.click({ force: true })
-  await expect(fab).not.toHaveAttribute('data-activated', 'true')
-})
-
 test('FAB honors size, shape, variant, elevation, and hover-state CSS properties', async ({
   page,
 }) => {

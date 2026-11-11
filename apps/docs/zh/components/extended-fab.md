@@ -106,11 +106,11 @@ import { Icon } from './components/yam3x/icon'
 - `expanded` 默认为 `true`。设为 `false` 时，带图标的 FAB 会在视觉上把标签折叠为纯图标形式；无障碍名称仍包含标签。纯文字 Extended FAB 会忽略折叠并保持展开。
 - 组件只渲染一个 button 或链接；展开与折叠不会创建第二个控件，也不会改变无障碍名称。
 - `lowered` 是项目扩展：静止、focus 和 pressed 时使用 level 1 高度，hover 时使用 level 2。
-- `disabled` 与 `disabledInteractive` 为兼容而保留，但 Material 建议在操作不可用时省略控件。
+- 操作不可用时应省略控件。Material 不定义禁用的 Extended FAB。
 
 ### 链接与表单
 
-- `href` 渲染原生锚点。禁用链接保留链接语义、移除 `href` 并离开 Tab 顺序；`disabledInteractive` 链接保持可聚焦并阻止导航。
+- `href` 渲染原生锚点。
 - `type`、`id`、`name`、`value` 和 `form` 仅在 button 模式下生效。
 - 焦点使用共享的 3 px `secondary` 指示器，偏移 2 px，并沿用该尺寸的容器形状。
 
@@ -127,15 +127,13 @@ import { Icon } from './components/yam3x/icon'
 
 ### `ExtendedFloatingActionButton` 属性与模型
 
-| 属性 / 模型           | 类型                                                                                                             | 默认值                | 说明                                         |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- | -------------------------------------------- |
-| `size`                | `'small' \| 'medium' \| 'large'`                                                                                 | `'medium'`            | 容器高度、图标尺寸、字体样式和圆角形状。     |
-| `expanded`            | `boolean`                                                                                                        | `true`                | 存在图标时在视觉上折叠标签。                 |
-| `variant`             | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | 六种 Expressive 颜色样式之一。               |
-| `lowered`             | `boolean`                                                                                                        | `false`               | 项目扩展，选择较低的高度处理。               |
-| `href`                | `string`                                                                                                         | 未定义                | 定义时渲染原生链接。                         |
-| `disabled`            | `boolean`                                                                                                        | `false`               | 已弃用的兼容状态，阻止激活。                 |
-| `disabledInteractive` | `boolean`                                                                                                        | `false`               | 已弃用；让不可用的 Extended FAB 保持可聚焦。 |
+| 属性 / 模型 | 类型                                                                                                             | 默认值                | 说明                                     |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- | ---------------------------------------- |
+| `size`      | `'small' \| 'medium' \| 'large'`                                                                                 | `'medium'`            | 容器高度、图标尺寸、字体样式和圆角形状。 |
+| `expanded`  | `boolean`                                                                                                        | `true`                | 存在图标时在视觉上折叠标签。             |
+| `variant`   | `'primary-container' \| 'secondary-container' \| 'tertiary-container' \| 'primary' \| 'secondary' \| 'tertiary'` | `'primary-container'` | 六种 Expressive 颜色样式之一。           |
+| `lowered`   | `boolean`                                                                                                        | `false`               | 项目扩展，选择较低的高度处理。           |
+| `href`      | `string`                                                                                                         | 未定义                | 定义时渲染原生链接。                     |
 
 ::: details 原生按钮属性
 

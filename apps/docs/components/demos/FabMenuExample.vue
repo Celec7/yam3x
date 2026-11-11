@@ -27,8 +27,7 @@ function setVariant(value: string | string[] | null) {
   if (value === 'primary' || value === 'secondary' || value === 'tertiary') variant.value = value
 }
 function setTriggerSize(value: string | string[] | null) {
-  if (value === 'small' || value === 'default' || value === 'medium' || value === 'large')
-    triggerSize.value = value
+  if (value === 'default' || value === 'medium' || value === 'large') triggerSize.value = value
 }
 function setHorizontalAlignment(value: string | string[] | null) {
   if (value === 'start' || value === 'center' || value === 'end') horizontalAlignment.value = value
@@ -85,10 +84,6 @@ const iconNames: Record<string, string> = {
           class="fab-menu-demo__select"
           @update:model-value="setTriggerSize"
         >
-          <Option
-            value="small"
-            :label="t('Small (not recommended)', '小型（不推荐）')"
-          />
           <Option
             value="default"
             :label="t('Default', '默认')"

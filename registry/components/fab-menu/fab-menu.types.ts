@@ -1,6 +1,6 @@
 export type FabMenuVariant = 'primary' | 'secondary' | 'tertiary'
 export type FabMenuHorizontalAlignment = 'start' | 'center' | 'end'
-export type FabMenuTriggerSize = 'small' | 'default' | 'medium' | 'large'
+export type FabMenuTriggerSize = 'default' | 'medium' | 'large'
 export type FabMenuPresentation = 'pill-stack' | 'web-menu'
 export type FabMenuSelectionSource = 'pointer' | 'keyboard'
 

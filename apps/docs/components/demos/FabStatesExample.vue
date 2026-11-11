@@ -48,43 +48,5 @@ const docsHref = t('/components/', '/zh/components/')
       v-model="lowered"
       :label="t('Lowered', '降低')"
     />
-
-    <details class="fab-states__compat">
-      <summary>{{ t('Compatibility example: unavailable FAB', '兼容示例：不可用的 FAB') }}</summary>
-      <p>
-        {{
-          t(
-            'Compatibility only. Material recommends omitting a FAB while its action is unavailable.',
-            '仅用于兼容既有流程。Material 建议操作不可用时省略 FAB。',
-          )
-        }}
-      </p>
-      <FloatingActionButton
-        id="fab-example-unavailable"
-        disabled
-        disabled-interactive
-        :aria-label="t('Cannot create project; sign in first', '无法创建项目；请先登录')"
-      >
-        <Icon
-          name="add"
-          filled
-        />
-      </FloatingActionButton>
-      <Tooltip for="fab-example-unavailable">
-        {{ t('Sign in to create a project.', '登录后即可创建项目。') }}
-      </Tooltip>
-    </details>
   </section>
 </template>
-
-<style scoped>
-.fab-states__compat {
-  margin-block-start: 8px;
-}
-.fab-states__compat > p {
-  max-width: 48rem;
-}
-.fab-states__compat :deep(.yam3x-floating-action-button) {
-  margin-block-start: 16px;
-}
-</style>

@@ -619,7 +619,6 @@ test('FAB menu variants, sizes, RTL placement, reduced motion, and forced colors
   const trigger = page.getByRole('button', { name: 'Create', exact: true })
   const size = page.getByLabel('Trigger FAB size')
   for (const [name, width] of [
-    ['small', 40],
     ['default', 56],
     ['medium', 80],
     ['large', 96],

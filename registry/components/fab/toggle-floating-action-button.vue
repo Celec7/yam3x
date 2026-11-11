@@ -90,13 +90,11 @@ watch(checked, (value) => animateProgress(value ? 1 : 0))
 onBeforeUnmount(() => cancelAnimationFrame(frame))
 
 const sizePixels: Record<ToggleFloatingActionButtonSize, number> = {
-  small: 40,
   default: 56,
   medium: 80,
   large: 96,
 }
 const iconPixels: Record<ToggleFloatingActionButtonSize, number> = {
-  small: 24,
   default: 24,
   medium: 28,
   large: 36,
@@ -107,7 +105,7 @@ const dimensions = computed(() => {
   return from + (to - from) * progress.value
 })
 const radius = computed(() => {
-  const from = ({ small: 12, default: 16, medium: 24, large: 28 } as const)[props.size]
+  const from = ({ default: 16, medium: 24, large: 28 } as const)[props.size]
   return from + (28 - from) * progress.value
 })
 const buttonStyle = computed(() => ({
@@ -144,8 +142,9 @@ defineExpose({ element: computed(() => button.value?.$el ?? null) })
     :style="buttonStyle"
     :size="size"
     :variant="variant"
-    :disabled="disabled"
     :type="type"
+    :aria-disabled="disabled || undefined"
+    :tabindex="disabled ? -1 : undefined"
     :aria-pressed="checked"
     @click="onClick"
   >

@@ -5,7 +5,7 @@ defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(
   defineProps<{
-    size?: 'small' | 'default' | 'medium' | 'large'
+    size?: 'default' | 'medium' | 'large'
     variant?:
       | 'primary-container'
       | 'secondary-container'
@@ -19,18 +19,12 @@ const props = withDefaults(
     name?: string
     value?: string
     form?: string
-    /** @deprecated Material recommends omitting the FAB while its action is unavailable. */
-    disabled?: boolean
-    /** @deprecated Material recommends omitting the FAB while its action is unavailable. */
-    disabledInteractive?: boolean
     lowered?: boolean
   }>(),
   {
     size: 'default',
     variant: 'primary-container',
     type: 'button',
-    disabled: false,
-    disabledInteractive: false,
     lowered: false,
   },
 )
