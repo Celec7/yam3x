@@ -23,7 +23,7 @@
 - InlineMessage accepts `headingLevel` for its optional title.
 - `pnpm breakpoints:check` enforces the shared responsive breakpoint contract in CI.
 - Add `yam3x status` for read-only dependency reconciliation and `yam3x sync` for updating dependency declarations of installed components without modifying copied source.
-- Add `pnpm deps:update` to update resolved dependencies within catalog ranges and rerun registry and CLI checks.
+- Add `pnpm deps:update` to refresh compatible catalog ranges and resolved dependencies, then rerun registry and CLI checks.
 
 ### Fixed
 

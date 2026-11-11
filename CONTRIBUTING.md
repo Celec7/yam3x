@@ -41,7 +41,7 @@ GitHub Actions runs formatting, lint, type checks, unit tests, CLI and registry 
 
 Run commands from the repository root. Workspace package manifests must keep `"catalog:"` references; [`pnpm-workspace.yaml`](pnpm-workspace.yaml) is the only owner of dependency versions.
 
-Update all dependencies within their existing version ranges and verify the registry:
+Refresh catalog ranges and resolved versions to current compatible releases and verify the registry:
 
 ```sh
 pnpm deps:update

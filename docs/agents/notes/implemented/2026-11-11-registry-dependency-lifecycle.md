@@ -146,7 +146,7 @@ There is no committed generated file to clean up.
 4. Run targeted browser checks for components that directly or transitively use the package.
 5. For a major upgrade, review upstream API and behavior changes before changing component source.
 
-`pnpm deps:update` updates resolved versions within existing catalog ranges and runs the registry and CLI checks. It does not replace a deliberate catalog change for a major or targeted upgrade.
+`pnpm deps:update` refreshes catalog ranges and resolved versions to current compatible releases and runs the registry and CLI checks. It does not apply major upgrades; review those separately.
 
 #### Add a peer dependency
 
