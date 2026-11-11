@@ -301,13 +301,13 @@ export async function buildRegistry() {
       .map((file) => relative(componentsRoot, file).split(sep).join('/'))
       .sort()
     const names = new Set(closure.packages)
-    for (const coreName of coreNames) names.delete(coreName)
     for (const packageName of names) {
       if (kinds.get(packageName) === 'dev') {
         throw new Error(`Component ${name} imports dev-only package ${packageName}.`)
       }
-      componentPackages.add(packageName)
     }
+    for (const coreName of coreNames) names.delete(coreName)
+    for (const packageName of names) componentPackages.add(packageName)
     const packages = partitionPackages(names, kinds, `Component ${name}`)
 
     components[name] = {
