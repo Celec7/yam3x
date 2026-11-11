@@ -491,6 +491,8 @@ function setInputPart(part: 'hour' | 'minute' | 'second', raw: string): void {
     return
   }
   validationIssue.value = null
+  // A completed two-digit part normalizes immediately; one-digit edits stay open for the next digit.
+  if (raw.length >= 2) editingPart.value = null
   draft.value = next
   publish()
 }
@@ -586,7 +588,8 @@ watch(format, async () => {
 
 watch(dragging, (value) => emit('update:dragging', value))
 watch(
-  [draft, showPeriod],
+  // Keep an invalid draft's original hour cycle across locale changes until the draft changes.
+  draft,
   () => {
     validationIssue.value = null
   },
