@@ -36,6 +36,6 @@ The choices below are project-defined.
 
 - Single-date and range selection remain distinct surfaces within one picker family, so each value shape is checked independently and a single date cannot be read as an interval.
 - On compact viewports, use a full-screen modal if a bounded dialog cannot fit without clipping. This adapts Material's compact guidance to a resizable web viewport.
-- Below 480 px, range inputs reduce inline padding and use 14 px text to keep both endpoints usable. This is a project micro-adaptation, not a Material breakpoint.
+- At 480 px and below, range inputs reduce inline padding and use 14 px text to keep both endpoints usable. This is a project micro-adaptation, not a Material breakpoint.
 - A standalone date input is a separate [project extension](date-input.md), not a new Material date-picker variant.
 - `date-picker.behavior.locale-draft`: A language change preserves the provisional date selection, current view, and focused date. Parse pending text using its editing language, independently for each range endpoint, so translating the UI cannot reinterpret the date. Reformat untouched values and start a fresh language context after clearing.
