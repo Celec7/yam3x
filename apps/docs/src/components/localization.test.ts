@@ -362,6 +362,7 @@ describe('shared localization', () => {
       slots: { default: () => h(DateInput, { required: true }) },
     })
     expect(wrapper.find('[aria-label="Billing month"]').exists()).toBe(true)
+    await wrapper.get('[aria-label="Billing month"]').trigger('invalid')
     expect(wrapper.text()).toContain('Choose a date')
     await wrapper.setProps({ locale: 'zh-CN', messages: {} })
     expect(wrapper.text()).toContain('日期')
@@ -437,7 +438,7 @@ describe('shared localization', () => {
     expect(month.attributes('tabindex')).toBe('0')
     expect(wrapper.get('input[id$="-year"]').attributes('tabindex')).toBe('-1')
   })
-  it('resolves Date input bounded-date messages from the scoped catalog', () => {
+  it('resolves Date input bounded-date messages from the scoped catalog', async () => {
     const wrapper = mount(LocaleProvider, {
       props: { locale: 'zh-CN', messages: { dateInput: { earlyDate: 'Too soon' } } },
       slots: {
@@ -445,6 +446,7 @@ describe('shared localization', () => {
           h(DateInput, { modelValue: new Date(2026, 9, 5), minDate: new Date(2026, 9, 6) }),
       },
     })
+    await wrapper.get('input[id$="-month"]').trigger('invalid')
     expect(wrapper.text()).toContain('Too soon')
     expect(wrapper.getComponent(DateInput).emitted('update:modelValue')).toBeUndefined()
   })
