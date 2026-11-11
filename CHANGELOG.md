@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 This release aligns the component set with Material 3 Expressive, removes Tailwind and deprecated compatibility layers, and moves registry dependency management into the CLI build.
 
@@ -64,6 +64,8 @@ This release changes copied internals across foundations, form fields, date/time
 3. Run your type check and build, then verify the affected interactions in a browser.
 
 `status` reports missing or unsafe declarations; `sync` adds missing runtime and development dependencies and narrows ranges that permit versions outside the registry requirement. It does not overwrite copied source or remove dependencies. The component and performance fixes require no prop or event migrations beyond the breaking changes above.
+
+[Compare changes from 0.3.1](https://github.com/Celec7/yam3x/compare/v0.3.1...v0.4.0).
 
 ## 0.3.1
 
