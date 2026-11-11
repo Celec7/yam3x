@@ -4,7 +4,6 @@ import {
   getHourDialItems,
   getTickDialItems,
   getTimePeriodLabels,
-  parseTimeValue,
   resolveTimePickerFormat,
   timeToSeconds,
   validateTimeValue,
@@ -12,12 +11,6 @@ import {
 
 describe('time picker utilities', () => {
   it('validates local time values independently from calendar dates', () => {
-    expect(parseTimeValue({ hour: 9, minute: 5 })).toEqual({ hour: 9, minute: 5 })
-    expect(parseTimeValue({ hour: 23, minute: 59, second: 59 })).toEqual({
-      hour: 23,
-      minute: 59,
-      second: 59,
-    })
     expect(validateTimeValue({ hour: 24, minute: 0 })).toBeNull()
     expect(validateTimeValue({ hour: 12, minute: 60 })).toBeNull()
     expect(validateTimeValue({ hour: 12, minute: 30, second: 60 })).toBeNull()

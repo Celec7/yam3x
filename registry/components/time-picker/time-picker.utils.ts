@@ -5,10 +5,6 @@ export type { TimePickerFormat, TimePickerView, TimeValue } from './time-picker.
 export type TimeParts = TimeValue
 export type HourDialItem = { value: number; label: string; angle: number; inner: boolean }
 
-export function parseTimeValue(value: TimeValue | null | undefined): TimeValue | null {
-  return value ? validateTimeValue(value) : null
-}
-
 export function parseTimeParts(value: string | TimeValue | null | undefined): TimeValue | null {
   if (typeof value === 'string') {
     const match = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(value.trim())

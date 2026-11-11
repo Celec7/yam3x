@@ -57,10 +57,6 @@ export function registerIcon(name: string, variant: IconVariant, fillSet: SvgIco
   for (const notify of [...(observers.get(key) ?? [])]) notify()
 }
 
-export function hasRegisteredIcon(name: string, variant: IconVariant): boolean {
-  return icons.has(keyFor(name, variant))
-}
-
 export function getRegisteredIcon(name: string, variant: IconVariant): StoredIcon | undefined {
   return icons.get(keyFor(name, variant))
 }

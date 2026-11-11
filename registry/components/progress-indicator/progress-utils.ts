@@ -17,28 +17,6 @@ export function progressFraction(value: number, max: number): number {
   return Number.isFinite(value) ? Math.min(1, Math.max(0, value / normalizedMax)) : 0
 }
 
-export function circularWavePath(
-  size: number,
-  thickness: number,
-  amplitude: number,
-  wavelength: number,
-): string {
-  const center = size / 2
-  const radius = Math.max(0, center - thickness / 2 - amplitude)
-  const waveCount = Math.max(1, Math.round((2 * Math.PI * radius) / Math.max(wavelength, 2)))
-  const steps = Math.max(64, waveCount * 16)
-  const points = Array.from({ length: steps + 1 }, (_, index) => {
-    const progress = index / steps
-    const angle = progress * Math.PI * 2
-    const wave = Math.sin(progress * waveCount * 2 * Math.PI)
-    const r = radius + amplitude * wave
-    const x = center + r * Math.sin(angle)
-    const y = center - r * Math.cos(angle)
-    return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`
-  })
-  return points.join(' ')
-}
-
 export function linearWavePath(
   width: number,
   thickness: number,

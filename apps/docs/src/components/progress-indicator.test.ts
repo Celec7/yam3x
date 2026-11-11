@@ -5,7 +5,6 @@ import LinearProgressIndicator from '../../../../registry/components/progress-in
 import {
   circularArcPath,
   circularWaveArcPath,
-  circularWavePath,
   circularWavySweep,
   linearWavePath,
   linearWaveSegmentPath,
@@ -21,13 +20,6 @@ describe('progress indicator value helpers', () => {
     expect(progressFraction(-4, 10)).toBe(0)
     expect(progressFraction(15, 10)).toBe(1)
     expect(progressFraction(Number.POSITIVE_INFINITY, 10)).toBe(0)
-  })
-
-  it('builds a closed waveform path within the circular drawing area', () => {
-    const path = circularWavePath(48, 4, 1.6, 15)
-    expect(path).toMatch(/^M /)
-    expect(path).toContain(' L ')
-    expect(path.split(' L ').length).toBeGreaterThan(50)
   })
 
   it('keeps the full linear wave and its stroke inside the viewport', () => {

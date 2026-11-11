@@ -40,7 +40,7 @@ test('packed CLI contains a runnable registry and installs a component', async (
 
     const modulesRoot = join(packageRoot, 'package/node_modules')
     await mkdir(modulesRoot, { recursive: true })
-    await symlink(join(repositoryRoot, 'node_modules/semver'), join(modulesRoot, 'semver'), 'dir')
+    await symlink(join(cliRoot, 'node_modules/semver'), join(modulesRoot, 'semver'), 'dir')
 
     const consumerRoot = join(temporaryRoot, 'consumer')
     await mkdir(join(consumerRoot, 'src'), { recursive: true })
