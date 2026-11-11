@@ -65,7 +65,6 @@ Each flag is `0` or `1`. Use the primary-pointer flags for layout sizing so hybr
 
 These flags describe device capability, not which input is active. Keep hover-only appearance behind `@media (hover: hover) and (pointer: fine)`, and do not change layout on pointer movement.
 
-
 ## Material references
 
 [Motion overview](https://m3.material.io/styles/motion/overview) · [Interaction states](https://m3.material.io/styles/interaction-states/overview)

@@ -192,11 +192,11 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 
 ### Exports
 
-| Export                                                                                                 | Description                                        |
-| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| `TreeView`                                                                                             | The tree, its models, loading, and virtualization. |
-| `TreeViewNode`, `TreeViewKey`, `TreeViewSelectionMode`, `TreeViewCheckMode`, `TreeViewCheckState`     | Node and model types.                              |
-| `TreeViewLoader`, `TreeViewMessages`, `VirtualListOptions`                                            | Loader, message, and virtualization types.         |
+| Export                                                                                            | Description                                        |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `TreeView`                                                                                        | The tree, its models, loading, and virtualization. |
+| `TreeViewNode`, `TreeViewKey`, `TreeViewSelectionMode`, `TreeViewCheckMode`, `TreeViewCheckState` | Node and model types.                              |
+| `TreeViewLoader`, `TreeViewMessages`, `VirtualListOptions`                                        | Loader, message, and virtualization types.         |
 
 ### Props and models
 
@@ -219,21 +219,21 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 
 ### Events
 
-| Event       | Payload                                                      | Use                                                                    |
-| ----------- | ------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `expand`    | `{ node, expanded, keys }`                                   | Reports an expansion proposal with the resulting keys.                 |
-| `select`    | `{ node, keys }`                                             | Reports a selection proposal with the resulting keys.                  |
-| `check`     | `{ node, keys }`                                             | Reports a checking proposal with the resulting keys.                   |
-| `activate`  | `node`                                                       | Follows label activation or Enter.                                     |
-| `load`      | `{ node, children }`                                         | Reports an accepted child result.                                      |
-| `loadError` | `{ node, error }`                                            | Carries diagnostic failure details. Visible text uses generic recovery. |
+| Event       | Payload                    | Use                                                                     |
+| ----------- | -------------------------- | ----------------------------------------------------------------------- |
+| `expand`    | `{ node, expanded, keys }` | Reports an expansion proposal with the resulting keys.                  |
+| `select`    | `{ node, keys }`           | Reports a selection proposal with the resulting keys.                   |
+| `check`     | `{ node, keys }`           | Reports a checking proposal with the resulting keys.                    |
+| `activate`  | `node`                     | Follows label activation or Enter.                                      |
+| `load`      | `{ node, children }`       | Reports an accepted child result.                                       |
+| `loadError` | `{ node, error }`          | Carries diagnostic failure details. Visible text uses generic recovery. |
 
 ### Slots
 
-| Slot      | Scope                     | Use                                                                        |
-| --------- | ------------------------- | -------------------------------------------------------------------------- |
-| `leading` | `{ node, expanded }`      | Decorative leading media for a node; keep the full identity in `node.label`. |
-| `empty`   | —                         | Replaces the default Empty state.                                          |
+| Slot      | Scope                | Use                                                                          |
+| --------- | -------------------- | ---------------------------------------------------------------------------- |
+| `leading` | `{ node, expanded }` | Decorative leading media for a node; keep the full identity in `node.label`. |
+| `empty`   | —                    | Replaces the default Empty state.                                            |
 
 Avoid adding uncoordinated focusable controls inside decorative media.
 
@@ -241,37 +241,37 @@ Avoid adding uncoordinated focusable controls inside decorative media.
 
 Access these through a template ref.
 
-| Method       | Returns   | Use                                                                                     |
-| ------------ | --------- | --------------------------------------------------------------------------------------- |
-| `focus(key)` | `boolean` | Focuses a visible logical node; `true` when it is available or mounted on the next render. |
-| `reload(key)`| `boolean` | Invalidates a loader-owned cache; `true` when the request applies.                       |
+| Method        | Returns   | Use                                                                                        |
+| ------------- | --------- | ------------------------------------------------------------------------------------------ |
+| `focus(key)`  | `boolean` | Focuses a visible logical node; `true` when it is available or mounted on the next render. |
+| `reload(key)` | `boolean` | Invalidates a loader-owned cache; `true` when the request applies.                         |
 
 An expanded node reloads immediately; a collapsed node loads on its next expansion. Neither method invents missing nodes or changes selection.
 
 ### Node schema
 
-| Field         | Type                          | Use                                                                   |
-| ------------- | ----------------------------- | --------------------------------------------------------------------- |
-| `key`         | `string \| number`            | Required stable identity; unique across the full tree.                |
-| `label`       | `string`                      | Required visible name and accessible label.                           |
-| `description` | `string`                      | Accessible description and supporting text.                           |
-| `icon`        | `string`                      | Decorative icon name for the project's Icon component.                |
-| `value`       | `unknown`                     | Opaque application data.                                              |
-| `children`    | `readonly TreeViewNode[]`     | Known immediate children; an explicit empty array is a leaf.          |
-| `hasChildren` | `boolean`                     | Marks an unresolved branch when `children` is omitted.                |
-| `disabled`    | `boolean`                     | Applies to this node and its known descendants.                       |
-| `selectable`  | `boolean`                     | Controls selection for this node only.                                |
-| `checkable`   | `boolean`                     | Controls checking for this node only.                                 |
+| Field         | Type                      | Use                                                          |
+| ------------- | ------------------------- | ------------------------------------------------------------ |
+| `key`         | `string \| number`        | Required stable identity; unique across the full tree.       |
+| `label`       | `string`                  | Required visible name and accessible label.                  |
+| `description` | `string`                  | Accessible description and supporting text.                  |
+| `icon`        | `string`                  | Decorative icon name for the project's Icon component.       |
+| `value`       | `unknown`                 | Opaque application data.                                     |
+| `children`    | `readonly TreeViewNode[]` | Known immediate children; an explicit empty array is a leaf. |
+| `hasChildren` | `boolean`                 | Marks an unresolved branch when `children` is omitted.       |
+| `disabled`    | `boolean`                 | Applies to this node and its known descendants.              |
+| `selectable`  | `boolean`                 | Controls selection for this node only.                       |
+| `checkable`   | `boolean`                 | Controls checking for this node only.                        |
 
 ## Styling
 
 `TreeView` exposes these public properties on the tree root. Row geometry, spacing, indentation, and type follow the Material system density, spacing, type, color, shape, elevation, and motion roles.
 
-| Property                                  | Default                                  | Use                                      |
-| ----------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| `--yam3x-tree-view-virtual-max-height`    | `400px`                                  | Maximum height of the virtual viewport.  |
-| `--yam3x-tree-view-label-min-width`       | `10rem`                                  | Minimum label width before overflow.     |
-| `--yam3x-tree-view-row-shape`             | `--md-sys-shape-corner-medium` (12 px)   | Row, hover, selection, and focus shape.  |
+| Property                               | Default                                | Use                                     |
+| -------------------------------------- | -------------------------------------- | --------------------------------------- |
+| `--yam3x-tree-view-virtual-max-height` | `400px`                                | Maximum height of the virtual viewport. |
+| `--yam3x-tree-view-label-min-width`    | `10rem`                                | Minimum label width before overflow.    |
+| `--yam3x-tree-view-row-shape`          | `--md-sys-shape-corner-medium` (12 px) | Row, hover, selection, and focus shape. |
 
 Labels use Body Large, metadata and guidance Body Small, and the title Title Medium. Selected nodes use Secondary Container and On Secondary Container; focus has an independent visible outline. Expansion alone does not select a row. The shared row shape is a project design decision.
 

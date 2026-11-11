@@ -171,55 +171,55 @@ const dialog = ref<InstanceType<typeof Dialog> | null>(null)
 
 ### 导出
 
-| 导出     | 说明                              |
-| -------- | --------------------------------- |
-| `Dialog` | 模态表面、焦点行为和生命周期。    |
+| 导出     | 说明                           |
+| -------- | ------------------------------ |
+| `Dialog` | 模态表面、焦点行为和生命周期。 |
 
 ### 属性与模型
 
-| 属性与模型              | 类型                           | 默认值          | 用途                                       |
-| ----------------------- | ------------------------------ | --------------- | ------------------------------------------ |
-| `open`                  | `v-model:open: boolean`        | `false`         | 控制显示状态。                             |
-| `returnValue`           | `v-model:return-value: string`  | `''`            | 由 `close(value)` 写入的结果。             |
-| `title`                 | `string`                       | 必填            | 可见标题和对话框无障碍名称。               |
-| `description`           | `string`                       | 未定义          | 与对话框关联的辅助文本。                   |
-| `showCloseButton`       | `boolean`                      | `false`         | 显示独立的项目关闭目标。                   |
-| `dismissOnEscape`       | `boolean`                      | `true`          | 允许 Escape 关闭对话框。                   |
-| `dismissOnClickOutside` | `boolean`                      | `true`          | 允许外部指针输入关闭对话框。               |
-| `closeLabel`            | `string`                       | 本地化「关闭」  | 关闭目标的无障碍名称。                     |
-| `locale`                | `string`                       | Provider → `en-US` | 内置界面文案语言。                     |
+| 属性与模型              | 类型                           | 默认值             | 用途                           |
+| ----------------------- | ------------------------------ | ------------------ | ------------------------------ |
+| `open`                  | `v-model:open: boolean`        | `false`            | 控制显示状态。                 |
+| `returnValue`           | `v-model:return-value: string` | `''`               | 由 `close(value)` 写入的结果。 |
+| `title`                 | `string`                       | 必填               | 可见标题和对话框无障碍名称。   |
+| `description`           | `string`                       | 未定义             | 与对话框关联的辅助文本。       |
+| `showCloseButton`       | `boolean`                      | `false`            | 显示独立的项目关闭目标。       |
+| `dismissOnEscape`       | `boolean`                      | `true`             | 允许 Escape 关闭对话框。       |
+| `dismissOnClickOutside` | `boolean`                      | `true`             | 允许外部指针输入关闭对话框。   |
+| `closeLabel`            | `string`                       | 本地化「关闭」     | 关闭目标的无障碍名称。         |
+| `locale`                | `string`                       | Provider → `en-US` | 内置界面文案语言。             |
 
 ### 事件
 
-| 事件      | 载荷    | 用途                                                                 |
-| --------- | ------- | -------------------------------------------------------------------- |
-| `opening` | `Event` | 在对话框打开前触发。直接更改 `open` 模型时只作为通知。                 |
-| `opened`  | `Event` | 打开过渡和焦点放置后触发。                                           |
-| `cancel`  | `Event` | 可取消，在 Escape 关闭前触发。调用 `preventDefault()` 可保持打开。   |
-| `closing` | `Event` | 可取消，在对话框关闭前触发。调用 `preventDefault()` 可保持打开。     |
-| `closed`  | `Event` | 关闭过渡和焦点返回后触发。                                           |
+| 事件      | 载荷    | 用途                                                               |
+| --------- | ------- | ------------------------------------------------------------------ |
+| `opening` | `Event` | 在对话框打开前触发。直接更改 `open` 模型时只作为通知。             |
+| `opened`  | `Event` | 打开过渡和焦点放置后触发。                                         |
+| `cancel`  | `Event` | 可取消，在 Escape 关闭前触发。调用 `preventDefault()` 可保持打开。 |
+| `closing` | `Event` | 可取消，在对话框关闭前触发。调用 `preventDefault()` 可保持打开。   |
+| `closed`  | `Event` | 关闭过渡和焦点返回后触发。                                         |
 
 直接更改 `open` 模型会以通知方式触发 `opening` 或 `closing`，随后触发 `opened` 或 `closed`。关闭路径和 `close()` 触发可取消的 `closing`；被阻止的关闭不会触发 `closed`。
 
 ### 插槽
 
-| 插槽         | 用途                                                                 |
-| ------------ | -------------------------------------------------------------------- |
-| `default`    | 对话框主体内容；为空时省略。                                         |
-| `title`      | 替换标题内容，同时保留标题元素。                                     |
-| `icon`       | 添加辅助图标媒体，并居中标题内容。                                   |
-| `close-icon` | 替换项目关闭目标内的图标。                                           |
-| `divider`    | 在主体和操作之间添加分隔线，例如 `Divider`。                         |
-| `actions`    | 放置最多两个文本操作；确认操作放在最后。                             |
+| 插槽         | 用途                                         |
+| ------------ | -------------------------------------------- |
+| `default`    | 对话框主体内容；为空时省略。                 |
+| `title`      | 替换标题内容，同时保留标题元素。             |
+| `icon`       | 添加辅助图标媒体，并居中标题内容。           |
+| `close-icon` | 替换项目关闭目标内的图标。                   |
+| `divider`    | 在主体和操作之间添加分隔线，例如 `Divider`。 |
+| `actions`    | 放置最多两个文本操作；确认操作放在最后。     |
 
 ### 方法
 
 通过模板 ref 访问。
 
-| 方法            | 返回     | 用途                                                          |
-| --------------- | -------- | ------------------------------------------------------------- |
-| `close(value?)` | `void`   | 关闭对话框，将 `value` 写入 `returnValue`，并遵守取消检查。   |
-| `returnValue`   | `string` | 暴露的模型值；优先使用 `v-model:return-value`。               |
+| 方法            | 返回     | 用途                                                        |
+| --------------- | -------- | ----------------------------------------------------------- |
+| `close(value?)` | `void`   | 关闭对话框，将 `value` 写入 `returnValue`，并遵守取消检查。 |
+| `returnValue`   | `string` | 暴露的模型值；优先使用 `v-model:return-value`。             |
 
 ## 样式
 

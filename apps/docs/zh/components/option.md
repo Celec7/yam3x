@@ -221,111 +221,111 @@ Dialog 模式中，父级必须为表面命名、将焦点移入、处理 Escape
 
 ### 导出
 
-| 导出                                                                                           | 说明                                       |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `Option`、`OptionGroup`、`OptionPanel`                                                         | 行、分组和弹出表面基元。                   |
-| `OptionHighlightMode`、`OptionSelectionDetail`、`OptionSelectionSource`、`OptionToggleDetail`  | 高亮、选择和切换类型导出。                 |
+| 导出                                                                                          | 说明                       |
+| --------------------------------------------------------------------------------------------- | -------------------------- |
+| `Option`、`OptionGroup`、`OptionPanel`                                                        | 行、分组和弹出表面基元。   |
+| `OptionHighlightMode`、`OptionSelectionDetail`、`OptionSelectionSource`、`OptionToggleDetail` | 高亮、选择和切换类型导出。 |
 
 ### `Option` 属性与模型
 
-| 属性                     | 类型                                   | 默认值       | 用途                                              |
-| ------------------------ | -------------------------------------- | ------------ | ------------------------------------------------- |
-| `value`                  | `string`                               | 必填         | `select` 报告的唯一选项值。                         |
-| `label`                  | `string`                               | 必填         | 可见文本和无障碍名称。                            |
-| `selected`               | `boolean`                              | `false`      | 已接受的选择；值由父级拥有。                      |
-| `disabled`               | `boolean`                              | `false`      | 禁止激活，并保持行不可选择。                      |
-| `id`                     | `string`                               | 自动生成     | 供 `aria-activedescendant` 使用的元素 ID。        |
-| `first`                  | `boolean`                              | `false`      | 应用外侧首行圆角处理。                            |
-| `last`                   | `boolean`                              | `false`      | 应用外侧末行圆角处理。                            |
-| `tabindex`               | `number`                               | `-1`         | 选项作为焦点入口时的 Tab 索引。                   |
-| `term`                   | `string`                               | `''`         | 用于匹配高亮的搜索词。                            |
-| `highlightMode`          | `'contains' \| 'starts-with' \| 'ends-with'` | `'contains'` | `term` 的匹配策略。                         |
-| `disableHighlight`       | `boolean`                              | `false`      | 禁用匹配高亮，同时保留标签。                      |
-| `hideSelectionIndicator` | `boolean`                              | `false`      | 移除内置选择标记。                                |
-| `selectionSource`        | `'pointer' \| 'keyboard' \| 'programmatic'` | `'pointer'` | 指针激活时报告的来源。                       |
+| 属性                     | 类型                                         | 默认值       | 用途                                       |
+| ------------------------ | -------------------------------------------- | ------------ | ------------------------------------------ |
+| `value`                  | `string`                                     | 必填         | `select` 报告的唯一选项值。                |
+| `label`                  | `string`                                     | 必填         | 可见文本和无障碍名称。                     |
+| `selected`               | `boolean`                                    | `false`      | 已接受的选择；值由父级拥有。               |
+| `disabled`               | `boolean`                                    | `false`      | 禁止激活，并保持行不可选择。               |
+| `id`                     | `string`                                     | 自动生成     | 供 `aria-activedescendant` 使用的元素 ID。 |
+| `first`                  | `boolean`                                    | `false`      | 应用外侧首行圆角处理。                     |
+| `last`                   | `boolean`                                    | `false`      | 应用外侧末行圆角处理。                     |
+| `tabindex`               | `number`                                     | `-1`         | 选项作为焦点入口时的 Tab 索引。            |
+| `term`                   | `string`                                     | `''`         | 用于匹配高亮的搜索词。                     |
+| `highlightMode`          | `'contains' \| 'starts-with' \| 'ends-with'` | `'contains'` | `term` 的匹配策略。                        |
+| `disableHighlight`       | `boolean`                                    | `false`      | 禁用匹配高亮，同时保留标签。               |
+| `hideSelectionIndicator` | `boolean`                                    | `false`      | 移除内置选择标记。                         |
+| `selectionSource`        | `'pointer' \| 'keyboard' \| 'programmatic'`  | `'pointer'`  | 指针激活时报告的来源。                     |
 
 ### `Option` 事件
 
-| 事件     | 载荷                            | 用途                                                    |
-| -------- | ------------------------------- | ------------------------------------------------------- |
-| `select` | `{ value, source }`             | 报告启用选项的激活；由父级接受。                        |
+| 事件     | 载荷                | 用途                             |
+| -------- | ------------------- | -------------------------------- |
+| `select` | `{ value, source }` | 报告启用选项的激活；由父级接受。 |
 
 ### `Option` 插槽
 
-| 插槽                 | 用途                                                     |
-| -------------------- | -------------------------------------------------------- |
-| `default`            | 自定义标签内容；无障碍名称仍来自 `label`。               |
-| `leading`            | 装饰性前导媒体，例如图标或头像。                         |
-| `selected-indicator` | 替换内置选择标记。                                       |
-| `trailing`           | 尾部元数据或徽章。                                       |
+| 插槽                 | 用途                                       |
+| -------------------- | ------------------------------------------ |
+| `default`            | 自定义标签内容；无障碍名称仍来自 `label`。 |
+| `leading`            | 装饰性前导媒体，例如图标或头像。           |
+| `selected-indicator` | 替换内置选择标记。                         |
+| `trailing`           | 尾部元数据或徽章。                         |
 
 请保持行交互目标内没有嵌套控件或第二个独立操作。
 
 ### `OptionGroup` 属性
 
-| 属性         | 类型      | 默认值   | 用途                                 |
-| ------------ | --------- | -------- | ------------------------------------ |
-| `label`      | `string`  | 未定义   | 可见分组标签和无障碍分组名称。       |
-| `labelledby` | `string`  | 未定义   | 为分组命名的现有元素 ID。            |
-| `hidden`     | `boolean` | `false`  | 移除分组及其选项。                   |
+| 属性         | 类型      | 默认值  | 用途                           |
+| ------------ | --------- | ------- | ------------------------------ |
+| `label`      | `string`  | 未定义  | 可见分组标签和无障碍分组名称。 |
+| `labelledby` | `string`  | 未定义  | 为分组命名的现有元素 ID。      |
+| `hidden`     | `boolean` | `false` | 移除分组及其选项。             |
 
 ### `OptionGroup` 插槽
 
-| 插槽      | 用途                     |
-| --------- | ------------------------ |
-| `default` | 分组选项。               |
-| `label`   | 自定义可见分组标签。     |
+| 插槽      | 用途                 |
+| --------- | -------------------- |
+| `default` | 分组选项。           |
+| `label`   | 自定义可见分组标签。 |
 
 ### `OptionPanel` 属性与模型
 
-| 属性与模型       | 类型                              | 默认值         | 用途                                           |
-| ---------------- | --------------------------------- | -------------- | ---------------------------------------------- |
-| `open`           | `v-model:open: boolean`           | `false`        | 控制显示状态。                                 |
-| `id`             | `string`                          | 自动生成       | 显式面板元素 ID。                              |
-| `anchor`         | `HTMLElement \| null`             | `null`         | 面板定位所依据的元素。                         |
-| `role`           | `'listbox' \| 'dialog'`           | `'listbox'`    | 表面语义。                                     |
-| `label`          | `string`                          | `''`           | 表面无障碍名称。                               |
-| `labelledby`     | `string`                          | `''`           | 为表面命名的现有元素 ID。                      |
-| `multiple`       | `boolean`                         | `false`        | 为列表框添加 `aria-multiselectable`。          |
-| `fitAnchorWidth` | `boolean`                         | `true`         | 使面板宽度匹配锚点。                           |
-| `anchorOffset`   | `number`                          | `4`            | 锚点与面板的间距，单位为 CSS 像素。            |
-| `scrollStrategy` | `'reposition' \| 'hide'`          | `'reposition'` | 保持对齐，或在锚点滚动时关闭。                 |
-| `loading`        | `boolean`                         | `false`        | 显示加载状态并设置 `aria-busy`。               |
-| `empty`          | `boolean`                         | `false`        | 显示无数据状态。                               |
-| `teleport`       | `boolean`                         | `false`        | 将面板移动到 `body`。                          |
-| `loadingText`    | `string`                          | 本地化         | 覆盖加载文案。                                 |
-| `noDataText`     | `string`                          | 本地化         | 覆盖空状态文案。                               |
-| `panelClass`     | `string`                          | `''`           | 面板元素上的额外类名。                         |
-| `locale`         | `string`                          | Provider → `en-US` | 内置状态文案语言。                         |
+| 属性与模型       | 类型                     | 默认值             | 用途                                  |
+| ---------------- | ------------------------ | ------------------ | ------------------------------------- |
+| `open`           | `v-model:open: boolean`  | `false`            | 控制显示状态。                        |
+| `id`             | `string`                 | 自动生成           | 显式面板元素 ID。                     |
+| `anchor`         | `HTMLElement \| null`    | `null`             | 面板定位所依据的元素。                |
+| `role`           | `'listbox' \| 'dialog'`  | `'listbox'`        | 表面语义。                            |
+| `label`          | `string`                 | `''`               | 表面无障碍名称。                      |
+| `labelledby`     | `string`                 | `''`               | 为表面命名的现有元素 ID。             |
+| `multiple`       | `boolean`                | `false`            | 为列表框添加 `aria-multiselectable`。 |
+| `fitAnchorWidth` | `boolean`                | `true`             | 使面板宽度匹配锚点。                  |
+| `anchorOffset`   | `number`                 | `4`                | 锚点与面板的间距，单位为 CSS 像素。   |
+| `scrollStrategy` | `'reposition' \| 'hide'` | `'reposition'`     | 保持对齐，或在锚点滚动时关闭。        |
+| `loading`        | `boolean`                | `false`            | 显示加载状态并设置 `aria-busy`。      |
+| `empty`          | `boolean`                | `false`            | 显示无数据状态。                      |
+| `teleport`       | `boolean`                | `false`            | 将面板移动到 `body`。                 |
+| `loadingText`    | `string`                 | 本地化             | 覆盖加载文案。                        |
+| `noDataText`     | `string`                 | 本地化             | 覆盖空状态文案。                      |
+| `panelClass`     | `string`                 | `''`               | 面板元素上的额外类名。                |
+| `locale`         | `string`                 | Provider → `en-US` | 内置状态文案语言。                    |
 
 ### `OptionPanel` 事件
 
-| 事件           | 载荷                                         | 用途                                                          |
-| -------------- | -------------------------------------------- | ------------------------------------------------------------- |
-| `beforetoggle` | `CustomEvent<{ open, source }>`              | 变化前可取消。调用 `preventDefault()` 可阻止。                |
-| `toggle`       | `{ open, source }`                           | 打开状态变化后触发。                                          |
-| `open`         | —                                            | 面板打开后触发。                                              |
-| `close`        | —                                            | 面板关闭后触发。                                              |
+| 事件           | 载荷                            | 用途                                           |
+| -------------- | ------------------------------- | ---------------------------------------------- |
+| `beforetoggle` | `CustomEvent<{ open, source }>` | 变化前可取消。调用 `preventDefault()` 可阻止。 |
+| `toggle`       | `{ open, source }`              | 打开状态变化后触发。                           |
+| `open`         | —                               | 面板打开后触发。                               |
+| `close`        | —                               | 面板关闭后触发。                               |
 
 `source` 为 `programmatic`、`outside` 或 `anchor-scroll`。
 
 ### `OptionPanel` 插槽
 
-| 插槽      | 用途                             |
-| --------- | -------------------------------- |
-| `default` | 选项或对话框内容。               |
-| `loading` | 替换加载状态。                   |
-| `no-data` | 替换空状态。                     |
+| 插槽      | 用途               |
+| --------- | ------------------ |
+| `default` | 选项或对话框内容。 |
+| `loading` | 替换加载状态。     |
+| `no-data` | 替换空状态。       |
 
 ### `OptionPanel` 方法
 
 通过模板 ref 访问。组件还暴露 `panel` 元素和响应式 `positioned` 标志。
 
-| 方法       | 返回   | 用途                                     |
-| ---------- | ------ | ---------------------------------------- |
-| `show()`   | `void` | 针对提供的锚点打开，不移动焦点。         |
-| `hide()`   | `void` | 关闭，不恢复焦点。                       |
-| `toggle()` | `void` | 切换当前状态。                           |
+| 方法       | 返回   | 用途                             |
+| ---------- | ------ | -------------------------------- |
+| `show()`   | `void` | 针对提供的锚点打开，不移动焦点。 |
+| `hide()`   | `void` | 关闭，不恢复焦点。               |
+| `toggle()` | `void` | 切换当前状态。                   |
 
 ## 样式
 
@@ -333,16 +333,16 @@ Dialog 模式中，父级必须为表面命名、将焦点移入、处理 Escape
 
 ::: details 常用 CSS 属性
 
-| 区域       | 属性                                                                                                                                         |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 行         | `--yam3x-option-container-height`、`--yam3x-option-height`、`--yam3x-option-shape`、`--yam3x-option-first-child-shape`、`--yam3x-option-last-child-shape` |
-| 已选行     | `--yam3x-option-selected-container-color`、`--yam3x-option-selected-color`、`--yam3x-option-selected-container-hover-color`、`--yam3x-option-selected-container-focus-color` |
-| 文本       | `--yam3x-option-color`、`--yam3x-option-disabled-color`、`--yam3x-option-label-text-font-size`、`--yam3x-option-label-text-font-weight`、`--yam3x-option-label-text-line-height`、`--yam3x-option-label-text-tracking` |
-| 间距       | `--yam3x-option-padding-start`、`--yam3x-option-padding-end`、`--yam3x-option-icon-size`、`--yam3x-option-icon-label-space` |
-| 状态       | `--yam3x-option-container-hover-color`、`--yam3x-option-container-focus-color`、`--yam3x-option-ripple-color` |
-| 分组       | `--yam3x-option-group-label-color`、`--yam3x-option-group-divider-color`、`--yam3x-option-group-divider-inset` |
-| 面板       | `--yam3x-option-panel-container-color`、`--yam3x-option-panel-container-shape`、`--yam3x-option-panel-container-min-width`、`--yam3x-option-panel-container-max-width`、`--yam3x-option-panel-container-max-height` |
-| 面板状态   | `--yam3x-option-panel-container-padding-inline`、`--yam3x-option-panel-container-padding-block`、`--yam3x-option-panel-container-elevation`、`--yam3x-option-panel-divider-spacing`、`--yam3x-option-panel-loading-color`、`--yam3x-option-panel-text-highlight-color`、`--yam3x-option-panel-text-highlight-container-color` |
+| 区域     | 属性                                                                                                                                                                                                                                                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 行       | `--yam3x-option-container-height`、`--yam3x-option-height`、`--yam3x-option-shape`、`--yam3x-option-first-child-shape`、`--yam3x-option-last-child-shape`                                                                                                                                                                     |
+| 已选行   | `--yam3x-option-selected-container-color`、`--yam3x-option-selected-color`、`--yam3x-option-selected-container-hover-color`、`--yam3x-option-selected-container-focus-color`                                                                                                                                                  |
+| 文本     | `--yam3x-option-color`、`--yam3x-option-disabled-color`、`--yam3x-option-label-text-font-size`、`--yam3x-option-label-text-font-weight`、`--yam3x-option-label-text-line-height`、`--yam3x-option-label-text-tracking`                                                                                                        |
+| 间距     | `--yam3x-option-padding-start`、`--yam3x-option-padding-end`、`--yam3x-option-icon-size`、`--yam3x-option-icon-label-space`                                                                                                                                                                                                   |
+| 状态     | `--yam3x-option-container-hover-color`、`--yam3x-option-container-focus-color`、`--yam3x-option-ripple-color`                                                                                                                                                                                                                 |
+| 分组     | `--yam3x-option-group-label-color`、`--yam3x-option-group-divider-color`、`--yam3x-option-group-divider-inset`                                                                                                                                                                                                                |
+| 面板     | `--yam3x-option-panel-container-color`、`--yam3x-option-panel-container-shape`、`--yam3x-option-panel-container-min-width`、`--yam3x-option-panel-container-max-width`、`--yam3x-option-panel-container-max-height`                                                                                                           |
+| 面板状态 | `--yam3x-option-panel-container-padding-inline`、`--yam3x-option-panel-container-padding-block`、`--yam3x-option-panel-container-elevation`、`--yam3x-option-panel-divider-spacing`、`--yam3x-option-panel-loading-color`、`--yam3x-option-panel-text-highlight-color`、`--yam3x-option-panel-text-highlight-container-color` |
 
 临时面板默认使用 System `surface-container-low` 角色和 level 2 高度，并继承选项行与分组的值。它使用 2 px 块方向内边距和 4 px 行内边距。悬停和焦点使用独立状态层；已选行保留已选容器，同时使用已选状态层。
 

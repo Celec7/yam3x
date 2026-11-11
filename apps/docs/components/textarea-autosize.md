@@ -113,18 +113,18 @@ The directive runs on the client after mount. Server rendering and a no-JavaScri
 
 ### Exports
 
-| Export                   | Description                                                           |
-| ------------------------ | --------------------------------------------------------------------- |
-| `vTextareaAutosize`      | The Vue directive for a native textarea element.                      |
-| `TextareaAutosizeOptions`| The directive value type.                                             |
+| Export                    | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `vTextareaAutosize`       | The Vue directive for a native textarea element. |
+| `TextareaAutosizeOptions` | The directive value type.                        |
 
 ### Options
 
-| Value     | Type      | Default                | Use                                                                                                                            |
-| --------- | --------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `minRows` | `number`  | Textarea's `rows`      | Minimum visible rows when content is short.                                                                                    |
-| `maxRows` | `number`  | `0` (unlimited)        | Scrolls vertically inside the textarea after reaching the limit.                                                               |
-| `enabled` | `boolean` | `true`                 | Enables auto-sizing. When `false`, the directive restores the original inline `height` and `overflow-y`; the field stays usable. |
+| Value     | Type      | Default           | Use                                                                                                                              |
+| --------- | --------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `minRows` | `number`  | Textarea's `rows` | Minimum visible rows when content is short.                                                                                      |
+| `maxRows` | `number`  | `0` (unlimited)   | Scrolls vertically inside the textarea after reaching the limit.                                                                 |
+| `enabled` | `boolean` | `true`            | Enables auto-sizing. When `false`, the directive restores the original inline `height` and `overflow-y`; the field stays usable. |
 
 The directive has no events, slots, or exposed methods.
 

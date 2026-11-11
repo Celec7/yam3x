@@ -66,7 +66,6 @@ For a YAM3X component's internal appearance, use the props and documented CSS cu
 
 The project does not ship utility classes. Consuming applications may add their own styling tools, including Tailwind, but YAM3X components use standard CSS and the semantic custom properties above.
 
-
 ## Related foundations
 
 - [Spacing and density](/guide/foundations/spacing) for density configuration and application spacing.

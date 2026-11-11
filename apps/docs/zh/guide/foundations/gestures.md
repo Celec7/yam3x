@@ -65,7 +65,6 @@ useGestures(targetElementRef, pressThenTap)
 
 这些标志描述设备能力，不描述当前正在使用的输入方式。仅悬停可用的外观应放在 `@media (hover: hover) and (pointer: fine)` 中，且不要在指针移动时改变布局。
 
-
 ## Material 参考
 
 [动效概览](https://m3.material.io/styles/motion/overview) · [交互状态](https://m3.material.io/styles/interaction-states/overview)

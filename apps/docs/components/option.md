@@ -221,34 +221,34 @@ Built-in loading and empty text can inherit shared [LocaleProvider](/components/
 
 ### Exports
 
-| Export                                                                                         | Description                                       |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `Option`, `OptionGroup`, `OptionPanel`                                                         | The row, group, and popup surface primitives.     |
-| `OptionHighlightMode`, `OptionSelectionDetail`, `OptionSelectionSource`, `OptionToggleDetail`  | Type exports for highlighting, selection, and toggling. |
+| Export                                                                                        | Description                                             |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `Option`, `OptionGroup`, `OptionPanel`                                                        | The row, group, and popup surface primitives.           |
+| `OptionHighlightMode`, `OptionSelectionDetail`, `OptionSelectionSource`, `OptionToggleDetail` | Type exports for highlighting, selection, and toggling. |
 
 ### `Option` props and models
 
-| Prop                     | Type                                   | Default      | Use                                                          |
-| ------------------------ | -------------------------------------- | ------------ | ------------------------------------------------------------ |
-| `value`                  | `string`                               | Required     | Unique option value reported by `select`.                    |
-| `label`                  | `string`                               | Required     | Visible text and accessible name.                            |
-| `selected`               | `boolean`                              | `false`      | Accepted selection; the parent owns the value.               |
-| `disabled`               | `boolean`                              | `false`      | Prevents activation and keeps the row non-selectable.        |
-| `id`                     | `string`                               | Generated    | Element ID used by `aria-activedescendant`.                  |
-| `first`                  | `boolean`                              | `false`      | Applies the outer first-row corner treatment.                |
-| `last`                   | `boolean`                              | `false`      | Applies the outer last-row corner treatment.                 |
-| `tabindex`               | `number`                               | `-1`         | Tab index for the option when it is the focused entry.       |
-| `term`                   | `string`                               | `''`         | Search term used for match highlighting.                     |
-| `highlightMode`          | `'contains' \| 'starts-with' \| 'ends-with'` | `'contains'` | Match strategy for `term`.                              |
-| `disableHighlight`       | `boolean`                              | `false`      | Disables matching highlight while keeping the label.         |
-| `hideSelectionIndicator` | `boolean`                              | `false`      | Removes the built-in selected mark.                          |
-| `selectionSource`        | `'pointer' \| 'keyboard' \| 'programmatic'` | `'pointer'` | Source reported for pointer activation.                  |
+| Prop                     | Type                                         | Default      | Use                                                    |
+| ------------------------ | -------------------------------------------- | ------------ | ------------------------------------------------------ |
+| `value`                  | `string`                                     | Required     | Unique option value reported by `select`.              |
+| `label`                  | `string`                                     | Required     | Visible text and accessible name.                      |
+| `selected`               | `boolean`                                    | `false`      | Accepted selection; the parent owns the value.         |
+| `disabled`               | `boolean`                                    | `false`      | Prevents activation and keeps the row non-selectable.  |
+| `id`                     | `string`                                     | Generated    | Element ID used by `aria-activedescendant`.            |
+| `first`                  | `boolean`                                    | `false`      | Applies the outer first-row corner treatment.          |
+| `last`                   | `boolean`                                    | `false`      | Applies the outer last-row corner treatment.           |
+| `tabindex`               | `number`                                     | `-1`         | Tab index for the option when it is the focused entry. |
+| `term`                   | `string`                                     | `''`         | Search term used for match highlighting.               |
+| `highlightMode`          | `'contains' \| 'starts-with' \| 'ends-with'` | `'contains'` | Match strategy for `term`.                             |
+| `disableHighlight`       | `boolean`                                    | `false`      | Disables matching highlight while keeping the label.   |
+| `hideSelectionIndicator` | `boolean`                                    | `false`      | Removes the built-in selected mark.                    |
+| `selectionSource`        | `'pointer' \| 'keyboard' \| 'programmatic'`  | `'pointer'`  | Source reported for pointer activation.                |
 
 ### `Option` events
 
-| Event    | Payload                         | Use                                                               |
-| -------- | ------------------------------- | ----------------------------------------------------------------- |
-| `select` | `{ value, source }`             | Reports an enabled option's activation; the parent accepts it.    |
+| Event    | Payload             | Use                                                            |
+| -------- | ------------------- | -------------------------------------------------------------- |
+| `select` | `{ value, source }` | Reports an enabled option's activation; the parent accepts it. |
 
 ### `Option` slots
 
@@ -263,69 +263,69 @@ Keep the row's interactive target free of nested controls or a second independen
 
 ### `OptionGroup` props
 
-| Prop         | Type      | Default   | Use                                                      |
-| ------------ | --------- | --------- | -------------------------------------------------------- |
-| `label`      | `string`  | Undefined | Visible group label and accessible group name.           |
-| `labelledby` | `string`  | Undefined | Existing element ID that names the group.                |
-| `hidden`     | `boolean` | `false`   | Removes the group and its options.                       |
+| Prop         | Type      | Default   | Use                                            |
+| ------------ | --------- | --------- | ---------------------------------------------- |
+| `label`      | `string`  | Undefined | Visible group label and accessible group name. |
+| `labelledby` | `string`  | Undefined | Existing element ID that names the group.      |
+| `hidden`     | `boolean` | `false`   | Removes the group and its options.             |
 
 ### `OptionGroup` slots
 
-| Slot    | Use                                      |
-| ------- | ---------------------------------------- |
-| `default` | Grouped options.                       |
-| `label` | Custom visible group label.              |
+| Slot      | Use                         |
+| --------- | --------------------------- |
+| `default` | Grouped options.            |
+| `label`   | Custom visible group label. |
 
 ### `OptionPanel` props and models
 
-| Prop and model   | Type                              | Default        | Use                                                          |
-| ---------------- | --------------------------------- | -------------- | ------------------------------------------------------------ |
-| `open`           | `v-model:open: boolean`           | `false`        | Controls visibility.                                         |
-| `id`             | `string`                          | Generated      | Explicit panel element ID.                                   |
-| `anchor`         | `HTMLElement \| null`             | `null`         | Element the panel positions against.                         |
-| `role`           | `'listbox' \| 'dialog'`           | `'listbox'`    | Surface semantics.                                           |
-| `label`          | `string`                          | `''`           | Accessible surface name.                                     |
-| `labelledby`     | `string`                          | `''`           | Existing element ID that names the surface.                  |
-| `multiple`       | `boolean`                         | `false`        | Adds `aria-multiselectable` to a listbox.                    |
-| `fitAnchorWidth` | `boolean`                         | `true`         | Matches the panel width to the anchor.                       |
-| `anchorOffset`   | `number`                          | `4`            | Gap between the anchor and panel, in CSS pixels.             |
-| `scrollStrategy` | `'reposition' \| 'hide'`          | `'reposition'` | Keeps alignment or closes when the anchor scrolls.           |
-| `loading`        | `boolean`                         | `false`        | Shows the loading status and sets `aria-busy`.               |
-| `empty`          | `boolean`                         | `false`        | Shows the no-data status.                                    |
-| `teleport`       | `boolean`                         | `false`        | Moves the panel to `body`.                                   |
-| `loadingText`    | `string`                          | Localized      | Overrides the loading message.                               |
-| `noDataText`     | `string`                          | Localized      | Overrides the empty message.                                 |
-| `panelClass`     | `string`                          | `''`           | Extra classes on the panel element.                          |
-| `locale`         | `string`                          | Provider → `en-US` | Language of built-in status text.                        |
+| Prop and model   | Type                     | Default            | Use                                                |
+| ---------------- | ------------------------ | ------------------ | -------------------------------------------------- |
+| `open`           | `v-model:open: boolean`  | `false`            | Controls visibility.                               |
+| `id`             | `string`                 | Generated          | Explicit panel element ID.                         |
+| `anchor`         | `HTMLElement \| null`    | `null`             | Element the panel positions against.               |
+| `role`           | `'listbox' \| 'dialog'`  | `'listbox'`        | Surface semantics.                                 |
+| `label`          | `string`                 | `''`               | Accessible surface name.                           |
+| `labelledby`     | `string`                 | `''`               | Existing element ID that names the surface.        |
+| `multiple`       | `boolean`                | `false`            | Adds `aria-multiselectable` to a listbox.          |
+| `fitAnchorWidth` | `boolean`                | `true`             | Matches the panel width to the anchor.             |
+| `anchorOffset`   | `number`                 | `4`                | Gap between the anchor and panel, in CSS pixels.   |
+| `scrollStrategy` | `'reposition' \| 'hide'` | `'reposition'`     | Keeps alignment or closes when the anchor scrolls. |
+| `loading`        | `boolean`                | `false`            | Shows the loading status and sets `aria-busy`.     |
+| `empty`          | `boolean`                | `false`            | Shows the no-data status.                          |
+| `teleport`       | `boolean`                | `false`            | Moves the panel to `body`.                         |
+| `loadingText`    | `string`                 | Localized          | Overrides the loading message.                     |
+| `noDataText`     | `string`                 | Localized          | Overrides the empty message.                       |
+| `panelClass`     | `string`                 | `''`               | Extra classes on the panel element.                |
+| `locale`         | `string`                 | Provider → `en-US` | Language of built-in status text.                  |
 
 ### `OptionPanel` events
 
-| Event          | Payload                                      | Use                                                                 |
-| -------------- | -------------------------------------------- | ------------------------------------------------------------------- |
-| `beforetoggle` | `CustomEvent<{ open, source }>`              | Cancelable before a change. Call `preventDefault()` to stop it.     |
-| `toggle`       | `{ open, source }`                           | After the open state changes.                                       |
-| `open`         | —                                            | After the panel opens.                                              |
-| `close`        | —                                            | After the panel closes.                                             |
+| Event          | Payload                         | Use                                                             |
+| -------------- | ------------------------------- | --------------------------------------------------------------- |
+| `beforetoggle` | `CustomEvent<{ open, source }>` | Cancelable before a change. Call `preventDefault()` to stop it. |
+| `toggle`       | `{ open, source }`              | After the open state changes.                                   |
+| `open`         | —                               | After the panel opens.                                          |
+| `close`        | —                               | After the panel closes.                                         |
 
 `source` is `programmatic`, `outside`, or `anchor-scroll`.
 
 ### `OptionPanel` slots
 
-| Slot      | Use                                                   |
-| --------- | ----------------------------------------------------- |
-| `default` | Options or dialog content.                            |
-| `loading` | Replaces the loading status.                          |
-| `no-data` | Replaces the empty status.                            |
+| Slot      | Use                          |
+| --------- | ---------------------------- |
+| `default` | Options or dialog content.   |
+| `loading` | Replaces the loading status. |
+| `no-data` | Replaces the empty status.   |
 
 ### `OptionPanel` methods
 
 Access these through a template ref. The component also exposes `panel`, its element, and the reactive `positioned` flag.
 
-| Method     | Returns | Use                                                        |
-| ---------- | ------- | ---------------------------------------------------------- |
-| `show()`   | `void`  | Opens against the supplied anchor without moving focus.   |
-| `hide()`   | `void`  | Closes without restoring focus.                           |
-| `toggle()` | `void`  | Toggles the current state.                                 |
+| Method     | Returns | Use                                                     |
+| ---------- | ------- | ------------------------------------------------------- |
+| `show()`   | `void`  | Opens against the supplied anchor without moving focus. |
+| `hide()`   | `void`  | Closes without restoring focus.                         |
+| `toggle()` | `void`  | Toggles the current state.                              |
 
 ## Styling
 
@@ -333,16 +333,16 @@ The primitives expose public `--yam3x-option-*` properties on their roots. Defau
 
 ::: details Common CSS properties
 
-| Area        | Properties                                                                                                                                   |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Row         | `--yam3x-option-container-height`, `--yam3x-option-height`, `--yam3x-option-shape`, `--yam3x-option-first-child-shape`, `--yam3x-option-last-child-shape` |
-| Selected row| `--yam3x-option-selected-container-color`, `--yam3x-option-selected-color`, `--yam3x-option-selected-container-hover-color`, `--yam3x-option-selected-container-focus-color` |
-| Text        | `--yam3x-option-color`, `--yam3x-option-disabled-color`, `--yam3x-option-label-text-font-size`, `--yam3x-option-label-text-font-weight`, `--yam3x-option-label-text-line-height`, `--yam3x-option-label-text-tracking` |
-| Spacing     | `--yam3x-option-padding-start`, `--yam3x-option-padding-end`, `--yam3x-option-icon-size`, `--yam3x-option-icon-label-space` |
-| State       | `--yam3x-option-container-hover-color`, `--yam3x-option-container-focus-color`, `--yam3x-option-ripple-color` |
-| Group       | `--yam3x-option-group-label-color`, `--yam3x-option-group-divider-color`, `--yam3x-option-group-divider-inset` |
-| Panel       | `--yam3x-option-panel-container-color`, `--yam3x-option-panel-container-shape`, `--yam3x-option-panel-container-min-width`, `--yam3x-option-panel-container-max-width`, `--yam3x-option-panel-container-max-height` |
-| Panel state | `--yam3x-option-panel-container-padding-inline`, `--yam3x-option-panel-container-padding-block`, `--yam3x-option-panel-container-elevation`, `--yam3x-option-panel-divider-spacing`, `--yam3x-option-panel-loading-color`, `--yam3x-option-panel-text-highlight-color`, `--yam3x-option-panel-text-highlight-container-color` |
+| Area         | Properties                                                                                                                                                                                                                                                                                                                    |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Row          | `--yam3x-option-container-height`, `--yam3x-option-height`, `--yam3x-option-shape`, `--yam3x-option-first-child-shape`, `--yam3x-option-last-child-shape`                                                                                                                                                                     |
+| Selected row | `--yam3x-option-selected-container-color`, `--yam3x-option-selected-color`, `--yam3x-option-selected-container-hover-color`, `--yam3x-option-selected-container-focus-color`                                                                                                                                                  |
+| Text         | `--yam3x-option-color`, `--yam3x-option-disabled-color`, `--yam3x-option-label-text-font-size`, `--yam3x-option-label-text-font-weight`, `--yam3x-option-label-text-line-height`, `--yam3x-option-label-text-tracking`                                                                                                        |
+| Spacing      | `--yam3x-option-padding-start`, `--yam3x-option-padding-end`, `--yam3x-option-icon-size`, `--yam3x-option-icon-label-space`                                                                                                                                                                                                   |
+| State        | `--yam3x-option-container-hover-color`, `--yam3x-option-container-focus-color`, `--yam3x-option-ripple-color`                                                                                                                                                                                                                 |
+| Group        | `--yam3x-option-group-label-color`, `--yam3x-option-group-divider-color`, `--yam3x-option-group-divider-inset`                                                                                                                                                                                                                |
+| Panel        | `--yam3x-option-panel-container-color`, `--yam3x-option-panel-container-shape`, `--yam3x-option-panel-container-min-width`, `--yam3x-option-panel-container-max-width`, `--yam3x-option-panel-container-max-height`                                                                                                           |
+| Panel state  | `--yam3x-option-panel-container-padding-inline`, `--yam3x-option-panel-container-padding-block`, `--yam3x-option-panel-container-elevation`, `--yam3x-option-panel-divider-spacing`, `--yam3x-option-panel-loading-color`, `--yam3x-option-panel-text-highlight-color`, `--yam3x-option-panel-text-highlight-container-color` |
 
 The temporary panel defaults to the System `surface-container-low` role and level 2 elevation and inherits row and group values. It uses 2 px block padding and 4 px inline padding. Hover and focus use separate state layers; the selected row keeps its selected container while using the selected state layer.
 

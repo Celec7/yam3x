@@ -49,9 +49,7 @@ const current = computed(
         </OptionGroup>
       </Select>
     </FormField>
-    <p class="yam3x-demo__status">
-      {{ t('Current density:', '当前密度：') }} {{ current }}
-    </p>
+    <p class="yam3x-demo__status">{{ t('Current density:', '当前密度：') }} {{ current }}</p>
   </section>
 </template>
 

@@ -24,7 +24,6 @@ Material 间距以 8 dp 为基础，并提供推荐值；它不要求所有位�
 
 这些变量会随 YAM3X 的 density 设置缩放，包括应用布局所用的值。请检查应用实际密度下的页面边距和内容空间。设计原则参阅[间距概览](https://m3.material.io/styles/spacing/overview)、[间距 token](https://m3.material.io/styles/spacing/tokens)和[间距应用指南](https://m3.material.io/styles/spacing/applying-spacing)。
 
-
 ## 密度
 
 `density` 接受 `0`、`-1` 或 `-2`。紧凑设置会把组件间距缩放至 87.5% 或 75%，并缩小已接入的容器尺寸。字号与 48px 最小交互目标保持不变。密度档位和缩放比例是项目决策。

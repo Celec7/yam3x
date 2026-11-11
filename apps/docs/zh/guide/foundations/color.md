@@ -66,7 +66,6 @@ theme.dispose()
 
 项目不附带工具类。消费应用可以自行添加样式工具，包括 Tailwind，但 YAM3X 组件使用标准 CSS 和上述语义自定义属性。
 
-
 ## 相关基础
 
 - [间距与密度](/zh/guide/foundations/spacing)：密度配置与应用布局间距。

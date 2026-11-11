@@ -22,7 +22,6 @@ Add the correct **lang** to localized content. YAM3X maps common language tags t
 
 Use tabular figures for tables and numbers that change often, such as timers, so values stay aligned. See [Ensuring readability](https://m3.material.io/styles/typography/applying-type).
 
-
 ## Material references
 
 [Applying type](https://m3.material.io/styles/typography/applying-type) · [Type scale and tokens](https://m3.material.io/styles/typography/type-scale-tokens) · [Spacing](https://m3.material.io/styles/spacing/applying-spacing)

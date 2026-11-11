@@ -171,55 +171,55 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 
 ### Exports
 
-| Export   | Description                                      |
-| -------- | ------------------------------------------------ |
+| Export   | Description                                       |
+| -------- | ------------------------------------------------- |
 | `Dialog` | The modal surface, focus behavior, and lifecycle. |
 
 ### Props and models
 
-| Prop and model          | Type                           | Default           | Use                                                              |
-| ----------------------- | ------------------------------ | ----------------- | ---------------------------------------------------------------- |
-| `open`                  | `v-model:open: boolean`        | `false`           | Controls visibility.                                             |
-| `returnValue`           | `v-model:return-value: string`  | `''`              | Result written by `close(value)`.                                |
-| `title`                 | `string`                       | Required          | Visible title and accessible dialog name.                        |
-| `description`           | `string`                       | Undefined         | Supporting text associated with the dialog.                      |
-| `showCloseButton`       | `boolean`                      | `false`           | Shows the separate project close target.                         |
-| `dismissOnEscape`       | `boolean`                      | `true`            | Allows Escape to close the dialog.                               |
-| `dismissOnClickOutside` | `boolean`                      | `true`            | Allows outside pointer input to close the dialog.                |
-| `closeLabel`            | `string`                       | Localized `Close` | Accessible name of the close target.                             |
-| `locale`                | `string`                       | Provider → `en-US`| Language of built-in interface text.                             |
+| Prop and model          | Type                           | Default            | Use                                               |
+| ----------------------- | ------------------------------ | ------------------ | ------------------------------------------------- |
+| `open`                  | `v-model:open: boolean`        | `false`            | Controls visibility.                              |
+| `returnValue`           | `v-model:return-value: string` | `''`               | Result written by `close(value)`.                 |
+| `title`                 | `string`                       | Required           | Visible title and accessible dialog name.         |
+| `description`           | `string`                       | Undefined          | Supporting text associated with the dialog.       |
+| `showCloseButton`       | `boolean`                      | `false`            | Shows the separate project close target.          |
+| `dismissOnEscape`       | `boolean`                      | `true`             | Allows Escape to close the dialog.                |
+| `dismissOnClickOutside` | `boolean`                      | `true`             | Allows outside pointer input to close the dialog. |
+| `closeLabel`            | `string`                       | Localized `Close`  | Accessible name of the close target.              |
+| `locale`                | `string`                       | Provider → `en-US` | Language of built-in interface text.              |
 
 ### Events
 
-| Event     | Payload | Use                                                                                       |
-| --------- | ------- | ----------------------------------------------------------------------------------------- |
-| `opening` | `Event` | Before the dialog opens. A direct `open` model change emits a notification.              |
-| `opened`  | `Event` | After the open transition and focus placement.                                            |
-| `cancel`  | `Event` | Cancelable, before Escape dismissal. Call `preventDefault()` to keep it open.             |
-| `closing` | `Event` | Before the dialog closes. Cancelable for Escape, outside dismissal, and `close()`.        |
-| `closed`  | `Event` | After the close transition and focus return.                                              |
+| Event     | Payload | Use                                                                                |
+| --------- | ------- | ---------------------------------------------------------------------------------- |
+| `opening` | `Event` | Before the dialog opens. A direct `open` model change emits a notification.        |
+| `opened`  | `Event` | After the open transition and focus placement.                                     |
+| `cancel`  | `Event` | Cancelable, before Escape dismissal. Call `preventDefault()` to keep it open.      |
+| `closing` | `Event` | Before the dialog closes. Cancelable for Escape, outside dismissal, and `close()`. |
+| `closed`  | `Event` | After the close transition and focus return.                                       |
 
 A direct `open` model change emits `opening` or `closing` as a notification and then `opened` or `closed`. Dismissal paths and `close()` emit a cancelable `closing`; a prevented close emits no `closed` event.
 
 ### Slots
 
-| Slot         | Use                                                                    |
-| ------------ | ---------------------------------------------------------------------- |
-| `default`    | Dialog body content. Omitted when empty.                               |
-| `title`      | Replaces the title content while preserving the heading element.       |
-| `icon`       | Adds supporting icon media and centers the header content.             |
-| `close-icon` | Replaces the icon inside the project close target.                     |
-| `divider`    | Adds a divider between the body and actions, for example `Divider`.    |
-| `actions`    | Holds up to two text actions; the confirming action goes last.         |
+| Slot         | Use                                                                 |
+| ------------ | ------------------------------------------------------------------- |
+| `default`    | Dialog body content. Omitted when empty.                            |
+| `title`      | Replaces the title content while preserving the heading element.    |
+| `icon`       | Adds supporting icon media and centers the header content.          |
+| `close-icon` | Replaces the icon inside the project close target.                  |
+| `divider`    | Adds a divider between the body and actions, for example `Divider`. |
+| `actions`    | Holds up to two text actions; the confirming action goes last.      |
 
 ### Methods
 
 Access these through a template ref.
 
-| Method          | Returns | Use                                                                       |
-| --------------- | ------- | ------------------------------------------------------------------------- |
-| `close(value?)` | `void`  | Closes the dialog, stores `value` in `returnValue`, and honors cancellation. |
-| `returnValue`   | `string`| Exposed model value; prefer `v-model:return-value`.                       |
+| Method          | Returns  | Use                                                                          |
+| --------------- | -------- | ---------------------------------------------------------------------------- |
+| `close(value?)` | `void`   | Closes the dialog, stores `value` in `returnValue`, and honors cancellation. |
+| `returnValue`   | `string` | Exposed model value; prefer `v-model:return-value`.                          |
 
 ## Styling
 

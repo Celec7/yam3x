@@ -22,7 +22,12 @@ const note = ref('')
       :placeholder="t('Add a short note', '添加简短备注')"
     />
     <p class="textarea-basic__hint">
-      {{ t('The field grows with the note, then scrolls at eight rows.', '字段随备注增高，达到八行后在内部滚动。') }}
+      {{
+        t(
+          'The field grows with the note, then scrolls at eight rows.',
+          '字段随备注增高，达到八行后在内部滚动。',
+        )
+      }}
     </p>
   </section>
 </template>

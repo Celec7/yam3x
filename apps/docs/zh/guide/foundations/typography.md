@@ -22,7 +22,6 @@ Web 文本的行高决定文字边界盒的高度，字体度量决定字形在�
 
 表格和计时器等频繁变化的数字使用等宽数字，让数值保持对齐。参阅[确保可读性](https://m3.material.io/styles/typography/applying-type)。
 
-
 ## Material 参考
 
 [排版应用](https://m3.material.io/styles/typography/applying-type) · [字阶与 token](https://m3.material.io/styles/typography/type-scale-tokens) · [间距](https://m3.material.io/styles/spacing/applying-spacing)

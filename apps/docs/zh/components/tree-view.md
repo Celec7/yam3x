@@ -192,48 +192,48 @@ const loadChildren: TreeViewLoader = async (node, { signal }) => {
 
 ### 导出
 
-| 导出                                                                                                   | 说明                                    |
-| ------------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| `TreeView`                                                                                             | 树、模型、加载和虚拟化。                |
-| `TreeViewNode`、`TreeViewKey`、`TreeViewSelectionMode`、`TreeViewCheckMode`、`TreeViewCheckState`     | 节点与模型类型。                        |
-| `TreeViewLoader`、`TreeViewMessages`、`VirtualListOptions`                                            | 加载器、文案和虚拟化类型。              |
+| 导出                                                                                              | 说明                       |
+| ------------------------------------------------------------------------------------------------- | -------------------------- |
+| `TreeView`                                                                                        | 树、模型、加载和虚拟化。   |
+| `TreeViewNode`、`TreeViewKey`、`TreeViewSelectionMode`、`TreeViewCheckMode`、`TreeViewCheckState` | 节点与模型类型。           |
+| `TreeViewLoader`、`TreeViewMessages`、`VirtualListOptions`                                        | 加载器、文案和虚拟化类型。 |
 
 ### 属性与模型
 
-| 属性或模型      | 默认值                        | 用途                                                                                                      |
-| --------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `nodes`         | 必需                          | 无环的 `TreeViewNode` 森林，同一棵树内所有键唯一。                                                        |
+| 属性或模型      | 默认值                        | 用途                                                                                                       |
+| --------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `nodes`         | 必需                          | 无环的 `TreeViewNode` 森林，同一棵树内所有键唯一。                                                         |
 | `virtual`       | `false`                       | `boolean \| VirtualListOptions`；按实际行高渲染窗口，可配置 `estimateSize`（56 px）和 `overscan`（4 行）。 |
-| `label`         | 必需                          | 可见 Title Medium 标题与树的无障碍名称。                                                                  |
-| `description`   | 空                            | 与树关联的常驻说明。                                                                                      |
-| `expandedKeys`  | `[]`                          | 展开分支的模型。                                                                                          |
-| `selectedKeys`  | `[]`                          | 节点选择模型，单选最多使用一个键。                                                                        |
-| `checkedKeys`   | `[]`                          | 显式勾选记录及派生的完整分支键模型。                                                                      |
-| `selectionMode` | `single`，勾选模式下为 `none` | `none`、`single` 或无需修饰键的 `multiple`。                                                              |
-| `checkMode`     | `none`                        | `none`、`independent` 或 `cascade`；带加载器的树始终独立勾选。                                            |
-| `loadChildren`  | 未定义                        | `(node, { signal }) => Promise<readonly TreeViewNode[]>`；未解析分支必须提供。                            |
-| `disabled`      | `false`                       | 禁止展开、激活、选择、勾选、重试和新读取。已有读取可完成，焦点导航仍可用。                                |
-| `locale`        | Provider → `en-US`            | 随语言变化的前缀查找及内置中英文文案。                                                                    |
-| `instructions`  | 内置可见键盘说明              | 自定义文字，或在其他位置提供同等说明后设为 `false`。                                                      |
-| `messages`      | 内置文案                      | 部分 `TreeViewMessages`，覆盖名称、说明、加载、失败和空状态。                                             |
+| `label`         | 必需                          | 可见 Title Medium 标题与树的无障碍名称。                                                                   |
+| `description`   | 空                            | 与树关联的常驻说明。                                                                                       |
+| `expandedKeys`  | `[]`                          | 展开分支的模型。                                                                                           |
+| `selectedKeys`  | `[]`                          | 节点选择模型，单选最多使用一个键。                                                                         |
+| `checkedKeys`   | `[]`                          | 显式勾选记录及派生的完整分支键模型。                                                                       |
+| `selectionMode` | `single`，勾选模式下为 `none` | `none`、`single` 或无需修饰键的 `multiple`。                                                               |
+| `checkMode`     | `none`                        | `none`、`independent` 或 `cascade`；带加载器的树始终独立勾选。                                             |
+| `loadChildren`  | 未定义                        | `(node, { signal }) => Promise<readonly TreeViewNode[]>`；未解析分支必须提供。                             |
+| `disabled`      | `false`                       | 禁止展开、激活、选择、勾选、重试和新读取。已有读取可完成，焦点导航仍可用。                                 |
+| `locale`        | Provider → `en-US`            | 随语言变化的前缀查找及内置中英文文案。                                                                     |
+| `instructions`  | 内置可见键盘说明              | 自定义文字，或在其他位置提供同等说明后设为 `false`。                                                       |
+| `messages`      | 内置文案                      | 部分 `TreeViewMessages`，覆盖名称、说明、加载、失败和空状态。                                              |
 
 ### 事件
 
-| 事件        | 载荷                                                         | 用途                                                     |
-| ----------- | ------------------------------------------------------------ | -------------------------------------------------------- |
-| `expand`    | `{ node, expanded, keys }`                                   | 随结果键报告展开提议。                                   |
-| `select`    | `{ node, keys }`                                             | 随结果键报告选择提议。                                   |
-| `check`     | `{ node, keys }`                                             | 随结果键报告勾选提议。                                   |
-| `activate`  | `node`                                                       | 在标签激活或 Enter 后触发。                              |
-| `load`      | `{ node, children }`                                         | 报告已接受的子项结果。                                   |
-| `loadError` | `{ node, error }`                                            | 携带诊断失败详情；可见文案使用通用恢复。                 |
+| 事件        | 载荷                       | 用途                                     |
+| ----------- | -------------------------- | ---------------------------------------- |
+| `expand`    | `{ node, expanded, keys }` | 随结果键报告展开提议。                   |
+| `select`    | `{ node, keys }`           | 随结果键报告选择提议。                   |
+| `check`     | `{ node, keys }`           | 随结果键报告勾选提议。                   |
+| `activate`  | `node`                     | 在标签激活或 Enter 后触发。              |
+| `load`      | `{ node, children }`       | 报告已接受的子项结果。                   |
+| `loadError` | `{ node, error }`          | 携带诊断失败详情；可见文案使用通用恢复。 |
 
 ### 插槽
 
-| 插槽      | 作用域                    | 用途                                                                     |
-| --------- | ------------------------- | ------------------------------------------------------------------------ |
-| `leading` | `{ node, expanded }`      | 节点的装饰性前导媒体；请在 `node.label` 中保留完整身份。                 |
-| `empty`   | —                         | 替换默认 Empty state。                                                   |
+| 插槽      | 作用域               | 用途                                                     |
+| --------- | -------------------- | -------------------------------------------------------- |
+| `leading` | `{ node, expanded }` | 节点的装饰性前导媒体；请在 `node.label` 中保留完整身份。 |
+| `empty`   | —                    | 替换默认 Empty state。                                   |
 
 避免在装饰性媒体中加入未经协调的可聚焦控件。
 
@@ -241,37 +241,37 @@ const loadChildren: TreeViewLoader = async (node, { signal }) => {
 
 通过模板 ref 访问。
 
-| 方法         | 返回      | 用途                                                                                     |
-| ------------ | --------- | ---------------------------------------------------------------------------------------- |
-| `focus(key)` | `boolean` | 聚焦逻辑上可见的节点；可用或在下次渲染挂载时返回 `true`。                                |
-| `reload(key)`| `boolean` | 使加载器拥有的缓存失效；请求适用时返回 `true`。                                          |
+| 方法          | 返回      | 用途                                                      |
+| ------------- | --------- | --------------------------------------------------------- |
+| `focus(key)`  | `boolean` | 聚焦逻辑上可见的节点；可用或在下次渲染挂载时返回 `true`。 |
+| `reload(key)` | `boolean` | 使加载器拥有的缓存失效；请求适用时返回 `true`。           |
 
 已展开节点立即重读，折叠节点在下次展开时加载。这些方法不生成缺失节点，也不改变选择。
 
 ### 节点结构
 
-| 字段          | 类型                          | 用途                                                     |
-| ------------- | ----------------------------- | -------------------------------------------------------- |
-| `key`         | `string \| number`            | 必需稳定标识；在整棵树中唯一。                           |
-| `label`       | `string`                      | 必需可见名称与无障碍标签。                               |
-| `description` | `string`                      | 无障碍描述与辅助文本。                                   |
-| `icon`        | `string`                      | 项目 Icon 组件的装饰性图标名称。                         |
-| `value`       | `unknown`                     | 应用不透明数据。                                         |
-| `children`    | `readonly TreeViewNode[]`     | 已知直接子项；显式空数组表示叶节点。                     |
-| `hasChildren` | `boolean`                     | 省略 `children` 时标记未解析分支。                       |
-| `disabled`    | `boolean`                     | 作用于该节点及已知后代。                                 |
-| `selectable`  | `boolean`                     | 只控制该节点的选择。                                     |
-| `checkable`   | `boolean`                     | 只控制该节点的勾选。                                     |
+| 字段          | 类型                      | 用途                                 |
+| ------------- | ------------------------- | ------------------------------------ |
+| `key`         | `string \| number`        | 必需稳定标识；在整棵树中唯一。       |
+| `label`       | `string`                  | 必需可见名称与无障碍标签。           |
+| `description` | `string`                  | 无障碍描述与辅助文本。               |
+| `icon`        | `string`                  | 项目 Icon 组件的装饰性图标名称。     |
+| `value`       | `unknown`                 | 应用不透明数据。                     |
+| `children`    | `readonly TreeViewNode[]` | 已知直接子项；显式空数组表示叶节点。 |
+| `hasChildren` | `boolean`                 | 省略 `children` 时标记未解析分支。   |
+| `disabled`    | `boolean`                 | 作用于该节点及已知后代。             |
+| `selectable`  | `boolean`                 | 只控制该节点的选择。                 |
+| `checkable`   | `boolean`                 | 只控制该节点的勾选。                 |
 
 ## 样式
 
 `TreeView` 在树根元素暴露以下公开属性。行几何、间距、缩进和排版遵循 Material 系统 density、spacing、type、color、shape、elevation 和 motion 角色。
 
-| 属性                                      | 默认值                                   | 用途                     |
-| ----------------------------------------- | ---------------------------------------- | ------------------------ |
-| `--yam3x-tree-view-virtual-max-height`    | `400px`                                  | 虚拟视口最大高度。       |
-| `--yam3x-tree-view-label-min-width`       | `10rem`                                  | 溢出前标签的最小宽度。   |
-| `--yam3x-tree-view-row-shape`             | `--md-sys-shape-corner-medium`（12 px）  | 行、悬停、选择和焦点形状。 |
+| 属性                                   | 默认值                                  | 用途                       |
+| -------------------------------------- | --------------------------------------- | -------------------------- |
+| `--yam3x-tree-view-virtual-max-height` | `400px`                                 | 虚拟视口最大高度。         |
+| `--yam3x-tree-view-label-min-width`    | `10rem`                                 | 溢出前标签的最小宽度。     |
+| `--yam3x-tree-view-row-shape`          | `--md-sys-shape-corner-medium`（12 px） | 行、悬停、选择和焦点形状。 |
 
 标签使用 Body Large，元数据和说明使用 Body Small，标题使用 Title Medium。所选节点使用 Secondary Container 与 On Secondary Container；焦点具有独立的可见轮廓。仅展开不会选择一行。共享行形状属于项目设计选择。
 

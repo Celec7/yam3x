@@ -24,7 +24,6 @@ The copied foundation stylesheet provides reusable spacing variables at 4, 8, 12
 
 These variables scale with the YAM3X density setting, including values used by application layouts. Check page gutters and content fit at the density used by your app. For design guidance, see [Spacing overview](https://m3.material.io/styles/spacing/overview), [spacing tokens](https://m3.material.io/styles/spacing/tokens), and [applying spacing](https://m3.material.io/styles/spacing/applying-spacing).
 
-
 ## Density
 
 `density` accepts `0`, `-1`, or `-2`. The compact settings scale component spacing to 87.5% or 75% and reduce supported container dimensions. Font sizes and the 48px minimum interactive target remain unchanged. The factors and density levels are project decisions.
