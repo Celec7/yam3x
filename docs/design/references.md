@@ -52,5 +52,5 @@ An implementation-dependent decision records its exact library version in the de
 
 - [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) generates light and dark 2025 tonal schemes for [`generate.ts`](../../registry/foundations/theme/generate.ts).
 - AndroidX [ExpressiveMotionTokens](https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ExpressiveMotionTokens.kt) informs the spring parameters in [`foundation-tokens.mjs`](../../registry/foundations/tokens/foundation-tokens.mjs); the M3 Web motion specification supplies the CSS duration and easing mappings. [`generate-foundation-tokens.mjs`](../../scripts/generate-foundation-tokens.mjs) generates their CSS representation.
-- [Ark UI](https://ark-ui.com/) provides Switch and Dialog behavior. [Architecture and ownership](../architecture.md) describes the dependency boundary.
+- [Ark UI](https://ark-ui.com/) provides Switch, Dialog, and BottomSheet behavior. [Architecture and ownership](../architecture.md) describes the dependency boundary.
 - The source-copying workflow resembles [shadcn-vue](https://github.com/unovue/shadcn-vue), but yam3x does not depend on it.

@@ -4,7 +4,7 @@ English | [简体中文](README_zh-CN.md)
 
 YAM3X provides Vue-native Material 3 Expressive components as editable source. Add a component to your Vue app, then adapt its `.vue`, `.ts`, and `.css` files to your product.
 
-Components use Material design tokens and Vue APIs. Switch and Dialog use Ark UI internally for interaction behavior.
+Components use Material design tokens and Vue APIs. Switch, Dialog, and BottomSheet use Ark UI internally for interaction behavior.
 
 ## Getting started
 

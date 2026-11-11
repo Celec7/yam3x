@@ -4,7 +4,7 @@
 
 YAM3X 提供原生适配 Vue 的 Material 3 Expressive 组件，并以可编辑源码的形式交付。将组件添加到 Vue 应用后，可以根据产品需求修改其中的 `.vue`、`.ts` 和 `.css` 文件。
 
-组件使用 Material 设计令牌和 Vue API。Switch 和 Dialog 在内部使用 Ark UI 实现交互行为。
+组件使用 Material 设计令牌和 Vue API。Switch、Dialog 和 BottomSheet 在内部使用 Ark UI 实现交互行为。
 
 ## 开始使用
 

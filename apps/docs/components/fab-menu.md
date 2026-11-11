@@ -127,6 +127,7 @@ const expanded = ref(false)
 - `presentation` chooses `pill-stack` or `web-menu`. This is a project decision; the layout does not switch automatically by viewport size.
 - `horizontal-alignment` defaults to `end`; `start` and `center` are project positioning options.
 - The popup is teleported to `body`, mirrors the document direction, and receives System tokens from the nearest `[data-theme]` ancestor.
+- The popup reserves a 16px window margin, increased to 24px at 1200px and wider. This component-specific rule is a project decision.
 - The action list scrolls within the available space without covering the trigger.
 
 ### State ownership

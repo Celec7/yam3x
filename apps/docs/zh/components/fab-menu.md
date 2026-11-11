@@ -127,6 +127,7 @@ const expanded = ref(false)
 - `presentation` 选择 `pill-stack` 或 `web-menu`。这是项目决策；布局不会按视口尺寸自动切换。
 - `horizontal-alignment` 默认为 `end`；`start` 与 `center` 是项目定位选项。
 - 浮层会传送到 `body`，随文档方向镜像，并从最近的 `[data-theme]` 祖先读取 System token。
+- 浮层保留 16px 窗口边距，在 1200px 及以上增加为 24px。该组件专属规则属于项目决策。
 - 操作列表会在可用空间内滚动，不会遮挡触发器。
 
 ### 状态所有权
