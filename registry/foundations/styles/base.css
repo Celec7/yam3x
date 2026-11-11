@@ -217,23 +217,3 @@ body {
     outline-color: Highlight;
   }
 }
-
-.yam3x-elevation-1 {
-  box-shadow: var(--md-sys-elevation-level1);
-}
-
-.yam3x-elevation-2 {
-  box-shadow: var(--md-sys-elevation-level2);
-}
-
-.yam3x-elevation-3 {
-  box-shadow: var(--md-sys-elevation-level3);
-}
-
-.yam3x-elevation-4 {
-  box-shadow: var(--md-sys-elevation-level4);
-}
-
-.yam3x-elevation-5 {
-  box-shadow: var(--md-sys-elevation-level5);
-}

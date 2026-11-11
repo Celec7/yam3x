@@ -9,6 +9,7 @@
 - FormField resolves form controls through native form elements or `data-form-field-control`; external custom-element tags are no longer special-cased.
 - Remove the mandatory Tailwind CSS dependency. Copied components now use standard CSS without Tailwind or its Vite plugin, and the published Tailwind theme aliases (`bg-yam3x-*`, `text-yam3x-*`, `font-yam3x-*`, `rounded-yam3x-*`, `p-yam3x-*`, `gap-yam3x-*`, and other generated utilities) are no longer provided. Replace them with application-owned CSS using the retained semantic `--md-sys-*` custom properties.
 - Button variants no longer use `tailwind-variants`. The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
+- Remove the undocumented `yam3x-elevation-1` through `yam3x-elevation-5` helper classes. Use the `--md-sys-elevation-level1` through `--md-sys-elevation-level5` tokens in application CSS.
 
 ### Added
 
