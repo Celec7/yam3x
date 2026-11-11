@@ -190,12 +190,71 @@ for (const demo of demoFiles) {
   if (!usedDemos.has(demo)) errors.push(`${demo}: demo is not imported by a page or guide`)
 }
 
+const skillRoots = [path.join(root, 'skills'), path.join(root, '.agents', 'skills')]
+let skillCount = 0
+for (const skillRoot of skillRoots) {
+  let entries
+  try {
+    entries = await readdir(skillRoot, { withFileTypes: true })
+  } catch {
+    continue
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue
+    const skillPath = path.join(skillRoot, entry.name, 'SKILL.md')
+    let source
+    try {
+      source = await readFile(skillPath, 'utf8')
+    } catch {
+      continue
+    }
+    skillCount += 1
+    const relative = path.relative(root, skillPath)
+    const frontmatter = source.match(/^---\n([\s\S]*?)\n---/)
+    if (!frontmatter) {
+      errors.push(`${relative}: missing frontmatter`)
+      continue
+    }
+    const name = frontmatter[1].match(/^name:\s*(.+)$/m)?.[1]?.trim()
+    const description = frontmatter[1].match(/^description:\s*(.+)$/m)?.[1]?.trim()
+    if (!name) errors.push(`${relative}: missing name`)
+    else if (name !== entry.name)
+      errors.push(`${relative}: name "${name}" does not match directory`)
+    if (!description) errors.push(`${relative}: missing description`)
+
+    const body = source.slice(frontmatter[0].length).replace(/```[^\n]*\n[\s\S]*?```/g, '')
+    let references
+    try {
+      references = (await readdir(path.join(skillRoot, entry.name, 'references'))).filter((file) =>
+        file.endsWith('.md'),
+      )
+    } catch {
+      references = []
+    }
+    for (const reference of references) {
+      if (!body.includes(`references/${reference}`)) {
+        errors.push(`${relative}: unused reference references/${reference}`)
+      }
+    }
+    for (const match of body.matchAll(/\]\(([^)\s]+)\)/g)) {
+      const target = match[1]
+      if (/^(?:https?:|#|mailto:)/.test(target)) continue
+      const targetPath = path.resolve(path.dirname(skillPath), target.split('#')[0])
+      try {
+        await readFile(targetPath, 'utf8')
+      } catch {
+        errors.push(`${relative}: missing link target ${target}`)
+      }
+    }
+  }
+}
+
 if (errors.length) {
   console.error(`Docs check failed with ${errors.length} issue(s):`)
   for (const error of errors) console.error(`  - ${error}`)
   process.exitCode = 1
 } else {
   console.log(
-  `OK: ${pages.length} component page pairs, ${guidePages.length} guide pages, and ${demoFiles.size} demos checked.`,
-)
+    `OK: ${pages.length} component page pairs, ${guidePages.length} guide pages, ${demoFiles.size} demos, and ${skillCount} skills checked.`,
+  )
 }

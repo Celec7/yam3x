@@ -23,6 +23,7 @@ The CLI copies editable source and declares dependencies; the copied components 
 - [Documentation index](docs/README.md)
 - [Project glossary](docs/glossary.md)
 - [Component delivery pipeline](docs/contributing/component-implementation.md)
+- [Agent skill](skills/yam3x/SKILL.md)
 - [Install and use components](apps/docs/guide/start/installation.md)
 - [Foundations](apps/docs/guide/foundations/index.md)
 - [Project component design guides](docs/specs/README.md)

@@ -34,3 +34,13 @@ const enabled = ref(false)
 Build the target app to confirm that the dependencies are ready. Demo source on the component pages uses the site-only `@registry` path; when copying an example, use the corresponding `./components/yam3x/` path in your app.
 
 `--no-install` updates project files and dependency declarations without running a package manager. Use `--cwd <project>` to target a directory other than the current one. The CLI preserves existing files in the target app, including `src/components/yam3x/AGENTS.md`; merge the [distributed YAM3X guidance](https://github.com/Celec7/yam3x/blob/main/registry/foundations/AGENTS.md) into that file when needed. Running `add` again does not overwrite copied or edited source. See [Update copied source](/guide/maintain/updating) for later merges.
+
+## Agent skill
+
+Agents that support Agent Skills can install the published YAM3X skill for component selection, page design, customization, and verification guidance:
+
+```sh
+npx skills add Celec7/yam3x@yam3x
+```
+
+The skill is optional. Initialization still copies the short design route to `src/components/yam3x/AGENTS.md`; the skill adds a broader workflow for agents that support Agent Skills.

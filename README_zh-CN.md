@@ -23,6 +23,7 @@ CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 
 - [文档索引](docs/README.md)
 - [项目术语表](docs/glossary.md)
 - [组件交付流水线](docs/contributing/component-implementation.md)
+- [Agent skill](skills/yam3x/SKILL.md)
 - [安装和使用组件](apps/docs/zh/guide/start/installation.md)
 - [基础](apps/docs/zh/guide/foundations/index.md)
 - [项目组件设计指南](docs/specs/README.md)

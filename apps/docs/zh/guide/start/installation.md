@@ -34,3 +34,13 @@ const enabled = ref(false)
 运行目标项目的构建，确认依赖均已就绪。组件页面的演示源码使用站点专用的 `@registry` 路径；复制示例时应改用目标项目内的 `./components/yam3x/` 路径。
 
 `--no-install` 只更新项目文件和依赖声明，不运行包管理器。使用 `--cwd <project>` 可以指定其他目标目录。CLI 会保留目标应用中已经存在的文件，包括 `src/components/yam3x/AGENTS.md`；需要整合时，可参考[分发的 YAM3X 指南](https://github.com/Celec7/yam3x/blob/main/registry/foundations/AGENTS.md)。再次执行 `add` 不会覆盖之前复制或修改过的源码。后续版本的合并方法见[更新已复制的源码](/zh/guide/maintain/updating)。
+
+## Agent skill
+
+支持 Agent Skills 的 agent 可以安装已发布的 YAM3X skill，用来获得组件选择、页面设计、定制和验证方面的指导：
+
+```sh
+npx skills add Celec7/yam3x@yam3x
+```
+
+该 skill 是可选的。初始化仍会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`；skill 为支持 Agent Skills 的 agent 提供更完整的工作流程。

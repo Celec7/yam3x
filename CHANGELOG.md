@@ -12,6 +12,7 @@
 
 ### Added
 
+- Add the installable `yam3x` Agent Skill and the repository-only `yam3x-component-alignment` skill. `pnpm docs:check` validates skill frontmatter, reference files, and links.
 - Foundation CSS exposes read-only pointer capability flags for primary pointer, any-pointer, hover, and any-hover. Components use the primary pointer for layout sizing so hybrid devices stay stable.
 - Date pickers accept `closeLabel` and `saveLabel` for the full-screen modal actions. `DatePickerMessages` gains matching `close` and `save` messages.
 - InlineMessage accepts `headingLevel` for its optional title.

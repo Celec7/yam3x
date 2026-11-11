@@ -8,6 +8,19 @@
 - Tests and browser checks provide implementation evidence. Keep detailed results with their verification owner, not in design guides.
 - Label details not defined by Material as project decisions. Keep them brief and explain the reason when they affect component design or behavior.
 
+## Agent skills and task routing
+
+| Task                                                                  | Read first                                                                        |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Application page, demo, layout, or component usage in this repository | [skills/yam3x/SKILL.md](skills/yam3x/SKILL.md)                                    |
+| Adding, changing, or auditing a `registry/` component                 | `yam3x-component-alignment` skill under `.agents/skills/`                         |
+| Maintaining documentation                                             | `canonical-docs` and [Public docs authoring](docs/contributing/site-authoring.md) |
+| Recording a lasting architecture decision                             | `adr` skill                                                                       |
+
+- `skills/yam3x/` is also the consumer-installable skill: `npx skills add Celec7/yam3x@yam3x`.
+- Skills own reusable judgment; `docs/` owns design, API, and verification facts. Do not restate a fact owned by a document in a skill.
+- Subagents do not inherit this file. When delegating, include the relevant skill path and the constraints that apply to the slice.
+
 ## Reference order and component classes
 
 - Classify each component before changing it: **Expressive**, **M3 baseline**, or **project extension**. Class comes from whether an applicable Expressive design source exists, not from what Material Web or Compose currently implements.

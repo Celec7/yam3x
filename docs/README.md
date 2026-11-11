@@ -4,12 +4,13 @@
 
 ## Start here
 
-| Task                                               | Page                                                         |
-| -------------------------------------------------- | ------------------------------------------------------------ |
-| Understand source ownership and change propagation | [Architecture and ownership](architecture.md)                |
-| Use the project's shared terms                     | [Project glossary](glossary.md)                              |
-| Choose and cite design or implementation sources   | [Design and implementation references](design/references.md) |
-| Find workspace commands                            | [Contributing](../CONTRIBUTING.md)                           |
+| Task                                               | Page                                                                                                                                                      |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Understand source ownership and change propagation | [Architecture and ownership](architecture.md)                                                                                                             |
+| Use the project's shared terms                     | [Project glossary](glossary.md)                                                                                                                           |
+| Choose and cite design or implementation sources   | [Design and implementation references](design/references.md)                                                                                              |
+| Find workspace commands                            | [Contributing](../CONTRIBUTING.md)                                                                                                                        |
+| Route an agent task or use a project skill         | [Agent skills](../skills/yam3x/SKILL.md), [component alignment](../.agents/skills/yam3x-component-alignment/SKILL.md), [repository routing](../AGENTS.md) |
 
 ## Design and implementation
 
@@ -46,5 +47,6 @@ Installable components come from entrypoints under [`registry/components/`](../r
 - Current API and behavior: `registry/`.
 - Public usage: `apps/docs/`.
 - Verification evidence: tests, browser checks, and CLI checks.
+- Agent judgment: `skills/yam3x/` for the installable design workflow and `.agents/skills/` for repository-only skills.
 - Architecture rationale: ADRs under `docs/agents/notes/`.
 - Local temporary work: `docs/agents/local/work/` (git-ignored).

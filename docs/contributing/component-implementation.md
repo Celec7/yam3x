@@ -2,6 +2,8 @@
 
 This page owns the component delivery pipeline: design sources, project guides, Vue API decisions, implementation, public documentation, and evidence. Classify components using [design and implementation references](../design/references.md) and the [project glossary](../glossary.md). The guide index is [project component design guides](../specs/README.md).
 
+Agent-assisted work in this repository routes through the `yam3x-component-alignment` skill under `.agents/skills/`; this page remains the canonical source of the pipeline steps.
+
 ## Pipeline
 
 ### 1. Classify and gather sources

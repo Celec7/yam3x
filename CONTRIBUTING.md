@@ -24,10 +24,13 @@ Before changing a component, classify it as Expressive, M3 baseline, or a projec
 ```sh
 pnpm format:check
 pnpm lint
+pnpm docs:check
 pnpm typecheck
 pnpm test
 pnpm build
 ```
+
+Run `pnpm docs:check` when changing public pages, demos, or agent skills. It verifies page structure, bilingual heading parity, demo references, and skill frontmatter and links.
 
 Run the browser checks that cover the changed surface. Run a full `pnpm test:e2e` only for cross-cutting changes, shared foundations, or a risk that targeted checks cannot exercise. Run `pnpm test:cli` when component imports, dependencies, or distribution change.
 

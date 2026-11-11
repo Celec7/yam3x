@@ -15,7 +15,7 @@
 
 ## 消费项目中的 Agent
 
-安装时，如果目标文件尚不存在，CLI 会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`。应用根目录的 `AGENTS.md` 保持独立；保留文件的行为见[安装与首次使用](/zh/guide/start/installation)。
+安装时，如果目标文件尚不存在，CLI 会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`。应用根目录的 `AGENTS.md` 保持独立；保留文件的行为见[安装与首次使用](/zh/guide/start/installation)。支持 Agent Skills 的 agent 还可以通过 `npx skills add Celec7/yam3x@yam3x` 安装已发布的 skill。
 
 ## 参考
 
