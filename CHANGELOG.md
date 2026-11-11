@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- Vue is now a peer dependency of the registry. The CLI validates its declared and installed version but no longer adds Vue to the application's runtime dependencies.
+- Registry dependency metadata is generated into the published CLI package at pack time instead of being committed as `registry/registry.json`. Use `pnpm registry:check` to validate the derived model.
 - DateInput removes the controlled `value` and `update:value` compatibility aliases. Use `v-model`, `modelValue`, and `update:modelValue` instead.
 - Empty state and Inline message titles now render as level-3 headings by default, with `headingLevel` overrides; Cascader dialog titles use level 2.
 - FormField resolves form controls through native form elements or `data-form-field-control`; external custom-element tags are no longer special-cased.
@@ -20,9 +22,13 @@
 - Date pickers accept `closeLabel` and `saveLabel` for the full-screen modal actions. `DatePickerMessages` gains matching `close` and `save` messages.
 - InlineMessage accepts `headingLevel` for its optional title.
 - `pnpm breakpoints:check` enforces the shared responsive breakpoint contract in CI.
+- Add `yam3x status` for read-only dependency reconciliation and `yam3x sync` for updating dependency declarations of installed components without modifying copied source.
+- Add `pnpm deps:update` to update resolved dependencies within catalog ranges and rerun registry and CLI checks.
 
 ### Fixed
 
+- Dependency compatibility uses range inclusion instead of intersection, so a consumer declaration that permits untested versions is reported as unsafe.
+- `yam3x add` preflights every requested component before copying files or changing `package.json`, preventing a partial install when a later component has an incompatible dependency.
 - Responsive rules use the compact boundary below 600px consistently, removing the fractional gap between 599px and 600px in component media queries.
 - Descriptions scopes its styles, scales the remaining item and inline gaps with density, and records the outlined border, corner, and padding.
 - Inline messages record their fixed 2px leading-icon optical offset and which Button variants inherit the message foreground.

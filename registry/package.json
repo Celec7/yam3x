@@ -6,7 +6,9 @@
     "@ark-ui/vue": "catalog:",
     "@floating-ui/dom": "catalog:",
     "@material/material-color-utilities": "catalog:",
-    "composed-offset-position": "catalog:",
+    "composed-offset-position": "catalog:"
+  },
+  "peerDependencies": {
     "vue": "catalog:"
   }
 }

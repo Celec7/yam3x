@@ -1,6 +1,24 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitepress'
+import { buildRegistry } from '../../../scripts/generate-registry.mjs'
 import { getComponentCatalog, type ComponentGroup } from '../component-catalog'
+
+const registryComponentsModule = 'virtual:yam3x-components'
+const registryComponentsId = `\0${registryComponentsModule}`
+
+function registryComponentsPlugin() {
+  return {
+    name: 'yam3x-registry-components',
+    resolveId(id: string) {
+      if (id === registryComponentsModule) return registryComponentsId
+    },
+    async load(id: string) {
+      if (id !== registryComponentsId) return
+      const { components } = await buildRegistry()
+      return `export default ${JSON.stringify(Object.keys(components).sort())}`
+    },
+  }
+}
 
 function catalogSidebar(groups: ComponentGroup[], prefix = '') {
   return groups.map((group) => ({
@@ -93,9 +111,7 @@ function localeThemeConfig(prefix: '' | '/zh', english = false) {
     },
     {
       text: labels.maintain,
-      items: [
-        { text: labels.updating, link: `${prefix}/guide/maintain/updating` },
-      ],
+      items: [{ text: labels.updating, link: `${prefix}/guide/maintain/updating` }],
     },
   ]
   const foundationsSidebar = [
@@ -188,6 +204,7 @@ export default defineConfig({
   ],
   cleanUrls: true,
   vite: {
+    plugins: [registryComponentsPlugin()],
     ssr: {
       noExternal: ['@material/material-color-utilities'],
     },

@@ -4,18 +4,30 @@ import { existsSync } from 'node:fs'
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import semver from 'semver'
+import {
+  applyPackagePlan,
+  coreInstalled,
+  DEFAULT_STYLE,
+  describePackage,
+  installedComponents,
+  planNeedsAttention,
+  planNeedsInstall,
+  planReconcile,
+} from './plan.mjs'
 
 const cliDirectory = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(cliDirectory, '..')
-const workspaceRoot = resolve(packageRoot, '../..')
-const isWorkspacePackage = existsSync(join(workspaceRoot, 'packages/cli/package.json'))
-const registryRoot = isWorkspacePackage
-  ? join(workspaceRoot, 'registry')
-  : join(packageRoot, 'registry')
+const registryRoot = join(packageRoot, 'registry')
+const manualActions = new Set(['manual', 'narrow', 'move', 'invalid'])
 
 function parseOptions(args) {
-  const options = { positional: [], cwd: process.cwd(), install: true }
+  const options = {
+    positional: [],
+    cwd: process.cwd(),
+    install: true,
+    dryRun: false,
+    json: false,
+  }
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index]
@@ -27,6 +39,10 @@ function parseOptions(args) {
       index += 1
     } else if (argument === '--no-install') {
       options.install = false
+    } else if (argument === '--dry-run') {
+      options.dryRun = true
+    } else if (argument === '--json') {
+      options.json = true
     } else {
       options.positional.push(argument)
     }
@@ -43,12 +59,18 @@ async function writeJson(path, value) {
   await writeFile(path, `${JSON.stringify(value, null, 2)}\n`)
 }
 
-async function exists(path) {
+async function readRegistry() {
+  const path = join(registryRoot, 'registry.json')
   try {
-    await readFile(path)
-    return true
-  } catch {
-    return false
+    return await readJson(path)
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      throw new Error(
+        'Registry metadata is missing. Run `pnpm registry:prepare` from the repository root.',
+        { cause: error },
+      )
+    }
+    throw error
   }
 }
 
@@ -78,105 +100,128 @@ async function installDependencies(project, projectRoot) {
 }
 
 async function copyIfMissing(source, destination) {
-  if (await exists(destination)) return false
+  if (existsSync(destination)) return false
   await mkdir(dirname(destination), { recursive: true })
   await cp(source, destination, { recursive: true, errorOnExist: true })
   return true
 }
 
-function validateDependencyRequirements(packageJson, dependencyMap, kind = 'dependencies') {
-  const current = packageJson[kind] ?? {}
-  for (const [name, requiredRange] of Object.entries(dependencyMap)) {
-    const currentRange = current[name]
-    if (!currentRange) continue
-    if (
-      !semver.validRange(currentRange) ||
-      !semver.validRange(requiredRange) ||
-      !semver.intersects(currentRange, requiredRange)
-    ) {
-      throw new Error(
-        `Existing ${kind} entry for ${name} (${currentRange}) does not satisfy the registry requirement (${requiredRange}). Update it before adding this component.`,
-      )
-    }
-  }
-}
-
-async function addDependencies(packageJson, dependencyMap, kind = 'dependencies') {
-  validateDependencyRequirements(packageJson, dependencyMap, kind)
-  const current = packageJson[kind] ?? {}
-  const pending = Object.fromEntries(
-    Object.entries(dependencyMap).filter(([name]) => !current[name]),
-  )
-  packageJson[kind] = { ...current, ...pending }
-  return Object.keys(pending)
-}
-
-async function initProject(projectRoot, registry) {
-  const packagePath = join(projectRoot, 'package.json')
-  const project = await readJson(packagePath)
-  const core = registry.foundations.core
-  validateDependencyRequirements(project, core.dependencies ?? {})
-  validateDependencyRequirements(project, core.devDependencies ?? {}, 'devDependencies')
-  const existingMainPath = await findExistingMain(projectRoot)
-
-  if (!existingMainPath) {
-    throw new Error(
-      'Could not find src/main.ts or src/main.js. Create a Vue app entry before running yam3x init.',
-    )
-  }
-
-  const created = []
-  for (const { source, target } of core.files) {
-    if (await copyIfMissing(join(registryRoot, source), join(projectRoot, target)))
-      created.push(target)
-  }
-
-  let mainSource = await readFile(existingMainPath, 'utf8')
-  if (!mainSource.includes("'./yam3x.css'") && !mainSource.includes('"./yam3x.css"')) {
-    mainSource = `import './yam3x.css'\n${mainSource}`
-    await writeFile(existingMainPath, mainSource)
-  }
-
-  const devAdded = await addDependencies(project, core.devDependencies ?? {}, 'devDependencies')
-  const runtimeAdded = await addDependencies(project, core.dependencies ?? {})
-  project.yam3x = { ...(project.yam3x ?? {}), registry: 'yam3x', style: 'src/yam3x.css' }
-  await writeJson(packagePath, project)
-
-  return { project, created, dependencies: [...devAdded, ...runtimeAdded] }
-}
-
 async function findExistingMain(projectRoot) {
   for (const name of ['main.ts', 'main.js']) {
     const path = join(projectRoot, 'src', name)
-    if (await exists(path)) return path
+    if (existsSync(path)) return path
   }
   return undefined
 }
 
-async function addComponent(projectRoot, name, registry) {
-  const entry = registry.components[name]
-  const core = entry.foundations?.includes('core') ? registry.foundations.core : undefined
-  const project = await readJson(join(projectRoot, 'package.json'))
-  const dependencies = { ...(core?.dependencies ?? {}), ...(entry.dependencies ?? {}) }
-  validateDependencyRequirements(project, dependencies)
-  if (core) validateDependencyRequirements(project, core.devDependencies ?? {}, 'devDependencies')
-  const initialized = core ? await initProject(projectRoot, registry) : undefined
-  const updatedProject = await readJson(join(projectRoot, 'package.json'))
-
-  const addedFiles = [...(initialized?.created ?? [])]
-  for (const file of entry.files) {
-    const source = join(registryRoot, 'components', file)
-    const target = join(projectRoot, 'src/components/yam3x', file)
-    if (await copyIfMissing(source, target)) addedFiles.push(target)
+async function requireMain(projectRoot) {
+  const main = await findExistingMain(projectRoot)
+  if (!main) {
+    throw new Error(
+      'Could not find src/main.ts or src/main.js. Create a Vue app entry before running this command.',
+    )
   }
+  return main
+}
 
-  const addedDependencies = [
-    ...(initialized?.dependencies ?? []),
-    ...(await addDependencies(updatedProject, dependencies)),
-  ]
-  await writeJson(join(projectRoot, 'package.json'), updatedProject)
+function setProjectConfig(project) {
+  project.yam3x = {
+    ...(project.yam3x ?? {}),
+    registry: 'yam3x',
+    style: project.yam3x?.style ?? DEFAULT_STYLE,
+  }
+}
 
-  return { project: updatedProject, addedFiles, addedDependencies }
+async function injectStyleImport(projectRoot) {
+  const mainPath = await findExistingMain(projectRoot)
+  if (!mainPath) {
+    throw new Error(
+      'Could not find src/main.ts or src/main.js. Create a Vue app entry before running yam3x init.',
+    )
+  }
+  let source = await readFile(mainPath, 'utf8')
+  if (!source.includes("'./yam3x.css'") && !source.includes('"./yam3x.css"')) {
+    source = `import './yam3x.css'\n${source}`
+    await writeFile(mainPath, source)
+  }
+}
+
+async function applyPlan(plan, project, { copyFiles = true } = {}) {
+  const addedFiles = []
+  if (copyFiles) {
+    for (const file of plan.files) {
+      if (await copyIfMissing(file.source, file.target)) addedFiles.push(file.relativeTarget)
+    }
+  }
+  const changedPackages = applyPackagePlan(project, plan.packages)
+  return { addedFiles, changedPackages }
+}
+
+function planBlocking(plan, actions) {
+  return plan.errors.length > 0 || plan.packages.some((pkg) => actions.has(pkg.action))
+}
+
+function blockingMessage(plan, actions) {
+  const lines = [...plan.errors]
+  for (const pkg of plan.packages) {
+    if (!actions.has(pkg.action)) continue
+    if (pkg.status === 'missing') {
+      lines.push(
+        `Missing ${pkg.kind} dependency ${pkg.name} (${pkg.range}). Add it to the application before continuing.`,
+      )
+    } else if (pkg.status === 'invalid') {
+      lines.push(
+        `Existing ${pkg.kind} entry for ${pkg.name} (${pkg.declared}) is not a valid semver range. Update it before continuing.`,
+      )
+    } else {
+      lines.push(
+        `Existing ${pkg.kind} entry for ${pkg.name} (${pkg.declared}) does not satisfy the registry requirement (${pkg.range}). Update it before continuing.`,
+      )
+    }
+  }
+  return lines.join('\n')
+}
+
+function printPlan(plan, { json }) {
+  if (json) {
+    console.log(JSON.stringify(plan, null, 2))
+    return
+  }
+  const issues = plan.packages.filter((pkg) => pkg.status !== 'ok')
+  const missingFiles = plan.files.filter((file) => !file.exists)
+  if (!issues.length && !missingFiles.length && !plan.errors.length) {
+    console.log('Dependencies are up to date.')
+    return
+  }
+  for (const pkg of issues) console.log(describePackage(pkg))
+  if (missingFiles.length) {
+    console.log(`Missing files: ${missingFiles.length}`)
+    for (const file of missingFiles.slice(0, 10)) console.log(`  ${file.relativeTarget}`)
+    if (missingFiles.length > 10) console.log(`  ...and ${missingFiles.length - 10} more`)
+  }
+  for (const error of plan.errors) console.log(`Error: ${error}`)
+}
+
+function printFileSummary(files) {
+  console.log(
+    files.length ? `Added ${files.length} source file(s).` : 'No new source files were needed.',
+  )
+}
+
+function printDependencySummary(packages) {
+  const names = [...new Set(packages)]
+  console.log(
+    names.length ? `Declared dependencies: ${names.join(', ')}` : 'No new npm dependencies.',
+  )
+}
+
+async function installIfNeeded(plan, project, options) {
+  if (!planNeedsInstall(plan)) return
+  if (options.install) {
+    await installDependencies(project, options.cwd)
+  } else {
+    console.log('Run your package manager install command to resolve the new dependencies.')
+  }
 }
 
 async function run() {
@@ -189,63 +234,126 @@ async function run() {
 
   if (!command || command === '--help' || command === '-h') {
     console.log(
-      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]',
+      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]\n       yam3x status [--cwd <project>] [--json]\n       yam3x sync [--cwd <project>] [--dry-run] [--no-install]',
     )
     return
   }
 
-  const registry = await readJson(join(registryRoot, 'registry.json'))
+  const registry = await readRegistry()
   if (command === 'list') {
     console.log(Object.keys(registry.components).sort().join('\n'))
     return
   }
 
   const options = parseOptions(args)
-  let project = await readJson(join(options.cwd, 'package.json'))
-  const allFiles = []
-  const allDependencies = []
+  const packagePath = join(options.cwd, 'package.json')
+  const project = await readJson(packagePath)
 
   if (command === 'init') {
-    const result = await initProject(options.cwd, registry)
-    project = result.project
-    allFiles.push(...result.created)
-    allDependencies.push(...result.dependencies)
-  } else if (command === 'add') {
-    const components = options.positional
+    await requireMain(options.cwd)
+    const plan = await planReconcile({
+      registry,
+      registryRoot,
+      projectRoot: options.cwd,
+      project,
+      componentNames: [],
+      includeCore: true,
+    })
+    if (planBlocking(plan, manualActions)) throw new Error(blockingMessage(plan, manualActions))
+    if (options.dryRun) {
+      printPlan(plan, options)
+      return
+    }
+    const { addedFiles, changedPackages } = await applyPlan(plan, project)
+    setProjectConfig(project)
+    await injectStyleImport(options.cwd)
+    await writeJson(packagePath, project)
+    printFileSummary(addedFiles)
+    printDependencySummary(changedPackages)
+    await installIfNeeded(plan, project, options)
+    return
+  }
+
+  if (command === 'add') {
+    const components = [...new Set(options.positional)]
     if (components.length === 0) throw new Error('yam3x add requires at least one component name.')
-    for (const component of components) {
-      if (!Object.hasOwn(registry.components, component)) {
-        throw new Error(
-          `Unknown component "${component}". Available: ${Object.keys(registry.components).join(', ')}`,
-        )
-      }
+    await requireMain(options.cwd)
+    const plan = await planReconcile({
+      registry,
+      registryRoot,
+      projectRoot: options.cwd,
+      project,
+      componentNames: components,
+      includeCore: true,
+    })
+    if (planBlocking(plan, manualActions)) throw new Error(blockingMessage(plan, manualActions))
+    if (options.dryRun) {
+      printPlan(plan, options)
+      return
     }
-    for (const component of components) {
-      const result = await addComponent(options.cwd, component, registry)
-      project = result.project
-      allFiles.push(...result.addedFiles)
-      allDependencies.push(...result.addedDependencies)
-    }
-  } else {
-    throw new Error(`Unknown command "${command}".`)
+    const { addedFiles, changedPackages } = await applyPlan(plan, project)
+    setProjectConfig(project)
+    await injectStyleImport(options.cwd)
+    await writeJson(packagePath, project)
+    printFileSummary(addedFiles)
+    printDependencySummary(changedPackages)
+    await installIfNeeded(plan, project, options)
+    return
   }
 
-  console.log(
-    allFiles.length
-      ? `Added ${allFiles.length} source file(s).`
-      : 'No new source files were needed.',
-  )
-  console.log(
-    allDependencies.length
-      ? `Declared dependencies: ${[...new Set(allDependencies)].join(', ')}`
-      : 'No new npm dependencies.',
-  )
-
-  if (options.install && allDependencies.length > 0) {
-    await installDependencies(project, options.cwd)
-  } else if (allDependencies.length > 0) {
-    console.log('Run your package manager install command to resolve the new dependencies.')
+  if (command === 'status') {
+    const components = installedComponents(registry, options.cwd)
+    const includeCore = coreInstalled(options.cwd, project) || components.length > 0
+    if (!components.length && !includeCore) {
+      console.log('No YAM3X components are installed.')
+      return
+    }
+    const plan = await planReconcile({
+      registry,
+      registryRoot,
+      projectRoot: options.cwd,
+      project,
+      componentNames: components,
+      includeCore,
+    })
+    printPlan(plan, options)
+    if (planNeedsAttention(plan)) process.exitCode = 1
+    return
   }
+
+  if (command === 'sync') {
+    const components = installedComponents(registry, options.cwd)
+    const includeCore = coreInstalled(options.cwd, project) || components.length > 0
+    if (!components.length && !includeCore) {
+      console.log('No YAM3X components are installed.')
+      return
+    }
+    const plan = await planReconcile({
+      registry,
+      registryRoot,
+      projectRoot: options.cwd,
+      project,
+      componentNames: components,
+      includeCore,
+    })
+    const blocking = new Set(['manual', 'invalid'])
+    if (planBlocking(plan, blocking)) throw new Error(blockingMessage(plan, blocking))
+    if (options.dryRun) {
+      printPlan(plan, options)
+      return
+    }
+    const { changedPackages } = await applyPlan(plan, project, { copyFiles: false })
+    if (changedPackages.length > 0) await writeJson(packagePath, project)
+    if (changedPackages.length > 0) {
+      console.log(`Updated dependencies: ${changedPackages.join(', ')}`)
+    } else if (!planNeedsInstall(plan)) {
+      console.log('Dependencies are up to date.')
+    }
+    await installIfNeeded(plan, project, options)
+    return
+  }
+
+  throw new Error(`Unknown command "${command}".`)
 }
 
 run().catch((error) => {

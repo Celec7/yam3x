@@ -41,7 +41,7 @@ Gate: no public API exists only because a platform library has it; no design req
 
 ### 4. Implement
 
-Implement in `registry/` with the component's local tokens, styles, and dependencies. Keep `registry/registry.json` generated. Expressive components must not copy Material Web's visual defaults, states, or motion. Baseline components may use Material Web as the primary Web implementation reference while holding to the baseline design. Project extensions label their decisions.
+Implement in `registry/` with the component's local tokens, styles, and dependencies. Registry metadata is generated from source imports during `registry:prepare` and `prepack`; do not edit generated metadata. Expressive components must not copy Material Web's visual defaults, states, or motion. Baseline components may use Material Web as the primary Web implementation reference while holding to the baseline design. Project extensions label their decisions.
 
 Output: source, tokens, styles, and registry metadata.
 
@@ -49,7 +49,7 @@ Gate: implementation behavior maps to a design item or an explicit project decis
 
 ### 5. Document and distribute
 
-Update `apps/docs/` when the public API or usage changes. Keep English as the source page and update Chinese to the same structure and meaning. Document supported overrides and migration steps for breaking changes. Regenerate the registry after changing component imports.
+- Update `apps/docs/` when the public API or usage changes. Keep English as the source page and update Chinese to the same structure and meaning. Document supported overrides and migration steps for breaking changes. Run `pnpm registry:check` after changing component imports, dependency policy, or foundation mappings; the CLI generates metadata at pack time.
 
 Output: public API docs, examples, changelog, and registry entries.
 

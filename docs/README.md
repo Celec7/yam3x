@@ -41,7 +41,7 @@ Records live under [`agents/notes/`](agents/notes/), grouped by lifecycle status
 
 ## Fact ownership
 
-Installable components come from entrypoints under [`registry/components/`](../registry/components/). Foundation source mappings live in [`registry/foundations/registry.json`](../registry/foundations/registry.json), and dependency versions live in the pnpm workspace catalog. The CLI consumes the generated [`registry/registry.json`](../registry/registry.json); regenerate it with `pnpm registry:generate` instead of editing it directly. Current props and slots live in component source; public usage belongs in `apps/docs/`.
+Installable components come from entrypoints under [`registry/components/`](../registry/components/). Foundation source mappings live in [`registry/foundations/registry.json`](../registry/foundations/registry.json), dependency versions live in the pnpm workspace catalog, and package policy lives in [`registry/package.json`](../registry/package.json). The CLI reads metadata generated into the ignored `packages/cli/registry` directory during `registry:prepare` or `prepack`; `pnpm registry:check` validates the derived model. Current props and slots live in component source; public usage belongs in `apps/docs/`.
 
 - Design intent and project decisions: `docs/specs/`.
 - Current API and behavior: `registry/`.

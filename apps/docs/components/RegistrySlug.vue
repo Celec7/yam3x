@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vitepress'
-import registry from '@registry/registry.json'
+import registryComponents from 'virtual:yam3x-components'
 
 const route = useRoute()
+const registrySlugs = new Set(registryComponents)
 const pageSlugs: Record<string, string[]> = {
   chips: ['chips', 'filter-chip', 'filter-chip-set'],
   'extended-fab': ['fab'],
@@ -17,7 +18,7 @@ const slugs = computed(() => {
   if (!pageId || pageId.includes('/')) return []
 
   const candidates = pageSlugs[pageId] ?? [pageId]
-  return candidates.filter((slug) => Object.hasOwn(registry.components, slug))
+  return candidates.filter((slug) => registrySlugs.has(slug))
 })
 
 const label = computed(() => (route.path.startsWith('/zh/') ? '注册表 slug' : 'Registry slug'))

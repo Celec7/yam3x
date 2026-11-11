@@ -95,4 +95,4 @@ These guides define project-owned compositions and behavior derived from Materia
 
 Read [shared design foundations](foundations.md), including [shared component contracts](foundations.md#shared-component-contracts), [theme and color](foundations/theme.md), and [project-defined virtual windows](virtual-windows.md).
 
-The installable inventory remains [`registry/registry.json`](../../registry/registry.json). This index is navigation, not a second component registry.
+The installable inventory remains the component entrypoints under [`registry/components/`](../../registry/components/). This index is navigation, not a second component registry.

@@ -59,7 +59,7 @@ Token layers describe value ownership independently of CSS cascade layers. Found
 
 ## Registry distribution and generated files
 
-Registry components and foundation dependencies must remain independently distributable. Do not make registry source depend on VitePress or files under `apps/docs/`. Declare foundation source-to-target mappings in [`registry/foundations/registry.json`](../../registry/foundations/registry.json); the generator follows imports and emits required shared styles and token files into [`registry/registry.json`](../../registry/registry.json). Verify generated output and isolated installation through the CLI checks when those dependencies change.
+Registry components and foundation dependencies must remain independently distributable. Do not make registry source depend on VitePress or files under `apps/docs/`. Declare foundation source-to-target mappings in [`registry/foundations/registry.json`](../../registry/foundations/registry.json); the generator follows imports and writes required shared styles and token files into ignored [CLI metadata](../../packages/cli/registry) at pack time. Verify the derived model and isolated installation through the CLI checks when those dependencies change.
 
 Generated token blocks in `tokens.css` are owned by [`pnpm tokens:generate`](../../scripts/generate-foundation-tokens.mjs); edit their generator inputs and regenerate instead of hand-editing generated output. Keep hand-maintained foundation rules outside generated blocks.
 

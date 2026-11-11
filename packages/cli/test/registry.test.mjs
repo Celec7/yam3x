@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict'
+import { existsSync } from 'node:fs'
 import { readFile, readdir, stat } from 'node:fs/promises'
 import { dirname, extname, join, resolve, sep } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { readWorkspaceCatalog } from '../../../scripts/catalog.mjs'
+import { buildRegistry } from '../../../scripts/generate-registry.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const registryRoot = join(projectRoot, 'registry')
-const registry = JSON.parse(await readFile(join(registryRoot, 'registry.json'), 'utf8'))
+const registry = await buildRegistry()
 const catalog = await readWorkspaceCatalog()
 const sourceExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.mjs', '.css'])
 const importPattern =
@@ -33,6 +35,21 @@ test('workspace dependencies use the shared version catalog', async () => {
         assert.equal(version, 'catalog:', `${path} must read ${name} from pnpm-workspace.yaml`)
         assert.ok(catalog[name], `pnpm-workspace.yaml needs a catalog version for ${name}`)
       }
+    }
+  }
+})
+
+test('registry metadata is generated with normalized packages and no committed snapshot', () => {
+  assert.equal(registry.schemaVersion, 4)
+  assert.equal(registry.packages.vue.kind, 'peer')
+  assert.equal(registry.packages['@material/material-color-utilities'].kind, 'runtime')
+  assert.equal(existsSync(join(registryRoot, 'registry.json')), false)
+
+  for (const component of Object.values(registry.components)) {
+    assert.ok(Array.isArray(component.dependencies))
+    assert.ok(Array.isArray(component.peerDependencies))
+    for (const name of [...component.dependencies, ...component.peerDependencies]) {
+      assert.ok(registry.packages[name], `${name} is missing from registry.packages`)
     }
   }
 })
@@ -105,8 +122,9 @@ test('registry sources exist, stay local, and declare each component import clos
   ).flat()
   const coreFileSet = new Set(coreFiles)
   const coreDependencies = new Set([
-    ...Object.keys(registry.foundations.core.dependencies ?? {}),
-    ...Object.keys(registry.foundations.core.devDependencies ?? {}),
+    ...(registry.foundations.core.dependencies ?? []),
+    ...(registry.foundations.core.peerDependencies ?? []),
+    ...(registry.foundations.core.devDependencies ?? []),
   ])
 
   for (const [name, component] of Object.entries(registry.components)) {
@@ -118,7 +136,8 @@ test('registry sources exist, stay local, and declare each component import clos
     const declaredFiles = new Set([...coreFiles, ...componentFiles])
     const declaredDependencies = new Set([
       ...coreDependencies,
-      ...Object.keys(component.dependencies ?? {}),
+      ...(component.dependencies ?? []),
+      ...(component.peerDependencies ?? []),
       'vue',
     ])
 

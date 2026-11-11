@@ -41,20 +41,25 @@ GitHub Actions runs formatting, lint, type checks, unit tests, CLI and registry 
 
 Run commands from the repository root. Workspace package manifests must keep `"catalog:"` references; [`pnpm-workspace.yaml`](pnpm-workspace.yaml) is the only owner of dependency versions.
 
-Update all dependencies within their existing version ranges:
+Update all dependencies within their existing version ranges and verify the registry:
 
 ```sh
-pnpm update -r
+pnpm deps:update
 ```
 
 For a targeted or major-version update, change that package's entry in the workspace catalog, then run `pnpm install`. Review major upgrades separately. Do not put a concrete version in a workspace `package.json`; exact pins belong in the catalog too. This keeps updates centralized and avoids commands rewriting one package manifest with a second version source.
 
-When adding a dependency to registry source, add its catalog entry and declare the package name in `registry/package.json`. For a foundation setup tool, also list it in `registry/foundations/registry.json` under `devDependencies`. Workspace packages that use the dependency should refer to it as `"catalog:"`.
+When adding a dependency to registry source, add its catalog entry and declare the package in `registry/package.json`:
 
-After changing dependencies used by the registry, regenerate and verify the CLI metadata, then run the checks:
+- `dependencies` for packages the CLI installs.
+- `peerDependencies` for application-provided packages such as Vue.
+- `devDependencies` for foundation setup tools.
+
+For a foundation setup tool, also list it in `registry/foundations/registry.json` under `core.devDependencies`. The generator discovers actual imports from source; do not author per-component dependency ranges. Workspace packages that use the dependency should refer to it as `"catalog:"`.
+
+After changing registry source or dependency policy, validate the derived model and run the checks:
 
 ```sh
-pnpm registry:generate
 pnpm registry:check
 pnpm format:check
 pnpm lint
@@ -65,8 +70,8 @@ pnpm test:e2e
 pnpm build
 ```
 
-`pnpm test:cli` also checks that workspace dependencies use the shared catalog and that each registry component builds with only its declared dependencies. Do not edit the generated [`registry/registry.json`](registry/registry.json) directly.
+`pnpm test:cli` prepares the ignored CLI registry, checks that workspace dependencies use the shared catalog, and builds each registry component with only its declared dependencies. Registry metadata is generated into `packages/cli/registry` during `registry:prepare` and `prepack`; it is not committed.
 
 ## Registry and documentation ownership
 
-Component install requirements are derived from source imports. Keep foundation source-to-target mappings in [`registry/foundations/registry.json`](registry/foundations/registry.json), then run `pnpm registry:generate` after changing registry source or mappings. Keep exact component APIs in registry source and document public usage on the matching VitePress page. Project design guidance lives in [`docs/specs`](docs/specs/README.md); installation and update guidance live in `docs/`. Unit and browser tests under `apps/docs` hold detailed behavior evidence. The [documentation index](docs/README.md) maps documentation owners.
+Component install requirements are derived from source imports. Keep foundation source-to-target mappings in [`registry/foundations/registry.json`](registry/foundations/registry.json), then run `pnpm registry:check` after changing registry source, dependency policy, or mappings. Keep exact component APIs in registry source and document public usage on the matching VitePress page. Project design guidance lives in [`docs/specs`](docs/specs/README.md); installation and update guidance live in `docs/`. Unit and browser tests under `apps/docs` hold detailed behavior evidence. The [documentation index](docs/README.md) maps documentation owners.

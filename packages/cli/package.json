@@ -13,7 +13,7 @@
   },
   "type": "module",
   "files": [
-    "src/index.mjs",
+    "src/**",
     "registry/**",
     "README.md",
     "LICENSE"
@@ -23,7 +23,7 @@
   },
   "scripts": {
     "prepack": "node ../../scripts/prepare-cli-package.mjs",
-    "test": "node --test test/*.test.mjs"
+    "test": "node ../../scripts/prepare-cli-package.mjs && node --test --test-concurrency=1 test/*.test.mjs"
   },
   "dependencies": {
     "semver": "catalog:"

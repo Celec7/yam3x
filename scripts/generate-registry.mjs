@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict'
-import { readdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { readdir, readFile, stat } from 'node:fs/promises'
 import { dirname, extname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import prettier from 'prettier'
 import { parse as parseSfc } from '@vue/compiler-sfc'
 import ts from 'typescript'
 import { readWorkspaceCatalog } from './catalog.mjs'
@@ -10,8 +9,12 @@ import { readWorkspaceCatalog } from './catalog.mjs'
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const registryRoot = join(projectRoot, 'registry')
 const componentsRoot = join(registryRoot, 'components')
-const registryPath = join(registryRoot, 'registry.json')
 const sourceExtensions = ['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.json']
+const packageSections = [
+  ['runtime', 'dependencies'],
+  ['peer', 'peerDependencies'],
+  ['dev', 'devDependencies'],
+]
 
 function packageName(specifier) {
   if (specifier.startsWith('@')) return specifier.split('/').slice(0, 2).join('/')
@@ -205,23 +208,46 @@ function catalogRange(catalog, name) {
   return version
 }
 
-function dependencyMap(packages, catalog, allowedDependencies, label) {
-  const result = {}
-  for (const name of [...packages].sort()) {
-    if (!Object.hasOwn(allowedDependencies, name)) {
+function packageKinds(manifest) {
+  const kinds = new Map()
+  for (const [kind, section] of packageSections) {
+    for (const name of Object.keys(manifest[section] ?? {})) {
+      if (kinds.has(name)) {
+        throw new Error(`registry/package.json declares ${name} in more than one section.`)
+      }
+      kinds.set(name, kind)
+    }
+  }
+  return kinds
+}
+
+function partitionPackages(names, kinds, label) {
+  const result = {
+    dependencies: [],
+    peerDependencies: [],
+    devDependencies: [],
+  }
+  for (const name of [...names].sort()) {
+    const kind = kinds.get(name)
+    if (!kind) {
       throw new Error(`${label} imports ${name}, but registry/package.json does not declare it.`)
     }
-    result[name] = catalogRange(catalog, name)
+    if (kind === 'runtime') result.dependencies.push(name)
+    else if (kind === 'peer') result.peerDependencies.push(name)
+    else result.devDependencies.push(name)
   }
   return result
 }
 
-async function buildRegistry() {
+export async function buildRegistry() {
   const catalog = await readWorkspaceCatalog()
   const packageManifest = JSON.parse(await readFile(join(registryRoot, 'package.json'), 'utf8'))
   const foundationManifest = JSON.parse(
     await readFile(join(registryRoot, 'foundations/registry.json'), 'utf8'),
   )
+  const kinds = packageKinds(packageManifest)
+  for (const name of kinds.keys()) catalogRange(catalog, name)
+
   const coreSourceFiles = (
     await Promise.all(foundationManifest.core.files.map(expandMapping))
   ).flat()
@@ -245,29 +271,25 @@ async function buildRegistry() {
   }
 
   const coreDevNames = new Set(foundationManifest.core.devDependencies ?? [])
-  const corePackageNames = new Set(coreClosure.packages)
-  for (const name of coreDevNames) corePackageNames.delete(name)
-  const core = {
-    files: coreSourceFiles.sort((a, b) => a.source.localeCompare(b.source)),
-    dependencies: dependencyMap(
-      corePackageNames,
-      catalog,
-      packageManifest.dependencies ?? {},
-      'Foundation source',
-    ),
-    devDependencies: dependencyMap(
-      coreDevNames,
-      catalog,
-      packageManifest.devDependencies ?? {},
-      'Foundation setup',
-    ),
+  for (const name of coreDevNames) {
+    if (kinds.get(name) !== 'dev') {
+      throw new Error(`Foundation setup tool ${name} must be declared in devDependencies.`)
+    }
   }
+  for (const name of coreClosure.packages) {
+    if (kinds.get(name) === 'dev') {
+      throw new Error(`Foundation source imports dev-only package ${name}.`)
+    }
+  }
+  const coreNames = new Set([...coreClosure.packages, ...coreDevNames])
+  const corePackages = partitionPackages(coreNames, kinds, 'Foundation source')
 
   const componentDirectories = (await readdir(componentsRoot, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && entry.name !== '_shared')
     .map((entry) => entry.name)
     .sort()
   const components = {}
+  const componentPackages = new Set()
 
   for (const name of componentDirectories) {
     const directory = join(componentsRoot, name)
@@ -278,36 +300,71 @@ async function buildRegistry() {
       .filter((file) => file.startsWith(`${componentsRoot}${sep}`))
       .map((file) => relative(componentsRoot, file).split(sep).join('/'))
       .sort()
-    const componentPackages = new Set(closure.packages)
-    for (const name of corePackageNames) componentPackages.delete(name)
-    for (const name of coreDevNames) componentPackages.delete(name)
+    const names = new Set(closure.packages)
+    for (const coreName of coreNames) names.delete(coreName)
+    for (const packageName of names) {
+      if (kinds.get(packageName) === 'dev') {
+        throw new Error(`Component ${name} imports dev-only package ${packageName}.`)
+      }
+      componentPackages.add(packageName)
+    }
+    const packages = partitionPackages(names, kinds, `Component ${name}`)
 
     components[name] = {
       files: componentFiles,
-      dependencies: dependencyMap(
-        componentPackages,
-        catalog,
-        packageManifest.dependencies ?? {},
-        `Component ${name}`,
-      ),
+      dependencies: packages.dependencies,
+      peerDependencies: packages.peerDependencies,
       foundations: ['core'],
     }
   }
 
-  return { schemaVersion: 3, foundations: { core }, components }
+  const usedNames = new Set([...coreNames, ...componentPackages])
+  for (const name of kinds.keys()) {
+    if (!usedNames.has(name)) {
+      throw new Error(
+        `registry/package.json declares ${name}, but no registry source imports it. Remove the entry or add the import.`,
+      )
+    }
+  }
+  const packages = Object.fromEntries(
+    [...usedNames].sort().map((name) => [
+      name,
+      {
+        range: catalogRange(catalog, name),
+        kind: kinds.get(name),
+      },
+    ]),
+  )
+
+  return {
+    schemaVersion: 4,
+    packages,
+    foundations: {
+      core: {
+        files: coreSourceFiles.sort((a, b) => a.source.localeCompare(b.source)),
+        dependencies: corePackages.dependencies,
+        peerDependencies: corePackages.peerDependencies,
+        devDependencies: corePackages.devDependencies,
+      },
+    },
+    components,
+  }
 }
 
-const prettierOptions = await prettier.resolveConfig(registryPath)
-const generated = await prettier.format(JSON.stringify(await buildRegistry()), {
-  ...prettierOptions,
-  filepath: registryPath,
-})
-if (process.argv.includes('--check')) {
-  const current = await readFile(registryPath, 'utf8').catch(() => '')
-  if (current !== generated) {
-    console.error('registry/registry.json is stale. Run `pnpm registry:generate`.')
-    process.exitCode = 1
+async function run() {
+  const registry = await buildRegistry()
+  if (process.argv.includes('--check')) {
+    console.log(
+      `OK: ${Object.keys(registry.components).length} component(s), ${Object.keys(registry.packages).length} package(s), 0 issues.`,
+    )
+    return
   }
-} else {
-  await writeFile(registryPath, generated)
+  console.log(JSON.stringify(registry, null, 2))
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  run().catch((error) => {
+    console.error(error instanceof Error ? error.message : error)
+    process.exitCode = 1
+  })
 }

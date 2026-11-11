@@ -21,14 +21,14 @@ The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generate
    pnpm build
    ```
 
-5. Pack the CLI and inspect the archive contents. The `prepack` script copies the current registry files and root MIT license into the package before packing:
+5. Pack the CLI and inspect the archive contents. The `prepack` script generates the registry metadata from source and the catalog, then copies the current registry files and root MIT license into the package:
 
    ```sh
    cd packages/cli
    pnpm pack --pack-destination /tmp/yam3x-release
    ```
 
-   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. The CLI integration suite exercises the repository entry point against disposable consumer apps and separately packs, extracts, and runs the packaged CLI to install a component. For release verification, also install the archive into a disposable consumer app and check its copied source, type checking, and build.
+   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. `registry/registry.json` and its source files are generated into the package by `prepack`; they are not committed. The CLI integration suite exercises the repository entry point against disposable consumer apps and separately packs, extracts, and runs the packaged CLI to install a component. For release verification, also install the archive into a disposable consumer app and check its copied source, type checking, and build.
 
 ## First publish
 

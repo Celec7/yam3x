@@ -6,10 +6,12 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
+import { readWorkspaceCatalog } from '../../../scripts/catalog.mjs'
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const cliRoot = join(repositoryRoot, 'packages/cli')
 const cliManifest = JSON.parse(await readFile(join(cliRoot, 'package.json'), 'utf8'))
+const catalog = await readWorkspaceCatalog()
 
 test('packed CLI contains a runnable registry and installs a component', async () => {
   const temporaryRoot = await mkdtemp(join(tmpdir(), 'yam3x-pack-'))
@@ -32,6 +34,7 @@ test('packed CLI contains a runnable registry and installs a component', async (
     assert.equal(manifest.name, cliManifest.name)
     assert.deepEqual(manifest.bin, { yam3x: 'src/index.mjs' })
     assert.ok(manifest.dependencies.semver)
+    assert.ok(existsSync(join(packageRoot, 'package/src/plan.mjs')))
     assert.ok(existsSync(join(packageRoot, 'package/registry/registry.json')))
     assert.match(
       await readFile(join(packageRoot, 'package/LICENSE'), 'utf8'),
@@ -50,7 +53,7 @@ test('packed CLI contains a runnable registry and installs a component', async (
         name: 'consumer',
         version: '1.0.0',
         type: 'module',
-        dependencies: { vue: '^3.5.0' },
+        dependencies: { vue: catalog.vue },
       }),
     )
     await writeFile(join(consumerRoot, 'src/main.ts'), "import { createApp } from 'vue'\n")

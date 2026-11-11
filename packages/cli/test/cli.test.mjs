@@ -7,31 +7,47 @@ import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 import semver from 'semver'
 import { readWorkspaceCatalog } from '../../../scripts/catalog.mjs'
+import { buildRegistry } from '../../../scripts/generate-registry.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const cliPath = join(projectRoot, 'packages/cli/src/index.mjs')
-const registry = JSON.parse(await readFile(join(projectRoot, 'registry/registry.json'), 'utf8'))
+const registry = await buildRegistry()
 const catalog = await readWorkspaceCatalog()
 
-function assertRegistryDependencies(packageJson, componentNames) {
-  const requiredDependencies = { ...registry.foundations.core.dependencies }
+function requiredPackages(componentNames) {
+  const names = new Set([
+    ...registry.foundations.core.dependencies,
+    ...registry.foundations.core.peerDependencies,
+    ...registry.foundations.core.devDependencies,
+  ])
   for (const name of componentNames) {
-    Object.assign(requiredDependencies, registry.components[name].dependencies)
+    for (const dependency of registry.components[name].dependencies ?? []) names.add(dependency)
+    for (const dependency of registry.components[name].peerDependencies ?? []) names.add(dependency)
   }
+  return [...names].sort().map((name) => {
+    assert.ok(registry.packages[name], `Registry metadata is missing ${name}`)
+    return { name, ...registry.packages[name] }
+  })
+}
 
-  for (const [name, requiredRange] of Object.entries(requiredDependencies)) {
-    assert.ok(packageJson.dependencies?.[name], `Missing registry dependency ${name}`)
-    assert.ok(
-      semver.intersects(packageJson.dependencies[name], requiredRange),
-      `${name} range ${packageJson.dependencies[name]} does not satisfy ${requiredRange}`,
-    )
-  }
-  for (const [name, requiredRange] of Object.entries(registry.foundations.core.devDependencies)) {
-    assert.ok(packageJson.devDependencies?.[name], `Missing foundation dev dependency ${name}`)
-    assert.ok(
-      semver.intersects(packageJson.devDependencies[name], requiredRange),
-      `${name} range ${packageJson.devDependencies[name]} does not satisfy ${requiredRange}`,
-    )
+function assertRegistryDependencies(packageJson, componentNames) {
+  for (const { name, range, kind } of requiredPackages(componentNames)) {
+    if (kind === 'peer') {
+      const declared =
+        packageJson.dependencies?.[name] ??
+        packageJson.peerDependencies?.[name] ??
+        packageJson.devDependencies?.[name]
+      assert.ok(declared, `Missing registry peer dependency ${name}`)
+      assert.ok(
+        semver.subset(declared, range),
+        `${name} range ${declared} does not satisfy ${range}`,
+      )
+      continue
+    }
+    const section = kind === 'dev' ? 'devDependencies' : 'dependencies'
+    const declared = packageJson[section]?.[name]
+    assert.ok(declared, `Missing registry dependency ${name}`)
+    assert.ok(semver.subset(declared, range), `${name} range ${declared} does not satisfy ${range}`)
   }
 }
 
@@ -842,6 +858,10 @@ test('adding FAB to a clean Vue fixture copies native button and link behavior',
   )
   assert.match(
     await readFile(join(directory, 'src/styles/yam3x-base.css'), 'utf8'),
+    /--md-sys-state-focus-indicator-thickness/,
+  )
+  assert.doesNotMatch(
+    await readFile(join(directory, 'src/styles/yam3x-base.css'), 'utf8'),
     /\.yam3x-elevation-5/,
   )
 
@@ -909,6 +929,102 @@ test('add reports incompatible dependencies before copying registry files', asyn
   assert.equal(await readFile(packagePath, 'utf8'), before)
   assert.equal(await readFile(join(directory, 'src/main.ts'), 'utf8'), mainBefore)
   assert.deepEqual(await readdir(join(directory, 'src')), ['App.vue', 'env.d.ts', 'main.ts'])
+})
+
+test('add preflights every requested component before copying files', async (t) => {
+  const directory = await fixture(t)
+  const packagePath = join(directory, 'package.json')
+  const packageJson = JSON.parse(await readFile(packagePath, 'utf8'))
+  packageJson.dependencies['@ark-ui/vue'] = '^4.0.0'
+  await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
+  const before = await readFile(packagePath, 'utf8')
+
+  const result = runCli(['add', 'button', 'switch'], directory)
+
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /does not satisfy the registry requirement/)
+  assert.equal(await readFile(packagePath, 'utf8'), before)
+  assert.deepEqual(await readdir(join(directory, 'src')), ['App.vue', 'env.d.ts', 'main.ts'])
+})
+
+test('status reports unsafe ranges and sync narrows declarations without touching source', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'switch'], directory).status, 0)
+  const packagePath = join(directory, 'package.json')
+  const packageJson = JSON.parse(await readFile(packagePath, 'utf8'))
+  packageJson.dependencies['@ark-ui/vue'] = '^5.0.0'
+  await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
+  const sourcePath = join(directory, 'src/components/yam3x/switch/switch.vue')
+  const sourceBefore = await readFile(sourcePath, 'utf8')
+
+  const status = runCli(['status'], directory)
+
+  assert.equal(status.status, 1)
+  assert.match(status.stdout, /@ark-ui\/vue.*unsafe/)
+
+  const sync = runCli(['sync'], directory)
+
+  assert.equal(sync.status, 0, sync.stderr || sync.stdout)
+  assert.equal(
+    JSON.parse(await readFile(packagePath, 'utf8')).dependencies['@ark-ui/vue'],
+    registry.packages['@ark-ui/vue'].range,
+  )
+  assert.equal(await readFile(sourcePath, 'utf8'), sourceBefore)
+})
+
+test('sync adds missing dependencies for installed components', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'switch'], directory).status, 0)
+  const packagePath = join(directory, 'package.json')
+  const packageJson = JSON.parse(await readFile(packagePath, 'utf8'))
+  delete packageJson.dependencies['@ark-ui/vue']
+  await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
+
+  const status = runCli(['status'], directory)
+
+  assert.equal(status.status, 1)
+  assert.match(status.stdout, /@ark-ui\/vue.*missing/)
+
+  const sync = runCli(['sync'], directory)
+
+  assert.equal(sync.status, 0, sync.stderr || sync.stdout)
+  assert.equal(
+    JSON.parse(await readFile(packagePath, 'utf8')).dependencies['@ark-ui/vue'],
+    registry.packages['@ark-ui/vue'].range,
+  )
+})
+
+test('status infers installed components without component state', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'switch'], directory).status, 0)
+  const packagePath = join(directory, 'package.json')
+  const packageJson = JSON.parse(await readFile(packagePath, 'utf8'))
+  delete packageJson.yam3x
+  await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
+
+  const status = runCli(['status'], directory)
+
+  assert.equal(status.status, 0, status.stderr || status.stdout)
+  assert.doesNotMatch(status.stdout, /No YAM3X components are installed/)
+})
+
+test('init requires the Vue peer instead of adding it', async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'yam3x-peer-'))
+  t.after(() => rm(directory, { recursive: true, force: true }))
+  await mkdir(join(directory, 'src'), { recursive: true })
+  await writeFile(
+    join(directory, 'package.json'),
+    `${JSON.stringify({ name: 'peer-consumer', version: '0.0.0', type: 'module' }, null, 2)}\n`,
+  )
+  await writeFile(join(directory, 'src/main.ts'), "import { createApp } from 'vue'\n")
+  const before = await readFile(join(directory, 'package.json'), 'utf8')
+
+  const result = runCli(['init'], directory)
+
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /Missing peer dependency vue/)
+  assert.equal(await readFile(join(directory, 'package.json'), 'utf8'), before)
+  assert.deepEqual(await readdir(join(directory, 'src')), ['main.ts'])
 })
 
 test('adding a button group includes its imported Button types', async (t) => {
