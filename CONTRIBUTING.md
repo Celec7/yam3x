@@ -25,6 +25,7 @@ Before changing a component, classify it as Expressive, M3 baseline, or a projec
 pnpm format:check
 pnpm lint
 pnpm docs:check
+pnpm breakpoints:check
 pnpm typecheck
 pnpm test
 pnpm build

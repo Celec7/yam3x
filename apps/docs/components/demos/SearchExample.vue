@@ -395,7 +395,7 @@ function searchCurrent(close: () => void): void {
 .search-demo__result-arrow {
   color: inherit;
 }
-@media (max-width: 600px) {
+@media (max-width: 599.98px) {
   .search-demo__controls {
     gap: 12px;
   }

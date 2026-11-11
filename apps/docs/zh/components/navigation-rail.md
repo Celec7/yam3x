@@ -7,7 +7,7 @@ import NavigationRailExample from '../../components/demos/NavigationRailExample.
 
 Navigation rail 沿窗口边缘呈现顶层目的地。`NavigationRail` 是 Material 3 Expressive 导航栏轨，可保持当前目的地可见，并支持 96 px 收起布局、展开布局和紧凑宽度下的模态展开。
 
-应用能在窗口一侧保留纵向导航区域时，适合在中等及展开宽度使用 rail。Material 建议提供 3–7 个目的地，以及最多一个可选浮动操作按钮；这些是设计建议，不是运行时限制。紧凑宽度请改用 [navigation bar](/zh/components/navigation-bar)。
+应用能在窗口一侧保留纵向导航区域时，适合在中等及展开宽度使用 rail。Material 建议提供 3–7 个目的地，以及最多一个可选浮动操作按钮；这些是设计建议，不是运行时限制。紧凑宽度请改用 [navigation bar](/zh/components/navigation-bar)。使用 `auto` 模式时，rail 从 expanded 断点开始出现，中等宽度交给 navigation bar。
 
 ## 示例
 
@@ -133,7 +133,7 @@ const items: NavigationRailItem[] = [
 
 ### 选择与事件
 
-- `mode` 决定 rail 以 `collapsed`、`expanded` 或 `auto` 形态启动。`auto` 使用 960 px 断点：低于断点收起，达到或超过断点展开。
+- `mode` 决定 rail 以 `collapsed`、`expanded` 或 `auto` 形态启动。`auto` 使用 840 px 断点：低于断点收起，达到或超过断点展开。
 - `v-model:expanded` 优先于 `mode`。未绑定该模型时，使用内置菜单会保存手动选择，此后断点变化不再自动展开或收起 rail。将绑定的模型设为 `undefined` 可把控制权交回 `mode`。
 - 当前值缺失或已禁用时，会回退到首个可用目的地，并同步更新模型。
 - `secondary` 目的地只在展开时出现，除非它正是当前目的地。
@@ -155,7 +155,7 @@ const items: NavigationRailItem[] = [
 
 ### 响应式与 RTL
 
-- `auto` 模式在低于 960 px 时隐藏 rail，而不是压缩它；该区间应提供 navigation bar，并避免同时渲染两个相同的导航地标。
+- `auto` 模式在低于 840 px 时隐藏 rail，而不是压缩它；该区间应提供 navigation bar，并避免同时渲染两个相同的导航地标。
 - 默认尺寸下，收起 rail 为 96 px，展开 rail 为 220 px。目的地和 FAB 使用逻辑内边距，因此 RTL 会把 rail 镜像到另一侧，而不改变纵向方向键行为。
 - 放大文字会增加目的地高度并让标签换行，不会裁切文字。
 

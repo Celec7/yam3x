@@ -20,6 +20,6 @@ The following are project decisions.
 
 - An un-actionable Web snackbar remains available until dismissed unless equivalent inline feedback is provided. Distinct messages appear sequentially; a new message that updates the same information replaces the stale one.
 - The host can sit above a page anchor with a 16 px margin. It tracks anchor movement and falls back to the viewport bottom when the anchor is unavailable; an additional bottom offset remains additive.
-- Use 64 dp at compact viewport widths up to 599 px and 68 dp at wider widths, resolving the official 68 dp two-line spec value and 64 dp compact guideline value. The official sources define neither this breakpoint nor that width assignment.
+- Use 64 dp at compact viewport widths below 600 px and 68 dp at wider widths, resolving the official 68 dp two-line spec value and 64 dp compact guideline value. The official sources define neither this breakpoint nor that width assignment.
 - When the action, close target, and a 120 px minimum message width cannot fit in one row, place the action on its own row below the message. Material's configurations show a longer action may use a third line but do not define a Web wrapping threshold.
 - Use a short opacity transition for enter and exit. Material does not prescribe snackbar motion; opacity keeps the text baseline stable during appearance.

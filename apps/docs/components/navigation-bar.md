@@ -14,7 +14,7 @@ Navigation bars let people switch between UI views on smaller devices. They’re
 
 ### Basic
 
-Navigation bars can have three to five destinations. This demo keeps the bar visible at every viewport width and adds a navigation rail at 960px and wider only as a separate alternative.
+Navigation bars can have three to five destinations. This demo switches to a navigation rail at 840px and never renders both navigation controls at once.
 
 <div class="vp-raw yam3x-doc-demo-theme">
   <NavigationBarExample />

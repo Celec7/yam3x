@@ -225,7 +225,7 @@ function syncBreakpoint(): void {
   compactWindow.value = breakpointQuery?.matches ?? false
 }
 onMounted(() => {
-  breakpointQuery = window.matchMedia('(max-width: 599px)')
+  breakpointQuery = window.matchMedia('(max-width: 599.98px)')
   syncBreakpoint()
   breakpointQuery.addEventListener('change', syncBreakpoint)
   if ('fonts' in document) {

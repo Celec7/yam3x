@@ -23,8 +23,8 @@ A navigation bar switches between three to five stable top-level destinations. I
 - `navigation-bar.motion.selection`: Animate the indicator from the item center. Material shows expressive motion but leaves the Web transition implementation to the project.
 - Destinations retain native link semantics. The application owns routing and whether destination state is preserved.
 - Reselecting the active destination returns its screen to the top. The application owns this navigation policy.
-- At 960 px and wider, compose a navigation rail instead. This breakpoint is project-defined; Material defines window classes without numeric boundaries.
-- `mode="auto"` uses the compact item layout below 600 px and horizontal items from 600 px. This threshold is separate from the 960 px bar-to-rail threshold.
+- At 840 px and wider, compose a navigation rail instead. This is Material's Expanded breakpoint; Compact and Medium may use a navigation bar.
+- `mode="auto"` uses the compact item layout below 600 px and horizontal items from 600 px. This threshold is separate from the 840 px bar-to-rail threshold.
 - Disabled content uses `on-surface` at 38% opacity because the selector has no disabled mapping.
 
 Current API details belong to the component source and the public [Navigation bar page](../../../apps/docs/components/navigation-bar.md).

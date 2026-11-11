@@ -57,7 +57,7 @@ const examples = scales.flatMap((variant) =>
   gap: 12px 24px;
   align-items: baseline;
 }
-@media (max-width: 640px) {
+@media (max-width: 599.98px) {
   .heading-scale {
     grid-template-columns: minmax(0, 1fr);
   }

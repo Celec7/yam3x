@@ -25,6 +25,6 @@ A navigation rail switches between top-level destinations along the leading edge
 - Keep the menu icon aligned with the destination icon axis in both forms. Use a 40 px gap between the header and destination list, and 20 px outer surface padding. The expanded destination's 16 px inset and 8 px icon-label gap follow the horizontal layout.
 - Disabled destination content uses `on-surface` at 38% opacity because the official selector has no disabled mapping.
 - Navigation items retain native link semantics. The application owns routing and whether destination state is preserved.
-- Below 960 px, the rail is unavailable so the consuming layout can show the navigation bar. The numeric breakpoint is project-defined; Material specifies the bar and rail arrangement without numeric boundaries.
+- Below 840 px, `mode="auto"` leaves the rail unavailable so the consuming layout can show the navigation bar. This follows Material's numeric window breakpoints: Compact and Medium may use a navigation bar, while Expanded and larger use a navigation rail.
 
 Current API details belong to the component source and the public [Navigation rail page](../../../apps/docs/components/navigation-rail.md).

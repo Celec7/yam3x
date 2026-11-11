@@ -31,6 +31,23 @@ This guide collects Material 3 principles that apply across component families. 
 - Adapt structure and components to content, available space, user preferences, changing windows, and input methods. Use Feed for peer content, List-detail for parent-child content, and Supporting pane when secondary content only makes sense with the primary area. Material's Supporting pane example moves secondary content below the primary area at compact and medium sizes and beside it at expanded size. Consider resizing, selectively revealing information, reflowing, or changing presentation rather than only shrinking one composition. See [Adaptive design](https://m3.material.io/foundations/layout/layout-overview/adaptive-design) and the [canonical layout examples](https://m3.material.io/foundations/layout/canonical-examples/overview).
 - Use leading and trailing relationships that follow writing direction. Preserve a meaningful reading and focus order when the visual arrangement changes. See [Layout overview](https://m3.material.io/foundations/layout/layout-overview/overview) and [Bidirectionality and RTL](https://m3.material.io/foundations/layout/bidirectionality-rtl).
 
+### Responsive breakpoints
+
+Material defines five window breakpoints. Web maps dp to CSS pixels at default scale; that mapping is a project decision.
+
+| Breakpoint  | Window width |
+| ----------- | ------------ |
+| Compact     | `<600`       |
+| Medium      | `600–839`    |
+| Expanded    | `840–1199`   |
+| Large       | `1200–1599`  |
+| Extra-large | `1600+`      |
+
+- Use `min-width` for a breakpoint's lower edge and `max-width: 599.98px` for the compact upper edge. Do not use `599px` or other near-miss values; fractional viewport widths must not fall between categories.
+- Component-specific responsive guidance takes precedence over these window breakpoints. Record the component source when it differs, such as the bottom sheet's 640px width rule or the FAB menu's 1200px margin rule.
+- Container queries are content-driven component behavior, not window breakpoint aliases. Keep their thresholds local to the component and document them when they are project decisions.
+- The same numeric values apply to CSS media queries and `matchMedia` in component source. Demos must not teach preview widths as window breakpoints.
+
 ### Input and gestures
 
 - Treat pointer capability as a CSS concern and the current input modality as a behavioral concern. Do not use JavaScript to drive layout on every pointer event.

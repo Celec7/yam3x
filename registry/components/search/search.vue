@@ -1168,7 +1168,7 @@ defineExpose({ close, clear, focus: focusSearchbox })
     outline: 1px solid var(--_yam3x-search-outline-color);
   }
 }
-@media (max-width: 599px) {
+@media (max-width: 599.98px) {
   .yam3x-search--open-fullscreen .yam3x-search__bar-frame {
     width: calc(100vw - 24px);
   }

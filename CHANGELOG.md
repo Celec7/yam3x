@@ -11,6 +11,7 @@
 - Button variants no longer use `tailwind-variants`. The exported `buttonVariants` helper keeps its name and options and selects the same component classes without utility output.
 - FloatingActionButton and ExtendedFloatingActionButton remove the deprecated `disabled` and `disabledInteractive` props; omit the control when its action is unavailable. FloatingActionButton, ToggleFloatingActionButton, and FabMenu trigger sizes remove the baseline `small` size. ExtendedFloatingActionButton keeps its Expressive 56 px `small` size.
 - Remove the undocumented `yam3x-elevation-1` through `yam3x-elevation-5` helper classes. Use the `--md-sys-elevation-level1` through `--md-sys-elevation-level5` tokens in application CSS.
+- NavigationRail `auto` mode now follows Material's Expanded breakpoint. It is hidden below 840px and expanded at 840px instead of switching at 960px.
 
 ### Added
 
@@ -18,9 +19,11 @@
 - Foundation CSS exposes read-only pointer capability flags for primary pointer, any-pointer, hover, and any-hover. Components use the primary pointer for layout sizing so hybrid devices stay stable.
 - Date pickers accept `closeLabel` and `saveLabel` for the full-screen modal actions. `DatePickerMessages` gains matching `close` and `save` messages.
 - InlineMessage accepts `headingLevel` for its optional title.
+- `pnpm breakpoints:check` enforces the shared responsive breakpoint contract in CI.
 
 ### Fixed
 
+- Responsive rules use the compact boundary below 600px consistently, removing the fractional gap between 599px and 600px in component media queries.
 - Descriptions scopes its styles, scales the remaining item and inline gaps with density, and records the outlined border, corner, and padding.
 - Inline messages record their fixed 2px leading-icon optical offset and which Button variants inherit the message foreground.
 - Empty state records its On Surface Variant illustration color and exposes an illustration-color override.

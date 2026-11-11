@@ -16,6 +16,19 @@ Adaptive design can change layout structure, component placement, or behavior as
 
 In Material's Supporting pane example, supporting content moves below the primary area at compact and medium sizes, then appears beside it at expanded size. YAM3X SplitPane is a project extension based on this pattern. Its [component page](/components/split-pane) documents the project's compact behavior, which does not select application routes.
 
+## Breakpoints
+
+Material defines five window breakpoints. Component pages document component-specific responsive rules, and those rules take precedence when the component guidance selects a different threshold.
+
+| Breakpoint  | Window width |
+| ----------- | ------------ |
+| Compact     | `<600`       |
+| Medium      | `600–839`    |
+| Expanded    | `840–1199`   |
+| Large       | `1200–1599`  |
+| Extra-large | `1600+`      |
+
+Use these values to choose layout structure and navigation. Container-driven component behavior is separate from the window breakpoint and is documented on the component page.
 
 ## Material references
 

@@ -7,7 +7,7 @@ import NavigationRailExample from './demos/NavigationRailExample.vue'
 
 Navigation rails place top-level destinations along a window edge. `NavigationRail` is a Material 3 Expressive navigation rail. It keeps the current destination visible and supports a collapsed 96 px layout, an expanded layout, and a modal expansion for compact layouts.
 
-Use a rail at medium and expanded widths when the app can reserve a vertical edge for navigation. Material recommends three to seven destinations and at most one optional floating action button; these are design guidelines, not runtime limits. At compact widths, use a [navigation bar](/components/navigation-bar) instead.
+Use a rail at medium and expanded widths when the app can reserve a vertical edge for navigation. Material recommends three to seven destinations and at most one optional floating action button; these are design guidelines, not runtime limits. At compact widths, use a [navigation bar](/components/navigation-bar) instead. In `auto` mode, the rail appears from the expanded breakpoint and leaves medium widths to the navigation bar.
 
 ## Examples
 
@@ -127,7 +127,7 @@ With `hide-when-collapsed`, the rail is hidden until the external trigger sets `
 
 ### Selection and events
 
-- `mode` starts the rail in `collapsed`, `expanded`, or `auto` form. `auto` uses the 960 px breakpoint: collapsed below it and expanded at or above it.
+- `mode` starts the rail in `collapsed`, `expanded`, or `auto` form. `auto` uses the 840 px breakpoint: collapsed below it and expanded at or above it.
 - `v-model:expanded` takes precedence over `mode`. Without a bound value, using the built-in menu stores a manual choice, so a later breakpoint change no longer expands or collapses the rail. Set the bound model to `undefined` to return control to `mode`.
 - A missing or disabled current value falls back to the first enabled destination, and the model is updated to match.
 - `secondary` destinations appear only while expanded, unless one of them is current.
@@ -149,7 +149,7 @@ With `hide-when-collapsed`, the rail is hidden until the external trigger sets `
 
 ### Responsive and RTL
 
-- In `auto` mode the rail is hidden below 960 px instead of shrinking; provide a navigation bar for that range and do not render both as the same navigation landmark at once.
+- In `auto` mode the rail is hidden below 840 px instead of shrinking; provide a navigation bar for that range and do not render both as the same navigation landmark at once.
 - The collapsed rail keeps 96 px and the expanded rail 220 px in the default sizing. Destinations and the FAB use logical insets, so RTL mirrors the rail to the other edge without changing vertical arrow behavior.
 - Enlarged text increases destination height and wraps labels instead of clipping them.
 

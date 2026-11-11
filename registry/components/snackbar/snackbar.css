@@ -191,7 +191,7 @@
 .yam3x-snackbar-leave-to {
   opacity: 0;
 }
-@media (max-width: 599px) {
+@media (max-width: 599.98px) {
   .yam3x-snackbar {
     --_yam3x-snackbar-message-padding-block: calc(12px * var(--_yam3x-snackbar-density-scale));
   }

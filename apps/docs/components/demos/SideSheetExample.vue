@@ -14,7 +14,7 @@ const { t } = useDemoLocale()
 const open = ref(false)
 const mode = ref<'adaptive' | 'modal' | 'standard'>('adaptive')
 const direction = ref<'ltr' | 'rtl'>('ltr')
-const previewSize = ref<'container' | 'compact' | 'medium' | 'expanded'>('container')
+const previewSize = ref<'container' | 'compact' | 'medium' | 'wide'>('container')
 const showPageTitle = ref(true)
 const showBack = ref(false)
 const density = ref<'standard' | 'compact'>('standard')
@@ -22,9 +22,7 @@ const step = ref<'root' | 'advanced'>('root')
 const lastChange = ref('')
 const previewInlineSize = computed(
   () =>
-    ({ container: '100%', compact: '420px', medium: '640px', expanded: '960px' })[
-      previewSize.value
-    ],
+    ({ container: '100%', compact: '420px', medium: '640px', wide: '960px' })[previewSize.value],
 )
 function recordChange(value: boolean, reason: 'toggle' | 'dismiss'): void {
   lastChange.value = `${value ? t('open', '打开') : t('closed', '关闭')} · ${reason}`
@@ -88,8 +86,8 @@ function recordChange(value: boolean, reason: 'toggle' | 'dismiss'): void {
           :label="`${t('Medium', '中等')} · 640px`"
         />
         <Option
-          value="expanded"
-          :label="`${t('Expanded', '展开')} · 960px`"
+          value="wide"
+          :label="`${t('Wide', '宽')} · 960px`"
         />
       </Select>
     </label>

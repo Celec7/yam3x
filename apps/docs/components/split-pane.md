@@ -6,7 +6,7 @@ import SplitPaneExample from './demos/SplitPaneExample.vue'
 
 Split pane places primary content beside related supporting content and lets people resize the division. Use it when both regions must stay visible and their relative space benefits from adjustment.
 
-Split pane is a project extension. Material describes [supporting pane](/guide/foundations/layout) layouts but does not define a standalone draggable component, and Compose Material 3 has no direct primitive; the closest composition is a `Row` or `Box` with a draggable divider. The compact single-pane switch, the 599px and 840px breakpoints, and the divider interaction are project decisions. Divider semantics and keyboard behavior follow the [WAI-ARIA window splitter pattern](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/).
+Split pane is a project extension. Material describes [supporting pane](/guide/foundations/layout) layouts but does not define a standalone draggable component, and Compose Material 3 has no direct primitive; the closest composition is a `Row` or `Box` with a draggable divider. The compact single-pane switch, the compact and expanded breakpoints, and the divider interaction are project decisions. Divider semantics and keyboard behavior follow the [WAI-ARIA window splitter pattern](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/).
 
 ## Examples
 

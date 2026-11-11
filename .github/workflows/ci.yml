@@ -45,6 +45,9 @@ jobs:
       - name: Check documentation and skills
         run: pnpm docs:check
 
+      - name: Check responsive breakpoints
+        run: pnpm breakpoints:check
+
       - name: Type check
         run: pnpm typecheck
 

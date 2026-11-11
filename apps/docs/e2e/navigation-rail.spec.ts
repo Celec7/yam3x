@@ -283,19 +283,23 @@ test('auto mode responds to viewport width and manual expansion persists until r
   const rail = page.getByTestId('navigation-rail')
   await page.setViewportSize({ width: 800, height: 800 })
   await selectM3Option(page, page.getByRole('combobox', { name: 'Navigation rail mode' }), 'auto')
-  await expect(rail).toHaveCSS('width', '96px')
+  await expect(rail).toBeHidden()
+  await page.setViewportSize({ width: 840, height: 800 })
+  await expect(rail).toHaveCSS('width', '220px')
   await page.setViewportSize({ width: 1100, height: 800 })
   await expect(rail).toHaveCSS('width', '220px')
   await rail.getByRole('button', { name: 'Collapse navigation' }).click()
   await expect(rail).toHaveCSS('width', '96px')
   await page.setViewportSize({ width: 800, height: 800 })
-  await expect(rail).toHaveCSS('width', '96px')
+  await expect(rail).toBeHidden()
   await selectM3Option(
     page,
     page.getByRole('combobox', { name: 'Navigation rail mode' }),
     'collapsed',
   )
+  await expect(rail).toHaveCSS('width', '96px')
   await selectM3Option(page, page.getByRole('combobox', { name: 'Navigation rail mode' }), 'auto')
+  await expect(rail).toBeHidden()
   await page.setViewportSize({ width: 1100, height: 800 })
   await expect(rail).toHaveCSS('width', '220px')
 })

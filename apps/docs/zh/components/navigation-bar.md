@@ -14,7 +14,7 @@ Navigation bar 让人们在较小的设备上切换界面视图，是手持屏�
 
 ### 基础
 
-Navigation bar 可包含三到五个目的地。此演示在任何视口宽度都保留导航栏；960px 及以上出现的 navigation rail 只是独立的替代示例。
+Navigation bar 可包含三到五个目的地。此演示在 840px 切换为 navigation rail，并且不会同时渲染两种导航控件。
 
 <div class="vp-raw yam3x-doc-demo-theme">
   <NavigationBarExample />

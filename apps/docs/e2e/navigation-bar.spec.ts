@@ -326,24 +326,26 @@ test('selected indicator expands from the item center and settles at its target 
   expect(Math.abs(settledCenters[0]! - settledCenters[1]!)).toBeLessThan(1)
 })
 
-test('automatic mode shows compact and medium bars and adds a rail at wide widths', async ({
+test('automatic mode shows compact and medium bars and swaps to a rail at expanded width', async ({
   page,
 }) => {
   // navigation-bar.adaptive.layout
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/components/navigation-bar')
   const navigation = page.locator('.navigation-bar-example__bar')
+  const rail = page.locator('.navigation-bar-example__rail')
   const item = navigation.getByRole('link', { name: 'Overview' })
 
   await expect(item).toHaveCSS('display', 'grid')
+  await expect(rail).toBeHidden()
   await page.setViewportSize({ width: 599, height: 844 })
   await expect(item).toHaveCSS('display', 'grid')
   await page.setViewportSize({ width: 600, height: 844 })
   await expect(item).toHaveCSS('display', 'flex')
-  await page.setViewportSize({ width: 959, height: 844 })
+  await page.setViewportSize({ width: 839, height: 844 })
   await expect(item).toHaveCSS('display', 'flex')
-  await page.setViewportSize({ width: 960, height: 844 })
-  await expect(navigation).toBeVisible()
-  await expect(page.getByRole('navigation', { name: 'Documentation rail' })).toBeVisible()
-  await expect(page.locator('.navigation-bar-example__rail')).toBeVisible()
+  await expect(rail).toBeHidden()
+  await page.setViewportSize({ width: 840, height: 844 })
+  await expect(navigation).toBeHidden()
+  await expect(rail).toBeVisible()
 })

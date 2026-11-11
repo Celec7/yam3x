@@ -229,7 +229,7 @@ function focusFirstInteractive() {
   target?.focus()
 }
 onMounted(() => {
-  media = matchMedia('(min-width: 960px)')
+  media = matchMedia('(min-width: 840px)')
   updateWide()
   media.addEventListener('change', updateWide)
   if (modalOpen.value) nextTick(focusFirstInteractive)

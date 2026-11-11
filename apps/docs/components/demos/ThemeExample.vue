@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
 .theme-example__surface p {
   max-width: 34rem;
 }
-@media (max-width: 640px) {
+@media (max-width: 599.98px) {
   .theme-example__surface {
     align-items: start;
   }

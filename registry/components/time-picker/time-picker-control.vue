@@ -1085,7 +1085,7 @@ onBeforeUnmount(() => {
 html.yam3x-time-picker-scroll-lock {
   overflow: hidden;
 }
-@media (max-width: 599px) {
+@media (max-width: 599.98px) {
   .yam3x-time-picker__scrim {
     padding: 0;
     place-items: stretch;

@@ -17,6 +17,7 @@
     "test:cli": "pnpm registry:check && pnpm --filter @celec7/yam3x test",
     "registry:generate": "node scripts/generate-registry.mjs",
     "registry:check": "node scripts/generate-registry.mjs --check",
+    "breakpoints:check": "node scripts/check-breakpoints.mjs",
     "test:e2e": "pnpm tokens:generate && pnpm --filter yam3x-docs test:e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

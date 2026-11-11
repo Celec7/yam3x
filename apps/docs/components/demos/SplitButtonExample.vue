@@ -15,7 +15,7 @@ const variant = ref<'elevated' | 'filled' | 'filled-tonal' | 'outlined'>('filled
 const shape = ref<'round' | 'square'>('round')
 const requestedSize = ref<ButtonSize>('small')
 const responsive = ref(true)
-const viewport = ref<'compact' | 'medium' | 'expanded'>('compact')
+const viewport = ref<'compact' | 'medium' | 'expanded' | 'large'>('compact')
 const selected = ref('document')
 const primaryActionCount = ref(0)
 const isRtl = ref(false)
@@ -24,10 +24,12 @@ const positionY = ref<'below' | 'above'>('below')
 const menuTransitions = ref<string[]>([])
 let compactQuery: MediaQueryList | undefined
 let expandedQuery: MediaQueryList | undefined
+let largeQuery: MediaQueryList | undefined
 
 const size = computed<ButtonSize>(() => {
   if (!responsive.value) return requestedSize.value
-  return viewport.value === 'expanded' ? 'large' : viewport.value === 'medium' ? 'medium' : 'small'
+  if (viewport.value === 'large') return 'large'
+  return viewport.value === 'compact' ? 'small' : 'medium'
 })
 const items: MenuItem[] = [
   { value: 'document', label: t('Save document', '保存文档'), type: 'radio', group: 'format' },
@@ -37,22 +39,27 @@ const items: MenuItem[] = [
 ]
 
 function updateViewport() {
-  viewport.value = expandedQuery?.matches
-    ? 'expanded'
-    : compactQuery?.matches
-      ? 'medium'
-      : 'compact'
+  viewport.value = largeQuery?.matches
+    ? 'large'
+    : expandedQuery?.matches
+      ? 'expanded'
+      : compactQuery?.matches
+        ? 'medium'
+        : 'compact'
 }
 function listenForViewport() {
   compactQuery = window.matchMedia('(min-width: 600px)')
-  expandedQuery = window.matchMedia('(min-width: 960px)')
+  expandedQuery = window.matchMedia('(min-width: 840px)')
+  largeQuery = window.matchMedia('(min-width: 1200px)')
   updateViewport()
   compactQuery.addEventListener('change', updateViewport)
   expandedQuery.addEventListener('change', updateViewport)
+  largeQuery.addEventListener('change', updateViewport)
 }
 function stopListeningForViewport() {
   compactQuery?.removeEventListener('change', updateViewport)
   expandedQuery?.removeEventListener('change', updateViewport)
+  largeQuery?.removeEventListener('change', updateViewport)
 }
 function runPrimaryAction() {
   primaryActionCount.value++

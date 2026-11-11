@@ -18,7 +18,7 @@ The following are project decisions.
 - `split-pane.extension.separator`: When enabled, expose the divider as a keyboard-operable separator with a visible focus state and bounded value. Resizing changes space allocation without changing which content is primary.
 - `split-pane.extension.keyboard`: Support keyboard resizing and preserve the selected proportion when orientation changes. The component also supports drag resizing; Material does not define these interactions.
 - Compact automatic mode shows one selected pane, with primary content shown by default. The consuming scaffold owns the control that switches between panes. This intentionally differs from the Material Supporting pane example, which places supporting content below the primary area at compact sizes.
-- Compact, medium, and expanded window categories map to 0–599px, 600–839px, and 840px or wider viewports.
+- Compact, medium, and expanded window categories map to below 600px, 600–839px, and 840px or wider viewports.
 - Medium automatic layouts stack both panes; expanded layouts show them side by side and remain user-resizable. Unlike the official example's fixed 360dp supporting area, the divider ratio is controlled by the component's bounds.
 - Divider appearance has no official Supporting pane component tokens. Its default colors, state opacity, shape, and motion map to shared System tokens.
 - `split-pane.extension.divider-target`: Keep a 24px full-height divider track with a 4px visible handle. The divider is a continuous resize target, so it does not expand to the 48px discrete-control target.

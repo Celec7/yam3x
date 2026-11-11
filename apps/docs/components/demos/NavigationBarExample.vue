@@ -94,7 +94,7 @@ const localizedItems = [
       </NavigationBarItem>
     </NavigationBar>
     <p class="yam3x-demo__status">
-      {{ t('At 960px and wider, use a navigation rail.', '宽度达到 960px 时改用导航栏轨。') }}
+      {{ t('At 840px and wider, use a navigation rail.', '宽度达到 840px 时改用导航栏轨。') }}
     </p>
     <NavigationRail
       v-model="active"
@@ -156,7 +156,10 @@ const localizedItems = [
   display: none;
   height: 420px;
 }
-@media (min-width: 960px) {
+@media (min-width: 840px) {
+  .navigation-bar-example__bar {
+    display: none;
+  }
   .navigation-bar-example__rail {
     display: block;
   }

@@ -16,6 +16,19 @@ Material 的[经典布局示例](https://m3.material.io/foundations/layout/canon
 
 Material 的 Supporting pane 示例在 compact 和 medium 尺寸下将辅助内容放在主要区域下方，在 expanded 尺寸下将其放在主要区域旁边。YAM3X SplitPane 是基于此模式的项目扩展。其[组件页](/zh/components/split-pane)说明项目定义的紧凑行为；路由仍由应用负责。
 
+## 断点
+
+Material 定义了五个窗口断点。组件页会记录组件专属的响应式规则；当组件规范选择了不同阈值时，以组件规则为准。
+
+| 断点        | 窗口宽度    |
+| ----------- | ----------- |
+| Compact     | `<600`      |
+| Medium      | `600–839`   |
+| Expanded    | `840–1199`  |
+| Large       | `1200–1599` |
+| Extra-large | `1600+`     |
+
+使用这些值选择布局结构和导航。由容器驱动的组件行为与窗口断点相互独立，并在对应组件页说明。
 
 ## Material 参考
 

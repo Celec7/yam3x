@@ -136,6 +136,7 @@ Each prop overrides the corresponding built-in locale message.
 ### Responsive and RTL
 
 - At compact widths, a bounded dialog that cannot fit becomes a full-screen modal. Docked pickers anchor to the field and stay inside the viewport.
+- Below 480px, range fields tighten their inline padding and text size to keep both endpoints usable. This is a project adaptation, not a Material breakpoint.
 - Layout uses logical properties: navigation icons, range bands, and field labels mirror in right-to-left layouts while chronological values stay unchanged.
 
 ### State ownership
