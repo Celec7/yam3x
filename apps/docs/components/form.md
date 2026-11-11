@@ -133,25 +133,26 @@ Built-in UI text can inherit shared [LocaleProvider](/components/localization) c
 
 ### Exports
 
-| Export                                   | Kind      | Use                                                           |
-| ---------------------------------------- | --------- | ------------------------------------------------------------- |
-| `Form`                                   | Component | Validation, submission, and recovery coordinator.             |
-| `FormSection`                            | Component | Fieldset and legend for a related group of fields.            |
-| `useFormField`                           | Function  | Register a definition from a descendant component's setup.    |
-| `formFieldName`                          | Function  | Default dotted native name for a field path.                  |
-| `formValidationFromIssues`               | Function  | Adapt schema-library issues shaped as `{ path, message }`.    |
-| `FormContext`                            | Type      | Submission context passed to `submit`, validators, and rules. |
-| `FormValidator`                          | Type      | Plain validation function.                                    |
-| `FormValidationAdapter`                  | Type      | Adapter with `validate` and optional scoped `validateFields`. |
-| `FormValidationCheck`                    | Type      | Result of a programmatic scoped check.                        |
-| `FormFieldDefinition`                    | Type      | Registered field path, name, label, value getter, and rules.  |
-| `FormFieldPath`                          | Type      | Literal native name or tuple path.                            |
-| `FormRule`, `FormRuleContext`            | Type      | Constraint rule shape and the context a custom rule receives. |
-| `FormValidation`                         | Type      | `{ fieldErrors?, message? }` returned by validators.          |
-| `FormSubmitResult`                       | Type      | Accepted or expected-rejection result returned by `submit`.   |
-| `FormIssue`                              | Type      | `{ name, label, message }` item of the error summary.         |
-| `FormMessages`                           | Type      | Overridable coordinator copy.                                 |
-| `FormFailure`, `FormPhase`, `FormStatus` | Type      | Failure detail, failing phase, and visible status values.     |
+| Export                                   | Kind      | Use                                                               |
+| ---------------------------------------- | --------- | ----------------------------------------------------------------- |
+| `Form`                                   | Component | Validation, submission, and recovery coordinator.                 |
+| `FormSection`                            | Component | Fieldset and legend for a related group of fields.                |
+| `useFormField`                           | Function  | Register a definition from a descendant component's setup.        |
+| `formFieldName`                          | Function  | Default dotted native name for a field path.                      |
+| `formValidationFromIssues`               | Function  | Adapt schema-library issues shaped as `{ path, message }`.        |
+| `FormContext`                            | Type      | Submission context passed to `submit`, validators, and rules.     |
+| `FormValidator`                          | Type      | Plain validation function.                                        |
+| `FormValidationAdapter`                  | Type      | Adapter with `validate` and optional scoped `validateFields`.     |
+| `FormValidationCheck`                    | Type      | Result of a programmatic scoped check.                            |
+| `FormFieldDefinition`                    | Type      | Registered field path, name, label, value getter, and rules.      |
+| `FormFieldPath`                          | Type      | Literal native name or tuple path.                                |
+| `FormRule`, `FormRuleContext`            | Type      | Constraint rule shape and the context a custom rule receives.     |
+| `FormSchemaIssue`                        | Type      | `{ path, message }` issue accepted by `formValidationFromIssues`. |
+| `FormValidation`                         | Type      | `{ fieldErrors?, message? }` returned by validators.              |
+| `FormSubmitResult`                       | Type      | Accepted or expected-rejection result returned by `submit`.       |
+| `FormIssue`                              | Type      | `{ name, label, message }` item of the error summary.             |
+| `FormMessages`                           | Type      | Overridable coordinator copy.                                     |
+| `FormFailure`, `FormPhase`, `FormStatus` | Type      | Failure detail, failing phase, and visible status values.         |
 
 ### Props
 

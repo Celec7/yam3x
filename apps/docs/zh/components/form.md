@@ -132,25 +132,26 @@ async function save({ data, signal }: FormContext) {
 
 ### 导出
 
-| 导出                                     | 类型 | 用途                                                 |
-| ---------------------------------------- | ---- | ---------------------------------------------------- |
-| `Form`                                   | 组件 | 校验、提交与恢复协调器。                             |
-| `FormSection`                            | 组件 | 用 fieldset 与 legend 组织相关字段。                 |
-| `useFormField`                           | 函数 | 在后代组件 setup 中注册字段定义。                    |
-| `formFieldName`                          | 函数 | 字段路径的默认点连接原生名称。                       |
-| `formValidationFromIssues`               | 函数 | 适配 `{ path, message }` 形式的 schema 库问题。      |
-| `FormContext`                            | 类型 | 传给 `submit`、验证器与规则的提交上下文。            |
-| `FormValidator`                          | 类型 | 普通校验函数。                                       |
-| `FormValidationAdapter`                  | 类型 | 含 `validate` 与可选局部 `validateFields` 的适配器。 |
-| `FormValidationCheck`                    | 类型 | 程序化局部校验的结果。                               |
-| `FormFieldDefinition`                    | 类型 | 已注册字段的路径、名称、标签、取值函数与规则。       |
-| `FormFieldPath`                          | 类型 | 原生名称字面量或元组路径。                           |
-| `FormRule`、`FormRuleContext`            | 类型 | 约束规则结构及自定义规则收到的上下文。               |
-| `FormValidation`                         | 类型 | 验证器返回的 `{ fieldErrors?, message? }`。          |
-| `FormSubmitResult`                       | 类型 | `submit` 返回的已接受或预期拒绝结果。                |
-| `FormIssue`                              | 类型 | 错误摘要中的 `{ name, label, message }` 项。         |
-| `FormMessages`                           | 类型 | 可覆盖的协调器文案。                                 |
-| `FormFailure`、`FormPhase`、`FormStatus` | 类型 | 失败详情、失败阶段与可见状态值。                     |
+| 导出                                     | 类型 | 用途                                                         |
+| ---------------------------------------- | ---- | ------------------------------------------------------------ |
+| `Form`                                   | 组件 | 校验、提交与恢复协调器。                                     |
+| `FormSection`                            | 组件 | 用 fieldset 与 legend 组织相关字段。                         |
+| `useFormField`                           | 函数 | 在后代组件 setup 中注册字段定义。                            |
+| `formFieldName`                          | 函数 | 字段路径的默认点连接原生名称。                               |
+| `formValidationFromIssues`               | 函数 | 适配 `{ path, message }` 形式的 schema 库问题。              |
+| `FormContext`                            | 类型 | 传给 `submit`、验证器与规则的提交上下文。                    |
+| `FormValidator`                          | 类型 | 普通校验函数。                                               |
+| `FormValidationAdapter`                  | 类型 | 含 `validate` 与可选局部 `validateFields` 的适配器。         |
+| `FormValidationCheck`                    | 类型 | 程序化局部校验的结果。                                       |
+| `FormFieldDefinition`                    | 类型 | 已注册字段的路径、名称、标签、取值函数与规则。               |
+| `FormFieldPath`                          | 类型 | 原生名称字面量或元组路径。                                   |
+| `FormRule`、`FormRuleContext`            | 类型 | 约束规则结构及自定义规则收到的上下文。                       |
+| `FormSchemaIssue`                        | 类型 | `formValidationFromIssues` 接受的 `{ path, message }` 问题。 |
+| `FormValidation`                         | 类型 | 验证器返回的 `{ fieldErrors?, message? }`。                  |
+| `FormSubmitResult`                       | 类型 | `submit` 返回的已接受或预期拒绝结果。                        |
+| `FormIssue`                              | 类型 | 错误摘要中的 `{ name, label, message }` 项。                 |
+| `FormMessages`                           | 类型 | 可覆盖的协调器文案。                                         |
+| `FormFailure`、`FormPhase`、`FormStatus` | 类型 | 失败详情、失败阶段与可见状态值。                             |
 
 ### 属性
 

@@ -123,7 +123,7 @@ const current = ref('inbox')
 
 ### Exports
 
-`NavigationDrawer`, `NavigationDrawerSection`, `NavigationDrawerDivider`, `NavigationDrawerItem`, `NavigationDrawerMode`, and `NavigationDrawerChangeReason`.
+`NavigationDrawer`, `NavigationDrawerSection`, `NavigationDrawerDivider`, `NavigationDrawerItem`, `NavigationDrawerMode`, `NavigationDrawerChangeReason`, `NavigationDrawerCloseSlotProps`, and `NavigationDrawerToggleSlotProps`.
 
 ### `NavigationDrawer`
 

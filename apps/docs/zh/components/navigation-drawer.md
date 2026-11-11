@@ -123,7 +123,7 @@ const current = ref('inbox')
 
 ### 导出
 
-`NavigationDrawer`、`NavigationDrawerSection`、`NavigationDrawerDivider`、`NavigationDrawerItem`、`NavigationDrawerMode` 和 `NavigationDrawerChangeReason`。
+`NavigationDrawer`、`NavigationDrawerSection`、`NavigationDrawerDivider`、`NavigationDrawerItem`、`NavigationDrawerMode`、`NavigationDrawerChangeReason`、`NavigationDrawerCloseSlotProps` 和 `NavigationDrawerToggleSlotProps`。
 
 ### `NavigationDrawer`
 
