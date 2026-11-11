@@ -190,6 +190,37 @@ for (const demo of demoFiles) {
   if (!usedDemos.has(demo)) errors.push(`${demo}: demo is not imported by a page or guide`)
 }
 
+const iconConfig = await readFile(path.join(root, 'apps/docs/.vitepress/config.ts'), 'utf8')
+const configuredIcons = iconConfig.match(/icon_names=([^&'"]+)/)?.[1]?.split(',')
+if (!configuredIcons?.length) {
+  errors.push('apps/docs/.vitepress/config.ts: missing Material Symbols icon_names')
+} else {
+  const fontIcons = new Set(configuredIcons)
+  const demoIcons = new Map()
+  const registeredIcons = new Set()
+  for (const demo of demoFiles) {
+    const source = await readFile(path.join(root, 'apps/docs', demo), 'utf8')
+    for (const icon of source.matchAll(/<Icon\b([\s\S]*?)>/g)) {
+      const name = icon[1].match(/(?<![:\w-])name="([^"]+)"/)?.[1]
+      if (name) demoIcons.set(name, demo)
+    }
+    for (const match of source.matchAll(/(?<![:\w-])icon:\s*'([^']+)'/g)) {
+      demoIcons.set(match[1], demo)
+    }
+    for (const match of source.matchAll(/const iconNames[^=]*=\s*\{([\s\S]*?)\n\}/g)) {
+      for (const entry of match[1].matchAll(/:\s*'([^']+)'/g)) demoIcons.set(entry[1], demo)
+    }
+    for (const match of source.matchAll(/registerIcon\('([^']+)'/g)) {
+      registeredIcons.add(match[1])
+    }
+  }
+  for (const [name, demo] of demoIcons) {
+    if (!fontIcons.has(name) && !registeredIcons.has(name)) {
+      errors.push(`${demo}: icon "${name}" is not in the Material Symbols font subset`)
+    }
+  }
+}
+
 const skillRoots = [path.join(root, 'skills'), path.join(root, '.agents', 'skills')]
 let skillCount = 0
 for (const skillRoot of skillRoots) {
