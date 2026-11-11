@@ -64,7 +64,7 @@ The foundation stylesheet also exposes semantic color, typography, shape, and sp
 
 For a YAM3X component's internal appearance, use the props and documented CSS custom properties on its component page.
 
-The project does not ship utility classes. Consuming applications may add their own styling tools, including Tailwind, but YAM3X components use standard CSS and the semantic custom properties above.
+The project does not ship a utility-class framework. Consuming applications may add their own styling tools, including Tailwind, but YAM3X components use standard CSS and the semantic custom properties above.
 
 ## Related foundations
 

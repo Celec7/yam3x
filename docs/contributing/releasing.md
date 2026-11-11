@@ -53,11 +53,11 @@ If you tag the manually published version, CI runs the checks and skips the regi
 
 ## Later releases
 
-For each release, update `packages/cli/package.json` to a new stable version and add its release notes to the root [`CHANGELOG.md`](../../CHANGELOG.md) under an exact `## <version>` heading, for example `## 0.3.1`. Keep one nonempty section per version, with upgrade instructions when needed. While the package remains below `1.0.0`, use patch versions for compatible fixes, minor versions for new backward-compatible functionality and breaking changes, and reserve `1.0.0` for when the public API is ready to be treated as stable. After `1.0.0`, follow SemVer: breaking changes increment major, compatible features increment minor, and compatible fixes increment patch. Complete the release checks above and commit the changes to `main`. For the first CI release, configure the trusted publisher immediately before pushing its tag. Then push a tag that matches the package version. For example, package version `0.3.0` uses tag `v0.3.0`:
+For each release, update `packages/cli/package.json` to a new stable version and add its release notes to the root [`CHANGELOG.md`](../../CHANGELOG.md) under an exact `## <version>` heading. Keep one nonempty section per version, with upgrade instructions when needed. While the package remains below `1.0.0`, use patch versions for compatible fixes, minor versions for new backward-compatible functionality and breaking changes, and reserve `1.0.0` for when the public API is ready to be treated as stable. After `1.0.0`, follow SemVer: breaking changes increment major, compatible features increment minor, and compatible fixes increment patch. Complete the release checks above and commit the changes to `main`. For the first CI release, configure the trusted publisher immediately before pushing its tag. Then push a tag that matches the package version. For example, package version `X.Y.Z` uses tag `vX.Y.Z`:
 
 ```sh
-git tag v0.3.0
-git push origin v0.3.0
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
 The `Publish npm package` workflow verifies the tag matches the package version, runs the repository checks, packs the CLI, and publishes that exact archive using npm trusted publishing. It also waits for the new package version to become available. Before publishing, it requires a unique, nonempty changelog section matching the package version and includes those notes with the verified archive artifact.
