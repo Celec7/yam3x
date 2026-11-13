@@ -38,6 +38,8 @@ Records live under [`agents/notes/`](agents/notes/), grouped by lifecycle status
 
 - [Remove Tailwind from development and distribution](agents/notes/implemented/2026-11-08-remove-tailwind.md)
 - [Order floating overlays by open sequence](agents/notes/implemented/2026-11-08-overlay-layer-stack.md)
+- [Use one tab stop for composite action controls](agents/notes/implemented/2026-11-13-composite-keyboard-model.md)
+- [Require a visible dismissal path in modal surfaces](agents/notes/implemented/2026-11-13-modal-dismissal-affordance.md)
 
 ## Fact ownership
 
