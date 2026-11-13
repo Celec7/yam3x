@@ -111,7 +111,8 @@ Primary tabs render icons only when the `icon` slot is supplied. Use `ariaLabel`
 ### Keyboard and focus
 
 - Left and Right arrows move between enabled tabs and wrap; Home and End move to the first and last enabled tab. RTL reverses the horizontal direction.
-- Each enabled tab is a Tab stop, so Tab leaves the row rather than cycling inside it. Disabled tabs are not focusable.
+- The tablist has one Tab stop: the selected enabled tab. Tab moves into the selected tab and leaves the row rather than visiting every tab; Shift+Tab also leaves the row. Disabled tabs are not focusable.
+- Arrow keys move focus to another enabled tab without selecting it. Space or Enter activates the focused tab, and selection moves the Tab stop to the newly selected tab.
 - The selected panel is a `tabpanel` labelled by its tab and is focusable with `tabindex="0"`. Unselected panels are inert and hidden from the accessibility tree.
 - Visible focus, hover, and pressed states use separate state layers; the focus outline is not removed.
 

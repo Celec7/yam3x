@@ -352,6 +352,7 @@ watch(
             :aria-selected="item.value === selectedValue"
             :aria-controls="panelId(index)"
             :aria-label="item.ariaLabel ?? item.label"
+            :tabindex="index === selectedIndex && !item.disabled ? 0 : -1"
             :disabled="item.disabled"
             :aria-disabled="item.disabled || undefined"
             @click="select(item)"
