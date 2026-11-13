@@ -119,10 +119,10 @@ The toolbar does not position itself. Keep a floating toolbar inside the viewpor
 
 ### Keyboard
 
-- The toolbar does not use a roving tab index: each action remains a Tab stop in document order.
+- Button-like actions share one Tab stop. The focused action owns `tabindex="0"` and the other actions use `tabindex="-1"`, so Tab enters the toolbar once and leaves it instead of visiting every action.
 - In a horizontal toolbar, Left and Right arrows move between actions. In a vertical toolbar, Up and Down move. Home and End move to the first and last action, and arrow movement wraps.
 - RTL reverses horizontal arrow movement while keeping the visual order meaningful.
-- Text inputs, selects, text areas, editable regions, and composite widgets such as tab lists, menus, and listboxes keep their own arrow-key behavior. The toolbar does not intercept their keys.
+- Text inputs, selects, text areas, editable regions, and composite widgets such as tab lists, menus, and listboxes keep their own Tab stop and arrow-key behavior. The toolbar does not intercept their keys, so a toolbar that contains editable controls can have additional Tab stops by design.
 - Disabled and hidden controls are skipped. Child components handle Enter and Space activation.
 
 ### Orientation and RTL

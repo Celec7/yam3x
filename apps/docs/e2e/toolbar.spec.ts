@@ -50,7 +50,7 @@ test('floating and docked layouts follow the normative defaults and keep child a
   await expect(toolbar).not.toHaveClass(/yam3x-toolbar--vertical/)
 })
 
-test('each action remains a Tab stop while arrows, Home and End navigate the live toolbar', async ({
+test('one toolbar action is a Tab stop while arrows, Home and End navigate the live toolbar', async ({
   page,
 }) => {
   // toolbar.a11y.keyboard
@@ -58,12 +58,14 @@ test('each action remains a Tab stop while arrows, Home and End navigate the liv
   const save = page.getByRole('button', { name: 'Save' })
   const share = page.getByRole('button', { name: 'Share' })
   await back.focus()
+  await expect(back).toHaveAttribute('tabindex', '0')
+  await expect(save).toHaveAttribute('tabindex', '-1')
+  await expect(share).toHaveAttribute('tabindex', '-1')
   await page.keyboard.press('Tab')
-  await expect(save).toBeFocused()
-  await page.keyboard.press('Tab')
-  await expect(share).toBeFocused()
-  await share.press('Home')
-  await expect(back).toBeFocused()
+  await expect(save).not.toBeFocused()
+  await expect(share).not.toBeFocused()
+  await back.focus()
+  await expect(back).toHaveAttribute('tabindex', '0')
   await back.press('ArrowRight')
   await expect(save).toBeFocused()
   await save.press('End')
@@ -151,6 +153,7 @@ test('text input keeps arrow editing and hidden toolbar leaves the accessibility
     element.append(input)
   })
   const input = page.getByRole('textbox', { name: 'Query' })
+  await expect(input).not.toHaveAttribute('tabindex', '-1')
   await input.focus()
   await input.press('Home')
   await expect(input).toBeFocused()

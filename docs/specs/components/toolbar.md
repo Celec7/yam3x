@@ -21,5 +21,6 @@ Toolbars collect frequent actions for the current page. This guide adopts Materi
 The following are project decisions.
 
 - The toolbar is a composable action container. The consuming layout owns placement, overflow contents, pairing with a FAB, and page-specific scrolling behavior.
+- `toolbar.a11y.roving`: Button-like actions, links, and other single-action controls share one roving Tab stop. Arrow keys, `Home`, and `End` move focus across them. Editable controls keep their native Tab stop and arrow-key editing behavior, and composite widgets such as tablists, listboxes, menus, trees, grids, and comboboxes keep their own tab stop. This follows the WAI-ARIA Toolbar Pattern while preserving native editing. See [WAI-ARIA Toolbar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/).
 - Rounded docked corners begin at an 840 px viewport width and map to System `corner-large` (16 px). Material permits rounded docked corners on Web and large screens but does not prescribe this radius or breakpoint. Slotted controls keep their own styling; the caller selects child color variants and roles to match the toolbar scheme.
 - Accessibility orientation is derived from the effective layout, so the toolbar's semantics cannot conflict with its visual orientation or keyboard navigation.

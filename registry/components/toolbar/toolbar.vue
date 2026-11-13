@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useAttrs } from 'vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -37,8 +37,12 @@ const elevated = computed(() => props.elevated ?? layout.value === 'floating')
 const selector = 'button, a[href], input, select, textarea, [tabindex]'
 const composite =
   '[role="tablist"], [role="listbox"], [role="radiogroup"], [role="tree"], [role="grid"], [role="menu"], [role="menubar"], [role="slider"], [role="spinbutton"], [role="combobox"]'
+const editable = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
+const managedItems = new Set<HTMLElement>()
+const originalTabindex = new WeakMap<HTMLElement, string | null>()
+let rovingObserver: MutationObserver | undefined
 
-function focusableItems(): HTMLElement[] {
+function candidateItems(): HTMLElement[] {
   if (!host.value) return []
   const toolbar = host.value
   return [...toolbar.querySelectorAll<HTMLElement>(selector)].filter((item) => {
@@ -46,9 +50,54 @@ function focusableItems(): HTMLElement[] {
     if (item.closest(composite) && !item.matches(composite)) return false
     if (item.matches(':disabled, [disabled], [hidden], [inert]')) return false
     if (item.closest('[hidden], [inert]')) return false
-    if (item.tabIndex < 0 || item.getClientRects().length === 0) return false
+    if (item.getClientRects().length === 0) return false
     return true
   })
+}
+
+function isRovingItem(item: HTMLElement): boolean {
+  return !item.matches(editable) && !item.matches(composite)
+}
+
+function rovingItems(): HTMLElement[] {
+  return candidateItems().filter(isRovingItem)
+}
+
+function syncRoving(preferred?: HTMLElement): void {
+  for (const item of managedItems) {
+    if (!item.isConnected) managedItems.delete(item)
+  }
+  const items = rovingItems()
+  if (!items.length) return
+  for (const item of items) {
+    if (!managedItems.has(item)) {
+      managedItems.add(item)
+      originalTabindex.set(item, item.getAttribute('tabindex'))
+    }
+  }
+  const focused = document.activeElement
+  const active =
+    preferred && items.includes(preferred)
+      ? preferred
+      : focused instanceof HTMLElement && items.includes(focused)
+        ? focused
+        : (items.find((item) => item.getAttribute('tabindex') === '0') ?? items[0])
+  for (const item of items) item.setAttribute('tabindex', item === active ? '0' : '-1')
+}
+
+function restoreRoving(): void {
+  for (const item of managedItems) {
+    const value = originalTabindex.get(item)
+    if (value === null || value === undefined) item.removeAttribute('tabindex')
+    else item.setAttribute('tabindex', value)
+  }
+  managedItems.clear()
+}
+
+function onFocusin(event: FocusEvent): void {
+  if (event.target instanceof HTMLElement && rovingItems().includes(event.target)) {
+    syncRoving(event.target)
+  }
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -70,9 +119,12 @@ function onKeydown(event: KeyboardEvent) {
   const up = vertical.value && event.key === 'ArrowUp'
   if (!right && !left && !down && !up && event.key !== 'Home' && event.key !== 'End') return
 
-  const items = focusableItems()
+  const items = rovingItems()
   if (!items.length) return
-  const current = items.findIndex((item) => item === document.activeElement)
+  const current = Math.max(
+    0,
+    items.findIndex((item) => item === document.activeElement),
+  )
   let next: number
   if (event.key === 'Home') next = 0
   else if (event.key === 'End') next = items.length - 1
@@ -84,6 +136,23 @@ function onKeydown(event: KeyboardEvent) {
   event.preventDefault()
   items[next]?.focus()
 }
+
+onMounted(() => {
+  syncRoving()
+  if (!host.value) return
+  rovingObserver = new MutationObserver(() => syncRoving())
+  rovingObserver.observe(host.value, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['disabled', 'hidden', 'inert'],
+  })
+})
+onBeforeUnmount(() => {
+  rovingObserver?.disconnect()
+  rovingObserver = undefined
+  restoreRoving()
+})
 </script>
 
 <template>
@@ -99,6 +168,7 @@ function onKeydown(event: KeyboardEvent) {
     ]"
     role="toolbar"
     :aria-orientation="vertical ? 'vertical' : 'horizontal'"
+    @focusin="onFocusin"
     @keydown="onKeydown"
   >
     <slot />
