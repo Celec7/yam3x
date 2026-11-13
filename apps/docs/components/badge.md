@@ -74,7 +74,7 @@ const open = ref(false)
 </style>
 ```
 
-Place the badge inside a positioned wrapper when it must follow a destination, and give it an accessible name that describes the meaning rather than repeating only the number. The destination control owns activation; the badge has `pointer-events: none` and never enters the Tab order.
+Place the badge inside a positioned wrapper when it must follow a destination, and give it an accessible name that describes the meaning rather than repeating only the number. The destination control owns activation; the badge has `pointer-events: none` and never enters the Tab order. When the destination control already includes the count in its accessible name, hide the badge from assistive technology or omit its label so the count is not announced twice.
 
 ::: details Dot and abbreviated count
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **Tabs use one Tab stop.** The selected enabled tab owns `tabindex="0"`; arrow keys move focus and Space or Enter activates the focused tab. This follows the WAI-ARIA tablist focus contract while keeping Material's manual activation.
+- **Toolbars rove focus across action controls.** Button-like actions share one Tab stop; editable controls and composite widgets keep their own Tab stops. A toolbar containing editable controls can therefore have additional Tab stops by design.
+- **Bottom sheets expose a close control at every modal detent.** `showCloseButton` defaults to `true` for both variants. Set it to `false` only when the content provides its own visible dismissal control.
+- **Dialogs warn when no visible dismissal control exists.** The close icon remains optional; an action button normally supplies the visible path. Development builds warn when a dialog opens with neither.
+
+### Added
+
+- **Carousel slide announcements.** A visually hidden polite status reports the settled item as `N of M: label`; keyboard focus does not duplicate its own announcement.
+
+### Fixed
+
+- **Page scroll locking compensates the scrollbar width.** Opening Search, Time picker, or another shared-lock surface no longer removes the root scrollbar without preserving layout width.
+
 ## 0.4.0
 
 This release aligns the component set with Material 3 Expressive, removes Tailwind and deprecated compatibility layers, and moves registry dependency management into the CLI build.
