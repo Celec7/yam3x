@@ -53,6 +53,9 @@ const layoutProgress = ref({ anchor: 0, fraction: 0 })
 let resizeObserver: ResizeObserver | undefined
 let animationFrame = 0
 let resizeFrame = 0
+let statusTimer = 0
+let lastAnnouncedIndex = -1
+let pointerInteraction = false
 let interactionIndex: number | undefined
 let mouseDragPointer: number | null = null
 let mouseDragStartX = 0
@@ -60,6 +63,7 @@ let mouseDragLastX = 0
 let mouseDragMoved = false
 let suppressNextClick = false
 const mouseDragging = ref(false)
+const statusText = ref('')
 type MeasuredItem = { element: HTMLElement; index: number; rect: DOMRect }
 
 const isVertical = computed(() => props.layout === 'full-screen')
@@ -267,6 +271,7 @@ function scrollTo(index: number, focus = false): void {
 function focusIndex(index: number, direction: -1 | 1): void {
   for (let next = index; next >= 0 && next < props.items.length; next += direction) {
     if (props.items[next]?.disabled) continue
+    lastAnnouncedIndex = next
     updateActiveIndex(next)
     scrollTo(next, true)
     return
@@ -279,6 +284,7 @@ function updateActiveIndex(index: number): void {
   emit('change', index, props.items[index]!)
 }
 function onItemFocus(index: number): void {
+  if (!pointerInteraction) lastAnnouncedIndex = index
   updateActiveIndex(index)
 }
 function onItemKeydown(event: KeyboardEvent, index: number): void {
@@ -334,6 +340,10 @@ function onItemClick(item: CarouselItem, index: number, event: MouseEvent): void
   if (item.href || item.actionable) emit('activate', item, index, event)
 }
 function onTrackPointerDown(event: PointerEvent): void {
+  pointerInteraction = true
+  window.setTimeout(() => {
+    pointerInteraction = false
+  }, 0)
   if (
     isVertical.value ||
     event.pointerType !== 'mouse' ||
@@ -408,7 +418,20 @@ function onScroll(): void {
     }
     updateLayoutProgress(items)
     updateParallax(items)
+    scheduleStatus()
   })
+}
+
+function scheduleStatus(): void {
+  clearTimeout(statusTimer)
+  statusTimer = window.setTimeout(() => {
+    const index = activeIndex.value
+    if (index === lastAnnouncedIndex) return
+    const item = props.items[index]
+    if (!item) return
+    lastAnnouncedIndex = index
+    statusText.value = actionMessages.value.carouselItem(index + 1, props.items.length, item.label)
+  }, 180)
 }
 function updateLayoutProgress(measuredItems?: MeasuredItem[]): void {
   if (!track.value || props.items.length < 2) return
@@ -546,6 +569,7 @@ onMounted(() => {
     activeIndex.value = 1
     layoutProgress.value = { anchor: 1, fraction: 0 }
   }
+  lastAnnouncedIndex = activeIndex.value
   if (root.value) {
     resizeObserver = new ResizeObserver(updateContainerWidth)
     resizeObserver.observe(root.value)
@@ -555,6 +579,7 @@ onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   if (animationFrame) cancelAnimationFrame(animationFrame)
   if (resizeFrame) cancelAnimationFrame(resizeFrame)
+  clearTimeout(statusTimer)
   window.removeEventListener('pointermove', onTrackPointerMove)
   window.removeEventListener('pointerup', onTrackPointerUp)
   window.removeEventListener('pointercancel', onTrackPointerUp)
@@ -606,10 +631,29 @@ onBeforeUnmount(() => {
         <div class="yam3x-carousel__item-content"><slot v-bind="itemProps(item, index)" /></div>
       </component>
     </div>
+    <p
+      class="yam3x-carousel__status"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {{ statusText }}
+    </p>
   </section>
 </template>
 
 <style>
+.yam3x-carousel__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 .yam3x-carousel {
   --_yam3x-carousel-item-surface: var(--md-sys-color-surface);
   --_yam3x-carousel-on-surface: var(--md-sys-color-on-surface);

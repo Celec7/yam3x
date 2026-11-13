@@ -26,3 +26,4 @@ A carousel presents a scrollable collection of visual items that move partly on 
 The following are project decisions.
 
 - Full-screen layout is the consumer's responsibility: the component does not inspect viewport orientation or size, so use it only in portrait compact or medium windows.
+- `carousel.a11y.status`: The component announces the settled slide in a visually hidden polite status region as "item N of M". It does not provide previous/next or marker controls; the consuming page owns external navigation and the "Show all" route. This is a project Web enhancement; Material defines item-level focus and naming, not a settled-scroll announcement.

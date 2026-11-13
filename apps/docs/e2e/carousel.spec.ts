@@ -45,8 +45,9 @@ test('mouse drag scrolls the horizontal carousel without activating an item', as
   await expect.poll(() => track.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
   await expect(page.locator('.carousel-demo__activation')).toHaveCount(0)
 
+  await track.evaluate((element) => element.scrollTo({ left: element.scrollWidth * 0.6 }))
+  await expect(carousel.getByRole('status')).toContainText('of 5')
   const city = carousel.locator('[data-carousel-index="2"]')
-  await city.scrollIntoViewIfNeeded()
   await city.click()
   await expect(page.locator('.carousel-demo__activation')).toContainText('City at dusk')
 })
@@ -130,6 +131,7 @@ test('arrow keys move focus between slides and Browse all exposes every item', a
   const carousel = page.getByRole('group', { name: 'Featured places' })
   const first = carousel.locator('[data-carousel-index="0"]')
   const second = carousel.locator('[data-carousel-index="1"]')
+  await expect(carousel.getByRole('status')).toHaveText('')
   await first.focus()
   await page.keyboard.press('ArrowRight')
   await expect(second).toBeFocused()

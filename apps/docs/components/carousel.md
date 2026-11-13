@@ -117,6 +117,7 @@ Full-screen is a vertical, edge-to-edge layout with forced snap and no track pad
 - Every enabled item is a Tab stop. Arrow Left and Arrow Right move focus in left-to-right layouts; the arrows mirror in RTL. Arrow Up and Arrow Down leave a horizontal carousel for adjacent page content.
 - In Full-screen, Arrow Up and Arrow Down move between items.
 - The component does not intercept Home or End; use arrow keys for item navigation.
+- A visually hidden polite status announces the settled item as `N of M: label` after scrolling stops. The status stays empty on initial load, and keyboard focus does not duplicate its own slide announcement.
 - Disabled items are removed from the Tab order and skipped by arrow navigation.
 - Space activates a link item; Enter uses the native activation of links and buttons.
 
