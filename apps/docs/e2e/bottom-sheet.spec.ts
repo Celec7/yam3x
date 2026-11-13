@@ -259,6 +259,7 @@ test('modal sheet opens partially expanded, traps focus, and restores focus afte
   await expect(page.locator('.yam3x-bottom-sheet__scrim')).toBeVisible()
   await expect(page.locator('body')).toHaveCSS('overflow', 'hidden')
   await expect(page.getByRole('log')).toContainText('Events: opening → opened')
+  await expect(dialog.getByRole('button', { name: 'Close sheet' })).toBeVisible()
   const handle = dialog.getByRole('button', { name: 'Resize sheet' })
   await expect(handle).toBeVisible()
   const lastTabStop = dialog.getByRole('button', { name: 'Done' })

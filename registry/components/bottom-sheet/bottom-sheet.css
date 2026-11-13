@@ -284,6 +284,7 @@ button.yam3x-bottom-sheet__handle-button:active {
 .yam3x-bottom-sheet__close {
   display: grid;
   flex: 0 0 48px;
+  margin-inline-start: auto;
   place-items: center;
   inline-size: 48px;
   block-size: 48px;

@@ -38,6 +38,7 @@ const props = withDefaults(
     handleLabel?: string
     closeLabel?: string
     collapseLabel?: string
+    showCloseButton?: boolean
   }>(),
   {
     variant: 'standard',
@@ -49,6 +50,7 @@ const props = withDefaults(
     handleLabel: undefined,
     closeLabel: undefined,
     collapseLabel: undefined,
+    showCloseButton: true,
   },
 )
 const open = defineModel<boolean>('open', { default: false })
@@ -623,7 +625,7 @@ defineExpose({ close, requestOpen, requestDetent })
                 <slot name="header" />
               </h2>
               <button
-                v-if="isFullHeight"
+                v-if="showCloseButton"
                 class="yam3x-bottom-sheet__close"
                 type="button"
                 :aria-label="actionMessages.closeSheet"
@@ -692,7 +694,7 @@ defineExpose({ close, requestOpen, requestDetent })
           </slot>
         </div>
         <header
-          v-if="$slots.header || isFullHeight || variant === 'standard'"
+          v-if="$slots.header || showCloseButton || isFullHeight"
           class="yam3x-bottom-sheet__header"
         >
           <h2
@@ -703,7 +705,7 @@ defineExpose({ close, requestOpen, requestDetent })
             <slot name="header" />
           </h2>
           <button
-            v-if="variant === 'standard'"
+            v-if="showCloseButton"
             class="yam3x-bottom-sheet__close"
             type="button"
             :aria-label="actionMessages.closeSheet"

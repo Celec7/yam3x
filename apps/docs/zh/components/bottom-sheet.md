@@ -121,8 +121,8 @@ const detent = ref<'fit' | 'expanded'>('fit')
 ### 焦点与关闭
 
 - 关闭的标准表单会设置 `inert` 与 `aria-hidden`，其控件不进入 Tab 顺序。
-- 标准表单始终显示标注明确的关闭按钮；展开时还会显示独立的收起操作，回到最低停靠点。
-- 模态表单可通过 Escape 或点击 scrim 关闭；启用 `handle` 时，在手柄区域向下滑动也可关闭。关闭后焦点返回打开它的元素。
+- 标准表单始终显示标注明确的关闭按钮；展开时还会显示独立的收起操作，回到最低停靠点。只有在内容提供自己的可见关闭控件时才设置 `showCloseButton=false`；Escape、scrim 点击和拖动不能替代可见控件。
+- 模态表单在每个停靠高度都显示标注明确的关闭按钮，也可通过 Escape 或点击 scrim 关闭；启用 `handle` 时，在手柄区域向下滑动也可关闭。关闭后焦点返回打开它的元素。
 - 组件主动关闭时，会先触发 `cancel`，再触发 `closing`。在任一事件上调用 `preventDefault()` 都可保持表单打开。
 - 父级对 `v-model:open` 的更新具有权威性，不会被组件事件取消，因此外部状态变化始终生效。
 - 模态表单会在不高于视口一半的最高停靠点打开。关闭时会保留当前停靠点，再次打开时恢复。
@@ -153,20 +153,21 @@ const detent = ref<'fit' | 'expanded'>('fit')
 
 ### `BottomSheet` 属性与模型
 
-| 属性 / 模型     | 类型                                | 默认值                                                                | 说明                                                                                                                      |
-| --------------- | ----------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `variant`       | `'standard' \| 'modal'`             | `'standard'`                                                          | 标准 sheet 与页面并存；模态 sheet 管理焦点并遮罩背景。                                                                    |
-| `open`          | `v-model:open: boolean`             | `false`                                                               | 控制显示状态。                                                                                                            |
-| `detent`        | `v-model:detent: BottomSheetDetent` | 标准 `fit`，模态 `partially-expanded`                                 | 当前停靠高度，必须包含在 `detents` 中。可用值：`collapsed`、`fit`、`partially-expanded`、`expanded`、百分比、像素或数字。 |
-| `detents`       | `BottomSheetDetent[]`               | 标准 `['fit', 'expanded']`；模态 `['partially-expanded', 'expanded']` | 按高度从低到高排列的停靠点。模态默认在视口高度不超过一半的最高停靠点打开。                                                |
-| `hideable`      | `boolean`                           | `false`                                                               | 是否允许标准 sheet 通过将手柄拖到最低停靠点以下或越过最高停靠点隐藏。启用 `handle` 时，模态 sheet 也可通过向下滑动关闭。  |
-| `handle`        | `boolean`                           | `false`                                                               | 显示可拖动且可通过键盘激活的调整手柄。                                                                                    |
-| `label`         | `string`                            | —                                                                     | sheet 的可访问名称；未提供时使用 `header` 标题，再回退到本地化默认值。                                                    |
-| `handleLabel`   | `string`                            | 本地化默认值                                                          | 拖动手柄和默认调整控件的可访问名称。                                                                                      |
-| `closeLabel`    | `string`                            | 本地化默认值                                                          | 关闭按钮的可访问名称；标准 sheet 在各高度都提供明确的关闭按钮。                                                           |
-| `collapseLabel` | `string`                            | 本地化默认值                                                          | 标准 sheet 展开时回到较低停靠点的操作名称。                                                                               |
-| `maxWidth`      | `string`                            | `640px`                                                               | 自定义最大宽度。                                                                                                          |
-| `locale`        | `string`                            | Provider，再回退到 `en-US`                                            | 覆盖内置操作标签的语言。                                                                                                  |
+| 属性 / 模型       | 类型                                | 默认值                                                                | 说明                                                                                                                      |
+| ----------------- | ----------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `variant`         | `'standard' \| 'modal'`             | `'standard'`                                                          | 标准 sheet 与页面并存；模态 sheet 管理焦点并遮罩背景。                                                                    |
+| `open`            | `v-model:open: boolean`             | `false`                                                               | 控制显示状态。                                                                                                            |
+| `detent`          | `v-model:detent: BottomSheetDetent` | 标准 `fit`，模态 `partially-expanded`                                 | 当前停靠高度，必须包含在 `detents` 中。可用值：`collapsed`、`fit`、`partially-expanded`、`expanded`、百分比、像素或数字。 |
+| `detents`         | `BottomSheetDetent[]`               | 标准 `['fit', 'expanded']`；模态 `['partially-expanded', 'expanded']` | 按高度从低到高排列的停靠点。模态默认在视口高度不超过一半的最高停靠点打开。                                                |
+| `hideable`        | `boolean`                           | `false`                                                               | 是否允许标准 sheet 通过将手柄拖到最低停靠点以下或越过最高停靠点隐藏。启用 `handle` 时，模态 sheet 也可通过向下滑动关闭。  |
+| `handle`          | `boolean`                           | `false`                                                               | 显示可拖动且可通过键盘激活的调整手柄。                                                                                    |
+| `label`           | `string`                            | —                                                                     | sheet 的可访问名称；未提供时使用 `header` 标题，再回退到本地化默认值。                                                    |
+| `handleLabel`     | `string`                            | 本地化默认值                                                          | 拖动手柄和默认调整控件的可访问名称。                                                                                      |
+| `closeLabel`      | `string`                            | 本地化默认值                                                          | 关闭按钮的可访问名称。                                                                                                    |
+| `showCloseButton` | `boolean`                           | `true`                                                                | 是否渲染可见关闭按钮。两种变体默认在每个停靠高度都显示。只有内容提供自己的可见关闭控件时才设为 `false`。                  |
+| `collapseLabel`   | `string`                            | 本地化默认值                                                          | 标准 sheet 展开时回到较低停靠点的操作名称。                                                                               |
+| `maxWidth`        | `string`                            | `640px`                                                               | 自定义最大宽度。                                                                                                          |
+| `locale`          | `string`                            | Provider，再回退到 `en-US`                                            | 覆盖内置操作标签的语言。                                                                                                  |
 
 内置标签继承 [LocaleProvider](/zh/components/localization) 的 `actions` 配置；现有标签属性优先于对应的共享默认文案。
 

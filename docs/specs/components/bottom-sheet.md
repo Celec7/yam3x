@@ -25,3 +25,4 @@ The following are project decisions.
 - The sheet remains bottom-anchored at every width. A consuming layout may use the [Side sheet](https://m3.material.io/components/side-sheets/overview) when that pattern better fits an expanded screen.
 - Standard is the default presentation; Material does not prescribe a default.
 - The sheet may rest at a partial or expanded height. Height stops are ordered from lowest to highest, and closing preserves the selected stop.
+- `bottom-sheet.a11y.close`: A modal sheet has a visible, named close button at every detent, not only when it reaches full height. A standard sheet keeps its explicit close button. `showCloseButton=false` is an opt-out for consumers that provide their own visible dismissal control; Escape, scrim click, and drag do not satisfy the visible-control requirement on their own.
