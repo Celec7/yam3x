@@ -24,4 +24,5 @@ The following are project decisions.
 - Only the basic variant is implemented. A multi-step full-screen flow needs its own composition rather than added behavior in this component.
 - The optional visible close button is an extension. Keep its target at least 48 × 48 dp while retaining the 24 dp close icon. Its 40 dp state layer and inset 3 dp `secondary` focus ring follow the icon-button treatment.
 - The close button is an independent dismissal path; it does not control Escape or outside-click dismissal.
+- Every basic dialog has a visible, named dismissal control. Normally this is an action button. The close icon and Escape and outside-click dismissal do not replace the action; when a dialog opens with no close icon and no actions, development builds warn and the public guide requires the consumer to add a visible action.
 - The dialog is capped at 560 px high and then at the viewport's available height. Material defines dynamic height but not this desktop cap.

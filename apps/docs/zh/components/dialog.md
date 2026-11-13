@@ -140,6 +140,7 @@ const dialog = ref<InstanceType<typeof Dialog> | null>(null)
 - 打开对话框会将焦点移入表面并约束在其中。关闭后焦点返回打开对话框的元素。
 - 默认允许通过 Escape 和外部指针输入关闭；`dismissOnEscape` 和 `dismissOnClickOutside` 分别控制两条路径。
 - `showCloseButton` 渲染独立的 48 px 关闭目标。它不受两个关闭属性影响，使用本地化的 `close` 操作名称，除非 `closeLabel` 覆盖。
+- 必须提供可见的关闭控件：通常是 `actions` 插槽中的操作按钮，或关闭按钮。Escape 和点击外部是额外路径，不能替代可见控件。开发环境下，如果对话框打开时既没有关闭按钮也没有操作控件，会输出警告。
 - 表面是由标题命名的 `alertdialog`，并由 `description` 描述。对话框打开时背景内容不能滚动。
 - 减少动态效果时移除空间移动，但保留可见的打开状态；强制颜色下保留对话框边界与焦点环。
 

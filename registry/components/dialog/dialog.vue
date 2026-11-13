@@ -32,8 +32,10 @@ const emit = defineEmits<{
   closing: [event: Event]
   closed: [event: Event]
 }>()
+const host = ref<HTMLElement | null>(null)
 const layerZ = ref<number>()
 let layer: OverlayLayer | undefined
+let warnedMissingDismissal = false
 
 watch(
   open,
@@ -54,6 +56,38 @@ onBeforeUnmount(() => {
   layer?.release()
   layer = undefined
 })
+
+function hasVisibleDismissal(): boolean {
+  const content = host.value?.querySelector<HTMLElement>('.yam3x-dialog__content')
+  if (!content) return true
+  if (content.querySelector('.yam3x-dialog__close')) return true
+  const actions = content.querySelector<HTMLElement>('.yam3x-dialog__actions')
+  if (!actions) return false
+  return Boolean(
+    actions.querySelector(
+      'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+    ),
+  )
+}
+
+watch(
+  open,
+  async (value) => {
+    if (!value) {
+      warnedMissingDismissal = false
+      return
+    }
+    if (!import.meta.env.DEV || warnedMissingDismissal) return
+    await nextTick()
+    await nextTick()
+    if (!open.value || hasVisibleDismissal()) return
+    warnedMissingDismissal = true
+    console.warn(
+      '[yam3x] Dialog opened without a visible dismissal control. Add a close button or an action that closes the dialog.',
+    )
+  },
+  { immediate: true },
+)
 const { messages: actionMessages } = useComponentLocale(
   'actions',
   () => props.locale,
@@ -128,6 +162,7 @@ defineExpose({ close: closeWithValue, returnValue })
 
 <template>
   <div
+    ref="host"
     class="yam3x-dialog"
     :style="layerZ ? { '--_yam3x-dialog-layer-z': String(layerZ) } : undefined"
   >

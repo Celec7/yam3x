@@ -140,6 +140,7 @@ const dialog = ref<InstanceType<typeof Dialog> | null>(null)
 - Opening a dialog moves focus into the surface and traps it there. Closing restores focus to the element that opened the dialog.
 - Escape and outside pointer input dismiss by default. `dismissOnEscape` and `dismissOnClickOutside` control each path separately.
 - `showCloseButton` renders a separate 48 px close target. It is independent of both dismissal props and uses the localized `close` action unless `closeLabel` overrides it.
+- Provide a visible dismissal control: normally an action button in the `actions` slot, or the close button. Escape and outside-click are additional paths, not substitutes. In development, a dialog that opens with neither a close button nor an action control warns.
 - The surface is an `alertdialog` named by its title and described by `description`. Background content cannot be scrolled while a dialog is open.
 - Reduced motion removes spatial movement while keeping the visible open state; forced colors keep the dialog boundary and focus ring.
 
