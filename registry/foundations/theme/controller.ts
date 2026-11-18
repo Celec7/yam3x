@@ -1,5 +1,5 @@
 import { applyTheme, resolveColorMode } from './apply'
-import { generateTheme } from './generate'
+import { generateTheme, getThemeTokenValues } from './generate'
 import type { ColorMode, ResolvedColorMode, ThemeApplicationOptions, ThemeOptions } from './types'
 
 export type ThemeControllerOptions = ThemeOptions &
@@ -69,8 +69,12 @@ export function createThemeController(
     const nextSignature = signature()
     if (nextSignature === lastSignature) return
     const theme = generateTheme(options.color, options)
-    applyTheme(theme, target, getMode(), options)
+    const mode = getMode()
+    applyTheme(theme, target, mode, options)
     applyDocumentStyle()
+    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    const surface = getThemeTokenValues(theme, mode)['--md-sys-color-surface']
+    if (rootTarget && themeColor && surface) themeColor.content = surface
     lastSignature = nextSignature
     if (dispatchChange) {
       target.dispatchEvent(

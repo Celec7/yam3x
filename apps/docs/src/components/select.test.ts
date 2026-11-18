@@ -25,4 +25,18 @@ describe('Select required state', () => {
     expect(wrapper.get('.yam3x-form-field__label').text()).toBe('Page size')
     wrapper.unmount()
   })
+
+  it('exposes the selected value without incompatible combobox attributes', async () => {
+    const wrapper = mount(
+      defineComponent({
+        components: { M3Select: Select, M3Option: Option },
+        template: '<M3Select model-value="10"><M3Option value="10" label="Ten" /></M3Select>',
+      }),
+    )
+    await flushPromises()
+    const trigger = wrapper.get('[role="combobox"]')
+    expect(trigger.attributes('aria-valuetext')).toBeUndefined()
+    expect(trigger.text()).toContain('Ten')
+    wrapper.unmount()
+  })
 })

@@ -298,4 +298,21 @@ describe('dynamic theme foundations', () => {
     expect(root.getAttribute('style')).toBe('--root-old: yes;')
     expect(body.getAttribute('style')).toBe('background-color: pink; color: purple;')
   })
+
+  it('syncs the theme-color meta with the resolved root surface', () => {
+    const meta = document.createElement('meta')
+    meta.name = 'theme-color'
+    document.head.append(meta)
+    const controller = createThemeController(document.documentElement, {
+      color: '#6750a4',
+      mode: 'light',
+    })
+    const light = meta.content
+    expect(light).toMatch(/^#[0-9a-f]{6}$/)
+    controller.update({ mode: 'dark' })
+    expect(meta.content).toMatch(/^#[0-9a-f]{6}$/)
+    expect(meta.content).not.toBe(light)
+    controller.dispose()
+    meta.remove()
+  })
 })

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased Changes
+
+- **Select no longer puts `aria-valuetext` on its combobox trigger.** The trigger exposes the selected text as its accessible value without an attribute that `role="combobox"` does not support.
+- **Theme controller keeps `meta[name="theme-color"]` in sync.** A root theme application or mode change now updates the browser chrome color from the resolved surface role.
+
 ## 0.5.0
 
 0.4.0 was tagged but is not available on npm. 0.5.0 is the next publishable version and includes every change since 0.3.1; review the [0.4.0 section](#040) for its breaking changes before upgrading.

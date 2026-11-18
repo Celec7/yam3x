@@ -846,7 +846,6 @@ defineExpose({ open, close: () => requestOpen(false), show: () => requestOpen(tr
       :aria-expanded="open ? 'true' : 'false'"
       :aria-controls="open ? listboxId : undefined"
       :aria-activedescendant="!multiple && open ? activeOption?.id : undefined"
-      :aria-valuetext="!multiple ? displayValue || undefined : undefined"
       :aria-description="multiple && displayValue ? displayValue : undefined"
       :aria-required="required ? 'true' : undefined"
       :aria-disabled="disabled ? 'true' : undefined"
