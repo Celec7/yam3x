@@ -245,6 +245,14 @@ const materialComponents: CatalogSection[] = [
         summary: { en: 'Choose one value from a set.', zh: '在一组选项中选择一个值。' },
       },
       {
+        path: 'scroll-field',
+        title: 'Scroll field',
+        summary: {
+          en: 'Pick a numeric value by scrolling or typing it.',
+          zh: '通过滚动或输入选择数值。',
+        },
+      },
+      {
         path: 'search',
         title: 'Search',
         summary: {
@@ -361,14 +369,6 @@ const extensions: CatalogSection[] = [
         summary: {
           en: 'Edit localized numeric values with optional step controls.',
           zh: '编辑本地化数值，并提供可选步进操作。',
-        },
-      },
-      {
-        path: 'scroll-field',
-        title: 'Scroll field',
-        summary: {
-          en: 'Pick a numeric value by scrolling or typing it.',
-          zh: '通过滚动或输入选择数值。',
         },
       },
       {
