@@ -73,7 +73,7 @@ provide(navigationBarContextKey, { modelValue, activate })
   --_yam3x-navigation-bar-label-font-size: var(--md-sys-typescale-label-medium-font-size);
   --_yam3x-navigation-bar-label-line-height: var(--md-sys-typescale-label-medium-line-height-small);
   --_yam3x-navigation-bar-label-font-weight: var(--md-sys-typescale-label-medium-font-weight);
-  --_yam3x-navigation-bar-compact-item-gap: 8px;
+  --_yam3x-navigation-bar-compact-item-gap: 4px;
   --_yam3x-navigation-bar-horizontal-item-gap: 4px;
   --_yam3x-navigation-bar-compact-indicator-width: 56px;
   --_yam3x-navigation-bar-compact-indicator-height: 32px;
@@ -94,7 +94,7 @@ provide(navigationBarContextKey, { modelValue, activate })
         var(--_yam3x-navigation-bar-density-container-scale)
     )
   );
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   gap: 0;
   width: 100%;
@@ -104,8 +104,9 @@ provide(navigationBarContextKey, { modelValue, activate })
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  /* Keep the indicator and ripple anchored to the icon row, independent of label metrics. */
-  grid-template-rows: var(--_yam3x-navigation-bar-icon-size) auto;
+  /* Keep the indicator and ripple anchored to the 32 dp indicator row, independent of label
+     metrics. The measurement figure gives 6 + 32 + 4 + label + 6 for a 64 dp item. */
+  grid-template-rows: var(--_yam3x-navigation-bar-compact-indicator-height) auto;
   min-width: 0;
   flex: 1 1 0;
   align-content: center;
@@ -114,7 +115,7 @@ provide(navigationBarContextKey, { modelValue, activate })
     var(--_yam3x-navigation-bar-compact-item-gap) *
       var(--_yam3x-navigation-bar-density-spacing-scale)
   );
-  padding: calc(8px * var(--_yam3x-navigation-bar-density-spacing-scale))
+  padding: calc(6px * var(--_yam3x-navigation-bar-density-spacing-scale))
     calc(4px * var(--_yam3x-navigation-bar-density-spacing-scale));
   color: var(--_yam3x-navigation-bar-inactive-color);
   text-decoration: none;
@@ -148,6 +149,7 @@ provide(navigationBarContextKey, { modelValue, activate })
 }
 .yam3x-navigation-bar__graphic {
   position: relative;
+  align-self: center;
   flex: none;
   width: var(--_yam3x-navigation-bar-icon-size);
   height: var(--_yam3x-navigation-bar-icon-size);

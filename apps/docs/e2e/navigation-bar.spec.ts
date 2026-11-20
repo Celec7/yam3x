@@ -88,6 +88,35 @@ test('compact navigation keeps its indicator clear of every destination label', 
   }
 })
 
+test('compact destinations follow the 6 / 32 / 4 / label / 6 measurement rhythm', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  const navigation = await openNavigationDemo(page)
+
+  for (const item of await navigation.getByRole('link').all()) {
+    const rhythm = await item.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const indicator = element
+        .querySelector<HTMLElement>('.yam3x-navigation-bar__indicator')!
+        .getBoundingClientRect()
+      const label = element
+        .querySelector<HTMLElement>('.yam3x-navigation-bar__label')!
+        .getBoundingClientRect()
+      return {
+        top: indicator.top - box.top,
+        indicatorHeight: indicator.height,
+        gap: label.top - indicator.bottom,
+        bottom: box.bottom - label.bottom,
+      }
+    })
+    expect(rhythm.top).toBeCloseTo(6, 0)
+    expect(rhythm.indicatorHeight).toBe(32)
+    expect(rhythm.gap).toBeCloseTo(4, 0)
+    expect(rhythm.bottom).toBeCloseTo(6, 0)
+  }
+})
+
 test('inactive destination shows a rounded hover layer and centered press ripple', async ({
   page,
 }) => {
@@ -179,7 +208,9 @@ test('navigation item geometry maps the official compact and horizontal token va
   const label = selected.locator('.yam3x-navigation-bar__label')
   await expect(indicator).toHaveCSS('width', '56px')
   await expect(indicator).toHaveCSS('height', '32px')
-  await expect(selected).toHaveCSS('row-gap', '8px')
+  await expect(selected).toHaveCSS('row-gap', '4px')
+  await expect(selected).toHaveCSS('padding-top', '6px')
+  await expect(selected).toHaveCSS('padding-bottom', '6px')
   await expect(label).toHaveCSS('font-size', '12px')
 
   await page.setViewportSize({ width: 1046, height: 844 })
