@@ -44,6 +44,7 @@ Use the [component guide template](TEMPLATE.md) for a new guide, the [project gl
 | Navigation rail                           | [Navigation rail](components/navigation-rail.md)        |
 | Menus                                     | [Menus](components/menu.md)                             |
 | Text fields                               | [Text fields](components/form-field.md)                 |
+| Scroll fields                             | [Scroll fields](components/scroll-field.md)             |
 
 ## Chip variants and set helpers
 

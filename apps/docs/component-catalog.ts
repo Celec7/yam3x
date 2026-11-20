@@ -364,6 +364,14 @@ const extensions: CatalogSection[] = [
         },
       },
       {
+        path: 'scroll-field',
+        title: 'Scroll field',
+        summary: {
+          en: 'Pick a numeric value by scrolling or typing it.',
+          zh: '通过滚动或输入选择数值。',
+        },
+      },
+      {
         path: 'option',
         title: 'Option',
         summary: {

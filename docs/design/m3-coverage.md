@@ -42,6 +42,7 @@ For an audit, use the component's Expressive or baseline overview, guidelines, s
 | Text fields                    | M3 baseline | [Text fields](../specs/components/form-field.md)                        | `FormField` around a native input |
 | Toolbars                       | Expressive  | [Toolbars](../specs/components/toolbar.md)                              | `toolbar`                         |
 | Tooltips                       | M3 baseline | [Tooltips](../specs/components/tooltip.md)                              | `tooltip`                         |
+| Scroll fields                  | Expressive  | [Scroll fields](../specs/components/scroll-field.md)                    | `scroll-field`                    |
 
 `Expressive` means the official guidance provides an Expressive variant or treatment. `M3 baseline` means the official source remains M3 baseline; Material Web may lead its Web implementation and API reference. Segmented buttons and Navigation drawer are baseline components that the current guidance no longer recommends for new designs; their guides record the replacement.
 

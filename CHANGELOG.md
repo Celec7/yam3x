@@ -2,6 +2,9 @@
 
 ## Unreleased Changes
 
+- **Scroll field is available.** `ScrollField` implements the Material 3 Expressive wheel with three sizes, finite or looping lists, pointer dragging, spring snapping, keyboard selection, and an optional text-input mode with validation, a hidden form value, and reduced-motion support.
+- **Compact navigation bar items follow the measured 6 / 32 / 4 / label / 6 rhythm.** The compact item now uses a 32 px indicator row, a 4 px indicator-to-label gap, and 6 px block padding, and items keep their natural height when the container is taller. The item row gap changes from 8 px to 4 px.
+- **Button shape morphs use a generated spring curve.** Buttons and button groups consume `--md-sys-motion-spring-shape-morph`, sampled from the specified damping 0.9 and stiffness 1400 spring. The press morph shortens from 178 ms to 155 ms; `pnpm motion:generate` reproduces the token and records its sampling error.
 - **Select no longer puts `aria-valuetext` on its combobox trigger.** The trigger exposes the selected text as its accessible value without an attribute that `role="combobox"` does not support.
 - **Theme controller keeps `meta[name="theme-color"]` in sync.** A root theme application or mode change now updates the browser chrome color from the resolved surface role.
 
