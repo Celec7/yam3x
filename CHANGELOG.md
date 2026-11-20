@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased Changes
+## 0.6.0
+
+This release adds the Expressive scroll time picker and the scroll field's external invalid state, alongside compact navigation bar, button morph, Select, and theme refinements.
 
 - **Time picker adds the Expressive scroll variant.** `TimeScroll` and `TimePickerDialog mode="scroll"` provide looping hour, minute, and optional second scroll fields; the dialog switches between scroll and manual entry while preserving the alternate mode. `TimePickerMode` now includes `scroll`, `TimeScrollProps` is exported, and the optional `timePicker.useScroll` locale key labels the mode toggle.
 - **ScrollField accepts an external invalid state.** The new `invalid` prop sets `aria-invalid` and the invalid outline without rendering a message, for callers that own a surrounding error summary. `--yam3x-scroll-field-item-height` exposes the value row height.
@@ -9,6 +11,8 @@
 - **Button shape morphs use a generated spring curve.** Buttons and button groups consume `--md-sys-motion-spring-shape-morph`, sampled from the specified damping 0.9 and stiffness 1400 spring. The press morph shortens from 178 ms to 155 ms; `pnpm motion:generate` reproduces the token and records its sampling error.
 - **Select no longer puts `aria-valuetext` on its combobox trigger.** The trigger exposes the selected text as its accessible value without an attribute that `role="combobox"` does not support.
 - **Theme controller keeps `meta[name="theme-color"]` in sync.** A root theme application or mode change now updates the browser chrome color from the resolved surface role.
+
+[Compare changes from 0.5.0](https://github.com/Celec7/yam3x/compare/v0.5.0...v0.6.0).
 
 ## 0.5.0
 
