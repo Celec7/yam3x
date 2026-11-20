@@ -161,21 +161,8 @@ function onClick(event: MouseEvent) {
     transparent
   );
   --_yam3x-button-effects-motion: var(--md-sys-motion-spring-fast-effects);
-  --_yam3x-button-shape-duration: 178ms;
+  --_yam3x-button-shape-motion: var(--md-sys-motion-spring-shape-morph);
   --yam3x-state-layer-color: var(--_yam3x-button-state-layer-color);
-  --_yam3x-button-shape-spring: linear(
-    0,
-    0.15 10%,
-    0.407 20%,
-    0.632 30%,
-    0.792 40%,
-    0.892 50%,
-    0.949 60%,
-    0.979 70%,
-    0.993 80%,
-    0.999 90%,
-    1.001 100%
-  );
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -200,7 +187,7 @@ function onClick(event: MouseEvent) {
   box-shadow: var(--_yam3x-button-elevation);
   text-decoration: none;
   transition:
-    border-radius var(--_yam3x-button-shape-duration) var(--_yam3x-button-shape-spring),
+    border-radius var(--_yam3x-button-shape-motion),
     background-color var(--_yam3x-button-effects-motion),
     color var(--_yam3x-button-effects-motion),
     box-shadow var(--_yam3x-button-effects-motion);

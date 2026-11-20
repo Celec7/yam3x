@@ -82,8 +82,17 @@ test('standard button group width responds with the spring and remains still for
   await button.hover()
   await page.mouse.down()
   await expect(item).toHaveAttribute('data-group-sizing', '')
-  await expect(item).toHaveCSS('transition-duration', /0\.178s/)
-  await expect(item).toHaveCSS('transition-timing-function', /linear\(/)
+  const shapeMotion = await page.evaluate(() =>
+    getComputedStyle(document.documentElement)
+      .getPropertyValue('--md-sys-motion-duration-shape-morph')
+      .trim(),
+  )
+  expect(shapeMotion.endsWith('ms')).toBe(true)
+  await expect(item).toHaveCSS(
+    'transition-duration',
+    new RegExp(`^${(Number.parseFloat(shapeMotion) / 1000).toFixed(3)}s`),
+  )
+  await expect(item).toHaveCSS('transition-timing-function', /^linear\(/)
   await page.mouse.up()
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await button.hover()

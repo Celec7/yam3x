@@ -271,7 +271,7 @@ Colors follow Material system roles, so changing the app theme updates every sty
 
 ::: details Shape, target, and motion
 
-The compact sizes keep a 48 × 48 CSS px interactive target even when the visible container is smaller. Round buttons use a fully rounded resting shape, square buttons use the size's square corner, and press feedback morphs toward the pressed shape with the shared spring approximation (178 ms) and no transition under reduced motion. Focus, state layers, and disabled opacity remain internal to the component.
+The compact sizes keep a 48 × 48 CSS px interactive target even when the visible container is smaller. Round buttons use a fully rounded resting shape, square buttons use the size's square corner, and press feedback morphs toward the pressed shape with the shared generated spring curve (155 ms) and no transition under reduced motion. Focus, state layers, and disabled opacity remain internal to the component.
 
 :::
 

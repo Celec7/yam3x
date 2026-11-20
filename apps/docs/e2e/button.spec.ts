@@ -95,8 +95,17 @@ test('button shape transitions use the spring approximation for the official pre
 }) => {
   await page.goto('/components/button')
   const button = page.locator('.yam3x-demo__row').first().locator('.yam3x-button').first()
-  await expect(button).toHaveCSS('transition-duration', /0\.178s/)
-  await expect(button).toHaveCSS('transition-timing-function', /linear\(/)
+  const shapeMotion = await page.evaluate(() =>
+    getComputedStyle(document.documentElement)
+      .getPropertyValue('--md-sys-motion-duration-shape-morph')
+      .trim(),
+  )
+  expect(shapeMotion.endsWith('ms')).toBe(true)
+  await expect(button).toHaveCSS(
+    'transition-duration',
+    new RegExp(`^${(Number.parseFloat(shapeMotion) / 1000).toFixed(3)}s`),
+  )
+  await expect(button).toHaveCSS('transition-timing-function', /^linear\(/)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(button).toHaveCSS('transition-property', 'none')
 })

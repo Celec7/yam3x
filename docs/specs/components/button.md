@@ -22,7 +22,7 @@ Buttons perform actions with a clear visual hierarchy from high emphasis to low 
 - Enabled filled, tonal, and elevated containers need at least 3:1 contrast with the background; outlined and text labels need at least 3:1 contrast. See [Buttons accessibility: color contrast](https://m3.material.io/components/buttons/accessibility).
 - `button.color.disabled-state`: Disabled buttons use the disabled colors and elevation shown in the [Buttons state specifications](https://m3.material.io/components/buttons/specs).
 - `button.shape.round-rest`: Round buttons use fully rounded corners at rest. Square and pressed shapes vary by size; press feedback morphs toward a more square shape. See the [Buttons shape and measurement figures](https://m3.material.io/components/buttons/specs).
-- Shape morphs use the spring parameters specified for button presses. See the [Buttons pressed shape token sets](https://m3.material.io/components/buttons/specs).
+- Shape morphs use the spring parameters specified for button presses (damping 0.9, stiffness 1400). On the Web the shape transition consumes the generated `--md-sys-motion-spring-shape-morph` token, a sampled `linear()` approximation of that spring. See the [Buttons pressed shape token sets](https://m3.material.io/components/buttons/specs) and [motion foundations](../foundations.md).
 
 ### Labels and accessibility
 

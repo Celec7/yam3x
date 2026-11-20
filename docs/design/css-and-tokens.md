@@ -19,6 +19,10 @@ The `--md-sys-*` namespace is reserved for Material system semantics. Project-wi
 
 Project-owned custom properties use the `yam3x` name, including documented component overrides and private implementation aliases. No legacy `m3x` or unprefixed compatibility aliases are provided.
 
+## Motion tokens
+
+Springs are published as duration and easing pairs because CSS transitions take a duration. Shape morphs need the full spring response, which a cubic bezier cannot express, so `scripts/spring-motion.mjs` samples the specified spring into a `linear()` timing function. `scripts/generate-foundation-tokens.mjs` writes the result as `--md-sys-motion-spring-shape-morph`, `--md-sys-motion-duration-shape-morph`, and `--md-sys-motion-easing-shape-morph`, together with the settle tolerance, sample count, and measured maximum error. Run `pnpm motion:generate` (or `pnpm tokens:generate`) after changing spring parameters; do not hand-edit the generated block.
+
 ## Component mappings and overrides
 
 Map each requirement from its applicable Material 3 Expressive specification. A component alias references a System token when the meanings match. Put official component-specific values in the Component layer when no semantically suitable System token exists. Do not borrow an unrelated System token or duplicate a value owned by another layer.

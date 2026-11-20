@@ -450,21 +450,8 @@ onBeforeUnmount(() => {
   --_yam3x-button-group-connected-square-outer-corner: var(--md-sys-shape-corner-small);
   --_yam3x-button-group-min-item-width: var(--md-sys-touch-target-size);
   --_yam3x-button-group-pressed-width-multiplier: 15%;
-  --_yam3x-button-group-press-duration: 178ms;
   --_yam3x-button-group-container-width-motion: var(--md-sys-motion-spring-fast-effects);
-  --_yam3x-button-group-press-spring: linear(
-    0,
-    0.15 10%,
-    0.407 20%,
-    0.632 30%,
-    0.792 40%,
-    0.892 50%,
-    0.949 60%,
-    0.979 70%,
-    0.993 80%,
-    0.999 90%,
-    1.001 100%
-  );
+  --_yam3x-button-group-press-motion: var(--md-sys-motion-spring-shape-morph);
   --_yam3x-button-group-overflow-indicator-width: 48px;
   --_yam3x-button-group-focus-ring-reach: calc(3px + 2px);
   padding: var(--_yam3x-button-group-focus-ring-reach);
@@ -630,8 +617,7 @@ onBeforeUnmount(() => {
 .yam3x-button-group[data-group-pressed] {
   width: var(--_yam3x-button-group-pressed-width);
   justify-content: space-between;
-  transition: width var(--_yam3x-button-group-press-duration)
-    var(--_yam3x-button-group-press-spring);
+  transition: width var(--_yam3x-button-group-press-motion);
 }
 
 .yam3x-button-group :deep(.yam3x-button-group__item[data-group-sizing]) {
@@ -639,7 +625,6 @@ onBeforeUnmount(() => {
   width: calc(
     var(--_yam3x-button-group-item-base-width) + var(--_yam3x-button-group-item-delta, 0px)
   );
-  transition: width var(--_yam3x-button-group-press-duration)
-    var(--_yam3x-button-group-press-spring);
+  transition: width var(--_yam3x-button-group-press-motion);
 }
 </style>

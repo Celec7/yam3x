@@ -26,7 +26,7 @@
     "lint:fix": "eslint . --fix",
     "tokens:generate": "node --import ./scripts/register-mcu-esm-loader.mjs scripts/generate-foundation-tokens.mjs",
     "yam3x": "pnpm registry:prepare && node packages/cli/src/index.mjs",
-    "motion:generate": "node scripts/generate-motion.mjs",
+    "motion:generate": "node --import ./scripts/register-mcu-esm-loader.mjs scripts/generate-motion.mjs",
     "docs:dev": "pnpm dev",
     "docs:build": "pnpm build",
     "docs:check": "node scripts/check-docs.mjs"
