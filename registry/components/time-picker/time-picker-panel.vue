@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Icon from '../icon/icon.vue'
+import ScrollField from '../scroll-field/scroll-field.vue'
+import TimePeriodToggle from './time-period-toggle.vue'
 import type { HourDialItem, TimePickerView } from './time-picker.utils'
 
 type TimePickerDialItem = HourDialItem | { value: number; label: string; angle: number }
 
 const props = defineProps<{
-  mode: 'dial' | 'input'
+  mode: 'dial' | 'input' | 'scroll'
+  alternateMode: 'dial' | 'scroll'
+  useScrollLabel: string
+  setScrollPart: (part: 'hour' | 'minute' | 'second', value: number) => void
   showModeToggle?: boolean
   showActions?: boolean
   showHeadline?: boolean
   activeView: TimePickerView
+  locale: string
   format: '12' | '24'
   showSeconds: boolean
   hour: number
@@ -61,7 +67,30 @@ const props = defineProps<{
   tickAllowed: (value: number) => boolean
 }>()
 
-const inputMode = computed(() => props.mode === 'input' || props.useInputOnly)
+const scrollMode = computed(() => props.mode === 'scroll' && !props.useInputOnly)
+const inputMode = computed(
+  () => !scrollMode.value && (props.mode === 'input' || props.useInputOnly),
+)
+const scrollHour = computed(() => (props.format === '12' ? props.hour % 12 || 12 : props.hour))
+const scrollHourMin = computed(() => (props.format === '12' ? 1 : 0))
+const scrollHourMax = computed(() => (props.format === '12' ? 12 : 23))
+const toggleLabel = computed(() =>
+  props.mode === 'input'
+    ? props.alternateMode === 'scroll'
+      ? props.useScrollLabel
+      : props.useDialLabel
+    : props.modeToggleLabel,
+)
+const toggleIcon = computed(() =>
+  props.mode === 'input'
+    ? props.alternateMode === 'scroll'
+      ? 'swipe_vertical'
+      : 'schedule'
+    : 'keyboard',
+)
+const inlineModeToggle = computed(
+  () => props.showModeToggle !== false && props.showActions === false && !props.hideModeToggle,
+)
 const fields = computed(() => [
   { part: 'hour' as const, text: props.hourText, label: props.hourLabel },
   { part: 'minute' as const, text: props.minuteText, label: props.minuteLabel },
@@ -93,21 +122,8 @@ const dialItems = computed<TimePickerDialItem[]>(() =>
   props.activeView === 'hour' ? props.hours : props.ticks,
 )
 
-function onPeriodKeydown(event: KeyboardEvent, index: number): void {
-  const delta =
-    event.key === 'ArrowRight' || event.key === 'ArrowDown'
-      ? 1
-      : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
-        ? -1
-        : 0
-  if (!delta) return
-  event.preventDefault()
-  const nextIndex = (index + delta + props.periodOptions.length) % props.periodOptions.length
-  const next = props.periodOptions[nextIndex]!
-  props.setPeriod(next.value)
-  ;(event.currentTarget as HTMLElement).parentElement
-    ?.querySelectorAll<HTMLButtonElement>('[role="radio"]')
-    [nextIndex]?.focus()
+function updateScroll(part: 'hour' | 'minute' | 'second', value: number | undefined): void {
+  if (value !== undefined) props.setScrollPart(part, value)
 }
 
 function onFieldPointerDown(event: PointerEvent, part: TimePickerView): void {
@@ -120,7 +136,7 @@ let resetModeToggleClickSuppression: number | undefined
 let modeTogglePointerId: number | null = null
 
 function toggleMode(): void {
-  props.setMode(props.mode === 'input' ? 'dial' : 'input')
+  props.setMode(props.mode === 'input' ? props.alternateMode : 'input')
 }
 
 function onModeTogglePointerDown(event: PointerEvent): void {
@@ -171,11 +187,101 @@ function dialItemLabel(value: number): string {
     <header class="yam3x-time-picker__header">
       <div class="yam3x-time-picker__header-value">
         <div
-          :key="inputMode ? 'input' : 'dial'"
+          :key="scrollMode ? 'scroll' : inputMode ? 'input' : 'dial'"
           class="yam3x-time-picker__view-content"
         >
           <div
-            v-if="inputMode"
+            v-if="scrollMode"
+            class="yam3x-time-picker__scroll"
+            dir="ltr"
+          >
+            <ScrollField
+              class="yam3x-time-picker__scroll-field"
+              size="small"
+              :model-value="scrollHour"
+              :min="scrollHourMin"
+              :max="scrollHourMax"
+              loop
+              :locale="locale"
+              :label="hourLabel"
+              :invalid="invalid"
+              @update:model-value="updateScroll('hour', $event)"
+            />
+            <span
+              class="yam3x-time-picker__scroll-separator"
+              aria-hidden="true"
+              >:</span
+            >
+            <ScrollField
+              class="yam3x-time-picker__scroll-field"
+              size="small"
+              :model-value="minute"
+              :min="0"
+              :max="59"
+              loop
+              :locale="locale"
+              :label="minuteLabel"
+              :invalid="invalid"
+              @update:model-value="updateScroll('minute', $event)"
+            />
+            <div
+              class="yam3x-time-picker__scroll-tail"
+              :class="{ 'is-toggle-only': !showPeriod && !showSeconds }"
+            >
+              <template v-if="showSeconds">
+                <span
+                  class="yam3x-time-picker__scroll-separator"
+                  aria-hidden="true"
+                  >:</span
+                >
+                <ScrollField
+                  class="yam3x-time-picker__scroll-field"
+                  size="small"
+                  :model-value="second"
+                  :min="0"
+                  :max="59"
+                  loop
+                  :locale="locale"
+                  :label="secondLabel"
+                  :invalid="invalid"
+                  @update:model-value="updateScroll('second', $event)"
+                />
+              </template>
+              <div
+                class="yam3x-time-picker__scroll-controls"
+                :class="{ 'is-inline': inlineModeToggle, 'has-period': showPeriod }"
+              >
+                <TimePeriodToggle
+                  v-if="showPeriod"
+                  class="yam3x-time-picker__scroll-period"
+                  :period="period"
+                  :options="periodOptions"
+                  :label="periodLabel"
+                  :set-period="setPeriod"
+                />
+                <button
+                  v-if="inlineModeToggle"
+                  type="button"
+                  class="yam3x-time-picker__inline-mode-toggle"
+                  :aria-label="toggleLabel"
+                  :title="toggleLabel"
+                  @click="toggleMode"
+                >
+                  <Icon :name="toggleIcon" />
+                </button>
+              </div>
+            </div>
+            <p
+              v-if="error"
+              :id="errorId"
+              class="yam3x-time-picker__error yam3x-time-picker__scroll-error"
+              role="alert"
+            >
+              {{ error }}
+            </p>
+          </div>
+          <div
+            v-else-if="inputMode"
             class="yam3x-time-picker__input"
           >
             <div class="yam3x-time-picker__input-controls">
@@ -214,22 +320,25 @@ function dialItemLabel(value: number): string {
                 </template>
               </div>
               <div
-                v-if="showPeriod"
-                class="yam3x-time-picker__period"
-                role="radiogroup"
-                :aria-label="periodLabel"
+                class="yam3x-time-picker__input-side-controls"
+                :class="{ 'is-inline': inlineModeToggle }"
               >
+                <TimePeriodToggle
+                  v-if="showPeriod"
+                  :period="period"
+                  :options="periodOptions"
+                  :label="periodLabel"
+                  :set-period="setPeriod"
+                />
                 <button
-                  v-for="(option, index) in periodOptions"
-                  :key="option.value"
+                  v-if="inlineModeToggle"
                   type="button"
-                  role="radio"
-                  :aria-checked="option.value === period"
-                  :tabindex="option.value === period ? 0 : -1"
-                  @click="setPeriod(option.value)"
-                  @keydown="onPeriodKeydown($event, index)"
+                  class="yam3x-time-picker__inline-mode-toggle"
+                  :aria-label="toggleLabel"
+                  :title="toggleLabel"
+                  @click="toggleMode"
                 >
-                  {{ option.label }}
+                  <Icon :name="toggleIcon" />
                 </button>
               </div>
             </div>
@@ -259,31 +368,19 @@ function dialItemLabel(value: number): string {
             >
               {{ field.text }}
             </button>
-            <div
+            <TimePeriodToggle
               v-if="showPeriod"
-              class="yam3x-time-picker__period"
-              role="radiogroup"
-              :aria-label="periodLabel"
-            >
-              <button
-                v-for="(option, index) in periodOptions"
-                :key="option.value"
-                type="button"
-                role="radio"
-                :aria-checked="option.value === period"
-                :tabindex="option.value === period ? 0 : -1"
-                @click="setPeriod(option.value)"
-                @keydown="onPeriodKeydown($event, index)"
-              >
-                {{ option.label }}
-              </button>
-            </div>
+              :period="period"
+              :options="periodOptions"
+              :label="periodLabel"
+              :set-period="setPeriod"
+            />
           </div>
         </div>
       </div>
     </header>
     <div
-      v-if="!inputMode"
+      v-if="!inputMode && !scrollMode"
       class="yam3x-time-picker__dial-wrap"
     >
       <div
@@ -346,13 +443,13 @@ function dialItemLabel(value: number): string {
         v-if="showModeToggle !== false && !useInputOnly && !hideModeToggle"
         type="button"
         class="yam3x-time-picker__mode-toggle"
-        :aria-label="mode === 'input' ? useDialLabel : modeToggleLabel"
-        :title="mode === 'input' ? useDialLabel : modeToggleLabel"
+        :aria-label="toggleLabel"
+        :title="toggleLabel"
         @pointerdown="onModeTogglePointerDown"
         @pointerup="onModeTogglePointerUp"
         @click="onModeToggleClick"
       >
-        <Icon :name="mode === 'input' ? 'schedule' : 'keyboard'" />
+        <Icon :name="toggleIcon" />
       </button>
       <button
         type="button"

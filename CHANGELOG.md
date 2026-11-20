@@ -2,6 +2,8 @@
 
 ## Unreleased Changes
 
+- **Time picker adds the Expressive scroll variant.** `TimeScroll` and `TimePickerDialog mode="scroll"` provide looping hour, minute, and optional second scroll fields; the dialog switches between scroll and manual entry while preserving the alternate mode. `TimePickerMode` now includes `scroll`, `TimeScrollProps` is exported, and the optional `timePicker.useScroll` locale key labels the mode toggle.
+- **ScrollField accepts an external invalid state.** The new `invalid` prop sets `aria-invalid` and the invalid outline without rendering a message, for callers that own a surrounding error summary. `--yam3x-scroll-field-item-height` exposes the value row height.
 - **Scroll field is available.** `ScrollField` implements the Material 3 Expressive wheel with three sizes, finite or looping lists, pointer dragging, spring snapping, keyboard selection, and an optional text-input mode with validation, a hidden form value, and reduced-motion support.
 - **Compact navigation bar items follow the measured 6 / 32 / 4 / label / 6 rhythm.** The compact item now uses a 32 px indicator row, a 4 px indicator-to-label gap, and 6 px block padding, and items keep their natural height when the container is taller. The item row gap changes from 8 px to 4 px.
 - **Button shape morphs use a generated spring curve.** Buttons and button groups consume `--md-sys-motion-spring-shape-morph`, sampled from the specified damping 0.9 and stiffness 1400 spring. The press morph shortens from 178 ms to 155 ms; `pnpm motion:generate` reproduces the token and records its sampling error.

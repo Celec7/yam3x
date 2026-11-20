@@ -96,7 +96,10 @@ const materialComponents: CatalogSection[] = [
       {
         path: 'time-picker',
         title: 'Time pickers',
-        summary: { en: 'Choose a time with a dial or keyboard.', zh: '通过表盘或键盘选择时间。' },
+        summary: {
+          en: 'Choose a time with a dial, scrolling fields, or keyboard.',
+          zh: '通过表盘、滚动字段或键盘选择时间。',
+        },
       },
     ],
   },

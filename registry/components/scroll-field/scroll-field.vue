@@ -31,6 +31,7 @@ const props = withDefaults(
     disabled?: boolean
     readonly?: boolean
     required?: boolean
+    invalid?: boolean
     error?: string
     name?: string
     form?: string
@@ -47,6 +48,7 @@ const props = withDefaults(
     disabled: false,
     readonly: false,
     required: false,
+    invalid: false,
     error: '',
     name: undefined,
     form: undefined,
@@ -89,7 +91,7 @@ const windowStart = ref(0)
 const windowEnd = ref(0)
 const draft = ref('')
 const inputInvalid = ref(false)
-const hasError = computed(() => Boolean(props.error) || inputInvalid.value)
+const hasError = computed(() => Boolean(props.error) || props.invalid || inputInvalid.value)
 
 const renderedItems = computed(() => {
   const items: Array<{ index: number; value: number; progress: number }> = []
@@ -671,7 +673,7 @@ onBeforeUnmount(() => {
   --_yam3x-scroll-field-state-layer-color: var(--md-sys-color-on-surface);
   --_yam3x-scroll-field-state-hover-opacity: var(--md-sys-state-hover-opacity);
   --_yam3x-scroll-field-state-pressed-opacity: var(--md-sys-state-pressed-opacity);
-  --_yam3x-scroll-field-item-height: 64px;
+  --_yam3x-scroll-field-item-height: var(--yam3x-scroll-field-item-height, 64px);
   --_yam3x-scroll-field-item-gap: 16px;
   --_yam3x-scroll-field-inline-padding: 16px;
   --_yam3x-scroll-field-selected-size: var(--md-sys-typescale-display-large-font-size);

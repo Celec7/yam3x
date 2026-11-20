@@ -87,6 +87,7 @@ export default {
     second: 'Second',
     modeToggle: 'Enter time manually',
     useDial: 'Use clock dial',
+    useScroll: 'Use scroll fields',
     dial: 'Select time',
     input: 'Edit time',
     cancel: 'Cancel',

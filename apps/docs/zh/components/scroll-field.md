@@ -28,7 +28,7 @@ import ScrollFieldExample from '../../components/demos/ScrollFieldExample.vue'
 
 ### 文本输入模式
 
-Material 要求每个滚轮字段都能用文本输入。绑定 `v-model:mode` 并提供切换控件：示例把字段切换为原生数字输入，并使用激活态描边与光标。Enter 或失焦提交有效值；无效输入保留草稿、标记字段无效并触发 `invalid`。绑定 `error` 可在字段下方显示消息。
+Material 要求每个滚轮字段都能用文本输入。绑定 `v-model:mode` 并提供切换控件：示例把字段切换为原生数字输入，并使用激活态描边与光标。Enter 或失焦提交有效值；无效输入保留草稿、标记字段无效并触发 `invalid`。绑定 `error` 可在字段下方显示消息；当外层表单负责消息时，改用 `invalid`。
 
 ### 标签与多字段
 
@@ -87,6 +87,7 @@ const mode = ref<'scroll' | 'input'>('scroll')
 | `locale`                | `string`                         | 浏览器     | 数值格式化与解析所用的 locale。         |
 | `disabled` / `readonly` | `boolean`                        | `false`    | 禁用交互或只允许提交。                  |
 | `required`              | `boolean`                        | `false`    | 暴露 `aria-required`。                  |
+| `invalid`               | `boolean`                        | `false`    | 标记字段无效，但不渲染消息。            |
 | `error`                 | `string`                         | `''`       | 字段下方消息；同时设置 `aria-invalid`。 |
 | `name` / `form`         | `string`                         | —          | 为原生表单提交添加隐藏输入。            |
 
@@ -94,7 +95,7 @@ const mode = ref<'scroll' | 'input'>('scroll')
 
 ## 样式
 
-`--yam3x-scroll-field-height` 设置容器高度（默认 200 px，最小 120 px）。`--yam3x-scroll-field-width` 覆盖尺寸宽度，例如填满网格单元。字段的颜色、字体角色、形状和动效映射到系统令牌；请通过主题而不是逐实例的颜色覆盖来调整。
+`--yam3x-scroll-field-height` 设置容器高度（默认 200 px，最小 120 px）。`--yam3x-scroll-field-width` 覆盖尺寸宽度，例如填满网格单元。`--yam3x-scroll-field-item-height` 设置数值行高（默认 64 px）。字段的颜色、字体角色、形状和动效映射到系统令牌；请通过主题而不是逐实例的颜色覆盖来调整。
 
 ## Material 参考
 

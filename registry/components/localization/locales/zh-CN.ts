@@ -83,6 +83,7 @@ export default {
     second: '秒',
     modeToggle: '手动输入时间',
     useDial: '使用时钟表盘',
+    useScroll: '使用滚动字段',
     dial: '选择时间',
     input: '编辑时间',
     cancel: '取消',

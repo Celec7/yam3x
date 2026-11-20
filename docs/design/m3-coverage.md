@@ -15,7 +15,7 @@ For an audit, use the component's Expressive or baseline overview, guidelines, s
 | Segmented buttons              | M3 baseline | [Segmented buttons](../specs/components/segmented-button.md)            | `segmented-button`                |
 | Split buttons                  | Expressive  | [Split buttons](../specs/components/split-button.md)                    | `split-button`                    |
 | Date pickers                   | M3 baseline | [Date pickers](../specs/components/date-picker.md)                      | `date-picker`                     |
-| Time pickers                   | M3 baseline | [Time pickers](../specs/components/time-picker.md)                      | `time-picker`                     |
+| Time pickers                   | Expressive  | [Time pickers](../specs/components/time-picker.md)                      | `time-picker`                     |
 | Loading indicator              | Expressive  | [Loading indicator](../specs/components/loading-indicator.md)           | `loading-indicator`               |
 | Progress indicators            | Expressive  | [Progress indicators](../specs/components/progress-indicator.md)        | `progress-indicator`              |
 | Navigation bar                 | Expressive  | [Navigation bar](../specs/components/navigation-bar.md)                 | `navigation-bar`                  |

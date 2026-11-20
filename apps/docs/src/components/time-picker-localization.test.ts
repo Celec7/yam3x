@@ -3,7 +3,7 @@ import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { LocaleProvider } from '../../../../registry/components/localization'
-import { TimeInput, TimePicker } from '../../../../registry/components/time-picker'
+import { TimeInput, TimePicker, TimeScroll } from '../../../../registry/components/time-picker'
 import TimePickerControl from '../../../../registry/components/time-picker/time-picker-control.vue'
 
 enableAutoUnmount(afterEach)
@@ -38,6 +38,19 @@ describe('Time picker shared localization', () => {
     expect(input.emitted('update:modelValue')?.[0]).toEqual([{ hour: 23, minute: 7 }])
     expect(input.get<HTMLInputElement>('input[aria-label="小时"]').element.value).toBe('23')
     expect(input.find('[role="radiogroup"]').exists()).toBe(false)
+  })
+  it('formats scroll fields with the picker locale', () => {
+    const wrapper = mount(TimeScroll, {
+      props: { locale: 'ar-EG', format: '24', modelValue: { hour: 13, minute: 7 } },
+    })
+    const format = new Intl.NumberFormat('ar-EG', {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+      useGrouping: false,
+    })
+    const fields = wrapper.findAll('[role="spinbutton"]')
+    expect(fields[0]!.attributes('aria-valuetext')).toBe(format.format(13))
+    expect(fields[1]!.attributes('aria-valuetext')).toBe(format.format(7))
   })
   it('gives explicit language and accessible label props priority over a different provider language', () => {
     const wrapper = mount(LocaleProvider, {

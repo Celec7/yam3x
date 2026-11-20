@@ -159,6 +159,7 @@ export interface TimePickerMessages {
   period?: string
   modeToggle: string
   useDial: string
+  useScroll?: string
   dial: string
   input: string
   cancel: string

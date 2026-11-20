@@ -1,7 +1,7 @@
 export type TimeValue = { hour: number; minute: number; second?: number }
 export type TimePickerFormat = '12' | '24' | 'auto'
 export type TimePickerView = 'hour' | 'minute' | 'second'
-export type TimePickerMode = 'dial' | 'input'
+export type TimePickerMode = 'dial' | 'input' | 'scroll'
 export type TimePickerLayoutType = 'vertical' | 'horizontal'
 export type TimePickerVariant = 'standard' | 'vibrant'
 
@@ -31,6 +31,8 @@ export interface TimePickerControlProps extends TimePickerCommonProps {
   showHeadline?: boolean
   modeToggleLabel?: string
   useDialLabel?: string
+  useScrollLabel?: string
+  alternateMode?: 'dial' | 'scroll'
   hideModeToggle?: boolean
   cancelLabel?: string
   confirmLabel?: string
@@ -41,6 +43,7 @@ export interface TimePickerProps extends TimePickerCommonProps {
 }
 
 export type TimeInputProps = TimePickerCommonProps
+export type TimeScrollProps = TimePickerCommonProps
 
 export interface TimePickerDialogProps extends TimePickerCommonProps {
   open?: boolean
@@ -52,6 +55,7 @@ export interface TimePickerDialogProps extends TimePickerCommonProps {
   triggerLabel?: string
   modeToggleLabel?: string
   useDialLabel?: string
+  useScrollLabel?: string
   hideModeToggle?: boolean
   cancelLabel?: string
   confirmLabel?: string

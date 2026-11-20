@@ -41,7 +41,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: TimeValue]
   'update:open': [value: boolean]
   change: [value: TimeValue]
-  'update:mode': [value: 'dial' | 'input']
+  'update:mode': [value: 'dial' | 'input' | 'scroll']
 }>()
 
 const MIN_VERTICAL_DIAL_HEIGHT = 596
@@ -74,7 +74,8 @@ watch(
 watch([layerZ, root], () => {
   setOverlayLayerProperty(root.value, '--_yam3x-time-picker-layer-z', layerZ.value)
 })
-const currentMode = ref<'dial' | 'input'>(props.mode)
+const currentMode = ref<'dial' | 'input' | 'scroll'>(props.mode)
+const alternateMode = ref<'dial' | 'scroll'>(props.mode === 'scroll' ? 'scroll' : 'dial')
 const controlVersion = ref(0)
 const draft = ref<TimeValue>({ hour: new Date().getHours(), minute: 0 })
 const box = ref({ width: 640, height: 620 })
@@ -91,6 +92,8 @@ const resolvedOrientation = computed(() =>
     : props.orientation,
 )
 const useInputOnly = computed(() => {
+  // A picker opened in scroll mode keeps its scroll/input toggle available.
+  if (alternateMode.value === 'scroll') return false
   const dialFits =
     resolvedOrientation.value === 'horizontal'
       ? box.value.width >= MIN_HORIZONTAL_DIAL_WIDTH &&
@@ -119,6 +122,7 @@ async function openPicker(): Promise<void> {
     ? { ...value.value }
     : { hour: now.getHours(), minute: now.getMinutes() }
   currentMode.value = props.mode
+  if (props.mode === 'scroll' || props.mode === 'dial') alternateMode.value = props.mode
   controlVersion.value += 1
   dockedAvailableHeight.value = 0
   dockedDialRequiredHeight.value = 0
@@ -128,9 +132,11 @@ async function openPicker(): Promise<void> {
   const initialFocus =
     currentMode.value === 'input' || useInputOnly.value
       ? surface.value?.querySelector<HTMLElement>('.yam3x-time-picker__input-slot input')
-      : surface.value?.querySelector<HTMLElement>(
-          '.yam3x-time-picker__selector[aria-pressed="true"]',
-        )
+      : currentMode.value === 'scroll'
+        ? surface.value?.querySelector<HTMLElement>('.yam3x-scroll-field [role="spinbutton"]')
+        : surface.value?.querySelector<HTMLElement>(
+            '.yam3x-time-picker__selector[aria-pressed="true"]',
+          )
   if (initialFocus) initialFocus.focus()
   else
     surface.value
@@ -262,6 +268,8 @@ watch(
   () => props.mode,
   (next) => {
     currentMode.value = next
+    // Keep the last alternate mode when v-model:mode reports an input-mode toggle.
+    if (next === 'scroll' || next === 'dial') alternateMode.value = next
   },
 )
 watch([useInputOnly, resolvedOrientation], ([inputOnly], [wasInputOnly]) => {
@@ -274,7 +282,9 @@ watch([useInputOnly, resolvedOrientation], ([inputOnly], [wasInputOnly]) => {
           ? '.yam3x-time-picker__input-slot input'
           : currentMode.value === 'dial'
             ? '.yam3x-time-picker__selector[aria-pressed="true"]'
-            : undefined
+            : currentMode.value === 'scroll'
+              ? '.yam3x-scroll-field [role="spinbutton"]'
+              : undefined
         : undefined
     if (focusTarget) surface.value?.querySelector<HTMLElement>(focusTarget)?.focus()
   })
@@ -366,9 +376,10 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
           class="yam3x-time-picker__surface yam3x-time-picker__surface--modal"
           :class="{
             'is-vibrant': props.variant === 'vibrant',
-            'is-horizontal': resolvedOrientation === 'horizontal',
+            'is-horizontal': resolvedOrientation === 'horizontal' && currentMode !== 'scroll',
             'is-input-only': useInputOnly,
             'is-input-mode': currentMode === 'input' || useInputOnly,
+            'is-scroll-mode': currentMode === 'scroll' || alternateMode === 'scroll',
             'is-24-hour': format === '24',
             'is-dragging': dragging,
           }"
@@ -398,6 +409,8 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
             :period-label="props.periodLabel"
             :mode-toggle-label="props.modeToggleLabel"
             :use-dial-label="props.useDialLabel"
+            :use-scroll-label="messages.useScroll"
+            :alternate-mode="alternateMode"
             :dial-value-label="props.dialValueLabel"
             :dial-label="props.dialLabel"
             :input-label="props.inputLabel"
@@ -418,9 +431,10 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
       class="yam3x-time-picker__surface yam3x-time-picker__surface--docked"
       :class="{
         'is-vibrant': props.variant === 'vibrant',
-        'is-horizontal': resolvedOrientation === 'horizontal',
+        'is-horizontal': resolvedOrientation === 'horizontal' && currentMode !== 'scroll',
         'is-input-only': useInputOnly,
         'is-input-mode': currentMode === 'input' || useInputOnly,
+        'is-scroll-mode': currentMode === 'scroll' || alternateMode === 'scroll',
         'is-24-hour': format === '24',
         'is-dragging': dragging,
       }"
@@ -450,6 +464,8 @@ watch([opened, () => props.presentation], ([isOpen, presentation]) => {
         :period-label="props.periodLabel"
         :mode-toggle-label="props.modeToggleLabel"
         :use-dial-label="props.useDialLabel"
+        :use-scroll-label="messages.useScroll"
+        :alternate-mode="alternateMode"
         :dial-value-label="props.dialValueLabel"
         :dial-label="props.dialLabel"
         :input-label="props.inputLabel"

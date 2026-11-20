@@ -156,6 +156,112 @@ test.describe('Time picker', () => {
     await expect(page.getByText(/Last submitted: 01:08:09 PM/)).toBeVisible()
   })
 
+  test('selects time with scroll fields and switches back from manual entry', async ({ page }) => {
+    // time-picker.scroll.fields, time-picker.scroll.mode-toggle, time-picker.scroll.geometry
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/components/time-picker')
+    await selectM3Option(page, page.getByLabel('Time format'), '24')
+    await selectM3Option(page, page.getByLabel('Mode'), 'scroll')
+    await page.getByRole('button', { name: /Reminder time/ }).click()
+    const dialog = page.getByRole('dialog', { name: 'Reminder time' })
+    await expect(dialog).toHaveClass(/is-scroll-mode/)
+    await expect(dialog.locator('.yam3x-time-picker__dial')).toHaveCount(0)
+    const hour = dialog.getByRole('spinbutton', { name: 'Hour' })
+    const minute = dialog.getByRole('spinbutton', { name: 'Minute' })
+    await expect(hour).toBeFocused()
+    await expect(hour).toHaveAttribute('aria-valuenow', '18')
+    await expect(minute).toHaveAttribute('aria-valuenow', '0')
+    await hour.press('ArrowDown')
+    await expect(hour).toHaveAttribute('aria-valuenow', '19')
+    await minute.press('ArrowDown')
+    await expect(minute).toHaveAttribute('aria-valuenow', '1')
+    await expect(hour).toHaveCSS('inline-size', '100px')
+    await expect(hour).toHaveCSS('block-size', '140px')
+    await dialog.getByRole('button', { name: 'Enter time manually' }).click()
+    await expect(dialog.getByRole('textbox', { name: 'Hour' })).toHaveValue('19')
+    const useScroll = dialog.getByRole('button', { name: 'Use scroll fields' })
+    await expect(useScroll).toBeVisible()
+    await useScroll.click()
+    await expect(dialog.getByRole('spinbutton', { name: 'Hour' })).toBeFocused()
+    await dialog.getByRole('button', { name: 'OK' }).click()
+    await expect(page.getByText(/Last submitted: 07:01 PM/)).toBeVisible()
+  })
+
+  test('maps 12-hour scroll fields and the period group without changing the stored value', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/components/time-picker')
+    await selectM3Option(page, page.getByLabel('Time format'), '12')
+    await selectM3Option(page, page.getByLabel('Mode'), 'scroll')
+    await page.getByRole('button', { name: /Reminder time/ }).click()
+    const dialog = page.getByRole('dialog', { name: 'Reminder time' })
+    const hour = dialog.getByRole('spinbutton', { name: 'Hour' })
+    const period = dialog.getByRole('radiogroup', { name: 'AM or PM' })
+    await expect(hour).toHaveAttribute('aria-valuenow', '6')
+    const pm = period.getByRole('radio', { name: 'PM' })
+    const am = period.getByRole('radio', { name: 'AM' })
+    await expect(pm).toHaveAttribute('aria-checked', 'true')
+    await expect(pm).toHaveCSS('background-color', await roleColor(page, 'primary-container'))
+    await expect(am).toHaveCSS(
+      'background-color',
+      await roleColor(page, 'surface-container-lowest'),
+    )
+    const periodBox = await period.boundingBox()
+    expect(periodBox).not.toBeNull()
+    expect(periodBox!.width).toBe(56)
+    expect(periodBox!.height).toBe(88)
+    await hour.press('ArrowDown')
+    await expect(hour).toHaveAttribute('aria-valuenow', '7')
+    await dialog.getByRole('button', { name: 'OK' }).click()
+    await expect(page.getByText(/Last submitted: 07:00 PM/)).toBeVisible()
+  })
+
+  test('wraps optional seconds without clipping the compact scroll dialog', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.setViewportSize({ width: 390, height: 600 })
+    await page.goto('/components/time-picker')
+    await page.getByLabel('Show seconds').check()
+    await selectM3Option(page, page.getByLabel('Mode'), 'scroll')
+    await page.getByRole('button', { name: /Reminder time/ }).click()
+    const dialog = page.getByRole('dialog', { name: 'Reminder time' })
+    const fields = dialog.getByRole('spinbutton')
+    await expect(fields).toHaveCount(3)
+    const hourBox = await fields.nth(0).boundingBox()
+    const secondBox = await fields.nth(2).boundingBox()
+    expect(hourBox).not.toBeNull()
+    expect(secondBox).not.toBeNull()
+    expect(secondBox!.y).toBeGreaterThan(hourBox!.y + hourBox!.height - 1)
+    await expect
+      .poll(() => dialog.evaluate((element) => element.scrollHeight - element.clientHeight))
+      .toBe(0)
+    await dialog.getByRole('button', { name: 'Enter time manually' }).click()
+    await dialog.getByRole('button', { name: 'Use scroll fields' }).click()
+    await expect(dialog.getByRole('spinbutton')).toHaveCount(3)
+  })
+
+  test('blocks out-of-range scroll values and clears the error when corrected', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/components/time-picker')
+    await selectM3Option(page, page.getByLabel('Time format'), '24')
+    await selectM3Option(page, page.getByLabel('Mode'), 'scroll')
+    await page.getByRole('button', { name: /Reminder time/ }).click()
+    const dialog = page.getByRole('dialog', { name: 'Reminder time' })
+    const hour = dialog.getByRole('spinbutton', { name: 'Hour' })
+    await hour.press('Home')
+    await expect(hour).toHaveAttribute('aria-valuenow', '0')
+    await expect(hour).toHaveAttribute('aria-invalid', 'true')
+    await expect(dialog.getByRole('alert')).toContainText('outside the allowed range')
+    await expect(dialog.getByRole('button', { name: 'OK' })).toBeDisabled()
+    for (let index = 0; index < 8; index += 1) await hour.press('ArrowDown')
+    await expect(hour).toHaveAttribute('aria-valuenow', '8')
+    await expect(hour).not.toHaveAttribute('aria-invalid', 'true')
+    await expect(dialog.getByRole('alert')).toHaveCount(0)
+    await expect(dialog.getByRole('button', { name: 'OK' })).toBeEnabled()
+  })
+
   test('keeps a one-digit input editable until the second digit is entered', async ({ page }) => {
     await page.goto('/components/time-picker')
     await selectM3Option(page, page.getByLabel('Time format'), '24')
@@ -182,7 +288,7 @@ test.describe('Time picker', () => {
     await composition.locator('summary').click()
 
     const periodGroups = composition.locator('.yam3x-time-picker__period')
-    await expect(periodGroups).toHaveCount(2)
+    await expect(periodGroups).toHaveCount(3)
     for (const period of await periodGroups.all()) {
       const groupBox = await period.boundingBox()
       const amBox = await period.getByRole('radio', { name: 'AM' }).boundingBox()
@@ -191,8 +297,29 @@ test.describe('Time picker', () => {
       expect(amBox).not.toBeNull()
       expect(pmBox).not.toBeNull()
       expect(Math.abs(amBox!.height - pmBox!.height)).toBeLessThanOrEqual(1)
-      expect(Math.abs(amBox!.height + pmBox!.height - groupBox!.height)).toBeLessThanOrEqual(2)
+      const gap = await period.evaluate(
+        (element) => Number.parseFloat(getComputedStyle(element).rowGap) || 0,
+      )
+      expect(Math.abs(amBox!.height + pmBox!.height + gap - groupBox!.height)).toBeLessThanOrEqual(
+        2,
+      )
     }
+    const scroll = composition.locator('.yam3x-time-picker__surface--inline.is-scroll-mode')
+    await scroll.getByRole('button', { name: 'Enter time manually' }).click()
+    await expect(scroll.getByRole('textbox', { name: 'Hour' })).toBeVisible()
+    await scroll.getByRole('button', { name: 'Use scroll fields' }).click()
+    await expect(scroll.getByRole('spinbutton', { name: 'Hour' })).toBeVisible()
+    await selectM3Option(page, page.getByLabel('Time format'), '24')
+    await expect(scroll.getByRole('radiogroup')).toHaveCount(0)
+    const fieldBox = await scroll.getByRole('spinbutton').first().boundingBox()
+    const toggleBox = await scroll
+      .getByRole('button', { name: 'Enter time manually' })
+      .boundingBox()
+    expect(fieldBox).not.toBeNull()
+    expect(toggleBox).not.toBeNull()
+    expect(
+      Math.abs(fieldBox!.y + fieldBox!.height / 2 - (toggleBox!.y + toggleBox!.height / 2)),
+    ).toBeLessThanOrEqual(1)
   })
 
   test('manual input exposes labeled fields and prevents a bound-invalid commit', async ({
@@ -270,7 +397,7 @@ test.describe('Time picker', () => {
     await page.getByRole('button', { name: /Reminder time/ }).click()
     dialog = page.getByRole('dialog', { name: 'Reminder time' })
     await expect(dialog).toHaveClass(/is-input-only/)
-    await expect(dialog.locator('.yam3x-time-picker__dial')).toBeHidden()
+    await expect(dialog.locator('.yam3x-time-picker__dial')).toHaveCount(0)
     await expect(dialog.getByRole('textbox', { name: 'Hour' })).toBeVisible()
     period = dialog.getByRole('radiogroup', { name: 'AM or PM' })
     await expect(period).toBeVisible()

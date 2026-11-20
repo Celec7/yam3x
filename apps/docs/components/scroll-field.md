@@ -28,7 +28,7 @@ Each row remains a 48 px pointer target, even when it is partly outside the cont
 
 ### Text input mode
 
-Material requires every scroll field to support text entry. Bind `v-model:mode` and give the user a toggle: the demo switches the field to a native numeric input with the active outline and caret. Enter or blur commits a valid value; invalid input keeps the draft, marks the field invalid, and emits `invalid`. Bind `error` to show a message below the field.
+Material requires every scroll field to support text entry. Bind `v-model:mode` and give the user a toggle: the demo switches the field to a native numeric input with the active outline and caret. Enter or blur commits a valid value; invalid input keeps the draft, marks the field invalid, and emits `invalid`. Bind `error` to show a message below the field, or `invalid` when the surrounding form owns the message.
 
 ### Labels and multiple fields
 
@@ -87,6 +87,7 @@ Place a labeled mode toggle beside the field so text entry is always reachable, 
 | `locale`                | `string`                         | browser    | Number formatting and parsing locale.                      |
 | `disabled` / `readonly` | `boolean`                        | `false`    | Disable interaction or commit only.                        |
 | `required`              | `boolean`                        | `false`    | Exposes `aria-required`.                                   |
+| `invalid`               | `boolean`                        | `false`    | Marks the field invalid without rendering a message.       |
 | `error`                 | `string`                         | `''`       | Message below the field; sets `aria-invalid`.              |
 | `name` / `form`         | `string`                         | —          | Adds a hidden input for native form submission.            |
 
@@ -94,7 +95,7 @@ Events: `change(value)` after a committed selection, `invalid(detail)` when text
 
 ## Styling
 
-`--yam3x-scroll-field-height` sets the container height (default 200 px, minimum 120 px). `--yam3x-scroll-field-width` overrides the size width, for example to fill a grid cell. The field maps its colors, type roles, shape, and motion to system tokens; use theme changes rather than per-instance color overrides.
+`--yam3x-scroll-field-height` sets the container height (default 200 px, minimum 120 px). `--yam3x-scroll-field-width` overrides the size width, for example to fill a grid cell. `--yam3x-scroll-field-item-height` sets the value row height (default 64 px). The field maps its colors, type roles, shape, and motion to system tokens; use theme changes rather than per-instance color overrides.
 
 ## Material references
 

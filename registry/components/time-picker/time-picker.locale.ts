@@ -13,6 +13,7 @@ export function useTimePickerLocale(props: TimePickerControlProps & { label?: st
       period: props.periodLabel,
       modeToggle: props.modeToggleLabel,
       useDial: props.useDialLabel,
+      useScroll: props.useScrollLabel,
       dial: props.dialLabel,
       input: props.inputLabel,
       cancel: props.cancelLabel,

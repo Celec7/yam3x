@@ -7,6 +7,7 @@ import {
   TimeInput,
   TimePicker,
   TimePickerDialog,
+  TimeScroll,
   type TimeValue,
 } from '@registry/components/time-picker'
 import { useDemoLocale } from './use-demo-locale'
@@ -36,15 +37,20 @@ const {
     second: 'Second',
     enterInput: 'Enter time manually',
     useDial: 'Use clock dial',
+    useScroll: 'Use scroll fields',
+    mode: 'Mode',
+    dialMode: 'Dial',
+    inputMode: 'Input',
+    scrollMode: 'Scroll',
     dial: 'Select time',
     input: 'Edit time',
     cancel: 'Cancel',
     confirm: 'OK',
     current: 'Current value:',
     lastSubmitted: 'Last submitted:',
-    hint: 'Drag the clock hands to adjust the time, or switch to keyboard input. Narrow screens use input mode automatically.',
+    hint: 'Drag the clock hands, scroll the fields, or switch to keyboard input. Narrow screens use input mode automatically for the dial.',
     composed: 'Composable controls',
-    composedHint: 'The dial and text input below share the same v-model value.',
+    composedHint: 'The dial, text input, and scroll fields below share the same v-model value.',
   },
   zh: {
     notSubmitted: '尚未提交',
@@ -66,15 +72,20 @@ const {
     second: '秒',
     enterInput: '手动输入时间',
     useDial: '使用时钟表盘',
+    useScroll: '使用滚动字段',
+    mode: '模式',
+    dialMode: '表盘',
+    inputMode: '输入',
+    scrollMode: '滚动',
     dial: '选择时间',
     input: '编辑时间',
     cancel: '取消',
     confirm: '确定',
     current: '当前值：',
     lastSubmitted: '最近提交：',
-    hint: '拖动表盘指针调整时间，也可切换键盘输入。窄屏会自动使用输入模式。',
+    hint: '可拖动表盘指针、滚动字段或切换键盘输入。表盘在窄屏会自动使用输入模式。',
     composed: '可组合控件',
-    composedHint: '下方表盘与文本输入共享同一个 v-model 值。',
+    composedHint: '下方表盘、文本输入与滚动字段共享同一个 v-model 值。',
   },
 })
 
@@ -82,6 +93,7 @@ const value = ref<TimeValue>({ hour: 18, minute: 0 })
 const composedValue = ref<TimeValue>({ hour: 8, minute: 30 })
 const format = ref<'12' | '24' | 'auto'>('auto')
 const presentation = ref<'modal' | 'docked'>('modal')
+const mode = ref<'dial' | 'input' | 'scroll'>('dial')
 const variant = ref<'standard' | 'vibrant'>('standard')
 const showSeconds = ref(false)
 const output = ref('')
@@ -134,6 +146,17 @@ function formatDialValue({
             :label="text.twentyFourHour" /></Select
       ></label>
       <label
+        >{{ text.mode }}
+        <Select v-model="mode"
+          ><Option
+            value="dial"
+            :label="text.dialMode" /><Option
+            value="input"
+            :label="text.inputMode" /><Option
+            value="scroll"
+            :label="text.scrollMode" /></Select
+      ></label>
+      <label
         >{{ text.presentation }}
         <Select v-model="presentation"
           ><Option
@@ -158,6 +181,7 @@ function formatDialValue({
     </div>
     <TimePickerDialog
       v-model="value"
+      v-model:mode="mode"
       :format="format"
       :presentation="presentation"
       :variant="variant"
@@ -169,6 +193,7 @@ function formatDialValue({
       :second-label="text.second"
       :mode-toggle-label="text.enterInput"
       :use-dial-label="text.useDial"
+      :use-scroll-label="text.useScroll"
       :dial-value-label="formatDialValue"
       :dial-label="text.dial"
       :input-label="text.input"
@@ -199,6 +224,15 @@ function formatDialValue({
           :max-time="maxTime"
         />
         <TimeInput
+          v-model="composedValue"
+          :format="format"
+          :locale="localeTag"
+          :hour-label="text.hour"
+          :minute-label="text.minute"
+          :min-time="minTime"
+          :max-time="maxTime"
+        />
+        <TimeScroll
           v-model="composedValue"
           :format="format"
           :locale="localeTag"

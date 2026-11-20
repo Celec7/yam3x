@@ -31,6 +31,8 @@ const props = withDefaults(defineProps<TimePickerControlProps>(), {
   secondLabel: undefined,
   modeToggleLabel: undefined,
   useDialLabel: undefined,
+  useScrollLabel: undefined,
+  alternateMode: 'dial',
   dialLabel: undefined,
   inputLabel: undefined,
   hideModeToggle: false,
@@ -41,7 +43,7 @@ const props = withDefaults(defineProps<TimePickerControlProps>(), {
 const emit = defineEmits<{
   'update:modelValue': [value: TimeValue]
   change: [value: TimeValue]
-  'update:mode': [value: 'dial' | 'input']
+  'update:mode': [value: 'dial' | 'input' | 'scroll']
   'update:dragging': [value: boolean]
   confirm: [value: TimeValue]
   cancel: []
@@ -61,7 +63,7 @@ const format = computed(() =>
 const minimumTime = computed(() => parseTimeParts(props.minTime))
 const maximumTime = computed(() => parseTimeParts(props.maxTime))
 const periodLabels = computed(() => getTimePeriodLabels(locale.value))
-const currentMode = ref<'dial' | 'input'>(props.mode)
+const currentMode = ref<'dial' | 'input' | 'scroll'>(props.mode)
 const activeView = ref<TimePickerView>('hour')
 const initial = props.modelValue ?? { hour: new Date().getHours(), minute: 0 }
 const draft = ref<TimeParts>({ ...initial, second: initial.second ?? 0 })
@@ -169,6 +171,7 @@ const panelProps = computed(() => ({
   showActions: props.showActions,
   showHeadline: props.showHeadline,
   activeView: activeView.value,
+  locale: locale.value,
   format: format.value,
   showSeconds: props.showSeconds,
   hour: draft.value.hour,
@@ -188,6 +191,8 @@ const panelProps = computed(() => ({
   ],
   modeToggleLabel: messages.value.modeToggle,
   useDialLabel: messages.value.useDial,
+  useScrollLabel: messages.value.useScroll ?? messages.value.useDial,
+  alternateMode: props.alternateMode,
   cancelLabel: messages.value.cancel,
   confirmLabel: messages.value.confirm,
   dialValueLabel: messages.value.dialValue,
@@ -214,6 +219,7 @@ const panelProps = computed(() => ({
   setPeriod,
   setInputPart,
   finishInputPart,
+  setScrollPart,
   hourAllowed,
   tickAllowed,
 }))
@@ -519,6 +525,29 @@ function setView(view: string): void {
   if (view === 'hour' || view === 'minute' || view === 'second') activeView.value = view
 }
 
+function setScrollPart(part: 'hour' | 'minute' | 'second', value: number): void {
+  if (!Number.isInteger(value)) return
+  const hour =
+    part === 'hour'
+      ? format.value === '24'
+        ? value
+        : (value % 12) + (period.value === 'PM' ? 12 : 0)
+      : draft.value.hour
+  const next = {
+    hour,
+    minute: part === 'minute' ? value : draft.value.minute,
+    second: part === 'second' ? value : (draft.value.second ?? 0),
+  }
+  draft.value = next
+  syncInputText()
+  if (isTimeValueAllowed(currentValue())) {
+    validationIssue.value = null
+    publish()
+  } else {
+    validationIssue.value = 'range'
+  }
+}
+
 function setMode(mode: string): void {
   if (mode === 'cancel') {
     emit('cancel')
@@ -528,7 +557,7 @@ function setMode(mode: string): void {
     if (canConfirm.value) emit('confirm', currentValue())
     return
   }
-  if (mode === 'dial' || mode === 'input') {
+  if (mode === 'dial' || mode === 'input' || mode === 'scroll') {
     editingPart.value = null
     syncInputText()
     currentMode.value = mode
@@ -540,7 +569,9 @@ function setMode(mode: string): void {
         ?.querySelector<HTMLElement>(
           mode === 'input'
             ? '.yam3x-time-picker__input-slot input'
-            : '.yam3x-time-picker__selector[aria-pressed="true"]',
+            : mode === 'scroll'
+              ? '.yam3x-scroll-field [role="spinbutton"]'
+              : '.yam3x-time-picker__selector[aria-pressed="true"]',
         )
         ?.focus(),
     )
@@ -581,7 +612,9 @@ watch(format, async () => {
       ?.querySelector<HTMLElement>(
         currentMode.value === 'input'
           ? '.yam3x-time-picker__input-slot input'
-          : '.yam3x-time-picker__selector[aria-pressed="true"]',
+          : currentMode.value === 'scroll'
+            ? '.yam3x-scroll-field [role="spinbutton"]'
+            : '.yam3x-time-picker__selector[aria-pressed="true"]',
       )
       ?.focus()
 })
@@ -591,7 +624,7 @@ watch(
   // Keep an invalid draft's original hour cycle across locale changes until the draft changes.
   draft,
   () => {
-    validationIssue.value = null
+    if (isTimeValueAllowed(currentValue())) validationIssue.value = null
   },
   { deep: true },
 )
@@ -1028,6 +1061,59 @@ onBeforeUnmount(() => {
   margin: 0;
   color: var(--_yam3x-time-picker-color-error);
   font-size: 12px;
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__content {
+  min-width: 0;
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__header {
+  min-width: 0;
+  max-width: 100%;
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__header-value,
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__view-content {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.yam3x-time-picker__scroll {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  min-height: 140px;
+}
+.yam3x-time-picker__scroll-field {
+  --yam3x-scroll-field-width: 100px;
+  --yam3x-scroll-field-height: 140px;
+  --yam3x-scroll-field-item-height: 52px;
+  flex: none;
+}
+.yam3x-time-picker__scroll-tail {
+  display: flex;
+  align-items: flex-start;
+}
+.yam3x-time-picker__scroll-tail.is-toggle-only {
+  align-self: center;
+}
+.yam3x-time-picker__scroll-separator {
+  align-self: center;
+  min-inline-size: 16px;
+  text-align: center;
+  margin-block-start: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1));
+  font-size: var(--_yam3x-time-picker-input-field-separator-font-size);
+  line-height: var(--_yam3x-time-picker-input-field-separator-line-height);
+  letter-spacing: var(--_yam3x-time-picker-input-field-separator-tracking);
+}
+.yam3x-time-picker__surface--modal.is-scroll-mode {
+  min-height: 300px;
+}
+.yam3x-time-picker__scroll-error {
+  flex-basis: 100%;
+  padding-block-start: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1));
+  text-align: center;
 }
 .yam3x-time-picker__actions {
   display: flex;
@@ -1920,5 +2006,96 @@ html.yam3x-time-picker-scroll-lock {
 .yam3x-time-picker__period button:focus-visible {
   outline: 3px solid var(--_yam3x-time-picker-color-secondary);
   outline-offset: 2px;
+}
+.yam3x-time-picker__scroll-controls,
+.yam3x-time-picker__input-side-controls {
+  display: contents;
+}
+.yam3x-time-picker__scroll-controls.is-inline,
+.yam3x-time-picker__input-side-controls.is-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1));
+  margin-inline-start: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1));
+}
+.yam3x-time-picker__scroll-controls.is-inline.has-period {
+  align-self: flex-start;
+}
+.yam3x-time-picker__scroll-controls.is-inline:not(.has-period) {
+  align-self: center;
+}
+.yam3x-time-picker__input-side-controls.is-inline {
+  align-self: flex-start;
+}
+.yam3x-time-picker__inline-mode-toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--_yam3x-time-picker-color-on-surface-variant);
+  cursor: pointer;
+}
+.yam3x-time-picker__inline-mode-toggle:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.yam3x-time-picker__inline-mode-toggle .yam3x-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__period {
+  box-sizing: border-box;
+  width: 56px;
+  height: auto;
+  margin-block-start: 0;
+  margin-inline-start: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1));
+  gap: calc(8px * var(--_yam3x-time-picker-density-spacing-scale, 1));
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__period button {
+  width: 56px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(
+    --_yam3x-time-picker-color-surface-container-lowest,
+    var(--md-sys-color-surface-container-lowest)
+  );
+  color: var(--_yam3x-time-picker-color-on-surface-variant);
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__period button[aria-checked='true'] {
+  background: var(--_yam3x-time-picker-color-primary-container);
+  color: var(--_yam3x-time-picker-color-on-primary-container);
+}
+.yam3x-time-picker__surface.is-scroll-mode .yam3x-time-picker__period button:hover {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-time-picker-color-on-surface-variant) 8%,
+    var(
+      --_yam3x-time-picker-color-surface-container-lowest,
+      var(--md-sys-color-surface-container-lowest)
+    )
+  );
+}
+.yam3x-time-picker__surface.is-scroll-mode
+  .yam3x-time-picker__period
+  button[aria-checked='true']:hover {
+  background: color-mix(
+    in srgb,
+    var(--_yam3x-time-picker-color-on-primary-container) 8%,
+    var(--_yam3x-time-picker-color-primary-container)
+  );
+}
+.yam3x-time-picker__scroll-controls.is-inline .yam3x-time-picker__period,
+.yam3x-time-picker__input-side-controls.is-inline .yam3x-time-picker__period {
+  margin-inline-start: 0;
 }
 </style>
