@@ -24,6 +24,7 @@ const props = withDefaults(
     virtual?: boolean | VirtualListOptions
     options: AutocompleteOption[]
     label: string
+    floatLabel?: 'always'
     hint?: string
     error?: string
     locale?: string
@@ -53,6 +54,7 @@ const props = withDefaults(
   {
     virtual: false,
     placeholder: '',
+    floatLabel: undefined,
     hint: '',
     error: '',
     disabled: false,
@@ -127,6 +129,9 @@ const host = ref<HTMLElement | null>(null)
 const input = ref<HTMLInputElement | null>(null)
 const anchor = ref<HTMLElement | null>(null)
 const popup = ref<HTMLElement | null>(null)
+const labelEl = ref<HTMLElement | null>(null)
+const labelFloats = computed(() => props.floatLabel === 'always')
+let labelObserver: ResizeObserver | null = null
 const generatedId = useId()
 const inputId = computed(() => props.id ?? `yam3x-autocomplete-${generatedId}`)
 const listboxId = computed(() => `${inputId.value}-listbox`)
@@ -292,6 +297,18 @@ const liveMessage = computed(() =>
       ? messages.value.noData
       : messages.value.results(filteredOptions.value.length),
 )
+const announcement = ref('')
+watch([open, liveMessage], ([expanded, message], _, onCleanup) => {
+  if (!expanded) {
+    announcement.value = ''
+    return
+  }
+  // Announce only settled result counts; typing can change the count every keystroke.
+  const timer = setTimeout(() => {
+    announcement.value = message
+  }, 200)
+  onCleanup(() => clearTimeout(timer))
+})
 
 let stopPositioning: (() => void) | undefined
 let blurTimer = 0
@@ -375,11 +392,15 @@ function onInput(event: Event) {
     emit('change', { option: null, value: null, query: target.value })
   }
   emit('query', { query: target.value })
-  setActive(initialActiveOption(), 'automatic')
-  if (popupAvailable.value) show()
-  else close()
-  animateOptionMovement(previousOptionPositions)
-  setCustomValidity()
+  // A controlled query is reflected in the child after the parent renders.
+  void nextTick(() => {
+    if (!input.value) return
+    setActive(initialActiveOption(), 'automatic')
+    if (popupAvailable.value) show()
+    else close()
+    animateOptionMovement(previousOptionPositions)
+    setCustomValidity()
+  })
 }
 function onFocus() {
   emit('query', { query: query.value })
@@ -644,6 +665,24 @@ watch(open, async (value) => {
     floatingStyle.value = { visibility: 'hidden' }
   }
 })
+function syncNotch() {
+  if (!host.value || !anchor.value || !labelEl.value || !labelFloats.value) return
+  const scale =
+    Number.parseFloat(
+      getComputedStyle(host.value).getPropertyValue('--_yam3x-autocomplete-label-scale'),
+    ) || 0.75
+  const width = labelEl.value.offsetWidth * scale
+  const rtl = getComputedStyle(anchor.value).direction === 'rtl'
+  const start = rtl
+    ? labelEl.value.offsetLeft + labelEl.value.offsetWidth - width
+    : labelEl.value.offsetLeft
+  host.value.style.setProperty('--_yam3x-autocomplete-notch-start', `${start}px`)
+  host.value.style.setProperty('--_yam3x-autocomplete-notch-end', `${start + width}px`)
+}
+watch([labelFloats, () => props.label], async () => {
+  await nextTick()
+  syncNotch()
+})
 onMounted(() => {
   initialQuery = query.value
   initialSelected = selected.value
@@ -652,10 +691,15 @@ onMounted(() => {
     : (input.value?.form ?? null)
   resetForm?.addEventListener('reset', onFormReset)
   setCustomValidity()
+  labelObserver = new ResizeObserver(syncNotch)
+  if (labelEl.value) labelObserver.observe(labelEl.value)
+  syncNotch()
 })
 onBeforeUnmount(() => {
   layer?.release()
   layer = undefined
+  labelObserver?.disconnect()
+  labelObserver = null
   window.clearTimeout(blurTimer)
   document.removeEventListener('pointerdown', onOutsidePointer, true)
   stopPositioning?.()
@@ -672,12 +716,14 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
     v-bind="$attrs"
     :class="{
       'yam3x-autocomplete--open': open,
+      'yam3x-autocomplete--floating-label': labelFloats,
       'yam3x-autocomplete--disabled': disabled,
       'yam3x-autocomplete--invalid': props.error,
       'yam3x-autocomplete--vibrant': props.variant === 'vibrant',
     }"
   >
     <label
+      ref="labelEl"
       class="yam3x-autocomplete__label"
       :for="inputId"
       >{{ label }}</label
@@ -687,6 +733,10 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
       class="yam3x-autocomplete__field"
       @click="onClick"
     >
+      <span
+        class="yam3x-autocomplete__outline"
+        aria-hidden="true"
+      />
       <slot
         v-if="slots.input"
         name="input"
@@ -705,6 +755,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
         class="yam3x-autocomplete__input"
       />
       <button
+        v-if="popupAvailable || disabled || readonly"
         class="yam3x-autocomplete__trailing"
         type="button"
         :tabindex="-1"
@@ -744,7 +795,7 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
       aria-live="polite"
       aria-atomic="true"
     >
-      {{ open ? liveMessage : '' }}
+      {{ announcement }}
     </div>
     <div
       :id="listboxId"
@@ -947,6 +998,12 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   --_yam3x-autocomplete-sys-shape-corner-medium: var(--md-sys-shape-corner-medium);
   --_yam3x-autocomplete-sys-state-focus-opacity: var(--md-sys-state-focus-opacity);
   --_yam3x-autocomplete-sys-typescale-line-height-scale: var(--md-sys-typescale-line-height-scale);
+  --_yam3x-autocomplete-label-scale: 0.75;
+  --_yam3x-autocomplete-label-font-size: var(--md-sys-typescale-body-large-size, 16px);
+  --_yam3x-autocomplete-label-font-weight: var(--md-sys-typescale-body-large-weight, 400);
+  --_yam3x-autocomplete-label-tracking: var(--md-sys-typescale-body-large-tracking, 0.5px);
+  --_yam3x-autocomplete-notch-start: 0px;
+  --_yam3x-autocomplete-notch-end: 0px;
   --_yam3x-autocomplete-popup-color: var(--_yam3x-autocomplete-sys-color-surface-container-low);
   --_yam3x-autocomplete-option-color: var(--_yam3x-autocomplete-sys-color-on-surface);
   --_yam3x-autocomplete-option-selected-container-color: var(
@@ -1018,6 +1075,9 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   border-radius: var(--_yam3x-autocomplete-sys-shape-corner-extra-small, 4px);
   background: transparent;
 }
+.yam3x-autocomplete__outline {
+  display: none;
+}
 @media (hover: hover) and (pointer: fine) {
   .yam3x-autocomplete__field:hover:not(:focus-within) {
     border-color: var(--_yam3x-autocomplete-sys-color-on-surface);
@@ -1040,6 +1100,79 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
 .yam3x-autocomplete--invalid .yam3x-autocomplete__field:focus-within {
   border-color: var(--md-sys-color-error);
   outline-color: var(--md-sys-color-error);
+}
+.yam3x-autocomplete--floating-label .yam3x-autocomplete__field {
+  border-color: transparent;
+}
+.yam3x-autocomplete--floating-label .yam3x-autocomplete__outline {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  box-sizing: border-box;
+  display: block;
+  border: var(--_yam3x-autocomplete-outline-width, 1px) solid
+    var(--_yam3x-autocomplete-sys-color-outline);
+  border-radius: var(--_yam3x-autocomplete-sys-shape-corner-extra-small, 4px);
+  background: transparent;
+  pointer-events: none;
+  clip-path: polygon(
+    0 0,
+    var(--_yam3x-autocomplete-notch-start) 0,
+    var(--_yam3x-autocomplete-notch-start) var(--_yam3x-autocomplete-outline-width, 1px),
+    var(--_yam3x-autocomplete-notch-end) var(--_yam3x-autocomplete-outline-width, 1px),
+    var(--_yam3x-autocomplete-notch-end) 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+  transition: border-color var(--_yam3x-autocomplete-sys-motion-spring-fast-effects);
+}
+.yam3x-autocomplete--floating-label .yam3x-autocomplete__label {
+  position: absolute;
+  z-index: 1;
+  top: 3px;
+  inset-inline-start: calc(16px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1));
+  max-inline-size: calc(100% - 32px);
+  padding-inline: calc(4px * var(--_yam3x-autocomplete-sys-density-spacing-scale, 1));
+  font-size: var(--_yam3x-autocomplete-label-font-size);
+  font-weight: var(--_yam3x-autocomplete-label-font-weight);
+  line-height: calc(16px / var(--_yam3x-autocomplete-label-scale));
+  letter-spacing: var(--_yam3x-autocomplete-label-tracking);
+  white-space: nowrap;
+  transform: translateY(-50%) scale(var(--_yam3x-autocomplete-label-scale));
+  transform-origin: top left;
+  cursor: text;
+}
+.yam3x-autocomplete--floating-label:dir(rtl) .yam3x-autocomplete__label {
+  transform-origin: top right;
+}
+@media (hover: hover) and (pointer: fine) {
+  .yam3x-autocomplete--floating-label
+    .yam3x-autocomplete__field:hover:not(:focus-within)
+    .yam3x-autocomplete__outline {
+    border-color: var(--_yam3x-autocomplete-sys-color-on-surface);
+  }
+}
+.yam3x-autocomplete--floating-label .yam3x-autocomplete__field:focus-within {
+  border-color: transparent;
+  outline: none;
+}
+.yam3x-autocomplete--floating-label
+  .yam3x-autocomplete__field:focus-within
+  .yam3x-autocomplete__outline {
+  --_yam3x-autocomplete-outline-width: 3px;
+  border-color: var(--_yam3x-autocomplete-sys-color-primary);
+}
+.yam3x-autocomplete--floating-label.yam3x-autocomplete--invalid .yam3x-autocomplete__outline,
+.yam3x-autocomplete--floating-label.yam3x-autocomplete--invalid
+  .yam3x-autocomplete__field:hover:not(:focus-within)
+  .yam3x-autocomplete__outline {
+  border-color: var(--md-sys-color-error);
+}
+.yam3x-autocomplete--floating-label.yam3x-autocomplete--invalid
+  .yam3x-autocomplete__field:focus-within
+  .yam3x-autocomplete__outline {
+  border-color: var(--md-sys-color-error);
 }
 .yam3x-autocomplete__subscript {
   display: flex;
@@ -1459,11 +1592,25 @@ defineExpose({ open, close, focus: () => input.value?.focus(), input })
   .yam3x-autocomplete__chevron {
     transition: none;
   }
+  .yam3x-autocomplete__outline {
+    transition: none;
+  }
 }
 @media (forced-colors: active) {
   .yam3x-autocomplete__field {
     border: 1px solid ButtonText;
     background: Canvas;
+  }
+  .yam3x-autocomplete--floating-label .yam3x-autocomplete__field {
+    border-color: transparent;
+  }
+  .yam3x-autocomplete--floating-label .yam3x-autocomplete__outline {
+    border-color: CanvasText;
+  }
+  .yam3x-autocomplete--floating-label
+    .yam3x-autocomplete__field:focus-within
+    .yam3x-autocomplete__outline {
+    border-color: Highlight;
   }
   .yam3x-autocomplete__field:focus-within {
     outline: 2px solid Highlight;

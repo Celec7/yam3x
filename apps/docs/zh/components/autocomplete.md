@@ -202,7 +202,11 @@ const options: AutocompleteOption[] = Array.from({ length: 10000 }, (_, index) =
 
 - `loading` 设置 `aria-busy`、卸载选项行，并显示加载行，除非设置 `hide-loading`。加载文本可来自 `loadingText` 或 `#loading` 插槽。
 - 无匹配时显示无数据行，除非设置 `hide-no-data`；`noDataText` 和 `#no-data` 覆盖本地化默认值。若两种状态行都被隐藏，空结果的弹层不会打开。
+- 结果数量和状态文本会在查询稳定后播报，快速输入不会用每个中间数量反复打断辅助技术。
+- 当弹层无法打开且字段启用时，尾部建议按钮会省略；禁用和只读字段保留可见的禁用按钮。
+- 受控查询会在父组件渲染后结算。若父组件规范化查询，活动项和弹层状态使用规范化后的值。
 - `hint` 通过 `aria-describedby` 关联。`error` 替换提示、标记字段无效，并通过 alert 播报。
+- `floatLabel="always"` 使用 Form field 的 outlined 缺口几何：预填值时标签仍可见，缺口在文本缩放和 RTL 下跟随实际标签宽度。
 - 原生输入承载 `name`、`form`、`disabled`、`readonly` 和 `required`。在已确认选项标签与文本匹配之前，`selection-required` 会添加原生自定义有效性错误。原生表单重置会恢复初始查询和已选值。
 - `resultsLabel`、`loadingText` 和 `noDataText` 覆盖内置播报。`#input` 插槽必须把 `inputProps` 绑定到原生可编辑输入框。
 - 虚拟化要求唯一且稳定的选项值。只有附近和活动建议会挂载；`aria-posinset` 和 `aria-setsize` 描述其在筛选结果中的位置。目录变化会保留首个可见记录及其偏移，显式导航优先。
@@ -229,38 +233,39 @@ const options: AutocompleteOption[] = Array.from({ length: 10000 }, (_, index) =
 
 ### 属性与模型
 
-| 属性 / 模型                     | 类型                                    | 默认值             | 说明                                                 |
-| ------------------------------- | --------------------------------------- | ------------------ | ---------------------------------------------------- |
-| `options`                       | `AutocompleteOption[]`                  | 必填               | 建议项；每个 `value` 在列表中唯一。                  |
-| `label`                         | `string`                                | 必填               | 可见字段标签和可访问名称。                           |
-| `hint`                          | `string`                                | `''`               | 辅助文本，与输入框关联。                             |
-| `error`                         | `string`                                | `''`               | 无效消息；替换提示并标记字段无效。                   |
-| `modelValue` / `v-model`        | `string`                                | `''`               | 当前可编辑文本。                                     |
-| `selected` / `v-model:selected` | `string \| null`                        | `null`             | 已确认建议的值。                                     |
-| `filter`                        | `AutocompleteFilter`                    | `'contains'`       | 不区分大小写的模式或自定义谓词。                     |
-| `caseSensitive`                 | `boolean`                               | `false`            | 区分大小写匹配标签。                                 |
-| `autoActivate`                  | `boolean`                               | `false`            | 将已确认或首个启用建议设为活动项，但不确认它。       |
-| `openOnFocus`                   | `boolean`                               | `true`             | 输入框聚焦时打开可用建议。                           |
-| `loading`                       | `boolean`                               | `false`            | 显示加载状态并移除选项行。                           |
-| `loadingText`                   | `string`                                | 本地化             | 覆盖加载状态文本。                                   |
-| `noDataText`                    | `string`                                | 本地化             | 覆盖无结果文本。                                     |
-| `resultsLabel`                  | `string \| ((count: number) => string)` | 本地化             | 覆盖结果数量播报。                                   |
-| `variant`                       | `'standard' \| 'vibrant'`               | `'standard'`       | 作为项目变体公开的菜单颜色映射。                     |
-| `hideSelectionIndicator`        | `boolean`                               | `false`            | 隐藏已确认值勾选图标。                               |
-| `hideLoading`                   | `boolean`                               | `false`            | 隐藏加载行；加载时也隐藏弹层。                       |
-| `hideNoData`                    | `boolean`                               | `false`            | 隐藏无结果行；为空时也隐藏弹层。                     |
-| `panelClass`                    | `string`                                | `''`               | 应用到弹层 listbox 的类名。                          |
-| `virtual`                       | `boolean \| VirtualListOptions`         | `false`            | 渲染测量窗口；`true` 使用 48px 估计和 4 行额外渲染。 |
-| `id`                            | `string`                                | 自动生成           | 输入框 ID。                                          |
-| `placeholder`                   | `string`                                | `''`               | 原生输入占位符。                                     |
-| `name`                          | `string`                                | —                  | 原生表单字段名。                                     |
-| `form`                          | `string`                                | —                  | 通过 id 将输入框关联到表单。                         |
-| `autocomplete`                  | `string`                                | `'off'`            | 原生自动完成提示。                                   |
-| `required`                      | `boolean`                               | `false`            | 对非空值进行原生必填验证。                           |
-| `selectionRequired`             | `boolean`                               | `false`            | 要求文本与已确认选项标签匹配。                       |
-| `disabled`                      | `boolean`                               | `false`            | 禁用输入框和弹层。                                   |
-| `readonly`                      | `boolean`                               | `false`            | 使输入框只读并关闭弹层。                             |
-| `locale`                        | `string`                                | Provider → `en-US` | 内置状态与验证文本的语言。                           |
+| 属性 / 模型                     | 类型                                    | 默认值             | 说明                                                                           |
+| ------------------------------- | --------------------------------------- | ------------------ | ------------------------------------------------------------------------------ |
+| `options`                       | `AutocompleteOption[]`                  | 必填               | 建议项；每个 `value` 在列表中唯一。                                            |
+| `label`                         | `string`                                | 必填               | 可见字段标签和可访问名称。                                                     |
+| `floatLabel`                    | `'always'`                              | —                  | 将标签放在 outlined field 内，作为常驻的缺口标签。不设置时标签保留在字段上方。 |
+| `hint`                          | `string`                                | `''`               | 辅助文本，与输入框关联。                                                       |
+| `error`                         | `string`                                | `''`               | 无效消息；替换提示并标记字段无效。                                             |
+| `modelValue` / `v-model`        | `string`                                | `''`               | 当前可编辑文本。                                                               |
+| `selected` / `v-model:selected` | `string \| null`                        | `null`             | 已确认建议的值。                                                               |
+| `filter`                        | `AutocompleteFilter`                    | `'contains'`       | 不区分大小写的模式或自定义谓词。                                               |
+| `caseSensitive`                 | `boolean`                               | `false`            | 区分大小写匹配标签。                                                           |
+| `autoActivate`                  | `boolean`                               | `false`            | 将已确认或首个启用建议设为活动项，但不确认它。                                 |
+| `openOnFocus`                   | `boolean`                               | `true`             | 输入框聚焦时打开可用建议。                                                     |
+| `loading`                       | `boolean`                               | `false`            | 显示加载状态并移除选项行。                                                     |
+| `loadingText`                   | `string`                                | 本地化             | 覆盖加载状态文本。                                                             |
+| `noDataText`                    | `string`                                | 本地化             | 覆盖无结果文本。                                                               |
+| `resultsLabel`                  | `string \| ((count: number) => string)` | 本地化             | 覆盖结果数量播报。                                                             |
+| `variant`                       | `'standard' \| 'vibrant'`               | `'standard'`       | 作为项目变体公开的菜单颜色映射。                                               |
+| `hideSelectionIndicator`        | `boolean`                               | `false`            | 隐藏已确认值勾选图标。                                                         |
+| `hideLoading`                   | `boolean`                               | `false`            | 隐藏加载行；加载时也隐藏弹层。                                                 |
+| `hideNoData`                    | `boolean`                               | `false`            | 隐藏无结果行；为空时也隐藏弹层。                                               |
+| `panelClass`                    | `string`                                | `''`               | 应用到弹层 listbox 的类名。                                                    |
+| `virtual`                       | `boolean \| VirtualListOptions`         | `false`            | 渲染测量窗口；`true` 使用 48px 估计和 4 行额外渲染。                           |
+| `id`                            | `string`                                | 自动生成           | 输入框 ID。                                                                    |
+| `placeholder`                   | `string`                                | `''`               | 原生输入占位符。                                                               |
+| `name`                          | `string`                                | —                  | 原生表单字段名。                                                               |
+| `form`                          | `string`                                | —                  | 通过 id 将输入框关联到表单。                                                   |
+| `autocomplete`                  | `string`                                | `'off'`            | 原生自动完成提示。                                                             |
+| `required`                      | `boolean`                               | `false`            | 对非空值进行原生必填验证。                                                     |
+| `selectionRequired`             | `boolean`                               | `false`            | 要求文本与已确认选项标签匹配。                                                 |
+| `disabled`                      | `boolean`                               | `false`            | 禁用输入框和弹层。                                                             |
+| `readonly`                      | `boolean`                               | `false`            | 使输入框只读并关闭弹层。                                                       |
+| `locale`                        | `string`                                | Provider → `en-US` | 内置状态与验证文本的语言。                                                     |
 
 ### 事件
 

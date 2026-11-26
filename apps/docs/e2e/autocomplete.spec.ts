@@ -398,6 +398,42 @@ test('Autocomplete connects hint and error supporting text to the input', async 
   expect(colors.border).toBe(colors.error)
 })
 
+test('announces settled results and hides the trailing control when no popup can open', async ({
+  page,
+}) => {
+  await page.goto('/components/autocomplete')
+  const input = page.getByRole('combobox', { name: 'Fruit' })
+  const root = page.locator('.yam3x-autocomplete').filter({ has: input })
+  const live = root.locator('.yam3x-autocomplete__live')
+
+  await input.fill('ap')
+  await expect(live).toHaveText('', { timeout: 100 })
+  await expect(live).toHaveText(/2 options/, { timeout: 1000 })
+  await input.fill('zzz')
+  await expect(live).not.toHaveText(/0 options/, { timeout: 100 })
+  await expect(live).toHaveText(/No options/, { timeout: 1000 })
+
+  await page.getByText('Validation and custom input examples', { exact: true }).click()
+  const hiddenNoData = page
+    .locator('.yam3x-autocomplete')
+    .filter({ has: page.getByLabel('Hidden no-data') })
+  const hiddenInput = hiddenNoData.getByRole('combobox')
+  await hiddenInput.fill('a')
+  await expect(hiddenNoData.locator('.yam3x-autocomplete__trailing')).toHaveCount(1)
+  await hiddenInput.fill('zzz')
+  await expect(hiddenNoData.locator('.yam3x-autocomplete__trailing')).toHaveCount(0)
+
+  const hiddenLoading = page
+    .locator('.yam3x-autocomplete')
+    .filter({ has: page.getByLabel('Hidden loading') })
+  await expect(hiddenLoading.locator('.yam3x-autocomplete__trailing')).toHaveCount(0)
+
+  const loading = page
+    .locator('.yam3x-autocomplete')
+    .filter({ has: page.getByLabel('Loading fruit') })
+  await expect(loading.locator('.yam3x-autocomplete__trailing')).toHaveCount(1)
+})
+
 test('Autocomplete uses theme roles, mirrors RTL placement, flips above, and honors motion/forced colors', async ({
   page,
 }) => {
@@ -649,4 +685,40 @@ test('Autocomplete exposes documented geometry and shape CSS overrides', async (
   const selectedApple = page.getByRole('option', { name: 'Apple' })
   await expect(selectedApple).toHaveCSS('border-start-start-radius', '20px')
   await expect(selectedApple).toHaveCSS('border-end-end-radius', '20px')
+})
+
+test('float label uses a measured notch and keeps a prefilled value clear', async ({ page }) => {
+  await page.goto('/components/autocomplete')
+  await page.getByText('Validation and custom input examples', { exact: true }).click()
+  const root = page
+    .locator('.yam3x-autocomplete')
+    .filter({ has: page.getByLabel('Floating fruit') })
+  const input = root.getByRole('combobox')
+  const label = root.locator('.yam3x-autocomplete__label')
+  const outline = root.locator('.yam3x-autocomplete__outline')
+
+  await expect(outline).toHaveCSS('display', 'block')
+  await expect(label).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+  await expect(outline).not.toHaveCSS('clip-path', 'none')
+  const notch = () =>
+    root.evaluate((element) => ({
+      start: Number.parseFloat(
+        getComputedStyle(element).getPropertyValue('--_yam3x-autocomplete-notch-start'),
+      ),
+      end: Number.parseFloat(
+        getComputedStyle(element).getPropertyValue('--_yam3x-autocomplete-notch-end'),
+      ),
+    }))
+  const initial = await notch()
+  expect(initial.end).toBeGreaterThan(initial.start)
+
+  const labelBox = (await label.boundingBox())!
+  const inputBox = (await input.boundingBox())!
+  expect(labelBox.y + labelBox.height).toBeLessThan(inputBox.y + inputBox.height / 2)
+
+  await input.focus()
+  await expect(outline).toHaveCSS('border-top-width', '3px')
+  await page.evaluate(() => (document.documentElement.style.fontSize = '32px'))
+  await expect.poll(async () => (await notch()).end).toBeGreaterThan(initial.end)
+  await expect(label).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
 })

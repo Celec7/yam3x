@@ -44,6 +44,7 @@ describe('selection shared localization', () => {
       },
     })
     await wrapper.get('input[role="combobox"]').trigger('focus')
+    await new Promise((resolve) => setTimeout(resolve, 250))
     expect(wrapper.text()).toContain('Found 1')
   })
   it('inherits Option panel text and gives local props and slots priority', async () => {
@@ -122,6 +123,7 @@ describe('selection shared localization', () => {
     await wrapper.setProps({ locale: 'zh-CN' })
     expect(input.attributes('aria-activedescendant')).toBe(active)
     expect(input.attributes('aria-expanded')).toBe('true')
+    await new Promise((resolve) => setTimeout(resolve, 250))
     expect(wrapper.get('[aria-live="polite"]').text()).toBe('2 个选项')
     expect(wrapper.getComponent(Autocomplete).emitted('update:modelValue')).toBeUndefined()
     expect(wrapper.getComponent(Autocomplete).emitted('update:selected')).toBeUndefined()

@@ -202,7 +202,11 @@ The editable input is a combobox that owns DOM focus. The popup is a listbox nam
 
 - `loading` exposes `aria-busy`, unmounts option rows, and shows the loading row unless `hide-loading` is set. Loading text can come from `loadingText` or the `#loading` slot.
 - No matches show the no-data row unless `hide-no-data` is set; `noDataText` and `#no-data` override the localized default. If both status rows are hidden, the popup does not open for an empty result.
+- Result counts and state text are announced after the query settles, so rapid typing does not interrupt assistive technology with every intermediate count.
+- The trailing suggestions control is omitted when no popup can open and the field is enabled; disabled and read-only fields keep it visibly disabled.
+- A controlled query is settled after the parent renders. If the parent normalizes the query, active-option and popup state use the normalized value.
 - `hint` is connected with `aria-describedby`. `error` replaces the hint, marks the field invalid, and is announced as an alert.
+- `floatLabel="always"` uses the Form field outlined notch geometry: the label stays visible over prefilled values, and the notch follows the rendered label width at text scaling and in RTL.
 - The native input carries `name`, `form`, `disabled`, `readonly`, and `required`. `selection-required` adds native custom validity until the committed option label matches the text. Native form reset restores the initial query and selected value.
 - `resultsLabel`, `loadingText`, and `noDataText` override built-in announcements. The `#input` slot must bind `inputProps` to a native editable input.
 - Virtualization requires unique, stable option values. Only nearby and active suggestions mount; `aria-posinset` and `aria-setsize` describe positions in the filtered result. Catalog changes preserve the first visible record and its offset, and explicit navigation takes priority.
@@ -229,38 +233,39 @@ Built-in status, result announcements, suggestion names, and required-selection 
 
 ### Props and models
 
-| Prop / model                    | Type                                    | Default            | Description                                                                   |
-| ------------------------------- | --------------------------------------- | ------------------ | ----------------------------------------------------------------------------- |
-| `options`                       | `AutocompleteOption[]`                  | Required           | Suggestions; each `value` must be unique in the list.                         |
-| `label`                         | `string`                                | Required           | Visible field label and accessible name.                                      |
-| `hint`                          | `string`                                | `''`               | Supporting text; connected to the input.                                      |
-| `error`                         | `string`                                | `''`               | Invalid message; replaces the hint and marks the field invalid.               |
-| `modelValue` / `v-model`        | `string`                                | `''`               | Current editable text.                                                        |
-| `selected` / `v-model:selected` | `string \| null`                        | `null`             | Value of the committed suggestion.                                            |
-| `filter`                        | `AutocompleteFilter`                    | `'contains'`       | Case-insensitive mode or a custom predicate.                                  |
-| `caseSensitive`                 | `boolean`                               | `false`            | Matches labels with case sensitivity.                                         |
-| `autoActivate`                  | `boolean`                               | `false`            | Makes the committed or first enabled suggestion active without committing it. |
-| `openOnFocus`                   | `boolean`                               | `true`             | Opens available suggestions when the input receives focus.                    |
-| `loading`                       | `boolean`                               | `false`            | Shows the loading state and removes option rows.                              |
-| `loadingText`                   | `string`                                | Localized          | Overrides the loading status text.                                            |
-| `noDataText`                    | `string`                                | Localized          | Overrides the no-results text.                                                |
-| `resultsLabel`                  | `string \| ((count: number) => string)` | Localized          | Overrides the result-count announcement.                                      |
-| `variant`                       | `'standard' \| 'vibrant'`               | `'standard'`       | Menu color mapping exposed as a project variant.                              |
-| `hideSelectionIndicator`        | `boolean`                               | `false`            | Hides the committed-value check icon.                                         |
-| `hideLoading`                   | `boolean`                               | `false`            | Hides the loading row and the popup when loading.                             |
-| `hideNoData`                    | `boolean`                               | `false`            | Hides the no-results row and the popup when empty.                            |
-| `panelClass`                    | `string`                                | `''`               | Class applied to the popup listbox.                                           |
-| `virtual`                       | `boolean \| VirtualListOptions`         | `false`            | Renders a measured window; `true` uses a 48px estimate and 4 overscan rows.   |
-| `id`                            | `string`                                | Generated          | Input ID.                                                                     |
-| `placeholder`                   | `string`                                | `''`               | Native input placeholder.                                                     |
-| `name`                          | `string`                                | —                  | Native form field name.                                                       |
-| `form`                          | `string`                                | —                  | Associates the input with a form by id.                                       |
-| `autocomplete`                  | `string`                                | `'off'`            | Native autocomplete hint.                                                     |
-| `required`                      | `boolean`                               | `false`            | Native required validation for a nonempty value.                              |
-| `selectionRequired`             | `boolean`                               | `false`            | Requires the text to match the committed option label.                        |
-| `disabled`                      | `boolean`                               | `false`            | Disables the input and popup.                                                 |
-| `readonly`                      | `boolean`                               | `false`            | Makes the input read-only and closes the popup.                               |
-| `locale`                        | `string`                                | Provider → `en-US` | Language of built-in status and validation text.                              |
+| Prop / model                    | Type                                    | Default            | Description                                                                                                          |
+| ------------------------------- | --------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `options`                       | `AutocompleteOption[]`                  | Required           | Suggestions; each `value` must be unique in the list.                                                                |
+| `label`                         | `string`                                | Required           | Visible field label and accessible name.                                                                             |
+| `floatLabel`                    | `'always'`                              | —                  | Places the label inside the outlined field as a persistent notch label. Without it, the label stays above the field. |
+| `hint`                          | `string`                                | `''`               | Supporting text; connected to the input.                                                                             |
+| `error`                         | `string`                                | `''`               | Invalid message; replaces the hint and marks the field invalid.                                                      |
+| `modelValue` / `v-model`        | `string`                                | `''`               | Current editable text.                                                                                               |
+| `selected` / `v-model:selected` | `string \| null`                        | `null`             | Value of the committed suggestion.                                                                                   |
+| `filter`                        | `AutocompleteFilter`                    | `'contains'`       | Case-insensitive mode or a custom predicate.                                                                         |
+| `caseSensitive`                 | `boolean`                               | `false`            | Matches labels with case sensitivity.                                                                                |
+| `autoActivate`                  | `boolean`                               | `false`            | Makes the committed or first enabled suggestion active without committing it.                                        |
+| `openOnFocus`                   | `boolean`                               | `true`             | Opens available suggestions when the input receives focus.                                                           |
+| `loading`                       | `boolean`                               | `false`            | Shows the loading state and removes option rows.                                                                     |
+| `loadingText`                   | `string`                                | Localized          | Overrides the loading status text.                                                                                   |
+| `noDataText`                    | `string`                                | Localized          | Overrides the no-results text.                                                                                       |
+| `resultsLabel`                  | `string \| ((count: number) => string)` | Localized          | Overrides the result-count announcement.                                                                             |
+| `variant`                       | `'standard' \| 'vibrant'`               | `'standard'`       | Menu color mapping exposed as a project variant.                                                                     |
+| `hideSelectionIndicator`        | `boolean`                               | `false`            | Hides the committed-value check icon.                                                                                |
+| `hideLoading`                   | `boolean`                               | `false`            | Hides the loading row and the popup when loading.                                                                    |
+| `hideNoData`                    | `boolean`                               | `false`            | Hides the no-results row and the popup when empty.                                                                   |
+| `panelClass`                    | `string`                                | `''`               | Class applied to the popup listbox.                                                                                  |
+| `virtual`                       | `boolean \| VirtualListOptions`         | `false`            | Renders a measured window; `true` uses a 48px estimate and 4 overscan rows.                                          |
+| `id`                            | `string`                                | Generated          | Input ID.                                                                                                            |
+| `placeholder`                   | `string`                                | `''`               | Native input placeholder.                                                                                            |
+| `name`                          | `string`                                | —                  | Native form field name.                                                                                              |
+| `form`                          | `string`                                | —                  | Associates the input with a form by id.                                                                              |
+| `autocomplete`                  | `string`                                | `'off'`            | Native autocomplete hint.                                                                                            |
+| `required`                      | `boolean`                               | `false`            | Native required validation for a nonempty value.                                                                     |
+| `selectionRequired`             | `boolean`                               | `false`            | Requires the text to match the committed option label.                                                               |
+| `disabled`                      | `boolean`                               | `false`            | Disables the input and popup.                                                                                        |
+| `readonly`                      | `boolean`                               | `false`            | Makes the input read-only and closes the popup.                                                                      |
+| `locale`                        | `string`                                | Provider → `en-US` | Language of built-in status and validation text.                                                                     |
 
 ### Events
 

@@ -24,6 +24,7 @@ const indicatorQuery = ref('')
 const indicatorSelection = ref<string | null>(null)
 const invalidQuery = ref('apple')
 const invalidSelected = ref<string | null>(null)
+const floatingQuery = ref('Apple')
 
 const fruitResultsLabel = (count: number) =>
   t(`${count} fruits available`, `有 ${count} 种水果可选`)
@@ -187,6 +188,13 @@ function toggleDynamicApple(): void {
         :label="t('Hidden selection indicator', '隐藏选中指示器')"
         :locale="localeTag"
         hide-selection-indicator
+      />
+      <Autocomplete
+        v-model="floatingQuery"
+        :options="selection"
+        :label="t('Floating fruit', '浮动水果')"
+        :locale="localeTag"
+        float-label="always"
       />
       <Autocomplete
         v-model="invalidQuery"
