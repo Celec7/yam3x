@@ -360,7 +360,7 @@ listbox 会从属性暴露 `aria-multiselectable`、`aria-required`、`aria-inva
 | `items`             | —      | 子列表内容。                 |
 | `full-screen-title` | —      | 替换全屏对话框标题。         |
 
-行内模式下，面板是 `list`；全屏模式下，它是模态 `dialog`。使用 `fullScreenTitle`、`#full-screen-title` 或根 `aria-label` 命名该对话框；最后一项也提供可见标题回退。模型接受 `open` 后控制面板；组件不暴露命令式打开或关闭方法。
+行内模式下，面板包含一个带名称的 `list`；全屏模式下，它是模态 `dialog`。使用 `fullScreenTitle`、`#full-screen-title` 或根 `aria-label` 命名该对话框；最后一项也提供可见标题回退。模型接受 `open` 后控制面板；组件不暴露命令式打开或关闭方法。
 
 ### 事件
 
@@ -372,18 +372,19 @@ listbox 会从属性暴露 `aria-multiselectable`、`aria-required`、`aria-inva
 
 ## 样式
 
-列表几何、内缩、间距、媒体尺寸和状态形状由组件拥有，并映射到 Expressive 列表样式。没有公开的列表专用自定义属性；请使用共享 System 字阶 token 以及共享状态层和涟漪接口。
+列表几何、内缩、间距、媒体尺寸和状态形状由组件拥有，并映射到 Expressive 列表样式。`--yam3x-list-segmented-item-container-color` 只改变分段列表中未选中项的静止容器色；选中、悬停和禁用状态继续使用各自的官方角色。标准列表和选择列表不受影响。
 
-| 接口                                                                     | 用途                               |
-| ------------------------------------------------------------------------ | ---------------------------------- |
-| `--md-sys-typescale-body-large-*`                                        | 标题角色。                         |
-| `--md-sys-typescale-body-medium-*`                                       | 辅助文字角色。                     |
-| `--md-sys-typescale-label-small-*`                                       | Overline 和尾部文字角色。          |
-| `--md-sys-density-spacing-scale`                                         | 按密度缩放列表间距。               |
-| `--yam3x-state-layer-hover-color`、`--yam3x-state-layer-focus-color`     | 操作行和选项表面的共享状态层颜色。 |
-| `--yam3x-state-layer-hover-opacity`、`--yam3x-state-layer-focus-opacity` | 共享状态层透明度。                 |
-| `--yam3x-ripple-color`、`--yam3x-ripple-opacity`                         | 操作行和选择行的共享按下涟漪颜色。 |
-| `--yam3x-collapsible-animation-duration`                                 | 展开与收起时长；默认 `300ms`。     |
+| 接口                                                                     | 用途                                               |
+| ------------------------------------------------------------------------ | -------------------------------------------------- |
+| `--yam3x-list-segmented-item-container-color`                            | 分段列表中未选中项的静止容器色；回退到 `surface`。 |
+| `--md-sys-typescale-body-large-*`                                        | 标题角色。                                         |
+| `--md-sys-typescale-body-medium-*`                                       | 辅助文字角色。                                     |
+| `--md-sys-typescale-label-small-*`                                       | Overline 和尾部文字角色。                          |
+| `--md-sys-density-spacing-scale`                                         | 按密度缩放列表间距。                               |
+| `--yam3x-state-layer-hover-color`、`--yam3x-state-layer-focus-color`     | 操作行和选项表面的共享状态层颜色。                 |
+| `--yam3x-state-layer-hover-opacity`、`--yam3x-state-layer-focus-opacity` | 共享状态层透明度。                                 |
+| `--yam3x-ripple-color`、`--yam3x-ripple-opacity`                         | 操作行和选择行的共享按下涟漪颜色。                 |
+| `--yam3x-collapsible-animation-duration`                                 | 展开与收起时长；默认 `300ms`。                     |
 
 segmented 列表是一个视觉分组，带 2px 间距和大容器圆角。standard 列表保持整行宽度并依赖显式分隔线。条目填满父容器宽度；周围布局控制列数和阅读宽度。前置与尾部图标以 20px 渲染，前置头像 40px，图片 56px，视频 100 × 56px。选中的前置和尾部图标使用选中内容角色；悬停、聚焦和按压的选中状态会将图标切换为 `on-surface`，而标签保持选中标签角色。
 

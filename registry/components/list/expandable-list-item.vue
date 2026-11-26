@@ -269,15 +269,16 @@ onBeforeUnmount(() => {
         </template>
       </ListItemLayout>
     </button>
+    <!-- The disclosure panel wraps the list; it is not itself a list. Full screen is the dialog. -->
     <div
       :id="contentId"
       ref="panel"
       class="yam3x-expandable-list-item__panel"
       :data-open="String(open)"
       :data-variant="variantContext.variant.value"
-      :role="presentation === 'fullScreen' ? 'dialog' : 'list'"
+      :role="presentation === 'fullScreen' ? 'dialog' : undefined"
       :aria-modal="presentation === 'fullScreen' && open ? 'true' : undefined"
-      :aria-labelledby="presentation === 'fullScreen' ? `${headerId}-dialog-title` : headerId"
+      :aria-labelledby="presentation === 'fullScreen' ? `${headerId}-dialog-title` : undefined"
       :aria-hidden="!open"
       :inert="!open"
       :tabindex="presentation === 'fullScreen' ? -1 : undefined"
@@ -306,7 +307,12 @@ onBeforeUnmount(() => {
         class="yam3x-expandable-list-item__clip"
         :data-variant="variantContext.variant.value"
       >
-        <div role="list"><slot name="items" /></div>
+        <div
+          role="list"
+          :aria-labelledby="presentation === 'fullScreen' ? undefined : headerId"
+        >
+          <slot name="items" />
+        </div>
       </div>
     </div>
   </li>

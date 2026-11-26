@@ -21,6 +21,10 @@
   --_yam3x-list-color-surface: var(--md-sys-color-surface);
   --_yam3x-list-color-surface-container: var(--md-sys-color-surface-container);
   --_yam3x-list-color-tertiary-container: var(--md-sys-color-tertiary-container);
+  --_yam3x-list-segmented-item-container-color: var(
+    --yam3x-list-segmented-item-container-color,
+    var(--_yam3x-list-color-surface)
+  );
   --_yam3x-list-density-spacing-scale: var(--md-sys-density-spacing-scale);
   --_yam3x-list-elevation-level4: var(--md-sys-elevation-level4);
   --_yam3x-list-motion-duration-default-spatial: var(--md-sys-motion-duration-default-spatial);

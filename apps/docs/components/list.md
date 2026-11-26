@@ -360,7 +360,7 @@ The listbox exposes `aria-multiselectable`, `aria-required`, `aria-invalid`, and
 | `items`             | —     | Child list content.                            |
 | `full-screen-title` | —     | Replaces the full-screen dialog title.         |
 
-In inline mode the panel is a `list`; in full-screen mode it is a modal `dialog`. Name that dialog with `fullScreenTitle`, `#full-screen-title`, or the root `aria-label`; the last also supplies the visible title fallback. Accepting `open` from the model controls the panel; the component does not expose imperative open or close methods.
+In inline mode the panel contains one labelled `list`; in full-screen mode it is a modal `dialog`. Name that dialog with `fullScreenTitle`, `#full-screen-title`, or the root `aria-label`; the last also supplies the visible title fallback. Accepting `open` from the model controls the panel; the component does not expose imperative open or close methods.
 
 ### Events
 
@@ -372,18 +372,19 @@ No list component exposes instance methods. Selection is controlled through mode
 
 ## Styling
 
-List geometry, insets, gaps, media dimensions, and state shapes are owned by the component and map to the Expressive list treatment. No list-specific custom properties are documented; use the shared System typescale tokens and the shared state-layer and ripple hooks instead.
+List geometry, insets, gaps, media dimensions, and state shapes are owned by the component and map to the Expressive list treatment. `--yam3x-list-segmented-item-container-color` changes only the resting container of unselected items in a segmented list; selected, hovered, and disabled states keep their official roles. Standard and selection lists are unchanged.
 
-| Interface                                                                | Use                                                         |
-| ------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| `--md-sys-typescale-body-large-*`                                        | Headline role.                                              |
-| `--md-sys-typescale-body-medium-*`                                       | Supporting text role.                                       |
-| `--md-sys-typescale-label-small-*`                                       | Overline and trailing text roles.                           |
-| `--md-sys-density-spacing-scale`                                         | Scales list spacing with density.                           |
-| `--yam3x-state-layer-hover-color`, `--yam3x-state-layer-focus-color`     | Shared state-layer colors for action and option surfaces.   |
-| `--yam3x-state-layer-hover-opacity`, `--yam3x-state-layer-focus-opacity` | Shared state-layer opacities.                               |
-| `--yam3x-ripple-color`, `--yam3x-ripple-opacity`                         | Shared pressed ripple colors for action and selection rows. |
-| `--yam3x-collapsible-animation-duration`                                 | Expand and collapse duration; defaults to `300ms`.          |
+| Interface                                                                | Use                                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `--yam3x-list-segmented-item-container-color`                            | Resting container color of unselected segmented list items; falls back to `surface`. |
+| `--md-sys-typescale-body-large-*`                                        | Headline role.                                                                       |
+| `--md-sys-typescale-body-medium-*`                                       | Supporting text role.                                                                |
+| `--md-sys-typescale-label-small-*`                                       | Overline and trailing text roles.                                                    |
+| `--md-sys-density-spacing-scale`                                         | Scales list spacing with density.                                                    |
+| `--yam3x-state-layer-hover-color`, `--yam3x-state-layer-focus-color`     | Shared state-layer colors for action and option surfaces.                            |
+| `--yam3x-state-layer-hover-opacity`, `--yam3x-state-layer-focus-opacity` | Shared state-layer opacities.                                                        |
+| `--yam3x-ripple-color`, `--yam3x-ripple-opacity`                         | Shared pressed ripple colors for action and selection rows.                          |
+| `--yam3x-collapsible-animation-duration`                                 | Expand and collapse duration; defaults to `300ms`.                                   |
 
 A segmented list is one visual group with 2px gaps and the large container corner shape. A standard list keeps full-width rows and relies on explicit dividers. Items fill the parent width; the surrounding layout controls columns and reading width. Leading and trailing icons render at 20px, leading avatars at 40px, images at 56px, and video at 100 × 56px. Selected leading and trailing icons use the selected content role; hover, focus, and pressed selected states switch those icons to `on-surface` while the label keeps the selected label role.
 

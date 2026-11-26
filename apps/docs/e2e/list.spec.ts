@@ -66,6 +66,7 @@ test('inbox stays inline in narrow desktop content panes and mobile viewports', 
   await expect(inbox).toHaveAttribute('aria-controls', (await panel.getAttribute('id')) ?? '')
   await expect(panel).toHaveAttribute('aria-hidden', 'true')
   await expect(panel).toHaveAttribute('inert', '')
+  await expect(panel).not.toHaveAttribute('role')
   const sentPositionBeforeExpansion = await sent.evaluate(
     (element) => element.getBoundingClientRect().top + window.scrollY,
   )
@@ -92,6 +93,10 @@ test('inbox stays inline in narrow desktop content panes and mobile viewports', 
   await page.mouse.move(0, 0)
   await expect(panel).toHaveAttribute('aria-hidden', 'false')
   await expect(panel).not.toHaveAttribute('inert')
+  await expect(panel).not.toHaveAttribute('role')
+  const panelList = panel.locator('.yam3x-expandable-list-item__clip > [role="list"]')
+  await expect(panelList).toHaveCount(1)
+  await expect(panelList).toHaveAttribute('aria-labelledby', (await inbox.getAttribute('id')) ?? '')
   await expect(row).toHaveCSS('position', 'static')
   await expect(inbox).toHaveCSS('border-start-start-radius', '16px')
   await expect(inbox).toHaveCSS('border-end-start-radius', '4px')
@@ -754,6 +759,27 @@ test('segmented item shape morphs smoothly between resting and hover shapes', as
   await page.mouse.move(0, 0)
   await expectIntermediateRadius()
   await expect(option).toHaveCSS('border-radius', '4px')
+})
+
+test('segmented list container hook only changes resting segmented rows', async ({ page }) => {
+  await page.goto('/components/list')
+  const demo = listDemo(page, 1)
+  const list = demo.getByRole('list', { name: 'Media and dividers' })
+  const appearance = demo.getByRole('combobox', { name: 'List appearance' })
+  const surface = list.locator(':scope > .yam3x-list-item > .yam3x-list-item__surface').first()
+
+  await selectM3Option(page, appearance, 'segmented')
+  await list.evaluate((element) =>
+    element.style.setProperty('--yam3x-list-segmented-item-container-color', 'rgb(1, 2, 3)'),
+  )
+  await expect(surface).toHaveCSS('background-color', 'rgb(1, 2, 3)')
+
+  await selectM3Option(page, appearance, 'standard')
+  await expect(surface).not.toHaveCSS('background-color', 'rgb(1, 2, 3)')
+  await expect(surface).toHaveCSS(
+    'background-color',
+    await resolveColorToken(surface, '--md-sys-color-surface'),
+  )
 })
 
 test('reduced motion and forced colors preserve expandable and selection states', async ({
