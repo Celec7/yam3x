@@ -122,7 +122,9 @@ function guardNavigation(destination: { value: string }, event: MouseEvent) {
 ### 响应式与 RTL
 
 - `layout="auto"` 在视口宽度达到 600px 时由垂直项目切换为水平项目。该断点是项目决策，并非 Material 官方断点。
-- 导航栏会横向滚动而不是换行。标签保持完整可见，并可在 2× 缩放下换行。
+- 水平项使用固定 144px 宽度；溢出时导航栏横向滚动，`safe center` 保持起始边可达。
+- `fitHorizontal` 是面向五个目的地中等宽度栏的项目扩展。它允许水平项收缩到 48px 行内尺寸，并让标签换行，而不是强制横向滚动。Material Expressive 导航栏规定水平项固定宽度，因此需要严格对齐官方时不要开启。
+- 标签保持完整可见，并可在 2× 缩放下换行。导航栏纵向增长，不截断标签。
 - 图标、标签和徽标会随文档方向镜像；组件不会根据 `dir` 切换布局。
 
 ### 状态所有权
@@ -139,11 +141,12 @@ function guardNavigation(destination: { value: string }, event: MouseEvent) {
 
 ### `NavigationBar`
 
-| 属性         | 类型                                   | 默认值   | 说明                                           |
-| ------------ | -------------------------------------- | -------- | ---------------------------------------------- |
-| `label`      | `string`                               | 必填     | 导航地标的可访问名称。                         |
-| `layout`     | `'vertical' \| 'horizontal' \| 'auto'` | `'auto'` | 项目排列方式；`auto` 在 600px 视口切换为水平。 |
-| `modelValue` | `string`（`v-model`）                  | `''`     | 当前目的地的 `value`。                         |
+| 属性            | 类型                                   | 默认值   | 说明                                                             |
+| --------------- | -------------------------------------- | -------- | ---------------------------------------------------------------- |
+| `label`         | `string`                               | 必填     | 导航地标的可访问名称。                                           |
+| `layout`        | `'vertical' \| 'horizontal' \| 'auto'` | `'auto'` | 项目排列方式；`auto` 在 600px 视口切换为水平。                   |
+| `fitHorizontal` | `boolean`                              | `false`  | 允许水平项收缩到 48px 并换行。项目扩展；官方水平项使用固定宽度。 |
+| `modelValue`    | `string`（`v-model`）                  | `''`     | 当前目的地的 `value`。                                           |
 
 ### `NavigationBarItem`
 

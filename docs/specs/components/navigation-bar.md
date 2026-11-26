@@ -26,6 +26,7 @@ A navigation bar switches between three to five stable top-level destinations. I
 - Reselecting the active destination returns its screen to the top. The application owns this navigation policy.
 - At 840 px and wider, compose a navigation rail instead. This is Material's Expanded breakpoint; Compact and Medium may use a navigation bar.
 - `mode="auto"` uses the compact item layout below 600 px and horizontal items from 600 px. This threshold is separate from the 840 px bar-to-rail threshold.
+- Horizontal items keep the fixed 144 px width from the measurement target. `fitHorizontal` is a project extension for five-destination medium bars: it lets items shrink to a 48 px inline target and wrap labels, deviating from Material's fixed-width horizontal items. `safe center` keeps the start edge reachable when fixed items overflow. The 48 px block target applies in both modes.
 - Disabled content uses `on-surface` at 38% opacity because the selector has no disabled mapping.
 
 Current API details belong to the component source and the public [Navigation bar page](../../../apps/docs/components/navigation-bar.md).

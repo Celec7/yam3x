@@ -279,7 +279,7 @@ test('navigation labels remain visible at 2x text size and activate links on tou
     await expect
       .poll(() => navigation.evaluate((element) => element.getBoundingClientRect().height))
       .toBeGreaterThan(64)
-    await expect(labels).toHaveCount(3)
+    await expect(labels).toHaveCount(5)
     const expectUnclippedLabels = async () => {
       for (const label of await labels.all()) {
         await expect(label).toBeVisible()
@@ -355,6 +355,58 @@ test('selected indicator expands from the item center and settles at its target 
   await expect.poll(async () => Math.abs((await width()) - 56)).toBeLessThan(0.25)
   const settledCenters = await centers()
   expect(Math.abs(settledCenters[0]! - settledCenters[1]!)).toBeLessThan(1)
+})
+
+test('horizontal items keep a 48px target at compact density', async ({ page }) => {
+  await page.setViewportSize({ width: 1046, height: 844 })
+  const navigation = await openNavigationDemo(page)
+  await page.evaluate(() => {
+    document.documentElement.style.setProperty('--md-sys-density-spacing-scale', '0.75')
+    document.documentElement.style.setProperty('--md-sys-density-container-scale', '0.75')
+  })
+  const item = navigation.getByRole('link', { name: 'Overview' })
+  await expect(item).toHaveCSS('min-block-size', '48px')
+  const box = await item.boundingBox()
+  expect(box).not.toBeNull()
+  expect(box!.height).toBeGreaterThanOrEqual(48)
+  expect(await navigation.evaluate((element) => getComputedStyle(element).justifyContent)).toBe(
+    'safe center',
+  )
+})
+
+test('fitHorizontal keeps five medium destinations visible and shrinks to the 48px floor', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 600, height: 844 })
+  const navigation = await openNavigationDemo(page)
+  const fit = page.getByRole('checkbox', { name: 'Fit five destinations' })
+  await expect(fit).not.toBeChecked()
+  await fit.check()
+  await expect(fit).toBeChecked()
+  const links = navigation.getByRole('link')
+  await expect(links).toHaveCount(5)
+
+  const fitted = await navigation.evaluate((element) => ({
+    clientWidth: element.clientWidth,
+    scrollWidth: element.scrollWidth,
+  }))
+  expect(fitted.scrollWidth).toBeLessThanOrEqual(fitted.clientWidth + 1)
+  for (const item of await links.all()) {
+    const box = await item.boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.width).toBeGreaterThanOrEqual(48)
+    expect(box!.width).toBeLessThanOrEqual(144)
+  }
+
+  await fit.uncheck()
+  await expect
+    .poll(() => navigation.evaluate((element) => element.scrollWidth > element.clientWidth))
+    .toBe(true)
+  const fixed = await navigation.evaluate((element) => ({
+    clientWidth: element.clientWidth,
+    scrollWidth: element.scrollWidth,
+  }))
+  expect(fixed.scrollWidth).toBeGreaterThan(fixed.clientWidth)
 })
 
 test('automatic mode shows compact and medium bars and swaps to a rail at expanded width', async ({

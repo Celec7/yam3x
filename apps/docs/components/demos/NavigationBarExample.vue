@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import NavigationBar from '@registry/components/navigation-bar/navigation-bar.vue'
 import NavigationBarItem from '@registry/components/navigation-bar/navigation-bar-item.vue'
 import NavigationRail from '@registry/components/navigation-rail/navigation-rail.vue'
+import { Checkbox } from '@registry/components/checkbox'
 import { Icon } from '@registry/components/icon'
 import { useDemoLocale } from './use-demo-locale'
 
@@ -14,6 +15,7 @@ function localHref(path: string): string {
 }
 
 const active = ref('overview')
+const fitHorizontal = ref(false)
 const localizedItems = [
   { label: t('Overview', '概览'), value: 'overview', href: localHref('/') },
   { label: t('Components', '组件'), value: 'components', href: localHref('/components/') },
@@ -22,6 +24,8 @@ const localizedItems = [
     value: 'foundations',
     href: localHref('/guide/foundations/'),
   },
+  { label: t('Blog', '博客'), value: 'blog', href: localHref('/components/') },
+  { label: t('GitHub', 'GitHub'), value: 'github', href: localHref('/guide/foundations/') },
 ]
 </script>
 
@@ -32,6 +36,7 @@ const localizedItems = [
       class="navigation-bar-example__bar"
       :label="t('Documentation navigation', '文档导航')"
       layout="auto"
+      :fit-horizontal="fitHorizontal"
     >
       <NavigationBarItem
         value="overview"
@@ -92,7 +97,46 @@ const localizedItems = [
             filled
         /></template>
       </NavigationBarItem>
+      <NavigationBarItem
+        value="blog"
+        :label="t('Blog', '博客')"
+        :href="localHref('/components/')"
+      >
+        <template #icon="{ selected }">
+          <Icon
+            name="description"
+            :filled="selected"
+          />
+        </template>
+        <template #selected-icon
+          ><Icon
+            name="description"
+            filled
+        /></template>
+      </NavigationBarItem>
+      <NavigationBarItem
+        value="github"
+        label="GitHub"
+        :href="localHref('/guide/foundations/')"
+      >
+        <template #icon="{ selected }">
+          <Icon
+            name="link"
+            :filled="selected"
+          />
+        </template>
+        <template #selected-icon
+          ><Icon
+            name="link"
+            filled
+        /></template>
+      </NavigationBarItem>
     </NavigationBar>
+    <Checkbox
+      v-model="fitHorizontal"
+      class="navigation-bar-example__fit"
+      :label="t('Fit five destinations', '容纳五个目的地')"
+    />
     <p class="yam3x-demo__status">
       {{ t('At 840px and wider, use a navigation rail.', '宽度达到 840px 时改用导航栏轨。') }}
     </p>
@@ -114,6 +158,14 @@ const localizedItems = [
           name="widgets"
         />
         <Icon
+          v-else-if="item.value === 'blog'"
+          name="description"
+        />
+        <Icon
+          v-else-if="item.value === 'github'"
+          name="link"
+        />
+        <Icon
           v-else
           name="architecture"
         />
@@ -127,6 +179,16 @@ const localizedItems = [
         <Icon
           v-else-if="item.value === 'components'"
           name="widgets"
+          filled
+        />
+        <Icon
+          v-else-if="item.value === 'blog'"
+          name="description"
+          filled
+        />
+        <Icon
+          v-else-if="item.value === 'github'"
+          name="link"
           filled
         />
         <Icon

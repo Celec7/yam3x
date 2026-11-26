@@ -122,7 +122,9 @@ function guardNavigation(destination: { value: string }, event: MouseEvent) {
 ### Responsive and RTL
 
 - `layout="auto"` switches from vertical to horizontal items at a 600px viewport width. This breakpoint is a project decision, not an official Material breakpoint.
-- The bar scrolls horizontally instead of wrapping. Labels remain fully visible and can wrap at 2× zoom.
+- Horizontal items use a fixed 144px width; when they overflow, the bar scrolls horizontally and `safe center` keeps the start edge reachable.
+- `fitHorizontal` is a project extension for five-destination medium bars. It lets horizontal items shrink down to a 48px inline size and wrap their labels instead of forcing horizontal scrolling. Material's expressive navigation bar specifies fixed-width horizontal items, so leave this opt-in mode off when strict alignment matters.
+- Labels remain fully visible and can wrap at 2× zoom. The bar grows vertically instead of truncating labels.
 - Icons, labels, and badges mirror with the document direction; the component does not switch its layout from `dir`.
 
 ### State ownership
@@ -139,11 +141,12 @@ function guardNavigation(destination: { value: string }, event: MouseEvent) {
 
 ### `NavigationBar`
 
-| Prop         | Type                                   | Default  | Description                                                          |
-| ------------ | -------------------------------------- | -------- | -------------------------------------------------------------------- |
-| `label`      | `string`                               | Required | Accessible name of the navigation landmark.                          |
-| `layout`     | `'vertical' \| 'horizontal' \| 'auto'` | `'auto'` | Item arrangement. `auto` switches to horizontal at a 600px viewport. |
-| `modelValue` | `string` (`v-model`)                   | `''`     | `value` of the current destination.                                  |
+| Prop            | Type                                   | Default  | Description                                                                                                         |
+| --------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| `label`         | `string`                               | Required | Accessible name of the navigation landmark.                                                                         |
+| `layout`        | `'vertical' \| 'horizontal' \| 'auto'` | `'auto'` | Item arrangement. `auto` switches to horizontal at a 600px viewport.                                                |
+| `fitHorizontal` | `boolean`                              | `false`  | Let horizontal items shrink to 48px and wrap labels. Project extension; official horizontal items use fixed widths. |
+| `modelValue`    | `string` (`v-model`)                   | `''`     | `value` of the current destination.                                                                                 |
 
 ### `NavigationBarItem`
 

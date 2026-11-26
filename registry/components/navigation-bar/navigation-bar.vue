@@ -7,8 +7,9 @@ const props = withDefaults(
   defineProps<{
     label: string
     layout?: NavigationBarLayout
+    fitHorizontal?: boolean
   }>(),
-  { layout: 'auto' },
+  { layout: 'auto', fitHorizontal: false },
 )
 const modelValue = defineModel<string>({ default: '' })
 const emit = defineEmits<{
@@ -42,6 +43,7 @@ provide(navigationBarContextKey, { modelValue, activate })
 <template>
   <nav
     class="yam3x-navigation-bar"
+    :class="{ 'yam3x-navigation-bar--fit-horizontal': fitHorizontal }"
     :aria-label="label"
     :data-layout="props.layout"
   >
@@ -80,6 +82,8 @@ provide(navigationBarContextKey, { modelValue, activate })
   --_yam3x-navigation-bar-horizontal-indicator-height: 40px;
   --_yam3x-navigation-bar-horizontal-indicator-inset: 16px;
   --_yam3x-navigation-bar-horizontal-item-width: 144px;
+  --_yam3x-navigation-bar-horizontal-item-shrink: 0;
+  --_yam3x-navigation-bar-item-min-width: 0px;
   --_yam3x-navigation-bar-horizontal-item-inline-padding: 16px;
   --_yam3x-navigation-bar-icon-size: 24px;
 
@@ -100,6 +104,10 @@ provide(navigationBarContextKey, { modelValue, activate })
   width: 100%;
   background: var(--_yam3x-navigation-bar-container-color);
 }
+.yam3x-navigation-bar--fit-horizontal {
+  --_yam3x-navigation-bar-horizontal-item-shrink: 1;
+  --_yam3x-navigation-bar-item-min-width: 48px;
+}
 .yam3x-navigation-bar .yam3x-navigation-bar__item {
   position: relative;
   display: grid;
@@ -107,7 +115,8 @@ provide(navigationBarContextKey, { modelValue, activate })
   /* Keep the indicator and ripple anchored to the 32 dp indicator row, independent of label
      metrics. The measurement figure gives 6 + 32 + 4 + label + 6 for a 64 dp item. */
   grid-template-rows: var(--_yam3x-navigation-bar-compact-indicator-height) auto;
-  min-width: 0;
+  min-inline-size: var(--_yam3x-navigation-bar-item-min-width);
+  min-block-size: var(--md-sys-touch-target-size);
   flex: 1 1 0;
   align-content: center;
   justify-items: center;
@@ -275,15 +284,17 @@ provide(navigationBarContextKey, { modelValue, activate })
   outline-offset: -3px;
 }
 .yam3x-navigation-bar__label {
+  overflow-wrap: anywhere;
   text-align: center;
 }
 @media (min-width: 600px) {
   .yam3x-navigation-bar[data-layout='auto'] {
-    justify-content: center;
+    justify-content: safe center;
   }
   .yam3x-navigation-bar[data-layout='auto'] .yam3x-navigation-bar__item {
     display: flex;
-    flex: 0 0 var(--_yam3x-navigation-bar-horizontal-item-width);
+    flex: 0 var(--_yam3x-navigation-bar-horizontal-item-shrink)
+      var(--_yam3x-navigation-bar-horizontal-item-width);
     align-items: center;
     justify-content: center;
     gap: calc(
@@ -314,11 +325,12 @@ provide(navigationBarContextKey, { modelValue, activate })
   }
 }
 .yam3x-navigation-bar[data-layout='horizontal'] {
-  justify-content: center;
+  justify-content: safe center;
 }
 .yam3x-navigation-bar[data-layout='horizontal'] .yam3x-navigation-bar__item {
   display: flex;
-  flex: 0 0 var(--_yam3x-navigation-bar-horizontal-item-width);
+  flex: 0 var(--_yam3x-navigation-bar-horizontal-item-shrink)
+    var(--_yam3x-navigation-bar-horizontal-item-width);
   align-items: center;
   justify-content: center;
   gap: calc(
