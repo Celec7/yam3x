@@ -137,6 +137,8 @@ const items: NavigationRailItem[] = [
 - `v-model:expanded` 优先于 `mode`。未绑定该模型时，使用内置菜单会保存手动选择，此后断点变化不再自动展开或收起 rail。将绑定的模型设为 `undefined` 可把控制权交回 `mode`。
 - 当前值缺失或已禁用时，会回退到首个可用目的地，并同步更新模型。
 - `secondary` 目的地只在展开时出现，除非它正是当前目的地。
+- `children` 是目的地下方一层子页面的项目扩展。子项仅在展开时渲染，位于带名称的嵌套列表中。子项可以作为当前目的地；收起时父项显示当前状态，rail 关闭时焦点返回父项。
+- 子项值必须在整个项目树中唯一。不要在同一导航层同时使用 `children` 和 `secondary`；`secondary` 是隐藏的顶层目的地，`children` 表达父子页面层级。
 - 选择时依次发出可取消的 `beforeinput`、更新模型，然后发出 `input`、`change` 和 `navigate`。在 `beforeinput` 上调用 `preventDefault()` 可阻止更改。
 - 在模态 rail 中点击目的地会关闭模态。
 
@@ -150,6 +152,7 @@ const items: NavigationRailItem[] = [
 ### 展开与模态呈现
 
 - `presentation="standard"` 在布局内展开。`presentation="modal"` 在展开时增加遮罩和对话框语义。
+- `density="compact"` 是项目扩展，减少纵向间距：顶部 16 px、标题间距 8 px、收起行约 56 px、展开行 48 px。它不会缩窄 96/220 px 的 rail；用于纵向容纳更多目的地，而不是回收横向工作区。
 - 展开宽度上限为 360 px。目的地超出较短的 rail 时，导航列表滚动，菜单按钮和 FAB 保持可用。
 - 菜单按钮暴露 `aria-expanded` 并控制目的地区域。`menuLabel` 与 `closeLabel` 可覆盖内置名称。
 
@@ -169,43 +172,45 @@ const items: NavigationRailItem[] = [
 
 ### 导出
 
-| 导出                                       | 类型 | 用途                   |
-| ------------------------------------------ | ---- | ---------------------- |
-| `NavigationRail`                           | 组件 | 纵向顶层导航。         |
-| `NavigationRailItem`、`NavigationRailMode` | 类型 | 目的地结构与形态取值。 |
+| 导出                                                                                       | 类型 | 用途                                   |
+| ------------------------------------------------------------------------------------------ | ---- | -------------------------------------- |
+| `NavigationRail`                                                                           | 组件 | 纵向顶层导航。                         |
+| `NavigationRailItem`、`NavigationRailChild`、`NavigationRailMode`、`NavigationRailDensity` | 类型 | 目的地结构、子项结构、形态与密度取值。 |
 
 ### 属性与模型
 
-| 属性与模型                      | 类型                                  | 默认值                       | 用途                               |
-| ------------------------------- | ------------------------------------- | ---------------------------- | ---------------------------------- |
-| `items`                         | `NavigationRailItem[]`                | 必填                         | 按显示顺序排列的目的地。           |
-| `label`                         | `string`                              | 必填                         | 导航地标及模态对话框的无障碍名称。 |
-| `modelValue` / `v-model`        | `string`                              | `''`                         | 当前目的地值。                     |
-| `expanded` / `v-model:expanded` | `boolean \| undefined`                | `undefined`                  | 受控展开状态；优先于 `mode`。      |
-| `mode`                          | `'collapsed' \| 'expanded' \| 'auto'` | `'collapsed'`                | 初始展开策略。                     |
-| `presentation`                  | `'standard' \| 'modal'`               | `'standard'`                 | 布局内或模态展开。                 |
-| `hideWhenCollapsed`             | `boolean`                             | `false`                      | 收起时隐藏 rail；需要外部触发器。  |
-| `alignment`                     | `'top' \| 'center'`                   | `'top'`                      | 将目的地放在块轴起始或居中。       |
-| `divider`                       | `boolean`                             | `false`                      | 在内容侧绘制分隔线。               |
-| `showMenu`                      | `boolean`                             | `true`                       | 显示内置展开与收起按钮。           |
-| `menuLabel`                     | `string`                              | 本地化 `Expand navigation`   | 收起状态下菜单按钮的无障碍名称。   |
-| `closeLabel`                    | `string`                              | 本地化 `Collapse navigation` | 展开状态下菜单按钮的无障碍名称。   |
-| `locale`                        | `string`                              | Provider，再回退 `en-US`     | 内置界面文案的语言。               |
+| 属性与模型                      | 类型                                  | 默认值                       | 用途                                                                   |
+| ------------------------------- | ------------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| `items`                         | `NavigationRailItem[]`                | 必填                         | 按显示顺序排列的目的地。                                               |
+| `label`                         | `string`                              | 必填                         | 导航地标及模态对话框的无障碍名称。                                     |
+| `modelValue` / `v-model`        | `string`                              | `''`                         | 当前目的地值。                                                         |
+| `expanded` / `v-model:expanded` | `boolean \| undefined`                | `undefined`                  | 受控展开状态；优先于 `mode`。                                          |
+| `mode`                          | `'collapsed' \| 'expanded' \| 'auto'` | `'collapsed'`                | 初始展开策略。                                                         |
+| `presentation`                  | `'standard' \| 'modal'`               | `'standard'`                 | 布局内或模态展开。                                                     |
+| `hideWhenCollapsed`             | `boolean`                             | `false`                      | 收起时隐藏 rail；需要外部触发器。                                      |
+| `alignment`                     | `'top' \| 'center'`                   | `'top'`                      | 将目的地放在块轴起始或居中。                                           |
+| `density`                       | `'standard' \| 'compact'`             | `'standard'`                 | 纵向密度层级。紧凑模式减少顶部与标题间距并缩短行高；不改变 rail 宽度。 |
+| `divider`                       | `boolean`                             | `false`                      | 在内容侧绘制分隔线。                                                   |
+| `showMenu`                      | `boolean`                             | `true`                       | 显示内置展开与收起按钮。                                               |
+| `menuLabel`                     | `string`                              | 本地化 `Expand navigation`   | 收起状态下菜单按钮的无障碍名称。                                       |
+| `closeLabel`                    | `string`                              | 本地化 `Collapse navigation` | 展开状态下菜单按钮的无障碍名称。                                       |
+| `locale`                        | `string`                              | Provider，再回退 `en-US`     | 内置界面文案的语言。                                                   |
 
 ### 条目结构
 
-| 字段                        | 类型               | 用途                                         |
-| --------------------------- | ------------------ | -------------------------------------------- |
-| `value`                     | `string`           | 必填且唯一，供模型和事件使用。               |
-| `label`                     | `string`           | 必填，可见且可访问的目的地文字。             |
-| `href`                      | `string`           | 必填的链接目标。                             |
-| `ariaLabel`                 | `string`           | 可见标签含糊时覆盖无障碍名称。               |
-| `disabled`                  | `boolean`          | 阻止激活，并将链接移出 Tab 顺序。            |
-| `disabledInteractive`       | `boolean`          | 让禁用目的地保持可聚焦，便于发现。           |
-| `secondary`                 | `boolean`          | 只在展开时显示，除非它是当前目的地。         |
-| `badge`                     | `string \| number` | 尾部徽章文字；超过四个字符会缩写。           |
-| `badgeLabel`                | `string`           | 由 `aria-describedby` 引用的屏幕阅读器说明。 |
-| `target`、`rel`、`download` | 原生锚点值         | 链接启用时转发给锚点。                       |
+| 字段                        | 类型                    | 用途                                                 |
+| --------------------------- | ----------------------- | ---------------------------------------------------- |
+| `value`                     | `string`                | 必填且唯一，供模型和事件使用。                       |
+| `label`                     | `string`                | 必填，可见且可访问的目的地文字。                     |
+| `href`                      | `string`                | 必填的链接目标。                                     |
+| `ariaLabel`                 | `string`                | 可见标签含糊时覆盖无障碍名称。                       |
+| `disabled`                  | `boolean`               | 阻止激活，并将链接移出 Tab 顺序。                    |
+| `disabledInteractive`       | `boolean`               | 让禁用目的地保持可聚焦，便于发现。                   |
+| `secondary`                 | `boolean`               | 只在展开时显示，除非它是当前目的地。                 |
+| `children`                  | `NavigationRailChild[]` | 展开时渲染的一层子目的地。子项值必须在整棵树中唯一。 |
+| `badge`                     | `string \| number`      | 尾部徽章文字；超过四个字符会缩写。                   |
+| `badgeLabel`                | `string`                | 由 `aria-describedby` 引用的屏幕阅读器说明。         |
+| `target`、`rel`、`download` | 原生锚点值              | 链接启用时转发给锚点。                               |
 
 ### 事件
 

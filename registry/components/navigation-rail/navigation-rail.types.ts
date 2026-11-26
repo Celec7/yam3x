@@ -1,4 +1,5 @@
 export type NavigationRailMode = 'collapsed' | 'expanded' | 'auto'
+export type NavigationRailDensity = 'standard' | 'compact'
 
 export interface NavigationRailItem {
   value: string
@@ -13,4 +14,7 @@ export interface NavigationRailItem {
   target?: string
   rel?: string
   download?: boolean | string
+  children?: readonly NavigationRailChild[]
 }
+
+export type NavigationRailChild = Omit<NavigationRailItem, 'children'>

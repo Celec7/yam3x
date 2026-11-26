@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Button } from '@registry/components/button'
 import { Checkbox } from '@registry/components/checkbox'
 import { Select } from '@registry/components/select'
 import { Option } from '@registry/components/option'
 import {
   NavigationRail,
+  type NavigationRailDensity,
   type NavigationRailItem,
   type NavigationRailMode,
 } from '@registry/components/navigation-rail'
@@ -20,6 +21,7 @@ function localHref(path: string): string {
 }
 
 const mode = ref<NavigationRailMode>('collapsed')
+const density = ref<NavigationRailDensity>('standard')
 const expanded = ref<boolean | undefined>(undefined)
 const presentation = ref<'standard' | 'modal'>('standard')
 const alignment = ref<'top' | 'center'>('top')
@@ -28,7 +30,19 @@ const rtl = ref(false)
 const selected = ref('home')
 const events = ref<string[]>([])
 const items: NavigationRailItem[] = [
-  { value: 'home', label: t('Home', '首页'), href: localHref('/') },
+  {
+    value: 'home',
+    label: t('Home', '首页'),
+    href: localHref('/'),
+    children: [
+      { value: 'home-overview', label: t('Overview', '概览'), href: localHref('/') },
+      {
+        value: 'home-activity',
+        label: t('Activity', '活动'),
+        href: localHref('/components/'),
+      },
+    ],
+  },
   {
     value: 'search',
     label: t('Search', '搜索'),
@@ -57,6 +71,12 @@ const iconNames: Record<string, string> = {
   downloads: 'download',
   settings: 'settings',
 }
+const selectedLabel = computed(
+  () =>
+    items.find((item) => item.value === selected.value)?.label ??
+    items.flatMap((item) => item.children ?? []).find((child) => child.value === selected.value)
+      ?.label,
+)
 watch(mode, () => {
   expanded.value = undefined
 })
@@ -91,6 +111,17 @@ function log(type: string) {
             :label="t('Standard', '标准')" /><Option
             value="modal"
             :label="t('Modal', '模态')" /></Select
+      ></label>
+      <label
+        >{{ t('Density', '密度') }}
+        <Select
+          v-model="density"
+          :aria-label="t('Navigation rail density', '导航栏轨密度')"
+          ><Option
+            value="standard"
+            :label="t('Standard', '标准')" /><Option
+            value="compact"
+            :label="t('Compact', '紧凑')" /></Select
       ></label>
       <label
         >{{ t('Destination alignment', '目的地位置') }}
@@ -133,6 +164,7 @@ function log(type: string) {
         :label="t('Main navigation', '主导航')"
         :items="items"
         :mode="mode"
+        :density="density"
         :presentation="presentation"
         :alignment="alignment"
         :hide-when-collapsed="hideWhenCollapsed"
@@ -159,10 +191,7 @@ function log(type: string) {
         >
       </NavigationRail>
       <div class="rail-demo__content">
-        <strong
-          >{{ t('Current page:', '当前页面：') }}
-          {{ items.find((item) => item.value === selected)?.label }}</strong
-        >
+        <strong>{{ t('Current page:', '当前页面：') }} {{ selectedLabel }}</strong>
         <p>
           {{
             t(

@@ -131,6 +131,8 @@ With `hide-when-collapsed`, the rail is hidden until the external trigger sets `
 - `v-model:expanded` takes precedence over `mode`. Without a bound value, using the built-in menu stores a manual choice, so a later breakpoint change no longer expands or collapses the rail. Set the bound model to `undefined` to return control to `mode`.
 - A missing or disabled current value falls back to the first enabled destination, and the model is updated to match.
 - `secondary` destinations appear only while expanded, unless one of them is current.
+- `children` is a one-level project extension for child pages under a destination. Children render only while the rail is expanded, in a named nested list. A child may be the current destination; while collapsed, the parent shows the current state and focus returns to the parent when the rail closes.
+- Child values must be unique across the whole item tree. Do not combine `children` with `secondary` on the same navigation layer; `secondary` is a hidden top-level destination, while `children` express a parent-child page hierarchy.
 - Selection emits cancellable `beforeinput`, updates the model, then emits `input`, `change`, and `navigate` in that order. Call `preventDefault()` on `beforeinput` to block the change.
 - Clicking a destination inside a modal rail closes the modal.
 
@@ -144,6 +146,7 @@ With `hide-when-collapsed`, the rail is hidden until the external trigger sets `
 ### Expansion and modal presentation
 
 - `presentation="standard"` expands within the layout. `presentation="modal"` adds a scrim and dialog semantics while expanded.
+- `density="compact"` is a project extension that reduces vertical spacing: a 16 px top inset, an 8 px header gap, a roughly 56 px collapsed row, and a 48 px expanded row. It does not narrow the 96/220 px rail; use it to fit more destinations vertically, not to reclaim horizontal workspace.
 - Expanded width is capped at 360 px. When the destinations overflow a short rail, the navigation list scrolls while the menu button and FAB stay available.
 - The menu button exposes `aria-expanded` and controls the destination region. `menuLabel` and `closeLabel` override the built-in names.
 
@@ -163,43 +166,45 @@ Built-in text can inherit [LocaleProvider](/components/localization)'s `actions`
 
 ### Exports
 
-| Export                                     | Kind      | Use                                 |
-| ------------------------------------------ | --------- | ----------------------------------- |
-| `NavigationRail`                           | Component | Vertical top-level navigation.      |
-| `NavigationRailItem`, `NavigationRailMode` | Type      | Destination schema and mode values. |
+| Export                                                                                     | Kind      | Use                                                         |
+| ------------------------------------------------------------------------------------------ | --------- | ----------------------------------------------------------- |
+| `NavigationRail`                                                                           | Component | Vertical top-level navigation.                              |
+| `NavigationRailItem`, `NavigationRailChild`, `NavigationRailMode`, `NavigationRailDensity` | Type      | Destination schema, child schema, mode, and density values. |
 
 ### Props and models
 
-| Prop and model                  | Type                                  | Default                         | Use                                                           |
-| ------------------------------- | ------------------------------------- | ------------------------------- | ------------------------------------------------------------- |
-| `items`                         | `NavigationRailItem[]`                | Required                        | Destinations in display order.                                |
-| `label`                         | `string`                              | Required                        | Accessible name of the navigation landmark and modal dialog.  |
-| `modelValue` / `v-model`        | `string`                              | `''`                            | Current destination value.                                    |
-| `expanded` / `v-model:expanded` | `boolean \| undefined`                | `undefined`                     | Controlled expansion; takes precedence over `mode`.           |
-| `mode`                          | `'collapsed' \| 'expanded' \| 'auto'` | `'collapsed'`                   | Initial expansion policy.                                     |
-| `presentation`                  | `'standard' \| 'modal'`               | `'standard'`                    | In-layout or modal expansion.                                 |
-| `hideWhenCollapsed`             | `boolean`                             | `false`                         | Hides the rail while collapsed; requires an external trigger. |
-| `alignment`                     | `'top' \| 'center'`                   | `'top'`                         | Places destinations at the block start or center.             |
-| `divider`                       | `boolean`                             | `false`                         | Draws a divider on the content side.                          |
-| `showMenu`                      | `boolean`                             | `true`                          | Shows the built-in expand and collapse button.                |
-| `menuLabel`                     | `string`                              | Localized `Expand navigation`   | Accessible name of the collapsed menu button.                 |
-| `closeLabel`                    | `string`                              | Localized `Collapse navigation` | Accessible name of the expanded menu button.                  |
-| `locale`                        | `string`                              | Provider, then `en-US`          | Language of built-in interface text.                          |
+| Prop and model                  | Type                                  | Default                         | Use                                                                                                             |
+| ------------------------------- | ------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `items`                         | `NavigationRailItem[]`                | Required                        | Destinations in display order.                                                                                  |
+| `label`                         | `string`                              | Required                        | Accessible name of the navigation landmark and modal dialog.                                                    |
+| `modelValue` / `v-model`        | `string`                              | `''`                            | Current destination value.                                                                                      |
+| `expanded` / `v-model:expanded` | `boolean \| undefined`                | `undefined`                     | Controlled expansion; takes precedence over `mode`.                                                             |
+| `mode`                          | `'collapsed' \| 'expanded' \| 'auto'` | `'collapsed'`                   | Initial expansion policy.                                                                                       |
+| `presentation`                  | `'standard' \| 'modal'`               | `'standard'`                    | In-layout or modal expansion.                                                                                   |
+| `hideWhenCollapsed`             | `boolean`                             | `false`                         | Hides the rail while collapsed; requires an external trigger.                                                   |
+| `alignment`                     | `'top' \| 'center'`                   | `'top'`                         | Places destinations at the block start or center.                                                               |
+| `density`                       | `'standard' \| 'compact'`             | `'standard'`                    | Vertical density tier. Compact reduces top and header spacing and shortens rows; it does not change rail width. |
+| `divider`                       | `boolean`                             | `false`                         | Draws a divider on the content side.                                                                            |
+| `showMenu`                      | `boolean`                             | `true`                          | Shows the built-in expand and collapse button.                                                                  |
+| `menuLabel`                     | `string`                              | Localized `Expand navigation`   | Accessible name of the collapsed menu button.                                                                   |
+| `closeLabel`                    | `string`                              | Localized `Collapse navigation` | Accessible name of the expanded menu button.                                                                    |
+| `locale`                        | `string`                              | Provider, then `en-US`          | Language of built-in interface text.                                                                            |
 
 ### Item schema
 
-| Field                       | Type                 | Use                                                                      |
-| --------------------------- | -------------------- | ------------------------------------------------------------------------ |
-| `value`                     | `string`             | Required unique destination value used by the model and events.          |
-| `label`                     | `string`             | Required visible and accessible destination text.                        |
-| `href`                      | `string`             | Required link target.                                                    |
-| `ariaLabel`                 | `string`             | Overrides the accessible name when the visible label is ambiguous.       |
-| `disabled`                  | `boolean`            | Blocks activation and removes the link from Tab order.                   |
-| `disabledInteractive`       | `boolean`            | Keeps a disabled destination focusable for discovery.                    |
-| `secondary`                 | `boolean`            | Shows the destination only while expanded, unless it is current.         |
-| `badge`                     | `string \| number`   | Trailing badge text; values longer than four characters are abbreviated. |
-| `badgeLabel`                | `string`             | Screen-reader description referenced by `aria-describedby`.              |
-| `target`, `rel`, `download` | Native anchor values | Forwarded to the link when it is enabled.                                |
+| Field                       | Type                    | Use                                                                                                   |
+| --------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `value`                     | `string`                | Required unique destination value used by the model and events.                                       |
+| `label`                     | `string`                | Required visible and accessible destination text.                                                     |
+| `href`                      | `string`                | Required link target.                                                                                 |
+| `ariaLabel`                 | `string`                | Overrides the accessible name when the visible label is ambiguous.                                    |
+| `disabled`                  | `boolean`               | Blocks activation and removes the link from Tab order.                                                |
+| `disabledInteractive`       | `boolean`               | Keeps a disabled destination focusable for discovery.                                                 |
+| `secondary`                 | `boolean`               | Shows the destination only while expanded, unless it is current.                                      |
+| `children`                  | `NavigationRailChild[]` | One level of child destinations rendered while expanded. Child values must be unique across the tree. |
+| `badge`                     | `string \| number`      | Trailing badge text; values longer than four characters are abbreviated.                              |
+| `badgeLabel`                | `string`                | Screen-reader description referenced by `aria-describedby`.                                           |
+| `target`, `rel`, `download` | Native anchor values    | Forwarded to the link when it is enabled.                                                             |
 
 ### Events
 

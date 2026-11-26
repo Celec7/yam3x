@@ -80,11 +80,6 @@ test('menu expansion reveals secondary destinations and makes the whole row targ
     return first.top - fab.bottom
   })
   expect(headerGap).toBeCloseTo(40, 0)
-  expect(
-    await rail
-      .locator('.yam3x-navigation-rail__nav')
-      .evaluate((element) => element.scrollHeight <= element.clientHeight),
-  ).toBe(true)
   const search = rail.getByRole('link', { name: 'Search' })
   const geometry = await search.evaluate((element) => {
     const hit = element.getBoundingClientRect()
@@ -438,4 +433,71 @@ test('component colors follow the official expressive rail roles and geometry', 
   expect(expanded.leadingInset).toBe(16)
   expect(expanded.gap).toBe('8px')
   expect(expanded.indicatorHeight).toBe(56)
+})
+
+test('compact density tightens vertical spacing without changing rail width', async ({ page }) => {
+  const rail = page.getByTestId('navigation-rail')
+  const surface = rail.locator('.yam3x-navigation-rail__surface')
+  const home = rail.getByRole('link', { name: 'Home' })
+  const standardHeight = (await home.boundingBox())!.height
+  await expect(rail).toHaveCSS('width', '96px')
+  await expect(surface).toHaveCSS('padding-top', '44px')
+
+  await selectM3Option(
+    page,
+    page.getByRole('combobox', { name: 'Navigation rail density' }),
+    'compact',
+  )
+  await expect(rail).toHaveCSS('width', '96px')
+  await expect(surface).toHaveCSS('padding-top', '16px')
+  const compactHeight = (await home.boundingBox())!.height
+  expect(compactHeight).toBeLessThan(standardHeight)
+  expect(compactHeight).toBeGreaterThanOrEqual(48)
+
+  await page.evaluate(() =>
+    document.documentElement.style.setProperty('--md-sys-density-spacing-scale', '0.75'),
+  )
+  await expect(surface).toHaveCSS('padding-top', '12px')
+
+  await selectM3Option(
+    page,
+    page.getByRole('combobox', { name: 'Navigation rail mode' }),
+    'expanded',
+  )
+  await expect(rail).toHaveCSS('width', '220px')
+  const expandedHeight = (await home.boundingBox())!.height
+  expect(expandedHeight).toBeGreaterThanOrEqual(48)
+  expect(expandedHeight).toBeLessThanOrEqual(49)
+})
+
+test('expanded rail exposes named child pages and maps child selection to its parent', async ({
+  page,
+}) => {
+  const rail = page.getByTestId('navigation-rail')
+  await rail.getByRole('button', { name: 'Expand navigation' }).click()
+  const childList = rail.getByRole('list', { name: 'Home' })
+  await expect(childList).toBeVisible()
+  const home = rail.getByRole('link', { name: 'Home' })
+  const overview = childList.getByRole('link', { name: 'Overview' })
+  const activity = childList.getByRole('link', { name: 'Activity' })
+
+  await home.focus()
+  await page.keyboard.press('ArrowDown')
+  await expect(overview).toBeFocused()
+  await page.keyboard.press('ArrowDown')
+  await expect(activity).toBeFocused()
+  await page.keyboard.press('Space')
+  await expect(activity).toHaveAttribute('aria-current', 'page')
+  await expect(home).not.toHaveAttribute('aria-current')
+
+  await rail.getByRole('button', { name: 'Collapse navigation' }).click()
+  await expect(childList).toHaveCount(0)
+  await expect(home).toHaveAttribute('aria-current', 'page')
+
+  await rail.getByRole('button', { name: 'Expand navigation' }).click()
+  await expect(activity).toHaveAttribute('aria-current', 'page')
+  await expect(childList).toHaveAttribute(
+    'aria-labelledby',
+    (await home.locator('.yam3x-navigation-rail__label').getAttribute('id')) ?? '',
+  )
 })

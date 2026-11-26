@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { useComponentLocale } from '../localization/context'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
-import { vRipple } from '../_shared/ripple'
 import {
   acquireOverlayLayer,
   setOverlayLayerProperty,
   type OverlayLayer,
 } from '../_shared/overlay-layer'
 import Icon from '../icon/icon.vue'
-import type { NavigationRailItem, NavigationRailMode } from './navigation-rail.types'
+import NavigationRailLink from './navigation-rail-link.vue'
+import type {
+  NavigationRailDensity,
+  NavigationRailItem,
+  NavigationRailMode,
+} from './navigation-rail.types'
 
 const props = withDefaults(
   defineProps<{
@@ -19,6 +23,7 @@ const props = withDefaults(
     presentation?: 'standard' | 'modal'
     hideWhenCollapsed?: boolean
     alignment?: 'top' | 'center'
+    density?: NavigationRailDensity
     divider?: boolean
     showMenu?: boolean
     menuLabel?: string
@@ -29,6 +34,7 @@ const props = withDefaults(
     presentation: 'standard',
     hideWhenCollapsed: false,
     alignment: 'top',
+    density: 'standard',
     divider: false,
     showMenu: true,
     menuLabel: undefined,
@@ -60,12 +66,16 @@ const { messages: actionMessages } = useComponentLocale(
 const root = ref<HTMLElement | null>(null)
 const surface = ref<HTMLElement | null>(null)
 const menuButton = ref<HTMLButtonElement | null>(null)
-const links = ref<HTMLAnchorElement[]>([])
 const wide = ref(false)
 const ready = ref(false)
 const id = useId()
 const resolvedExpanded = computed(
   () => expandedModel.value ?? (props.mode === 'expanded' || (props.mode === 'auto' && wide.value)),
+)
+const menuActionLabel = computed(() =>
+  resolvedExpanded.value
+    ? actionMessages.value.collapseNavigation
+    : actionMessages.value.expandNavigation,
 )
 const modalOpen = computed(() => resolvedExpanded.value && props.presentation === 'modal')
 const layerZ = ref<number>()
@@ -88,16 +98,33 @@ watch(
 watch([layerZ, root], () => {
   setOverlayLayerProperty(root.value, '--_yam3x-navigation-rail-layer-z', layerZ.value)
 })
+const childEntries = computed(() =>
+  props.items.flatMap((parent) => (parent.children ?? []).map((item) => ({ item, parent }))),
+)
 const visibleItems = computed(() =>
   props.items.filter(
-    (item) => resolvedExpanded.value || !item.secondary || item.value === model.value,
+    (item) =>
+      resolvedExpanded.value ||
+      !item.secondary ||
+      item.value === model.value ||
+      item.children?.some((child) => child.value === model.value),
   ),
 )
-const selectedValue = computed(
-  () =>
-    props.items.find((item) => item.value === model.value && !item.disabled)?.value ??
-    props.items.find((item) => !item.disabled)?.value,
-)
+const currentEntry = computed(() => {
+  const top = props.items.find((item) => item.value === model.value && !item.disabled)
+  if (top) return { item: top, parent: null as NavigationRailItem | null }
+  return (
+    childEntries.value.find((entry) => entry.item.value === model.value && !entry.item.disabled) ??
+    null
+  )
+})
+const fallbackItem = computed(() => props.items.find((item) => !item.disabled) ?? null)
+const selectedValue = computed(() => {
+  const entry = currentEntry.value
+  if (!entry) return fallbackItem.value?.value
+  if (entry.parent && !resolvedExpanded.value) return entry.parent.value
+  return entry.item.value
+})
 let media: MediaQueryList | null = null
 let opener: HTMLElement | null = null
 let oldOverflow: string | null = null
@@ -105,12 +132,10 @@ let oldOverflow: string | null = null
 function isDisabled(item: NavigationRailItem) {
   return !!(item.disabled || item.disabledInteractive)
 }
-function badgeText(value: string | number) {
-  const text = `${value}`
-  return text.length <= 4 ? text : /^\d+$/.test(text) ? '999+' : `${text.slice(0, 3)}+`
-}
-function setLink(element: unknown, index: number) {
-  if (element) links.value[index] = element as HTMLAnchorElement
+function navigationLinks() {
+  return Array.from(
+    root.value?.querySelectorAll<HTMLAnchorElement>('.yam3x-navigation-rail__item') ?? [],
+  )
 }
 function selectionEvent(type: 'input' | 'change', item: NavigationRailItem, target: EventTarget) {
   const event = new Event(type, { bubbles: true })
@@ -148,28 +173,27 @@ function activate(item: NavigationRailItem, event: MouseEvent) {
   emit('navigate', item, event)
   if (modalOpen.value) close()
 }
-function onItemKeydown(event: KeyboardEvent, index: number) {
+function onItemKeydown(event: KeyboardEvent) {
   if (event.key === ' ' && !event.repeat) {
     event.preventDefault()
     ;(event.currentTarget as HTMLElement).dataset.m3SpacePressed = 'true'
     return
   }
-  const enabled = visibleItems.value
-    .map((item, i) => (item.disabled ? -1 : i))
-    .filter((i) => i >= 0)
-  if (!enabled.length) return
   const forward = event.key === 'ArrowDown'
   const backward = event.key === 'ArrowUp'
   if (!forward && !backward && event.key !== 'Home' && event.key !== 'End') return
+  const enabled = navigationLinks().filter((link) => link.tabIndex >= 0)
+  if (!enabled.length) return
+  const position = enabled.indexOf(event.currentTarget as HTMLAnchorElement)
+  if (position < 0) return
   event.preventDefault()
-  const position = enabled.indexOf(index)
   const next =
     event.key === 'Home'
       ? enabled[0]
       : event.key === 'End'
         ? enabled[enabled.length - 1]
         : enabled[(position + (forward ? 1 : -1) + enabled.length) % enabled.length]
-  links.value[next]?.focus()
+  next?.focus()
 }
 function onItemKeyup(item: NavigationRailItem, event: KeyboardEvent) {
   if (event.key !== ' ') return
@@ -225,7 +249,7 @@ function focusFirstInteractive() {
   const fabControl = root.value?.querySelector<HTMLElement>(
     '.yam3x-navigation-rail__fab button:not([disabled]), .yam3x-navigation-rail__fab a[href], .yam3x-navigation-rail__fab [tabindex]:not([tabindex="-1"])',
   )
-  const target = menuButton.value ?? fabControl ?? links.value[0] ?? surface.value
+  const target = menuButton.value ?? fabControl ?? navigationLinks()[0] ?? surface.value
   target?.focus()
 }
 onMounted(() => {
@@ -244,12 +268,25 @@ onBeforeUnmount(() => {
   if (oldOverflow !== null) document.body.style.overflow = oldOverflow
 })
 watch(
-  selectedValue,
-  (value) => {
-    if (value !== undefined && model.value !== value) model.value = value
+  [currentEntry, fallbackItem],
+  ([entry, fallback]) => {
+    if (entry || !fallback) return
+    if (model.value !== fallback.value) model.value = fallback.value
   },
   { immediate: true },
 )
+watch(resolvedExpanded, async (expanded, wasExpanded) => {
+  if (expanded || !wasExpanded || props.presentation === 'modal') return
+  const active = document.activeElement
+  if (!(active instanceof HTMLElement)) return
+  const childLink = active.closest<HTMLElement>('.yam3x-navigation-rail__item--child')
+  const parentValue = childLink?.dataset.parentValue
+  if (!parentValue) return
+  await nextTick()
+  navigationLinks()
+    .find((link) => link.dataset.value === parentValue)
+    ?.focus()
+})
 watch(
   modalOpen,
   (value) => {
@@ -281,6 +318,7 @@ watch(
       'yam3x-navigation-rail--ready': ready,
       'yam3x-navigation-rail--divider': divider,
       'yam3x-navigation-rail--center': alignment === 'center',
+      'yam3x-navigation-rail--compact': density === 'compact',
     }"
     @keydown="onModalKeydown"
   >
@@ -306,9 +344,8 @@ watch(
           class="yam3x-navigation-rail__menu"
           :aria-expanded="resolvedExpanded"
           :aria-controls="`${id}-destinations`"
-          :aria-label="
-            resolvedExpanded ? actionMessages.collapseNavigation : actionMessages.expandNavigation
-          "
+          :aria-label="menuActionLabel"
+          :title="menuActionLabel"
           @click="toggle"
         >
           <slot
@@ -340,68 +377,83 @@ watch(
         <div
           :id="`${id}-destinations`"
           class="yam3x-navigation-rail__destinations"
+          role="list"
         >
-          <a
+          <div
             v-for="(item, index) in visibleItems"
             :key="item.value"
-            :ref="(element) => setLink(element, index)"
-            v-ripple
-            class="yam3x-navigation-rail__item"
-            data-yam3x-ripple
-            data-yam3x-ripple-target=".yam3x-navigation-rail__indicator"
-            data-yam3x-ripple-container-target=".yam3x-navigation-rail__indicator"
-            :href="isDisabled(item) ? undefined : item.href"
-            :target="isDisabled(item) ? undefined : item.target"
-            :rel="isDisabled(item) ? undefined : item.rel"
-            :download="isDisabled(item) ? undefined : item.download"
-            :role="isDisabled(item) ? 'link' : undefined"
-            :aria-current="selectedValue === item.value ? 'page' : undefined"
-            :aria-disabled="isDisabled(item) || undefined"
-            :aria-label="item.ariaLabel"
-            :aria-describedby="item.badgeLabel ? `${id}-badge-${index}` : undefined"
-            :tabindex="item.disabledInteractive ? 0 : item.disabled ? -1 : undefined"
-            @click="activate(item, $event)"
-            @keydown="onItemKeydown($event, index)"
-            @keyup="onItemKeyup(item, $event)"
-            @blur="delete ($event.currentTarget as HTMLElement).dataset.m3SpacePressed"
+            role="listitem"
           >
-            <span class="yam3x-navigation-rail__content">
-              <span
-                class="yam3x-navigation-rail__indicator"
-                aria-hidden="true"
-              />
-              <span
-                class="yam3x-navigation-rail__icon"
-                aria-hidden="true"
-                ><slot
+            <NavigationRailLink
+              :item="item"
+              :current="selectedValue === item.value"
+              :label-id="`${id}-label-${index}`"
+              :badge-id="`${id}-badge-${index}`"
+              @click="activate(item, $event)"
+              @keydown="onItemKeydown"
+              @keyup="onItemKeyup(item, $event)"
+            >
+              <template #icon>
+                <slot
                   v-if="selectedValue === item.value && slots['selected-icon']"
                   name="selected-icon"
-                  :item="item" /><slot
+                  :item="item"
+                />
+                <slot
                   v-else
                   name="icon"
                   :item="item"
                   :selected="selectedValue === item.value"
-              /></span>
-              <span class="yam3x-navigation-rail__label">{{ item.label }}</span>
-              <span
-                v-if="item.badge !== undefined || slots.badge"
-                class="yam3x-navigation-rail__badge"
-                aria-hidden="true"
-                ><slot
+                />
+              </template>
+              <template
+                v-if="slots.badge"
+                #badge="{ text }"
+              >
+                <slot
                   name="badge"
                   :item="item"
                   :selected="selectedValue === item.value"
-                  >{{ item.badge === undefined ? '' : badgeText(item.badge) }}</slot
-                ></span
-              >
-            </span>
-            <span
-              v-if="item.badgeLabel"
-              :id="`${id}-badge-${index}`"
-              class="yam3x-navigation-rail__sr-only"
-              >{{ item.badgeLabel }}</span
+                  >{{ text }}</slot
+                >
+              </template>
+            </NavigationRailLink>
+            <div
+              v-if="resolvedExpanded && item.children?.length"
+              class="yam3x-navigation-rail__children"
+              role="list"
+              :aria-labelledby="`${id}-label-${index}`"
             >
-          </a>
+              <div
+                v-for="(child, childIndex) in item.children"
+                :key="child.value"
+                role="listitem"
+              >
+                <NavigationRailLink
+                  :item="child"
+                  :current="selectedValue === child.value"
+                  :badge-id="`${id}-badge-${index}-${childIndex}`"
+                  :parent-value="item.value"
+                  child
+                  @click="activate(child, $event)"
+                  @keydown="onItemKeydown"
+                  @keyup="onItemKeyup(child, $event)"
+                >
+                  <template
+                    v-if="slots.badge"
+                    #badge="{ text }"
+                  >
+                    <slot
+                      name="badge"
+                      :item="child"
+                      :selected="selectedValue === child.value"
+                      >{{ text }}</slot
+                    >
+                  </template>
+                </NavigationRailLink>
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
     </div>
@@ -500,6 +552,14 @@ watch(
 .yam3x-navigation-rail[hidden] {
   display: none;
 }
+.yam3x-navigation-rail--compact {
+  --_yam3x-navigation-rail-top-space: 16px;
+  --_yam3x-navigation-rail-header-item-space: 8px;
+  --_yam3x-navigation-rail-item-height-collapsed: 56px;
+  --_yam3x-navigation-rail-item-height-expanded: 48px;
+  --_yam3x-navigation-rail-item-padding-top: 2px;
+  --_yam3x-navigation-rail-item-padding-bottom: 1px;
+}
 .yam3x-navigation-rail--expanded {
   inline-size: var(--_yam3x-navigation-rail-width-expanded);
   max-inline-size: var(--_yam3x-navigation-rail-width-expanded-max);
@@ -575,6 +635,9 @@ watch(
   block-size: 24px;
   font-size: 24px;
 }
+:dir(rtl) .yam3x-navigation-rail--expanded .yam3x-navigation-rail__menu .yam3x-icon {
+  transform: scaleX(-1);
+}
 .yam3x-navigation-rail__fab {
   max-inline-size: 100%;
 }
@@ -596,6 +659,12 @@ watch(
   margin-block-start: calc(
     var(--_yam3x-navigation-rail-header-item-space) * var(--_yam3x-navigation-rail-density-spacing)
   );
+}
+.yam3x-navigation-rail__destinations,
+.yam3x-navigation-rail__children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .yam3x-navigation-rail__destinations {
   display: flex;
@@ -690,14 +759,12 @@ watch(
   background: var(--_yam3x-navigation-rail-color-state-inactive);
   opacity: 0;
 }
-.yam3x-navigation-rail__item:not([aria-disabled='true']):is(
-    :hover,
-    :focus-visible,
-    :active,
-    [data-yam3x-pressed]
-  )
+.yam3x-navigation-rail__item:where(:not(.yam3x-navigation-rail__item--child)):not(
+    [aria-disabled='true']
+  ):is(:hover, :focus-visible, :active, [data-yam3x-pressed])
   .yam3x-navigation-rail__indicator,
-.yam3x-navigation-rail__item[aria-current='page'] .yam3x-navigation-rail__indicator {
+.yam3x-navigation-rail__item:where(:not(.yam3x-navigation-rail__item--child))[aria-current='page']
+  .yam3x-navigation-rail__indicator {
   opacity: 1;
   clip-path: inset(0 0 0 0 round var(--_yam3x-navigation-rail-shape-indicator));
 }
@@ -871,6 +938,49 @@ watch(
   position: relative;
   inset: auto;
   flex: none;
+}
+.yam3x-navigation-rail__children {
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: calc(
+    (
+        2 * var(--_yam3x-navigation-rail-item-inset-horizontal) +
+          var(--_yam3x-navigation-rail-item-icon-label-space-horizontal)
+      ) *
+      var(--_yam3x-navigation-rail-density-spacing) + var(--_yam3x-navigation-rail-icon-size) - 4px
+  );
+  margin-block-end: calc(8px * var(--_yam3x-navigation-rail-density-spacing));
+  padding-inline-start: calc(4px * var(--_yam3x-navigation-rail-density-spacing));
+  border-inline-start: 1px solid var(--_yam3x-navigation-rail-color-divider);
+}
+.yam3x-navigation-rail__item--child {
+  --_yam3x-navigation-rail-shape-indicator: var(--md-sys-shape-corner-small, 8px);
+}
+.yam3x-navigation-rail--expanded
+  .yam3x-navigation-rail__item--child
+  .yam3x-navigation-rail__content {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  margin-inline: 0;
+  padding-inline: calc(12px * var(--_yam3x-navigation-rail-density-spacing))
+    calc(8px * var(--_yam3x-navigation-rail-density-spacing));
+  padding-block: calc(8px * var(--_yam3x-navigation-rail-density-spacing));
+}
+.yam3x-navigation-rail--expanded
+  .yam3x-navigation-rail__item--child
+  .yam3x-navigation-rail__indicator {
+  inset-block: calc(4px * var(--_yam3x-navigation-rail-density-spacing));
+  min-block-size: 0;
+  opacity: 1;
+  clip-path: inset(0 round var(--_yam3x-navigation-rail-shape-indicator));
+  transition: none;
+}
+.yam3x-navigation-rail__item--child:not([aria-current='page']) .yam3x-navigation-rail__indicator {
+  background: transparent;
+}
+.yam3x-navigation-rail__item--child .yam3x-navigation-rail__indicator::before {
+  transition: opacity var(--_yam3x-navigation-rail-motion-fast-effects);
 }
 .yam3x-navigation-rail__indicator .yam3x-ripple-container {
   z-index: 1;
