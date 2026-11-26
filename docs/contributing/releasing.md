@@ -32,6 +32,8 @@ The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generate
 
 6. When registry source or lock behavior changes, review the source states and release notes as a consumer. Include the affected copied source in the changelog and link the [update guide](../../apps/docs/guide/maintain/updating.md). If `yam3x.lock.json` or an adopt baseline changes, describe the migration and add a versioned migration page when readers cannot infer the steps from `diff`. Regenerate the 0.6.0 baseline only from the `v0.6.0` tag; adding another supported adopt baseline is a separate release decision.
 
+   Every release section must contain a `### Upgrade` heading. A section with `### Breaking changes` must link `/guide/maintain/migrations/<version>` and add both `apps/docs/guide/maintain/migrations/<version>.md` and its Chinese mirror. `pnpm test:release` enforces both rules before the publish workflow can run.
+
 ## First publish
 
 The npm trusted publisher is configured in the settings for an existing package, so the first version must be published manually. After the package name is final and the checks pass, authenticate with npm and publish from `packages/cli`:

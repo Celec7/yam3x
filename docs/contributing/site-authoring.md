@@ -138,6 +138,28 @@ The site keeps lifecycle tasks, maintenance, and design foundations separate:
 
 Version-specific migration steps belong under `/guide/maintain/migrations/` only when a release needs actions that `diff` and the update guide cannot infer. Migration pages are versioned procedures; they link to component pages and the update guide instead of restating current API.
 
+Use this structure for a versioned migration page:
+
+```md
+# Upgrade to <version>
+
+Applies to: <from> → <to>
+
+## Before
+
+## Breaking changes
+
+## Source changes
+
+## Manual steps
+
+## Verification
+
+## Rollback
+```
+
+Keep both language mirrors. `pnpm test:release` requires the page and the changelog link when the release section contains `### Breaking changes`.
+
 Keep old guide URLs as meta-refresh stubs when a route moves. Internal links use the new routes; `pnpm docs:check` rejects links to retired guide routes.
 
 ## Task guides

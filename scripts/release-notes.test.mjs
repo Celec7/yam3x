@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { readFileSync } from 'node:fs'
-import { extractReleaseNotes } from './release-notes.mjs'
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { extractReleaseNotes, validateReleaseNotes } from './release-notes.mjs'
 
 test('release notes contain only the requested version and retain Markdown structure', () => {
   const changelog =
@@ -29,10 +31,43 @@ test('missing, duplicate, and empty release sections fail before publishing', ()
   }
 })
 
-test('the current package version has release notes', () => {
-  const { version } = JSON.parse(
-    readFileSync(new URL('../packages/cli/package.json', import.meta.url), 'utf8'),
+test('every release requires an Upgrade section', () => {
+  assert.doesNotThrow(() =>
+    validateReleaseNotes('## 0.7.0\n\nChanges\n\n### Upgrade\n\nNo API migration.\n', '0.7.0'),
   )
-  const changelog = readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8')
-  assert.ok(extractReleaseNotes(changelog, version).trim())
+  assert.throws(
+    () => validateReleaseNotes('## 0.7.0\n\nChanges\n', '0.7.0'),
+    /must include a "### Upgrade" section/,
+  )
+})
+
+test('breaking releases require a migration link and bilingual pages', () => {
+  const notes =
+    '## 0.7.0\n\n### Breaking changes\n\n- Renamed API.\n\n### Upgrade\n\nSee [migration](/guide/maintain/migrations/0.7.0).\n'
+
+  assert.doesNotThrow(() => validateReleaseNotes(notes, '0.7.0', { migrationExists: true }))
+  assert.throws(
+    () => validateReleaseNotes(notes, '0.7.0', { migrationExists: false }),
+    /Chinese mirror are required/,
+  )
+
+  const withoutLink =
+    '## 0.7.0\n\n### Breaking changes\n\n- Renamed API.\n\n### Upgrade\n\nMerge source.\n'
+  assert.throws(
+    () => validateReleaseNotes(withoutLink, '0.7.0', { migrationExists: true }),
+    /must link \/guide\/maintain\/migrations\/0\.7\.0/,
+  )
+})
+
+test('the current package version has valid release notes and migration pages', () => {
+  const projectRoot = fileURLToPath(new URL('..', import.meta.url))
+  const { version } = JSON.parse(
+    readFileSync(join(projectRoot, 'packages/cli/package.json'), 'utf8'),
+  )
+  const changelog = readFileSync(join(projectRoot, 'CHANGELOG.md'), 'utf8')
+  const migrationExists = ['apps/docs', 'apps/docs/zh'].every((prefix) =>
+    existsSync(join(projectRoot, prefix, 'guide/maintain/migrations', `${version}.md`)),
+  )
+
+  assert.ok(validateReleaseNotes(changelog, version, { migrationExists }).trim())
 })

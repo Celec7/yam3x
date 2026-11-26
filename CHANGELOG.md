@@ -12,6 +12,10 @@ This release adds the Expressive scroll time picker and the scroll field's exter
 - **Select no longer puts `aria-valuetext` on its combobox trigger.** The trigger exposes the selected text as its accessible value without an attribute that `role="combobox"` does not support.
 - **Theme controller keeps `meta[name="theme-color"]` in sync.** A root theme application or mode change now updates the browser chrome color from the resolved surface role.
 
+### Upgrade
+
+No API migration is required for this release. Merge the copied source changes above, then run `status` and `sync`; see the [source update guide](https://yam3x.iscccc.cc/guide/maintain/updating).
+
 [Compare changes from 0.5.0](https://github.com/Celec7/yam3x/compare/v0.5.0...v0.6.0).
 
 ## 0.5.0
