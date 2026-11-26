@@ -13,6 +13,9 @@ import { buildRegistry } from '../../../scripts/generate-registry.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const cliPath = join(projectRoot, 'packages/cli/src/index.mjs')
+const cliVersion = JSON.parse(
+  await readFile(join(projectRoot, 'packages/cli/package.json'), 'utf8'),
+).version
 const registry = await buildRegistry()
 const catalog = await readWorkspaceCatalog()
 
@@ -412,13 +415,13 @@ test('repeated add preserves a local edit and the lock baseline', async (t) => {
 
   const status = runCli(['status'], directory)
   assert.equal(status.status, 0, status.stderr || status.stdout)
-  assert.match(status.stdout, /Lock baseline: 0\.6\.0/)
+  assert.ok(status.stdout.includes(`Lock baseline: ${cliVersion}`))
   assert.match(status.stdout, /Source: .*1 local-only/)
 
   const json = runCli(['status', '--json'], directory)
   assert.equal(json.status, 0, json.stderr || json.stdout)
   const plan = JSON.parse(json.stdout)
-  assert.deepEqual(plan.lock.versions, ['0.6.0'])
+  assert.deepEqual(plan.lock.versions, [cliVersion])
   assert.equal(plan.source.counts['local-only'], 1)
 })
 
@@ -564,7 +567,7 @@ test('upgrade applies clean files while preserving local edits', async (t) => {
     updated.files['src/components/yam3x/button/button.vue'].integrity,
     await hashFile(join(projectRoot, 'registry/components/button/button.vue')),
   )
-  assert.equal(updated.files['src/components/yam3x/button/button.vue'].version, '0.6.0')
+  assert.equal(updated.files['src/components/yam3x/button/button.vue'].version, cliVersion)
   assert.equal(
     updated.files['src/components/yam3x/button/index.ts'].integrity,
     lock.files['src/components/yam3x/button/index.ts'].integrity,
@@ -608,7 +611,7 @@ test('upgrade keeps conflicts until resolve and finalize', async (t) => {
     updated.files[target].integrity,
     await hashFile(join(projectRoot, 'registry/components/button/button.vue')),
   )
-  assert.equal(updated.files[target].version, '0.6.0')
+  assert.equal(updated.files[target].version, cliVersion)
 
   const finalize = runCli(['upgrade', '--finalize'], directory)
   assert.equal(finalize.status, 0, finalize.stderr || finalize.stdout)
@@ -648,7 +651,7 @@ test('upgrade --dry-run and journal recovery do not lose clean files', async (t)
         schemaVersion: 1,
         package: '@celec7/yam3x',
         registry: 'yam3x',
-        targetVersion: '0.6.0',
+        targetVersion: cliVersion,
         files: [
           {
             target,
@@ -777,7 +780,7 @@ test('a foundation-only lock does not hide legacy component files', async (t) =>
   const status = runCli(['status'], directory)
   assert.equal(status.status, 0, status.stderr || status.stdout)
   assert.doesNotMatch(status.stdout, /No YAM3X components are installed/)
-  assert.match(status.stdout, /Lock baseline: 0\.6\.0/)
+  assert.ok(status.stdout.includes(`Lock baseline: ${cliVersion}`))
 })
 
 test('status uses the lock component set when an entry file is missing', async (t) => {

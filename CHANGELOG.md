@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.7.0
+
+This release adds a source-lock and upgrade workflow for copied components, along with navigation, autocomplete, split-pane, and list updates.
+
+### Added
+
+- **Source baseline lockfile.** `init` and `add` write `yam3x.lock.json` with a per-file upstream version, normalized content hash, and component/core ownership. The lock stays committed with the copied source.
+- **0.6.0 adoption and drift inspection.** `adopt` records the 0.6.0 baseline for existing installations without changing source. `status` reports a source summary, and `diff` classifies files as `current`, `converged`, `upstream-only`, `local-only`, `conflict`, `missing`, `untracked`, `added`, or `removed`.
+- **Clean source upgrades.** `upgrade --apply-clean` copies only `upstream-only` files and advances their lock entries. A `.yam3x/upgrade-journal.json` transaction reconciles interrupted applies; `upgrade --resolve` records conflict resolution and `upgrade --finalize` refuses while blocking states remain.
+- **Upgrade skill.** `yam3x-upgrade` documents baseline adoption, drift inspection, conflict judgment, and verification for consumer agents.
+- **Navigation bar destinations.** Five medium-width destinations can fit with the opt-in `fitHorizontal` mode, a 48px floor, and wrapped labels.
+- **Navigation rail density and children.** The rail gains a vertical compact density tier and one level of child destinations with child selection and focus restoration.
+- **Split pane content height.** Horizontal panes can grow with content, return vertical scrolling to the nearest ancestor, and keep a full-height divider line.
+- **Autocomplete floating labels.** `floatLabel="always"` uses a measured FormField-style notch and keeps the label stable through selection and validation.
+- **List segmented color hook.** `--yam3x-list-segmented-item-container-color` styles resting segmented rows.
+
+### Changed
+
+- Navigation bar items keep the 48px touch target and use safe-centered overflow; compact behavior follows the measured navigation rhythm.
+- Autocomplete debounces live announcements, hides unavailable trailing controls, and settles controlled queries after the parent renders.
+- Split pane uses one full-height divider line and keeps inert collapsed panes out of content height.
+- List expandable disclosures keep one list role for inline content while retaining the full-screen dialog.
+- `status` now includes source drift and adds lock/source data to `--json`. It exits nonzero for dependency issues, source conflicts, and missing files.
+
+### Upgrade
+
+No public API removal requires a migration page. Existing 0.6.0 installations should record the baseline, inspect drift, then merge copied source:
+
+```sh
+pnpm dlx @celec7/yam3x@latest adopt
+pnpm dlx @celec7/yam3x@latest diff
+pnpm dlx @celec7/yam3x@latest upgrade --apply-clean
+```
+
+Resolve any reported conflicts with `upgrade --resolve <target>`, run `upgrade --finalize`, then run `status` and `sync`. Commit `yam3x.lock.json`; do not commit `.yam3x/upgrade-journal.json`. See the [source update guide](https://yam3x.iscccc.cc/guide/maintain/updating) and the `yam3x-upgrade` skill for the full procedure.
+
+[Compare changes from 0.6.0](https://github.com/Celec7/yam3x/compare/v0.6.0...v0.7.0).
+
 ## 0.6.0
 
 This release adds the Expressive scroll time picker and the scroll field's external invalid state, alongside compact navigation bar, button morph, Select, and theme refinements.
