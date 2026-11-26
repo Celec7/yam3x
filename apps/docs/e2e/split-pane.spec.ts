@@ -6,7 +6,7 @@ test('SplitPane exposes a named separator and lays out its panes at the selected
   // split-pane.extension.separator
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   const separator = page.getByRole('separator', { name: 'Main content' })
   await expect(separator).toHaveAttribute('aria-orientation', 'vertical')
   await expect(separator).toHaveAttribute('aria-valuenow', '66')
@@ -47,7 +47,7 @@ test('SplitPane coalesces dense pointer input to the latest frame and settles at
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   const metrics = await root.evaluate((element) => {
     const separator = element.querySelector<HTMLElement>('[role="separator"]')!
     const rootRect = element.getBoundingClientRect()
@@ -107,7 +107,7 @@ test('SplitPane skips the settling state under reduced motion', async ({ page })
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   const separator = page.getByRole('separator', { name: 'Main content' })
   const rootRect = (await root.boundingBox())!
   const separatorRect = (await separator.boundingBox())!
@@ -147,7 +147,7 @@ test('SplitPane desktop divider follows physical pointer distance in LTR and RTL
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   const separator = page.getByRole('separator', { name: 'Main content' })
   const startPane = root.locator('.yam3x-split-pane__start')
 
@@ -184,7 +184,7 @@ test('SplitPane can be grabbed again during detent settlement without a position
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   const separator = page.getByRole('separator', { name: 'Main content' })
   const startPane = root.locator('.yam3x-split-pane__start')
   await separator.scrollIntoViewIfNeeded()
@@ -227,7 +227,7 @@ test('SplitPane restores the drag-start value on pointer cancellation and honors
   page,
 }) => {
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   await root.evaluate((element) => {
     const separator = element.querySelector<HTMLElement>('[role="separator"]')!
     const rect = separator.getBoundingClientRect()
@@ -332,7 +332,7 @@ test('SplitPane auto orientation follows compact, medium, and expanded supportin
 }) => {
   await page.setViewportSize({ width: 800, height: 700 })
   await page.goto('/components/split-pane')
-  const root = page.locator('.yam3x-split-pane')
+  const root = page.locator('.yam3x-split-pane').first()
   const separator = page.getByRole('separator', { name: 'Main content' })
   await expect(root).toHaveClass(/yam3x-split-pane--vertical/)
   await expect(separator).toHaveAttribute('aria-orientation', 'horizontal')
@@ -354,7 +354,7 @@ test('SplitPane auto orientation follows compact, medium, and expanded supportin
   await expect(root.getByRole('heading', { name: 'Supporting content' })).toBeVisible()
   await page.getByRole('button', { name: 'Show primary (compact)' }).click()
   await page.getByRole('checkbox', { name: 'Show supporting pane' }).uncheck()
-  await expect(page.getByRole('separator')).toHaveCount(0)
+  await expect(page.getByRole('separator', { name: 'Main content' })).toHaveCount(0)
   await expect(root.locator('.yam3x-split-pane__start')).toHaveCSS('display', 'block')
   await expect(root.locator('.yam3x-split-pane__start')).toHaveCSS('flex-grow', '1')
   await page.getByRole('checkbox', { name: 'Show main pane' }).uncheck()
@@ -435,7 +435,7 @@ test('SplitPane disables resizing and renders every documented handle style hook
   expect(box).not.toBeNull()
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2)
   await page.mouse.down()
-  await expect(page.locator('.yam3x-split-pane')).toHaveClass(/yam3x-split-pane--dragging/)
+  await expect(page.locator('.yam3x-split-pane').first()).toHaveClass(/yam3x-split-pane--dragging/)
   await expect
     .poll(() => handle.evaluate((element) => getComputedStyle(element).width))
     .toBe('14px')
@@ -470,51 +470,54 @@ test('SplitPane disables resizing and renders every documented handle style hook
 
 test('SplitPane maps handle styling through root System token aliases', async ({ page }) => {
   await page.goto('/components/split-pane')
-  const mapping = await page.locator('.yam3x-split-pane').evaluate((root) => {
-    const rootStyle = getComputedStyle(root)
-    const handle = root.querySelector<HTMLElement>('.yam3x-split-pane__handle')!
-    const handleStyle = getComputedStyle(handle)
-    const separator = root.querySelector<HTMLElement>('[role="separator"]')!
-    const separatorStyle = getComputedStyle(separator)
-    const system = (name: string) => rootStyle.getPropertyValue(name).trim()
-    return {
-      outline: [
-        system('--_yam3x-split-pane-system-color-outline'),
-        system('--md-sys-color-outline'),
-      ],
-      onSurface: [
-        system('--_yam3x-split-pane-system-color-on-surface'),
-        system('--md-sys-color-on-surface'),
-      ],
-      primary: [
-        system('--_yam3x-split-pane-system-color-primary'),
-        system('--md-sys-color-primary'),
-      ],
-      mediumCorner: [
-        system('--_yam3x-split-pane-system-shape-corner-medium'),
-        system('--md-sys-shape-corner-medium'),
-      ],
-      defaultSpatial: [
-        system('--_yam3x-split-pane-system-motion-default-spatial'),
-        system('--md-sys-motion-spring-default-spatial'),
-      ],
-      fastEffects: [
-        system('--_yam3x-split-pane-system-motion-fast-effects'),
-        system('--md-sys-motion-spring-fast-effects'),
-      ],
-      hoverOpacity: [
-        system('--_yam3x-split-pane-system-state-hover-opacity'),
-        system('--md-sys-state-hover-opacity'),
-      ],
-      focusOpacity: [
-        system('--_yam3x-split-pane-system-state-focus-opacity'),
-        system('--md-sys-state-focus-opacity'),
-      ],
-      handleColor: handleStyle.backgroundColor,
-      focusOutline: separatorStyle.outlineColor,
-      handleTransitionDuration: handleStyle.transitionDuration,
-    }
-  })
+  const mapping = await page
+    .locator('.yam3x-split-pane')
+    .first()
+    .evaluate((root) => {
+      const rootStyle = getComputedStyle(root)
+      const handle = root.querySelector<HTMLElement>('.yam3x-split-pane__handle')!
+      const handleStyle = getComputedStyle(handle)
+      const separator = root.querySelector<HTMLElement>('[role="separator"]')!
+      const separatorStyle = getComputedStyle(separator)
+      const system = (name: string) => rootStyle.getPropertyValue(name).trim()
+      return {
+        outline: [
+          system('--_yam3x-split-pane-system-color-outline'),
+          system('--md-sys-color-outline'),
+        ],
+        onSurface: [
+          system('--_yam3x-split-pane-system-color-on-surface'),
+          system('--md-sys-color-on-surface'),
+        ],
+        primary: [
+          system('--_yam3x-split-pane-system-color-primary'),
+          system('--md-sys-color-primary'),
+        ],
+        mediumCorner: [
+          system('--_yam3x-split-pane-system-shape-corner-medium'),
+          system('--md-sys-shape-corner-medium'),
+        ],
+        defaultSpatial: [
+          system('--_yam3x-split-pane-system-motion-default-spatial'),
+          system('--md-sys-motion-spring-default-spatial'),
+        ],
+        fastEffects: [
+          system('--_yam3x-split-pane-system-motion-fast-effects'),
+          system('--md-sys-motion-spring-fast-effects'),
+        ],
+        hoverOpacity: [
+          system('--_yam3x-split-pane-system-state-hover-opacity'),
+          system('--md-sys-state-hover-opacity'),
+        ],
+        focusOpacity: [
+          system('--_yam3x-split-pane-system-state-focus-opacity'),
+          system('--md-sys-state-focus-opacity'),
+        ],
+        handleColor: handleStyle.backgroundColor,
+        focusOutline: separatorStyle.outlineColor,
+        handleTransitionDuration: handleStyle.transitionDuration,
+      }
+    })
   const systemMappings = [
     mapping.outline,
     mapping.onSurface,
@@ -531,4 +534,52 @@ test('SplitPane maps handle styling through root System token aliases', async ({
   expect(
     mapping.handleTransitionDuration.split(',').every((duration) => duration.trim() === '0.15s'),
   ).toBe(true)
+})
+
+test('content-height returns scrolling to the page and uses a line divider', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 })
+  await page.goto('/components/split-pane')
+  const scroll = page.getByTestId('content-height-scroll')
+  await scroll.scrollIntoViewIfNeeded()
+  const root = scroll.locator('.yam3x-split-pane')
+  const start = root.locator('.yam3x-split-pane__start')
+  const end = root.locator('.yam3x-split-pane__end')
+  const separator = root.getByRole('separator')
+
+  const geometry = await scroll.evaluate((element) => ({
+    clientHeight: element.clientHeight,
+    rootHeight: element.querySelector<HTMLElement>('.yam3x-split-pane')!.getBoundingClientRect()
+      .height,
+  }))
+  expect(geometry.rootHeight).toBeGreaterThan(geometry.clientHeight)
+  await expect(start).toHaveCSS('overflow', 'visible')
+  await expect(end).toHaveCSS('overflow', 'visible')
+  await expect(root.locator('.yam3x-split-pane__handle')).toBeHidden()
+  expect(
+    await separator.evaluate((element) => getComputedStyle(element, '::before').inlineSize),
+  ).toBe('1px')
+
+  await scroll.evaluate((element) => (element.scrollTop = 0))
+  await start.hover({ position: { x: 20, y: 20 } })
+  await page.mouse.wheel(0, 600)
+  await expect.poll(() => scroll.evaluate((element) => element.scrollTop)).toBeGreaterThan(0)
+
+  await separator.focus()
+  await expect
+    .poll(() => separator.evaluate((element) => getComputedStyle(element, '::before').inlineSize))
+    .toBe('3px')
+  expect(await separator.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('none')
+
+  await page.getByRole('button', { name: 'Collapse start pane' }).click()
+  await expect(start).toHaveAttribute('inert', '')
+  const collapsed = await scroll.evaluate((element) => ({
+    root: element.querySelector<HTMLElement>('.yam3x-split-pane')!.getBoundingClientRect().height,
+    end: element.querySelector<HTMLElement>('.yam3x-split-pane__end')!.getBoundingClientRect()
+      .height,
+  }))
+  expect(collapsed.root).toBeCloseTo(collapsed.end, 0)
+
+  await page.getByRole('button', { name: 'Restore 40%' }).click()
+  await expect(start).not.toHaveAttribute('inert')
+  expect((await start.boundingBox())!.height).toBeGreaterThan(0)
 })

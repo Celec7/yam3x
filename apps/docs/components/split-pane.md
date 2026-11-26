@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SplitPaneExample from './demos/SplitPaneExample.vue'
+import SplitPaneContentHeightExample from './demos/SplitPaneContentHeightExample.vue'
 </script>
 
 # Split pane
@@ -19,6 +20,18 @@ The demo starts at a 66% start pane with detents at 25, 50, 66, and 75. Drag the
 ::: details View demo source
 
 <<< ./demos/SplitPaneExample.vue{vue}
+
+:::
+
+### Content height and page scrolling
+
+<div class="vp-raw yam3x-doc-demo-theme"><SplitPaneContentHeightExample /></div>
+
+`content-height` lets the surrounding scroll container own vertical scrolling. Scroll inside either pane: the page moves, and the divider is a full-height line. Collapse the start pane to see the inert pane stop contributing height.
+
+::: details View demo source
+
+<<< ./demos/SplitPaneContentHeightExample.vue{vue}
 
 :::
 
@@ -52,7 +65,7 @@ const width = ref(66)
 </template>
 ```
 
-Give the surrounding container a height; the component fills it and each pane manages its own scrolling. Keep the primary task in `#start` and use `#end` for content that supports it.
+By default, give the surrounding container a height; the component fills it and each pane manages its own scrolling. Set `content-height` when a page-level scroll container should own vertical scrolling instead: the component grows with its content, panes stop forming scroll containers, and the divider renders as a full-height line. `content-height` applies only to horizontal panes; vertical panes keep the ratio-controlled height and their own scrolling. Keep the primary task in `#start` and use `#end` for content that supports it.
 
 ::: details Compact switching and controlled collapse
 
@@ -131,6 +144,15 @@ const pane = ref<InstanceType<typeof SplitPane> | null>(null)
 - `orientation="auto"` shows one pane below 600px, both panes stacked from 600px to 839px, and both panes side by side at 840px or wider.
 - At compact widths the separator is removed and `v-model:compact-pane` selects `primary` or `supporting`. The default is `primary`.
 - The ratio is preserved when the orientation changes. The divider remains adjustable in medium and expanded layouts.
+
+### Content height and scroll ownership
+
+- `content-height` is a project extension for horizontal panes whose page owns vertical scrolling.
+- The root grows to the tallest pane, both panes use `overflow: visible`, and the nearest scroll ancestor receives wheel input. The panes do not create independent scroll containers.
+- The divider becomes a full-height line. Hover thickens it to 2px; keyboard focus thickens it to 3px in the secondary color. The 24px track remains the drag target.
+- Only panes that are `inert` at 0% or 100% stop contributing height. A pane collapsed to a positive `min` or first detent remains visible and contributes height.
+- Inline overflow is not handled by this mode: content must fit the pane's inline size. Keep inner independent scrollers responsible for chaining at their boundaries.
+- Vertical panes ignore `content-height` because their height is the ratio axis. With `orientation="auto"`, the mode applies only while the resolved orientation is horizontal.
 - A pane with no visible children is treated as absent. If either pane is empty, the separator disappears and the remaining pane fills the container.
 
 ### State ownership
@@ -154,19 +176,20 @@ const pane = ref<InstanceType<typeof SplitPane> | null>(null)
 
 ### Props and models
 
-| Prop and model           | Type                                   | Default                | Use                                                                                             |
-| ------------------------ | -------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------- |
-| `v-model` / `modelValue` | `number`                               | `50`                   | Accepted percentage of available space for the start pane.                                      |
-| `v-model:compact-pane`   | `'primary' \| 'supporting'`            | `'primary'`            | Pane shown below 600px in `auto` mode.                                                          |
-| `min`, `max`             | `number`                               | `0`, `100`             | Accepted bounds, clamped to 0–100.                                                              |
-| `step`                   | `number`                               | `1`                    | Keyboard increment without detents. Non-positive values fall back to `1`.                       |
-| `detents`                | `number[]`                             | `[]`                   | Snap points; clamped, deduplicated, and sorted. First and last also define collapse and expand. |
-| `wrapDetents`            | `boolean`                              | `false`                | Space wraps from the last detent to the first.                                                  |
-| `orientation`            | `'horizontal' \| 'vertical' \| 'auto'` | `'horizontal'`         | Layout direction or responsive behavior.                                                        |
-| `label`                  | `string`                               | Required               | Accessible name of the divider; should name the primary pane.                                   |
-| `valueText`              | `string`                               | Generated English text | Accessible description of the current pane ratio.                                               |
-| `disabled`               | `boolean`                              | `false`                | Disables pointer and keyboard resizing.                                                         |
-| `overshootLimit`         | `number`                               | `4`                    | Visual overshoot past a bound while dragging, in percentage points.                             |
+| Prop and model           | Type                                   | Default                | Use                                                                                                                |
+| ------------------------ | -------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `v-model` / `modelValue` | `number`                               | `50`                   | Accepted percentage of available space for the start pane.                                                         |
+| `v-model:compact-pane`   | `'primary' \| 'supporting'`            | `'primary'`            | Pane shown below 600px in `auto` mode.                                                                             |
+| `min`, `max`             | `number`                               | `0`, `100`             | Accepted bounds, clamped to 0–100.                                                                                 |
+| `step`                   | `number`                               | `1`                    | Keyboard increment without detents. Non-positive values fall back to `1`.                                          |
+| `detents`                | `number[]`                             | `[]`                   | Snap points; clamped, deduplicated, and sorted. First and last also define collapse and expand.                    |
+| `wrapDetents`            | `boolean`                              | `false`                | Space wraps from the last detent to the first.                                                                     |
+| `orientation`            | `'horizontal' \| 'vertical' \| 'auto'` | `'horizontal'`         | Layout direction or responsive behavior.                                                                           |
+| `contentHeight`          | `boolean`                              | `false`                | Horizontal-only page-scroll mode: grow with content, remove pane scrollers, and render a full-height divider line. |
+| `label`                  | `string`                               | Required               | Accessible name of the divider; should name the primary pane.                                                      |
+| `valueText`              | `string`                               | Generated English text | Accessible description of the current pane ratio.                                                                  |
+| `disabled`               | `boolean`                              | `false`                | Disables pointer and keyboard resizing.                                                                            |
+| `overshootLimit`         | `number`                               | `4`                    | Visual overshoot past a bound while dragging, in percentage points.                                                |
 
 ### Events
 

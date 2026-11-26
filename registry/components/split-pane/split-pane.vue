@@ -12,6 +12,7 @@ const props = withDefaults(
     detents?: number[]
     wrapDetents?: boolean
     orientation?: SplitPaneOrientation
+    contentHeight?: boolean
     label: string
     valueText?: string
     disabled?: boolean
@@ -24,6 +25,7 @@ const props = withDefaults(
     detents: () => [],
     wrapDetents: false,
     orientation: 'horizontal',
+    contentHeight: false,
     valueText: undefined,
     disabled: false,
     overshootLimit: 4,
@@ -474,6 +476,7 @@ defineExpose({
     :class="[
       `yam3x-split-pane--${resolvedOrientation}`,
       {
+        'yam3x-split-pane--content-height': contentHeight && resolvedOrientation === 'horizontal',
         'yam3x-split-pane--dragging': dragging,
         'yam3x-split-pane--settling': settling,
         'yam3x-split-pane--single':
@@ -608,6 +611,20 @@ defineExpose({
   overflow: auto;
   overscroll-behavior: contain;
 }
+.yam3x-split-pane--content-height {
+  block-size: auto;
+  grid-template-rows: auto;
+  overflow: visible;
+}
+.yam3x-split-pane--content-height > .yam3x-split-pane__start,
+.yam3x-split-pane--content-height > .yam3x-split-pane__end {
+  overflow: visible;
+}
+.yam3x-split-pane--content-height > .yam3x-split-pane__start[inert],
+.yam3x-split-pane--content-height > .yam3x-split-pane__end[inert] {
+  contain: size;
+  overflow: clip;
+}
 .yam3x-split-pane--settling {
   transition:
     grid-template-columns var(--_yam3x-split-pane-system-motion-default-spatial),
@@ -708,16 +725,55 @@ defineExpose({
 .yam3x-split-pane--single .yam3x-split-pane__end {
   flex: 1 1 auto;
 }
+.yam3x-split-pane--content-height .yam3x-split-pane__handle {
+  display: none;
+}
+.yam3x-split-pane--content-height .yam3x-split-pane__separator::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  inline-size: 1px;
+  background: var(--_yam3x-split-pane-handle-color);
+  content: '';
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition:
+    inline-size var(--_yam3x-split-pane-system-motion-fast-effects),
+    background-color var(--_yam3x-split-pane-system-motion-fast-effects);
+}
+.yam3x-split-pane--content-height
+  .yam3x-split-pane__separator:hover:not([aria-disabled='true'])::before {
+  inline-size: 2px;
+  background: var(--_yam3x-split-pane-handle-hover-color);
+}
+.yam3x-split-pane--content-height .yam3x-split-pane__separator:focus-visible {
+  outline: none;
+}
+.yam3x-split-pane--content-height .yam3x-split-pane__separator:focus-visible::before {
+  inline-size: 3px;
+  background: var(--_yam3x-split-pane-handle-focus-color);
+}
+.yam3x-split-pane--content-height.yam3x-split-pane--dragging .yam3x-split-pane__separator::before {
+  inline-size: 3px;
+  background: var(--_yam3x-split-pane-handle-pressed-color);
+}
 @media (prefers-reduced-motion: reduce) {
   .yam3x-split-pane--settling,
   .yam3x-split-pane__handle,
-  .yam3x-split-pane__handle::after {
+  .yam3x-split-pane__handle::after,
+  .yam3x-split-pane--content-height .yam3x-split-pane__separator::before {
     transition: none;
   }
 }
 @media (forced-colors: active) {
   .yam3x-split-pane__handle {
     background: ButtonText;
+  }
+  .yam3x-split-pane--content-height .yam3x-split-pane__separator::before {
+    background: ButtonText;
+  }
+  .yam3x-split-pane--content-height .yam3x-split-pane__separator:focus-visible::before {
+    background: Highlight;
   }
   .yam3x-split-pane__separator:focus-visible {
     outline-color: Highlight;

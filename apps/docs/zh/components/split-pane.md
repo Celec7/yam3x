@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SplitPaneExample from '../../components/demos/SplitPaneExample.vue'
+import SplitPaneContentHeightExample from '../../components/demos/SplitPaneContentHeightExample.vue'
 </script>
 
 # Split pane
@@ -19,6 +20,18 @@ Split pane 是项目扩展。Material 描述了[辅助窗格](/zh/guide/foundati
 ::: details 查看演示源码
 
 <<< ../../components/demos/SplitPaneExample.vue{vue}
+
+:::
+
+### 内容高度与页面滚动
+
+<div class="vp-raw yam3x-doc-demo-theme"><SplitPaneContentHeightExample /></div>
+
+`content-height` 让外层滚动容器拥有纵向滚动。在任一窗格内滚动：页面移动，分隔器显示为全高线条。收起起始窗格可看到 inert 窗格不再贡献高度。
+
+::: details 查看演示源码
+
+<<< ../../components/demos/SplitPaneContentHeightExample.vue{vue}
 
 :::
 
@@ -52,7 +65,7 @@ const width = ref(66)
 </template>
 ```
 
-为外层容器提供高度；组件会填满它，每个窗格管理自己的滚动。将主要任务放在 `#start`，将支持它的内容放在 `#end`。
+默认为外层容器提供高度；组件会填满它，每个窗格管理自己的滚动。当页面级滚动容器应拥有纵向滚动时，设置 `content-height`：组件随内容增长，窗格不再形成滚动容器，分隔器渲染为全高线条。`content-height` 仅适用于水平窗格；垂直窗格保留由比例控制的高度和自己的滚动。将主要任务放在 `#start`，将支持它的内容放在 `#end`。
 
 ::: details 紧凑切换与受控收起
 
@@ -133,6 +146,15 @@ const pane = ref<InstanceType<typeof SplitPane> | null>(null)
 - 方向变化时保留比例。中等和展开布局中分隔器仍可调整。
 - 没有可见子元素的窗格视为不存在。任一窗格为空时，分隔器消失，剩余窗格填满容器。
 
+### 内容高度与滚动所有权
+
+- `content-height` 是面向“页面拥有纵向滚动”的水平窗格的项目扩展。
+- 根节点增长到最高窗格，两个窗格使用 `overflow: visible`，滚轮交给最近的滚动祖先。窗格不再形成独立滚动容器。
+- 分隔器变成全高线条。悬停加粗到 2px；键盘焦点以 secondary 色加粗到 3px。24px 轨道仍是拖拽目标。
+- 只有 0% 或 100% 时 `inert` 的窗格停止贡献高度。折叠到正数 `min` 或首个 detent 的窗格仍然可见并贡献高度。
+- 此模式不处理行内溢出：内容必须适配窗格的行内尺寸。内部独立滚动区域仍负责在边界处传递滚动。
+- 垂直窗格忽略 `content-height`，因为高度就是比例轴。`orientation="auto"` 只在解析为水平时应用该模式。
+
 ### 状态归属
 
 `v-model` 拥有分配给起始窗格的已接受百分比。组件测量可用空间、限制到 `min` 和 `max`、吸附到 `detents` 并提出变更；它不保存路由、窗格内容或第二份比例。应用拥有每个窗格显示的内容、紧凑目的地切换，以及断点处需要变化的布局。
@@ -154,19 +176,20 @@ const pane = ref<InstanceType<typeof SplitPane> | null>(null)
 
 ### 属性与模型
 
-| 属性与模型               | 类型                                   | 默认值         | 说明                                                       |
-| ------------------------ | -------------------------------------- | -------------- | ---------------------------------------------------------- |
-| `v-model` / `modelValue` | `number`                               | `50`           | 起始窗格占可用空间的已接受百分比。                         |
-| `v-model:compact-pane`   | `'primary' \| 'supporting'`            | `'primary'`    | `auto` 模式下低于 600px 时显示的窗格。                     |
-| `min`、`max`             | `number`                               | `0`、`100`     | 已接受边界，限制在 0–100。                                 |
-| `step`                   | `number`                               | `1`            | 无停靠点时的键盘步长。非正值回退到 `1`。                   |
-| `detents`                | `number[]`                             | `[]`           | 吸附点；会限制、去重并排序。首尾停靠点同时定义收起和展开。 |
-| `wrapDetents`            | `boolean`                              | `false`        | Space 从最后一个停靠点循环到第一个。                       |
-| `orientation`            | `'horizontal' \| 'vertical' \| 'auto'` | `'horizontal'` | 布局方向或响应式行为。                                     |
-| `label`                  | `string`                               | 必填           | 分隔器的无障碍名称；应命名主要窗格。                       |
-| `valueText`              | `string`                               | 生成的英文文本 | 当前窗格比例的无障碍描述。                                 |
-| `disabled`               | `boolean`                              | `false`        | 禁用指针和键盘调整。                                       |
-| `overshootLimit`         | `number`                               | `4`            | 拖动越界时的视觉回弹幅度，单位为百分点。                   |
+| 属性与模型               | 类型                                   | 默认值         | 说明                                                             |
+| ------------------------ | -------------------------------------- | -------------- | ---------------------------------------------------------------- |
+| `v-model` / `modelValue` | `number`                               | `50`           | 起始窗格占可用空间的已接受百分比。                               |
+| `v-model:compact-pane`   | `'primary' \| 'supporting'`            | `'primary'`    | `auto` 模式下低于 600px 时显示的窗格。                           |
+| `min`、`max`             | `number`                               | `0`、`100`     | 已接受边界，限制在 0–100。                                       |
+| `step`                   | `number`                               | `1`            | 无停靠点时的键盘步长。非正值回退到 `1`。                         |
+| `detents`                | `number[]`                             | `[]`           | 吸附点；会限制、去重并排序。首尾停靠点同时定义收起和展开。       |
+| `wrapDetents`            | `boolean`                              | `false`        | Space 从最后一个停靠点循环到第一个。                             |
+| `orientation`            | `'horizontal' \| 'vertical' \| 'auto'` | `'horizontal'` | 布局方向或响应式行为。                                           |
+| `contentHeight`          | `boolean`                              | `false`        | 仅水平的页面滚动模式：随内容增长、移除窗格滚动、渲染全高分隔线。 |
+| `label`                  | `string`                               | 必填           | 分隔器的无障碍名称；应命名主要窗格。                             |
+| `valueText`              | `string`                               | 生成的英文文本 | 当前窗格比例的无障碍描述。                                       |
+| `disabled`               | `boolean`                              | `false`        | 禁用指针和键盘调整。                                             |
+| `overshootLimit`         | `number`                               | `4`            | 拖动越界时的视觉回弹幅度，单位为百分点。                         |
 
 ### 事件
 
