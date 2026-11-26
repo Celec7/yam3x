@@ -14,10 +14,11 @@ In an existing Vue/Vite app with `src/main.ts` or `src/main.js`, initialize the 
 pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 pnpm dlx @celec7/yam3x@latest status
+pnpm dlx @celec7/yam3x@latest diff
 pnpm dlx @celec7/yam3x@latest sync
 ```
 
-The CLI copies editable source and declares dependencies; the copied components need no additional Vite plugins or styling build step. `status` reports dependency drift and `sync` updates declarations without overwriting copied source. See the [installation guide](apps/docs/guide/start/installation.md) for a complete walkthrough.
+The CLI copies editable source and declares dependencies; the copied components need no additional Vite plugins or styling build step. `init` and `add` write `yam3x.lock.json`, and existing 0.6.0 installations can record it with `adopt`. `status` reports dependency and source drift; `diff` lists the changed files; `sync` updates declarations without overwriting copied source. See the [installation guide](apps/docs/guide/start/installation.md) for a complete walkthrough.
 
 ## Documentation
 

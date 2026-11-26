@@ -10,14 +10,16 @@
 
 ## Agent skills and task routing
 
-| Task                                                                  | Read first                                                                        |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Application page, demo, layout, or component usage in this repository | [skills/yam3x/SKILL.md](skills/yam3x/SKILL.md)                                    |
-| Adding, changing, or auditing a `registry/` component                 | `yam3x-component-alignment` skill under `.agents/skills/`                         |
-| Maintaining documentation                                             | `canonical-docs` and [Public docs authoring](docs/contributing/site-authoring.md) |
-| Recording a lasting architecture decision                             | `adr` skill                                                                       |
+| Task                                                                  | Read first                                                                                                                      |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Application page, demo, layout, or component usage in this repository | [skills/yam3x/SKILL.md](skills/yam3x/SKILL.md)                                                                                  |
+| Maintaining copied-source upgrade guidance or lock/adopt behavior     | [skills/yam3x-upgrade/SKILL.md](skills/yam3x-upgrade/SKILL.md) and [Update copied source](apps/docs/guide/maintain/updating.md) |
+| Adding, changing, or auditing a `registry/` component                 | `yam3x-component-alignment` skill under `.agents/skills/`                                                                       |
+| Maintaining documentation                                             | `canonical-docs` and [Public docs authoring](docs/contributing/site-authoring.md)                                               |
+| Recording a lasting architecture decision                             | `adr` skill                                                                                                                     |
 
 - `skills/yam3x/` is also the consumer-installable skill: `npx skills add Celec7/yam3x@yam3x`.
+- `skills/yam3x-upgrade/` is the consumer-installable source-upgrade skill: `npx skills add Celec7/yam3x@yam3x-upgrade`.
 - Skills own reusable judgment; `docs/` owns design, API, and verification facts. Do not restate a fact owned by a document in a skill.
 - Subagents do not inherit this file. When delegating, include the relevant skill path and the constraints that apply to the slice.
 

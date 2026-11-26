@@ -20,7 +20,7 @@ For theme roles and density configuration, see [Color and theming](/guide/founda
 
 When the CLI initializes YAM3X core, it copies a short design route to **src/components/yam3x/AGENTS.md** if that file does not already exist. This scopes the instructions to the copied YAM3X component directory and points agents to this guide and the component pages. An existing app-root **AGENTS.md** remains independent; an existing file at the YAM3X target path is preserved. Merge the [distributed guidance source](https://github.com/Celec7/yam3x/blob/main/registry/foundations/AGENTS.md) into that target file when needed. See [Installation and first use](/guide/start/installation) for the initialization workflow.
 
-Agents that support Agent Skills can install the published YAM3X skill with `npx skills add Celec7/yam3x@yam3x`. The skill adds the broader design, component-selection, customization, and verification workflow; the copied `AGENTS.md` remains the local route.
+Agents that support Agent Skills can install the published YAM3X skill with `npx skills add Celec7/yam3x@yam3x`. The skill adds the broader design, component-selection, customization, and verification workflow; the copied `AGENTS.md` remains the local route. Install `npx skills add Celec7/yam3x@yam3x-upgrade` when the task is merging a newer copied-source version.
 
 ## More guidance
 

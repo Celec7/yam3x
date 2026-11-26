@@ -7,7 +7,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-在目标应用根目录运行 `init` 和 `add`。`init` 会复制共享基础文件、声明依赖，并在应用入口导入 `yam3x.css`。`add` 初始化 core 时也会复制这些基础文件。Core 初始化还会将 YAM3X 设计指南入口复制到 `src/components/yam3x/AGENTS.md`，前提是该路径下尚无此文件；应用根目录已有的 `AGENTS.md` 与此独立，目标路径已有文件时则会保留。`add` 会复制组件源码并声明组件所需依赖。可在任意目录运行 `pnpm dlx @celec7/yam3x@latest list` 查看 CLI 接受的组件名称；分类后的组件说明见[组件目录](/zh/components/)。现有 Vite 配置无需添加额外插件。
+在目标应用根目录运行 `init` 和 `add`。`init` 会复制共享基础文件、声明依赖，并在应用入口导入 `yam3x.css`。`add` 初始化 core 时也会复制这些基础文件。Core 初始化还会将 YAM3X 设计指南入口复制到 `src/components/yam3x/AGENTS.md`，前提是该路径下尚无此文件；应用根目录已有的 `AGENTS.md` 与此独立，目标路径已有文件时则会保留。`add` 会复制组件源码并声明组件所需依赖。两个命令都会为新建源码写入 `yam3x.lock.json`；请将 lock 与复制的源码一起提交。可在任意目录运行 `pnpm dlx @celec7/yam3x@latest list` 查看 CLI 接受的组件名称；分类后的组件说明见[组件目录](/zh/components/)。现有 Vite 配置无需添加额外插件。
 
 生成的 `yam3x.css` 会在运行时从 Google Fonts 加载 Roboto 和三种 Material Symbols 字体。若应用需要离线运行或采用严格的内容安全策略，请自行托管字体并替换该导入，同时保留 `Roboto`、`Material Symbols Outlined`、`Material Symbols Rounded` 和 `Material Symbols Sharp` 这些字体族名称。
 
@@ -43,4 +43,10 @@ const enabled = ref(false)
 npx skills add Celec7/yam3x@yam3x
 ```
 
-该 skill 是可选的。初始化仍会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`；skill 为支持 Agent Skills 的 agent 提供更完整的工作流程。
+该 skill 是可选的。初始化仍会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`；skill 为支持 Agent Skills 的 agent 提供更完整的工作流程。源码升级需要另外安装升级 skill：
+
+```sh
+npx skills add Celec7/yam3x@yam3x-upgrade
+```
+
+`yam3x-upgrade` 负责基线记录、漂移检查和冲突判断；具体步骤和命令归[更新已复制的源码](/zh/guide/maintain/updating)文档所有。

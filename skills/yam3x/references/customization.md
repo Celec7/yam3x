@@ -65,12 +65,6 @@ Prefer the theme controller and semantic roles over hand-maintained palettes. Fo
 
 `add` copies missing files only. It does not overwrite edited files or merge upstream changes automatically.
 
-To adopt a newer YAM3X version:
-
-1. Compare `src/components/yam3x/`, `src/yam3x.css`, `src/styles/yam3x-*.css`, and `src/lib/yam3x/` with the upstream source.
-2. Merge component, shared-helper, and foundation changes together.
-3. Preserve local changes deliberately; do not discard a fork without understanding it.
-4. Install any new dependencies declared by the component.
-5. Run the application's type check and build, then exercise the affected interactions in a browser.
+Record the source baseline and inspect drift with the `yam3x-upgrade` skill before merging. The update guide owns the commands and state definitions; the upgrade skill owns the merge judgment. Preserve local extensions deliberately and re-check them after merging shared helpers and foundation files.
 
 See [Update copied source](https://yam3x.iscccc.cc/guide/maintain/updating) for the public procedure.

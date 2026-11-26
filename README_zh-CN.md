@@ -14,10 +14,11 @@ YAM3X 提供原生适配 Vue 的 Material 3 Expressive 组件，并以可编辑�
 pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 pnpm dlx @celec7/yam3x@latest status
+pnpm dlx @celec7/yam3x@latest diff
 pnpm dlx @celec7/yam3x@latest sync
 ```
 
-CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 Vite 插件或样式构建步骤。`status` 报告依赖漂移，`sync` 在不覆盖已复制源码的前提下更新依赖声明。完整步骤请参阅[安装指南](apps/docs/zh/guide/start/installation.md)。
+CLI 会复制可编辑源码并声明依赖；复制后的组件无需额外的 Vite 插件或样式构建步骤。`init` 和 `add` 会写入 `yam3x.lock.json`，已有的 0.6.0 安装可以用 `adopt` 记录基线。`status` 报告依赖和源码漂移；`diff` 列出变化文件；`sync` 在不覆盖已复制源码的前提下更新依赖声明。完整步骤请参阅[安装指南](apps/docs/zh/guide/start/installation.md)。
 
 ## 文档
 

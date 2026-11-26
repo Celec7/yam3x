@@ -28,7 +28,9 @@ The public package is `@celec7/yam3x` in `packages/cli`. It bundles the generate
    pnpm pack --pack-destination /tmp/yam3x-release
    ```
 
-   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. `registry/registry.json` and its source files are generated into the package by `prepack`; they are not committed. The CLI integration suite exercises the repository entry point against disposable consumer apps and separately packs, extracts, and runs the packaged CLI to install a component. For release verification, also install the archive into a disposable consumer app and check its copied source, type checking, and build.
+   Confirm the archive includes `src/index.mjs`, `registry/registry.json`, `baselines/0.6.0.json`, all source files referenced by the registry, `README.md`, and `LICENSE`. `registry/registry.json` and its source files are generated into the package by `prepack`; they are not committed. The CLI integration suite exercises the repository entry point against disposable consumer apps and separately packs, extracts, and runs the packaged CLI to install a component. For release verification, also install the archive into a disposable consumer app and check its copied source, type checking, and build.
+
+6. When registry source or lock behavior changes, review the source states and release notes as a consumer. Include the affected copied source in the changelog and link the [update guide](../../apps/docs/guide/maintain/updating.md). If `yam3x.lock.json` or an adopt baseline changes, describe the migration and add a versioned migration page when readers cannot infer the steps from `diff`. Regenerate the 0.6.0 baseline only from the `v0.6.0` tag; adding another supported adopt baseline is a separate release decision.
 
 ## First publish
 

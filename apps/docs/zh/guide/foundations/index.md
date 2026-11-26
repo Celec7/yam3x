@@ -20,7 +20,7 @@ YAM3X 提供主题基础和 Vue 组件。页面层级、内容布局、自适应
 
 CLI 初始化 YAM3X core 时，会将简短的设计指南入口复制到 **src/components/yam3x/AGENTS.md**，前提是目标文件尚不存在。这样指南只作用于复制后的 YAM3X 组件目录，并引导 agent 阅读本指南和组件文档。应用根目录已有的 **AGENTS.md** 与此独立；目标路径已有文件时 CLI 会保留。需要整合时，可参考[分发的指南源文件](https://github.com/Celec7/yam3x/blob/main/registry/foundations/AGENTS.md)。初始化流程见[安装与首次使用](/zh/guide/start/installation)。
 
-支持 Agent Skills 的 agent 可以通过 `npx skills add Celec7/yam3x@yam3x` 安装已发布的 YAM3X skill。该 skill 提供更完整的设计、组件选择、定制和验证流程；复制后的 `AGENTS.md` 仍是本地入口。
+支持 Agent Skills 的 agent 可以通过 `npx skills add Celec7/yam3x@yam3x` 安装已发布的 YAM3X skill。该 skill 提供更完整的设计、组件选择、定制和验证流程；复制后的 `AGENTS.md` 仍是本地入口。任务涉及合并新版复制源码时，安装 `npx skills add Celec7/yam3x@yam3x-upgrade`。
 
 ## 更多指南
 

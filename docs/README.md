@@ -38,12 +38,15 @@ Records live under [`agents/notes/`](agents/notes/), grouped by lifecycle status
 
 - [Remove Tailwind from development and distribution](agents/notes/implemented/2026-11-08-remove-tailwind.md)
 - [Order floating overlays by open sequence](agents/notes/implemented/2026-11-08-overlay-layer-stack.md)
+- [Record source baselines and inspect drift](agents/notes/implemented/2026-11-26-consumer-source-upgrade.md)
 - [Use one tab stop for composite action controls](agents/notes/implemented/2026-11-13-composite-keyboard-model.md)
 - [Require a visible dismissal path in modal surfaces](agents/notes/implemented/2026-11-13-modal-dismissal-affordance.md)
 
 ## Fact ownership
 
 Installable components come from entrypoints under [`registry/components/`](../registry/components/). Foundation source mappings live in [`registry/foundations/registry.json`](../registry/foundations/registry.json), dependency versions live in the pnpm workspace catalog, and package policy lives in [`registry/package.json`](../registry/package.json). The CLI reads metadata generated into the ignored `packages/cli/registry` directory during `registry:prepare` or `prepack`; `pnpm registry:check` validates the derived model. Current props and slots live in component source; public usage belongs in `apps/docs/`.
+
+Source upgrade procedure belongs to [`apps/docs/guide/maintain/updating.md`](../apps/docs/guide/maintain/updating.md). The lock schema, hashing, adoption baseline, and source-state classification belong to [`packages/cli`](../packages/cli). The CLI reference owns command behavior; the upgrade guide owns the consumer procedure.
 
 - Design intent and project decisions: `docs/specs/`.
 - Current API and behavior: `registry/`.

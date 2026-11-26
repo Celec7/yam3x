@@ -13,6 +13,7 @@ Material 3 Expressive is an expansion of Material 3, not a separate version or a
 
 - Generic visual direction for a product that does not use YAM3X: use `frontend-design`.
 - General Web accessibility or interface review: use `web-design-guidelines`; keep M3-specific decisions here.
+- Adopting a newer copied-source version or reconciling a local source fork: use `yam3x-upgrade`.
 
 ## Resolve the workspace
 
@@ -107,7 +108,7 @@ Use this order:
 
 Choose the smallest change that meets the need. Public props, slots, and documented hooks are usually enough, but copied source is yours to adapt when the product needs a deliberate extension.
 
-If the copied source must change, treat it as a local extension: keep the change scoped, preserve the component's states and accessibility, document why it differs, and re-check it when merging upstream changes. Follow [Update copied source](https://yam3x.iscccc.cc/guide/maintain/updating) when adopting a newer version.
+If the copied source must change, treat it as a local extension: keep the change scoped, preserve the component's states and accessibility, document why it differs, and re-check it when merging upstream changes. Record the lock baseline and inspect drift with the `yam3x-upgrade` skill before merging a newer version; follow [Update copied source](https://yam3x.iscccc.cc/guide/maintain/updating) for the procedure.
 
 ## Verify
 

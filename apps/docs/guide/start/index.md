@@ -10,12 +10,12 @@ Choose the path that matches your project. Installation and maintenance are sepa
 
 ## Existing copied source
 
-- [Update copied source](/guide/maintain/updating) explains how to compare and merge a newer YAM3X version without overwriting local edits.
+- [Update copied source](/guide/maintain/updating) explains how to record the 0.6.0 baseline, inspect source drift with `status` and `diff`, and merge a newer YAM3X version without overwriting local edits.
 - Keep component imports from `./components/yam3x/`; the site-only `@registry` path is for demo source.
 
 ## Agents in consumer projects
 
-Installation copies a short design route to `src/components/yam3x/AGENTS.md` when that file does not exist. The app-root `AGENTS.md` remains independent; see [Installation and first use](/guide/start/installation) for the preserved-file behavior. Agents that support Agent Skills can also install the published skill with `npx skills add Celec7/yam3x@yam3x`.
+Installation copies a short design route to `src/components/yam3x/AGENTS.md` when that file does not exist. The app-root `AGENTS.md` remains independent; see [Installation and first use](/guide/start/installation) for the preserved-file behavior. Agents that support Agent Skills can also install the published skill with `npx skills add Celec7/yam3x@yam3x`. Install `npx skills add Celec7/yam3x@yam3x-upgrade` when the task is adopting a newer copied-source version.
 
 ## Reference
 

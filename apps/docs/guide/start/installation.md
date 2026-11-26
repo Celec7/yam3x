@@ -7,7 +7,7 @@ pnpm dlx @celec7/yam3x@latest init
 pnpm dlx @celec7/yam3x@latest add button switch dialog
 ```
 
-Run `init` and `add` from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. When `add` initializes core, it copies the same foundation files. Core setup also adds the YAM3X design route as `src/components/yam3x/AGENTS.md` if no file exists there; an existing app-root `AGENTS.md` is independent, and an existing file at the YAM3X path is preserved. `add` copies component source and declares component dependencies. To find accepted component names, run `pnpm dlx @celec7/yam3x@latest list` from any directory; see the [component catalog](/components/) for categorized documentation. Your existing Vite configuration does not need additional plugins.
+Run `init` and `add` from the target app's root. `init` copies shared foundation files, declares their dependencies, and imports `yam3x.css` from the app entry point. When `add` initializes core, it copies the same foundation files. Core setup also adds the YAM3X design route as `src/components/yam3x/AGENTS.md` if no file exists there; an existing app-root `AGENTS.md` is independent, and an existing file at the YAM3X path is preserved. `add` copies component source and declares component dependencies. Both commands write `yam3x.lock.json` for the source they create; commit the lock with the copied source. To find accepted component names, run `pnpm dlx @celec7/yam3x@latest list` from any directory; see the [component catalog](/components/) for categorized documentation. Your existing Vite configuration does not need additional plugins.
 
 The generated `yam3x.css` loads Roboto and three Material Symbols font variants from Google Fonts at runtime. For offline apps or restrictive content security policies, host the fonts yourself and replace that import while keeping the `Roboto`, `Material Symbols Outlined`, `Material Symbols Rounded`, and `Material Symbols Sharp` family names.
 
@@ -43,4 +43,10 @@ Agents that support Agent Skills can install the published YAM3X skill for compo
 npx skills add Celec7/yam3x@yam3x
 ```
 
-The skill is optional. Initialization still copies the short design route to `src/components/yam3x/AGENTS.md`; the skill adds a broader workflow for agents that support Agent Skills.
+The skill is optional. Initialization still copies the short design route to `src/components/yam3x/AGENTS.md`; the skill adds a broader workflow for agents that support Agent Skills. For source upgrades, install the upgrade skill separately:
+
+```sh
+npx skills add Celec7/yam3x@yam3x-upgrade
+```
+
+`yam3x-upgrade` owns baseline adoption, drift inspection, and conflict judgment; the [Update copied source](/guide/maintain/updating) guide owns the procedure and commands.

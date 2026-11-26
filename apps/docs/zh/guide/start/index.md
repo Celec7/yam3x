@@ -10,12 +10,12 @@
 
 ## 已有复制源码
 
-- [更新已复制的源码](/zh/guide/maintain/updating)说明如何比较并合并新版 YAM3X，同时保留本地修改。
+- [更新已复制的源码](/zh/guide/maintain/updating)说明如何记录 0.6.0 基线、用 `status` 和 `diff` 检查源码漂移，并在不覆盖本地修改的前提下合并新版 YAM3X。
 - 组件导入继续使用 `./components/yam3x/`；站点专用的 `@registry` 路径只用于示例源码。
 
 ## 消费项目中的 Agent
 
-安装时，如果目标文件尚不存在，CLI 会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`。应用根目录的 `AGENTS.md` 保持独立；保留文件的行为见[安装与首次使用](/zh/guide/start/installation)。支持 Agent Skills 的 agent 还可以通过 `npx skills add Celec7/yam3x@yam3x` 安装已发布的 skill。
+安装时，如果目标文件尚不存在，CLI 会把简短的设计指南入口复制到 `src/components/yam3x/AGENTS.md`。应用根目录的 `AGENTS.md` 保持独立；保留文件的行为见[安装与首次使用](/zh/guide/start/installation)。支持 Agent Skills 的 agent 还可以通过 `npx skills add Celec7/yam3x@yam3x` 安装已发布的 skill。任务涉及采用新版复制源码时，安装 `npx skills add Celec7/yam3x@yam3x-upgrade`。
 
 ## 参考
 
