@@ -6,6 +6,7 @@ import { dirname, join, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 import semver from 'semver'
+import { hashFile } from '../src/lock.mjs'
 import { readWorkspaceCatalog } from '../../../scripts/catalog.mjs'
 import { buildRegistry } from '../../../scripts/generate-registry.mjs'
 
@@ -359,6 +360,103 @@ test('add preserves a locally edited component file on a repeated add', async (t
     await readFile(componentPath, 'utf8'),
     '<template><button>Local edit</button></template>\n',
   )
+})
+
+test('add records a deterministic source baseline lock', async (t) => {
+  const directory = await fixture(t)
+  const result = runCli(['add', 'button'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+
+  const raw = await readFile(join(directory, 'yam3x.lock.json'), 'utf8')
+  assert.ok(raw.endsWith('\n'))
+  const lock = JSON.parse(raw)
+  const { version } = JSON.parse(
+    await readFile(join(projectRoot, 'packages/cli/package.json'), 'utf8'),
+  )
+
+  assert.equal(lock.schemaVersion, 1)
+  assert.equal(lock.package, '@celec7/yam3x')
+  assert.equal(lock.registry, 'yam3x')
+  assert.deepEqual(lock.components, {
+    button: { entry: 'src/components/yam3x/button/index.ts' },
+  })
+  assert.deepEqual(lock.files['src/components/yam3x/button/button.vue'], {
+    source: 'components/button/button.vue',
+    version,
+    integrity: await hashFile(join(projectRoot, 'registry/components/button/button.vue')),
+    components: ['button'],
+  })
+  assert.equal(lock.files['src/yam3x.css'].core, true)
+  assert.deepEqual(
+    Object.keys(lock.files),
+    Object.keys(lock.files).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)),
+  )
+})
+
+test('repeated add preserves a local edit and the lock baseline', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const lockPath = join(directory, 'yam3x.lock.json')
+  const lockBefore = await readFile(lockPath, 'utf8')
+  const componentPath = join(directory, 'src/components/yam3x/button/button.vue')
+  await writeFile(componentPath, '<template><button>Local edit</button></template>\n')
+
+  const result = runCli(['add', 'button'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.equal(await readFile(lockPath, 'utf8'), lockBefore)
+  assert.equal(
+    await readFile(componentPath, 'utf8'),
+    '<template><button>Local edit</button></template>\n',
+  )
+
+  const status = runCli(['status'], directory)
+  assert.equal(status.status, 0, status.stderr || status.stdout)
+  assert.match(status.stdout, /Lock baseline: 0\.6\.0/)
+  assert.match(status.stdout, /Source: \d+ unchanged, 1 locally modified, 0 missing\./)
+
+  const json = runCli(['status', '--json'], directory)
+  assert.equal(json.status, 0, json.stderr || json.stdout)
+  const plan = JSON.parse(json.stdout)
+  assert.deepEqual(plan.lock.versions, ['0.6.0'])
+  assert.equal(plan.lock.drift.modified, 1)
+})
+
+test('init records foundation files in the source baseline lock', async (t) => {
+  const directory = await fixture(t)
+  const result = runCli(['init'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  const lock = JSON.parse(await readFile(join(directory, 'yam3x.lock.json'), 'utf8'))
+
+  assert.deepEqual(lock.components, {})
+  assert.equal(lock.files['src/yam3x.css'].core, true)
+  assert.equal(lock.files['src/components/yam3x/AGENTS.md'].core, true)
+  assert.ok(Object.keys(lock.files).length > 1)
+})
+
+test('a foundation-only lock does not hide legacy component files', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  await rm(join(directory, 'yam3x.lock.json'))
+  assert.equal(runCli(['init'], directory).status, 0)
+
+  const lock = JSON.parse(await readFile(join(directory, 'yam3x.lock.json'), 'utf8'))
+  assert.deepEqual(lock.components, {})
+
+  const status = runCli(['status'], directory)
+  assert.equal(status.status, 0, status.stderr || status.stdout)
+  assert.doesNotMatch(status.stdout, /No YAM3X components are installed/)
+  assert.match(status.stdout, /Lock baseline: 0\.6\.0/)
+})
+
+test('status uses the lock component set when an entry file is missing', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  await rm(join(directory, 'src/components/yam3x/button/index.ts'))
+
+  const result = runCli(['status'], directory)
+  assert.equal(result.status, 1)
+  assert.match(result.stdout, /Missing files/)
+  assert.match(result.stdout, /src\/components\/yam3x\/button\/index\.ts/)
 })
 
 test('add installs foundation dependencies even when the component has no extra packages', async (t) => {

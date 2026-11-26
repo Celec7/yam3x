@@ -17,14 +17,22 @@ export function componentEntryFile(component) {
   return component.files.find((file) => file.endsWith('/index.ts'))
 }
 
-export function installedComponents(registry, projectRoot) {
-  return Object.keys(registry.components).filter((name) => {
+export function installedComponents(registry, projectRoot, lock) {
+  const names = new Set()
+  if (lock) {
+    for (const name of Object.keys(lock.components)) {
+      if (Object.hasOwn(registry.components, name)) names.add(name)
+    }
+  }
+  for (const name of Object.keys(registry.components)) {
     const entry = componentEntryFile(registry.components[name])
-    return Boolean(entry) && existsSync(join(projectRoot, COMPONENTS_DIR, entry))
-  })
+    if (entry && existsSync(join(projectRoot, COMPONENTS_DIR, entry))) names.add(name)
+  }
+  return [...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
 }
 
-export function coreInstalled(projectRoot, project) {
+export function coreInstalled(projectRoot, project, lock) {
+  if (lock && Object.values(lock.files).some((file) => file.core)) return true
   return existsSync(join(projectRoot, project.yam3x?.style ?? DEFAULT_STYLE))
 }
 

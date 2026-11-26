@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs'
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { lockDrift, lockVersions, readLock, updateLockFromPlan, writeLock } from './lock.mjs'
 import {
   applyPackagePlan,
   coreInstalled,
@@ -215,6 +216,32 @@ function printDependencySummary(packages) {
   )
 }
 
+function printLockSummary(lock, drift) {
+  const versions = lockVersions(lock)
+  const components = Object.keys(lock.components).length
+  const files = Object.keys(lock.files).length
+  console.log(
+    `Lock baseline: ${versions.length ? versions.join(', ') : 'none'} (${components} component(s), ${files} file(s))`,
+  )
+  console.log(
+    `Source: ${drift.clean} unchanged, ${drift.modified} locally modified, ${drift.missing} missing.`,
+  )
+}
+
+async function recordSourceBaseline({ lock, plan, registry, version, addedFiles, projectRoot }) {
+  const { lock: nextLock, changed } = await updateLockFromPlan({
+    lock,
+    plan,
+    registry,
+    registryRoot,
+    version,
+    addedFiles,
+  })
+  if (!changed) return false
+  await writeLock(projectRoot, nextLock)
+  return true
+}
+
 async function installIfNeeded(plan, project, options) {
   if (!planNeedsInstall(plan)) return
   if (options.install) {
@@ -251,6 +278,7 @@ async function run() {
 
   if (command === 'init') {
     await requireMain(options.cwd)
+    const lock = await readLock(options.cwd)
     const plan = await planReconcile({
       registry,
       registryRoot,
@@ -265,11 +293,21 @@ async function run() {
       return
     }
     const { addedFiles, changedPackages } = await applyPlan(plan, project)
+    const { version } = await readJson(join(packageRoot, 'package.json'))
+    const recorded = await recordSourceBaseline({
+      lock,
+      plan,
+      registry,
+      version,
+      addedFiles,
+      projectRoot: options.cwd,
+    })
     setProjectConfig(project)
     await injectStyleImport(options.cwd)
     await writeJson(packagePath, project)
     printFileSummary(addedFiles)
     printDependencySummary(changedPackages)
+    if (recorded) console.log('Recorded source baseline in yam3x.lock.json.')
     await installIfNeeded(plan, project, options)
     return
   }
@@ -278,6 +316,7 @@ async function run() {
     const components = [...new Set(options.positional)]
     if (components.length === 0) throw new Error('yam3x add requires at least one component name.')
     await requireMain(options.cwd)
+    const lock = await readLock(options.cwd)
     const plan = await planReconcile({
       registry,
       registryRoot,
@@ -292,18 +331,29 @@ async function run() {
       return
     }
     const { addedFiles, changedPackages } = await applyPlan(plan, project)
+    const { version } = await readJson(join(packageRoot, 'package.json'))
+    const recorded = await recordSourceBaseline({
+      lock,
+      plan,
+      registry,
+      version,
+      addedFiles,
+      projectRoot: options.cwd,
+    })
     setProjectConfig(project)
     await injectStyleImport(options.cwd)
     await writeJson(packagePath, project)
     printFileSummary(addedFiles)
     printDependencySummary(changedPackages)
+    if (recorded) console.log('Recorded source baseline in yam3x.lock.json.')
     await installIfNeeded(plan, project, options)
     return
   }
 
   if (command === 'status') {
-    const components = installedComponents(registry, options.cwd)
-    const includeCore = coreInstalled(options.cwd, project) || components.length > 0
+    const lock = await readLock(options.cwd)
+    const components = installedComponents(registry, options.cwd, lock)
+    const includeCore = coreInstalled(options.cwd, project, lock) || components.length > 0
     if (!components.length && !includeCore) {
       console.log('No YAM3X components are installed.')
       return
@@ -316,14 +366,25 @@ async function run() {
       componentNames: components,
       includeCore,
     })
+    if (lock) {
+      const drift = await lockDrift(lock, options.cwd)
+      plan.lock = {
+        versions: lockVersions(lock),
+        components: Object.keys(lock.components).length,
+        files: Object.keys(lock.files).length,
+        drift,
+      }
+      if (!options.json) printLockSummary(lock, drift)
+    }
     printPlan(plan, options)
     if (planNeedsAttention(plan)) process.exitCode = 1
     return
   }
 
   if (command === 'sync') {
-    const components = installedComponents(registry, options.cwd)
-    const includeCore = coreInstalled(options.cwd, project) || components.length > 0
+    const lock = await readLock(options.cwd)
+    const components = installedComponents(registry, options.cwd, lock)
+    const includeCore = coreInstalled(options.cwd, project, lock) || components.length > 0
     if (!components.length && !includeCore) {
       console.log('No YAM3X components are installed.')
       return
