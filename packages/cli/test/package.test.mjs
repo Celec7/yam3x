@@ -36,6 +36,7 @@ test('packed CLI contains a runnable registry and installs a component', async (
     assert.ok(manifest.dependencies.semver)
     assert.ok(existsSync(join(packageRoot, 'package/src/plan.mjs')))
     assert.ok(existsSync(join(packageRoot, 'package/src/source.mjs')))
+    assert.ok(existsSync(join(packageRoot, 'package/src/upgrade.mjs')))
     assert.ok(existsSync(join(packageRoot, 'package/baselines/0.6.0.json')))
     assert.ok(existsSync(join(packageRoot, 'package/registry/registry.json')))
     assert.match(

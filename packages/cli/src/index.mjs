@@ -10,9 +10,20 @@ import {
   normalizeLock,
   projectPath,
   readLock,
+  toPosix,
   updateLockFromPlan,
   writeLock,
 } from './lock.mjs'
+import {
+  applyJournal,
+  journalFromSource,
+  readJournal,
+  recoverJournal,
+  removeJournal,
+  removeJournalTargets,
+  resolveLockTarget,
+  writeJournal,
+} from './upgrade.mjs'
 import {
   classifySource,
   filterSourceFiles,
@@ -46,6 +57,9 @@ function parseOptions(args) {
     json: false,
     component: undefined,
     from: '0.6.0',
+    applyClean: false,
+    finalize: false,
+    resolve: [],
   }
 
   for (let index = 0; index < args.length; index += 1) {
@@ -65,6 +79,15 @@ function parseOptions(args) {
       const value = args[index + 1]
       if (!value) throw new Error('--from requires a version.')
       options.from = value
+      index += 1
+    } else if (argument === '--apply-clean') {
+      options.applyClean = true
+    } else if (argument === '--finalize') {
+      options.finalize = true
+    } else if (argument === '--resolve') {
+      const value = args[index + 1]
+      if (!value) throw new Error('--resolve requires a target path.')
+      options.resolve.push(value)
       index += 1
     } else if (argument === '--no-install') {
       options.install = false
@@ -281,6 +304,33 @@ function printSourceDiff(files) {
   for (const file of changes) console.log(`${file.state.padEnd(14)} ${file.target}`)
 }
 
+const UPGRADE_BLOCKERS = new Set([
+  'upstream-only',
+  'conflict',
+  'missing',
+  'untracked',
+  'added',
+  'removed',
+])
+
+function upgradeBlockers(files) {
+  return files.filter((file) => UPGRADE_BLOCKERS.has(file.state))
+}
+
+function printUpgradePlan(source, journal) {
+  printSourceDiff(source.files)
+  const apply = source.files.filter((file) => file.state === 'upstream-only').length
+  const conflict = source.files.filter((file) => file.state === 'conflict').length
+  if (apply > 0 || conflict > 0) {
+    console.log(`Apply ${apply} clean file(s); resolve ${conflict} conflict(s).`)
+  }
+  if (journal?.files.length) {
+    console.log(
+      `Journal: ${journal.files.length} unresolved entr${journal.files.length === 1 ? 'y' : 'ies'}.`,
+    )
+  }
+}
+
 async function recordSourceBaseline({ lock, plan, registry, version, addedFiles, projectRoot }) {
   const { lock: nextLock, changed } = await updateLockFromPlan({
     lock,
@@ -314,7 +364,7 @@ async function run() {
 
   if (!command || command === '--help' || command === '-h') {
     console.log(
-      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]\n       yam3x adopt [--from <version>] [--cwd <project>] [--dry-run]\n       yam3x status [--cwd <project>] [--json]\n       yam3x diff [--component <component>] [--cwd <project>] [--json]\n       yam3x sync [--cwd <project>] [--dry-run] [--no-install]',
+      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]\n       yam3x adopt [--from <version>] [--cwd <project>] [--dry-run]\n       yam3x status [--cwd <project>] [--json]\n       yam3x diff [--component <component>] [--cwd <project>] [--json]\n       yam3x upgrade [--apply-clean] [--resolve <target>] [--finalize] [--cwd <project>] [--json]\n       yam3x sync [--cwd <project>] [--dry-run] [--no-install]',
     )
     return
   }
@@ -517,6 +567,206 @@ async function run() {
       printSourceDiff(files)
     }
     if (hasSourceChanges(files)) process.exitCode = 1
+    return
+  }
+
+  if (command === 'upgrade') {
+    if (options.applyClean && (options.finalize || options.resolve.length > 0)) {
+      throw new Error('--apply-clean cannot be combined with --resolve or --finalize.')
+    }
+    if (options.finalize && options.resolve.length > 0) {
+      throw new Error('--finalize cannot be combined with --resolve.')
+    }
+    if (options.dryRun && (options.resolve.length > 0 || options.finalize)) {
+      throw new Error('--dry-run supports upgrade planning only.')
+    }
+
+    const lock = await readLock(options.cwd)
+    if (!lock) throw new Error('No yam3x.lock.json found.')
+    const components = installedComponents(registry, options.cwd, lock)
+    const includeCore = coreInstalled(options.cwd, project, lock) || components.length > 0
+    if (!components.length && !includeCore) {
+      console.log('No YAM3X components are installed.')
+      return
+    }
+
+    const { version } = await readJson(join(packageRoot, 'package.json'))
+    const makePlan = () =>
+      planReconcile({
+        registry,
+        registryRoot,
+        projectRoot: options.cwd,
+        project,
+        componentNames: components,
+        includeCore,
+      })
+    const classify = async (plan) =>
+      classifySource({
+        lock,
+        plan,
+        registry,
+        registryRoot,
+        projectRoot: options.cwd,
+      })
+
+    let plan = await makePlan()
+    let source = await classify(plan)
+    let journal = await readJournal(options.cwd)
+    const needsRecovery =
+      !options.dryRun && (options.applyClean || options.finalize || options.resolve.length > 0)
+    if (journal && needsRecovery) {
+      const recovered = await recoverJournal({ journal, lock, projectRoot: options.cwd })
+      journal = recovered.journal
+      if (recovered.lockChanged) await writeLock(options.cwd, lock)
+      if (journal.files.length > 0) {
+        await writeJournal(options.cwd, journal)
+      } else {
+        await removeJournal(options.cwd)
+        journal = undefined
+      }
+      plan = await makePlan()
+      source = await classify(plan)
+    }
+
+    if (options.resolve.length > 0) {
+      const targets = options.resolve.map(toPosix)
+      const resolved = []
+      let lockChanged = false
+      for (const target of targets) {
+        const file = source.files.find((item) => item.target === target)
+        if (!file) throw new Error(`Unknown source file "${target}".`)
+        if (file.state !== 'conflict' && file.state !== 'converged') {
+          throw new Error(
+            `Cannot resolve ${target} in state ${file.state}; only conflict or converged files can be resolved.`,
+          )
+        }
+        if (resolveLockTarget(lock, file, version)) lockChanged = true
+        resolved.push(target)
+      }
+      if (lockChanged) await writeLock(options.cwd, lock)
+      if (journal) {
+        journal = removeJournalTargets(journal, resolved)
+        if (journal.files.length > 0) {
+          await writeJournal(options.cwd, journal)
+        } else {
+          await removeJournal(options.cwd)
+          journal = undefined
+        }
+      }
+      plan = await makePlan()
+      source = await classify(plan)
+      if (options.json) {
+        console.log(
+          JSON.stringify(
+            { targetVersion: version, resolved, counts: source.counts, files: source.files },
+            null,
+            2,
+          ),
+        )
+      } else {
+        console.log(`Resolved ${resolved.length} conflict(s).`)
+        console.log(`Source: ${sourceSummary(source.counts)}`)
+        printSourceDiff(source.files)
+      }
+      if (journal?.files.length) process.exitCode = 1
+      return
+    }
+
+    if (options.finalize) {
+      if (journal?.files.length) {
+        throw new Error(
+          'The upgrade journal still has unresolved entries. Run --apply-clean or --resolve first.',
+        )
+      }
+      const blockers = upgradeBlockers(source.files)
+      if (blockers.length > 0) {
+        throw new Error(
+          `Cannot finalize with unresolved source states: ${blockers
+            .map((file) => `${file.state} ${file.target}`)
+            .join(', ')}`,
+        )
+      }
+      if (journal) await removeJournal(options.cwd)
+      if (options.json) {
+        console.log(
+          JSON.stringify(
+            { targetVersion: version, finalized: true, counts: source.counts, files: source.files },
+            null,
+            2,
+          ),
+        )
+      } else {
+        console.log('Upgrade finalized.')
+        console.log(`Source: ${sourceSummary(source.counts)}`)
+      }
+      return
+    }
+
+    if (!options.applyClean || options.dryRun) {
+      if (options.json) {
+        console.log(
+          JSON.stringify(
+            {
+              targetVersion: version,
+              counts: source.counts,
+              files: source.files,
+              journal: journal ?? null,
+            },
+            null,
+            2,
+          ),
+        )
+      } else {
+        printUpgradePlan(source, journal)
+        console.log(`Source: ${sourceSummary(source.counts)}`)
+      }
+      return
+    }
+
+    const nextJournal = journalFromSource(source, version)
+    if (nextJournal.files.length > 0) {
+      await writeJournal(options.cwd, nextJournal)
+    } else {
+      await removeJournal(options.cwd)
+    }
+    const applied = await applyJournal({
+      journal: nextJournal,
+      lock,
+      plan,
+      projectRoot: options.cwd,
+    })
+    if (applied.lockChanged) await writeLock(options.cwd, lock)
+    journal = applied.journal.files.length > 0 ? applied.journal : undefined
+    if (journal) {
+      await writeJournal(options.cwd, journal)
+    } else {
+      await removeJournal(options.cwd)
+    }
+
+    plan = await makePlan()
+    source = await classify(plan)
+    if (options.json) {
+      console.log(
+        JSON.stringify(
+          {
+            targetVersion: version,
+            applied: applied.applied,
+            counts: source.counts,
+            files: source.files,
+            journal: journal ?? null,
+          },
+          null,
+          2,
+        ),
+      )
+    } else {
+      console.log(`Applied ${applied.applied.length} clean file(s).`)
+      console.log(`Source: ${sourceSummary(source.counts)}`)
+      printSourceDiff(source.files)
+    }
+    if (journal?.files.length || upgradeBlockers(source.files).length > 0) {
+      process.exitCode = 1
+    }
     return
   }
 

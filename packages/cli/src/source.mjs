@@ -89,6 +89,8 @@ export async function classifySource({ lock, plan, registry, registryRoot, proje
       version: entry.version,
       components: [...new Set(entry.components ?? ownersByTarget.get(target) ?? [])].sort(),
       core: entry.core === true || coreTargets.has(target),
+      baseIntegrity: entry.integrity,
+      upstreamIntegrity: upstream ?? null,
       state: sourceState({ base: entry.integrity, local, upstream }),
     })
   }
@@ -106,6 +108,8 @@ export async function classifySource({ lock, plan, registry, registryRoot, proje
       version: null,
       components: [...(ownersByTarget.get(target) ?? [])].sort(),
       core: coreTargets.has(target),
+      baseIntegrity: null,
+      upstreamIntegrity: upstream,
       state: local ? 'untracked' : 'added',
     })
   }

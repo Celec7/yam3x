@@ -535,6 +535,157 @@ test('diff reports missing, untracked, added, and removed source files', async (
   )
 })
 
+test('upgrade applies clean files while preserving local edits', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const buttonPath = join(directory, 'src/components/yam3x/button/button.vue')
+  const indexPath = join(directory, 'src/components/yam3x/button/index.ts')
+  const lockPath = join(directory, 'yam3x.lock.json')
+  const oldSource = '<template><button>Old upstream</button></template>\n'
+  await writeFile(buttonPath, oldSource)
+  await writeFile(indexPath, '// local edit\n')
+
+  const lock = JSON.parse(await readFile(lockPath, 'utf8'))
+  lock.files['src/components/yam3x/button/button.vue'].integrity = await hashFile(buttonPath)
+  lock.files['src/components/yam3x/button/button.vue'].version = '0.5.0'
+  await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`)
+
+  const result = runCli(['upgrade', '--apply-clean'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.match(result.stdout, /Applied 1 clean file\(s\)\./)
+  assert.equal(
+    await readFile(buttonPath, 'utf8'),
+    await readFile(join(projectRoot, 'registry/components/button/button.vue'), 'utf8'),
+  )
+  assert.equal(await readFile(indexPath, 'utf8'), '// local edit\n')
+
+  const updated = JSON.parse(await readFile(lockPath, 'utf8'))
+  assert.equal(
+    updated.files['src/components/yam3x/button/button.vue'].integrity,
+    await hashFile(join(projectRoot, 'registry/components/button/button.vue')),
+  )
+  assert.equal(updated.files['src/components/yam3x/button/button.vue'].version, '0.6.0')
+  assert.equal(
+    updated.files['src/components/yam3x/button/index.ts'].integrity,
+    lock.files['src/components/yam3x/button/index.ts'].integrity,
+  )
+  assert.equal(existsSync(join(directory, '.yam3x/upgrade-journal.json')), false)
+})
+
+test('upgrade keeps conflicts until resolve and finalize', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const target = 'src/components/yam3x/button/button.vue'
+  const buttonPath = join(directory, target)
+  const lockPath = join(directory, 'yam3x.lock.json')
+  const oldSource = '<template><button>Old upstream</button></template>\n'
+  await writeFile(buttonPath, oldSource)
+
+  const lock = JSON.parse(await readFile(lockPath, 'utf8'))
+  lock.files[target].integrity = await hashFile(buttonPath)
+  lock.files[target].version = '0.5.0'
+  await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`)
+  const localMerge = '<template><button>Local merge</button></template>\n'
+  await writeFile(buttonPath, localMerge)
+
+  const apply = runCli(['upgrade', '--apply-clean'], directory)
+  assert.equal(apply.status, 1)
+  assert.equal(await readFile(buttonPath, 'utf8'), localMerge)
+  assert.ok(existsSync(join(directory, '.yam3x/upgrade-journal.json')))
+
+  const finalizeBlocked = runCli(['upgrade', '--finalize'], directory)
+  assert.equal(finalizeBlocked.status, 1)
+  assert.match(finalizeBlocked.stderr, /journal still has unresolved entries/i)
+
+  const resolve = runCli(['upgrade', '--resolve', target], directory)
+  assert.equal(resolve.status, 0, resolve.stderr || resolve.stdout)
+  assert.match(resolve.stdout, /Resolved 1 conflict\(s\)\./)
+  assert.equal(await readFile(buttonPath, 'utf8'), localMerge)
+  assert.equal(existsSync(join(directory, '.yam3x/upgrade-journal.json')), false)
+
+  const updated = JSON.parse(await readFile(lockPath, 'utf8'))
+  assert.equal(
+    updated.files[target].integrity,
+    await hashFile(join(projectRoot, 'registry/components/button/button.vue')),
+  )
+  assert.equal(updated.files[target].version, '0.6.0')
+
+  const finalize = runCli(['upgrade', '--finalize'], directory)
+  assert.equal(finalize.status, 0, finalize.stderr || finalize.stdout)
+  assert.match(finalize.stdout, /Upgrade finalized\./)
+})
+
+test('upgrade --dry-run and journal recovery do not lose clean files', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const target = 'src/components/yam3x/button/button.vue'
+  const buttonPath = join(directory, target)
+  const lockPath = join(directory, 'yam3x.lock.json')
+  const oldSource = '<template><button>Old upstream</button></template>\n'
+  await writeFile(buttonPath, oldSource)
+
+  const lock = JSON.parse(await readFile(lockPath, 'utf8'))
+  const baseIntegrity = await hashFile(buttonPath)
+  lock.files[target].integrity = baseIntegrity
+  lock.files[target].version = '0.5.0'
+  await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`)
+
+  const dryRun = runCli(['upgrade', '--apply-clean', '--dry-run'], directory)
+  assert.equal(dryRun.status, 0, dryRun.stderr || dryRun.stdout)
+  assert.match(dryRun.stdout, /Apply 1 clean file\(s\)/)
+  assert.equal(await readFile(buttonPath, 'utf8'), oldSource)
+  assert.equal(existsSync(join(directory, '.yam3x/upgrade-journal.json')), false)
+  assert.equal(JSON.parse(await readFile(lockPath, 'utf8')).files[target].integrity, baseIntegrity)
+
+  const upstreamPath = join(projectRoot, 'registry/components/button/button.vue')
+  const upstreamSource = await readFile(upstreamPath, 'utf8')
+  await writeFile(buttonPath, upstreamSource)
+  await mkdir(join(directory, '.yam3x'), { recursive: true })
+  await writeFile(
+    join(directory, '.yam3x/upgrade-journal.json'),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        package: '@celec7/yam3x',
+        registry: 'yam3x',
+        targetVersion: '0.6.0',
+        files: [
+          {
+            target,
+            source: 'components/button/button.vue',
+            baseIntegrity,
+            targetIntegrity: await hashFile(upstreamPath),
+            kind: 'apply',
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  )
+
+  const recovered = runCli(['upgrade', '--apply-clean'], directory)
+  assert.equal(recovered.status, 0, recovered.stderr || recovered.stdout)
+  assert.match(recovered.stdout, /Applied 0 clean file\(s\)\./)
+  assert.equal(existsSync(join(directory, '.yam3x/upgrade-journal.json')), false)
+  assert.equal(
+    JSON.parse(await readFile(lockPath, 'utf8')).files[target].integrity,
+    await hashFile(upstreamPath),
+  )
+  assert.equal(await readFile(buttonPath, 'utf8'), upstreamSource)
+})
+
+test('upgrade --finalize refuses unresolved source states', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  await rm(join(directory, 'src/components/yam3x/button/button.vue'))
+
+  const result = runCli(['upgrade', '--finalize'], directory)
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /unresolved source states/)
+  assert.match(result.stderr, /missing src\/components\/yam3x\/button\/button\.vue/)
+})
+
 test('adopt records a 0.6.0 baseline without changing copied source', async (t) => {
   const directory = await fixture(t)
   const baseline = JSON.parse(
