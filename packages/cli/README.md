@@ -20,6 +20,8 @@ pnpm dlx @celec7/yam3x@latest add button switch dialog
 pnpm dlx @celec7/yam3x@latest adopt
 pnpm dlx @celec7/yam3x@latest status
 pnpm dlx @celec7/yam3x@latest diff
+pnpm dlx @celec7/yam3x@latest upgrade
+pnpm dlx @celec7/yam3x@latest upgrade --apply-clean
 pnpm dlx @celec7/yam3x@latest sync
 ```
 
@@ -46,6 +48,17 @@ pnpm dlx @celec7/yam3x@latest diff --component button
 ```
 
 `diff` states are `current`, `converged`, `upstream-only`, `local-only`, `conflict`, `missing`, `untracked`, `added`, and `removed`. It writes nothing and exits nonzero for any state other than `current` or `converged`. `status` exits nonzero for dependency issues, conflicts, and missing files. Neither command applies source changes.
+
+`upgrade` plans the source merge without writing by default. `--apply-clean` copies only `upstream-only` files and advances their lock entries; it never overwrites `local-only`, `conflict`, `missing`, `untracked`, `added`, or `removed` files. A local `.yam3x/upgrade-journal.json` records an in-progress apply and is not committed.
+
+After resolving a conflict in the application source, record the resolution and advance that file’s baseline:
+
+```sh
+pnpm dlx @celec7/yam3x@latest upgrade --resolve src/components/yam3x/button/button.vue
+pnpm dlx @celec7/yam3x@latest upgrade --finalize
+```
+
+`--resolve` accepts a `conflict` or `converged` target. `--finalize` refuses while the journal or any `upstream-only`, `conflict`, `missing`, `untracked`, `added`, or `removed` state remains; `local-only` files may remain intentionally. `upgrade`, `--apply-clean`, `--resolve`, and `--finalize` support `--json`; `--apply-clean --dry-run` prints the plan without writing.
 
 `sync` adds missing runtime and development dependencies and narrows unsafe declarations for installed components; it does not remove dependencies or modify copied source. Use `--json` with `status` or `diff` for machine-readable output, and `--dry-run` with `sync` to inspect the planned changes.
 

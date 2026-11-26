@@ -34,14 +34,16 @@ The update guide owns the commands and state definitions. Do not hand-compute ha
 1. **Establish the baseline.** If the lock is absent and the app is on the supported 0.6.0 installation, run `adopt` with `--dry-run` first, then write and commit the lock. If the app is older than 0.6.0, stop; it must reach 0.6.0 manually. If a lock already exists, do not replace it.
 2. **Inspect.** Run `status` and `diff`. Record counts and the exact targets for `upstream-only`, `local-only`, `conflict`, `missing`, `untracked`, `added`, and `removed`. Keep `converged` files as already current.
 3. **Plan before editing.** For each non-clean target, state whether the application intends to keep, merge, restore, or remove it. Do not start with a bulk copy. If a breaking API or behavior change lacks a migration page, stop and report the gap.
-4. **Merge `upstream-only` files.** Apply the upstream change, then check that imports, props, events, slots, and documented CSS hooks still match the application.
+4. **Apply clean files.** Run `upgrade --apply-clean` to copy `upstream-only` files and advance their lock entries. The CLI leaves every other state untouched. Do not bulk-copy `conflict` files.
 5. **Preserve `local-only` files.** Leave them untouched unless the application explicitly decides to drop the local extension.
-6. **Resolve `conflict` files by intent.** Read the local change and the upstream change separately. Combine behavior, not text. Re-check state ownership, focus, keyboard paths, and accessibility after merging.
+6. **Resolve `conflict` files by intent.** Read the local change and the upstream change separately. Combine behavior, not text. Re-check state ownership, focus, keyboard paths, and accessibility after merging. Record each resolution with `upgrade --resolve <target>`; it advances the baseline without requiring the local result to equal upstream.
 7. **Decide missing and untracked files.** Restore a `missing` file when the component is incomplete; confirm an intentional deletion otherwise. Adopt an `untracked` file only after identifying its upstream source.
 8. **Handle removed files.** Remove a tracked file only when its imports are gone and the application does not rely on the local copy. Keep local-only files as application-owned source.
 9. **Align dependencies.** Run `status` and `sync` after the source merge. Do not let `sync` modify copied source.
 10. **Verify.** Run the application type check and build. Exercise the affected interactions in a browser at compact, medium, and expanded widths; include keyboard flow, focus return, 200% text, RTL, reduced motion, and forced colors where relevant.
-11. **Record the outcome.** Report state counts, files intentionally kept local, files removed, unresolved conflicts, and the lock version. Do not claim a clean upgrade while a `conflict` or unexplained `missing` remains.
+11. **Finalize.** Run `upgrade --finalize` only when the journal and every blocking state are resolved. `local-only` files may remain. Report state counts, files intentionally kept local, files removed, unresolved conflicts, and the lock version. Do not claim a clean upgrade while a `conflict` or unexplained `missing` remains.
+
+The upgrade journal lives in `.yam3x/upgrade-journal.json` and is not committed. If a command is interrupted, rerun the upgrade; applied files are reconciled from their hashes before new work starts.
 
 ## Conflict judgment
 

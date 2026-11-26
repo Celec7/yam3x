@@ -17,7 +17,9 @@ The CLI records a committed `yam3x.lock.json` baseline and reads it during sourc
 - `init` and `add` record files they create. `add` does not advance the baseline of an existing entry.
 - `adopt` records the 0.6.0 baseline for existing installations without modifying source. The published 0.6.0 package is immutable; the CLI ships a generated baseline manifest for that version. Versions before 0.6.0 are outside this flow.
 - `status` reports source state counts alongside dependency state. `diff` is read-only and classifies files as `current`, `converged`, `upstream-only`, `local-only`, `conflict`, `missing`, `untracked`, `added`, or `removed`.
-- The CLI never overwrites a source file during inspection or adoption. Local edits and conflicts remain explicit.
+- `upgrade --apply-clean` copies only `upstream-only` files and advances their baseline. A `.yam3x/upgrade-journal.json` transaction reconciles interrupted applies from file hashes.
+- `upgrade --resolve <target>` advances a resolved `conflict` or `converged` file to the target upstream without requiring the local result to equal upstream. `upgrade --finalize` refuses while the journal or any blocking state remains.
+- The CLI never overwrites `local-only`, `conflict`, `missing`, `untracked`, `added`, or `removed` source. Local edits and conflicts remain explicit.
 
 ## Alternatives considered
 
@@ -33,17 +35,18 @@ The CLI records a committed `yam3x.lock.json` baseline and reads it during sourc
 - Formatting copied source counts as a local change because integrity is exact after BOM and line-ending normalization. Whitespace-only changes are not hidden.
 - Missing files and intentional deletions are ambiguous and require a decision; the CLI reports them without restoring or deleting source.
 - A known 0.6.0 local patch is classified as `local-only`; an upstream change touching the same file remains a `conflict`.
-- The initial feature set inspects and adopts. It does not apply source changes, run a three-way merge, or update a lock after a manual merge.
+- Clean source application is transactional but not a three-way merge. Conflicts remain manual, and `--resolve` records the application’s decision rather than proving the merge is correct.
 
 ## Verification
 
-- `pnpm test:cli` passed 60 tests, including lock generation, idempotent `add`, local-edit preservation, `adopt` from the 0.6.0 baseline, source-state classification, and packed CLI installation.
+- `pnpm test:cli` passed 68 tests, including lock generation, idempotent `add`, local-edit preservation, `adopt` from the 0.6.0 baseline, source-state classification, clean apply, conflict resolution/finalization, journal recovery, and packed CLI installation.
 - `packages/cli/test/lock.test.mjs` covers hash normalization, deterministic lock writes, invalid schemas, and drift counts.
 - `packages/cli/test/source.test.mjs` covers the state matrix and component filtering.
+- `packages/cli/test/upgrade.test.mjs` covers journal filtering, ordering, target removal, and validation.
 - `pnpm format:check` and `pnpm lint` cover the changed CLI and test files.
 
 ## Conditions to reconsider
 
-- Consumers need automated clean-file application, conflict journals, or three-way merges; that requires a separate apply decision and stronger recovery tests.
+- Consumers need automatic three-way merges or automatic conflict resolution; clean-file application and explicit resolution are implemented, but conflicts remain manual.
 - Another historical version must be adoptable; the baseline manifest then needs a defined generation and support policy.
-- The lock schema or integrity normalization changes; that requires a schema migration and an upgrade note for consumers.
+- The lock schema, journal schema, or integrity normalization changes; that requires a schema migration and an upgrade note for consumers.

@@ -42,15 +42,38 @@ pnpm dlx @celec7/yam3x@latest diff --component button
 
 `status` exits with a nonzero code for dependency issues, conflicts, and missing files. `diff` exits with a nonzero code for any state other than `current` or `converged`.
 
+## Apply clean changes
+
+`upgrade` plans the source merge without writing. `--apply-clean` copies only files in `upstream-only` and advances their lock entries:
+
+```sh
+pnpm dlx @celec7/yam3x@latest upgrade
+pnpm dlx @celec7/yam3x@latest upgrade --apply-clean
+pnpm dlx @celec7/yam3x@latest upgrade --apply-clean --dry-run
+pnpm dlx @celec7/yam3x@latest upgrade --json
+```
+
+The CLI never overwrites `local-only`, `conflict`, `missing`, `untracked`, `added`, or `removed` files. It writes `.yam3x/upgrade-journal.json` while an upgrade is in progress; do not commit the journal.
+
+After manually merging a `conflict`, record the resolution and advance its baseline:
+
+```sh
+pnpm dlx @celec7/yam3x@latest upgrade --resolve src/components/yam3x/button/button.vue
+pnpm dlx @celec7/yam3x@latest upgrade --finalize
+```
+
+`--resolve` accepts a `conflict` or `converged` target. `--finalize` refuses while the journal or any `upstream-only`, `conflict`, `missing`, `untracked`, `added`, or `removed` state remains. `local-only` files may remain intentionally.
+
 ## Merge source
 
 1. Start from a clean application worktree and keep the lock committed.
 2. Run `diff` and review every `upstream-only` and `conflict` file.
-3. Merge component files, shared helpers, and foundation files together; do not apply one layer without the others.
-4. Preserve `local-only` changes deliberately. Record why a divergence exists in the application's own notes.
-5. Treat `missing`, `untracked`, and `removed` entries as decisions, not cleanup commands.
+3. Run `upgrade --apply-clean` for `upstream-only` files, or merge them manually when the upstream change needs context.
+4. Merge `conflict` files by intent. Preserve `local-only` changes deliberately and record why a divergence exists.
+5. Resolve conflicts with `upgrade --resolve`, then run `upgrade --finalize` after all decisions are complete.
+6. Treat `missing`, `untracked`, and `removed` entries as decisions, not cleanup commands.
 
-The CLI does not apply source changes automatically. `add` remains an install command: it fills missing files but does not advance an existing lock baseline.
+`add` remains an install command: it fills missing files but does not advance an existing lock baseline.
 
 ## Align dependencies
 
