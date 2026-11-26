@@ -4,7 +4,23 @@ import { existsSync } from 'node:fs'
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { lockDrift, lockVersions, readLock, updateLockFromPlan, writeLock } from './lock.mjs'
+import {
+  emptyLock,
+  lockVersions,
+  normalizeLock,
+  projectPath,
+  readLock,
+  updateLockFromPlan,
+  writeLock,
+} from './lock.mjs'
+import {
+  classifySource,
+  filterSourceFiles,
+  hasSourceChanges,
+  sourceCounts,
+  sourceNeedsAttention,
+  sourceSummary,
+} from './source.mjs'
 import {
   applyPackagePlan,
   coreInstalled,
@@ -28,6 +44,8 @@ function parseOptions(args) {
     install: true,
     dryRun: false,
     json: false,
+    component: undefined,
+    from: '0.6.0',
   }
 
   for (let index = 0; index < args.length; index += 1) {
@@ -37,6 +55,16 @@ function parseOptions(args) {
       const value = args[index + 1]
       if (!value) throw new Error('--cwd requires a project path.')
       options.cwd = isAbsolute(value) ? value : resolve(process.cwd(), value)
+      index += 1
+    } else if (argument === '--component') {
+      const value = args[index + 1]
+      if (!value) throw new Error('--component requires a component name.')
+      options.component = value
+      index += 1
+    } else if (argument === '--from') {
+      const value = args[index + 1]
+      if (!value) throw new Error('--from requires a version.')
+      options.from = value
       index += 1
     } else if (argument === '--no-install') {
       options.install = false
@@ -72,6 +100,24 @@ async function readRegistry() {
       )
     }
     throw error
+  }
+}
+
+async function readBaseline(version) {
+  const path = join(packageRoot, 'baselines', `${version}.json`)
+  let source
+  try {
+    source = await readFile(path, 'utf8')
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      throw new Error(`No adopt baseline is available for version ${version}.`, { cause: error })
+    }
+    throw error
+  }
+  try {
+    return normalizeLock(JSON.parse(source))
+  } catch (error) {
+    throw new Error(`Invalid baseline ${version}: ${error.message}`, { cause: error })
   }
 }
 
@@ -216,16 +262,23 @@ function printDependencySummary(packages) {
   )
 }
 
-function printLockSummary(lock, drift) {
+function printLockSummary(lock, summary) {
   const versions = lockVersions(lock)
   const components = Object.keys(lock.components).length
   const files = Object.keys(lock.files).length
   console.log(
     `Lock baseline: ${versions.length ? versions.join(', ') : 'none'} (${components} component(s), ${files} file(s))`,
   )
-  console.log(
-    `Source: ${drift.clean} unchanged, ${drift.modified} locally modified, ${drift.missing} missing.`,
-  )
+  console.log(`Source: ${summary}`)
+}
+
+function printSourceDiff(files) {
+  const changes = files.filter((file) => file.state !== 'current' && file.state !== 'converged')
+  if (changes.length === 0) {
+    console.log('Source is up to date.')
+    return
+  }
+  for (const file of changes) console.log(`${file.state.padEnd(14)} ${file.target}`)
 }
 
 async function recordSourceBaseline({ lock, plan, registry, version, addedFiles, projectRoot }) {
@@ -261,7 +314,7 @@ async function run() {
 
   if (!command || command === '--help' || command === '-h') {
     console.log(
-      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]\n       yam3x status [--cwd <project>] [--json]\n       yam3x sync [--cwd <project>] [--dry-run] [--no-install]',
+      'Usage: yam3x --version\n       yam3x list\n       yam3x init [--cwd <project>] [--no-install]\n       yam3x add <component> [component ...] [--cwd <project>] [--no-install]\n       yam3x adopt [--from <version>] [--cwd <project>] [--dry-run]\n       yam3x status [--cwd <project>] [--json]\n       yam3x diff [--component <component>] [--cwd <project>] [--json]\n       yam3x sync [--cwd <project>] [--dry-run] [--no-install]',
     )
     return
   }
@@ -350,6 +403,45 @@ async function run() {
     return
   }
 
+  if (command === 'adopt') {
+    const baseline = await readBaseline(options.from)
+    if (await readLock(options.cwd)) throw new Error('yam3x.lock.json already exists.')
+    const installed = new Set()
+    for (const [name, component] of Object.entries(baseline.components)) {
+      if (existsSync(projectPath(options.cwd, component.entry))) installed.add(name)
+    }
+    const core = existsSync(projectPath(options.cwd, project.yam3x?.style ?? DEFAULT_STYLE))
+    if (installed.size === 0 && !core) {
+      throw new Error('No YAM3X source was found to adopt.')
+    }
+
+    const nextLock = emptyLock()
+    for (const name of installed) nextLock.components[name] = baseline.components[name]
+    for (const [target, file] of Object.entries(baseline.files)) {
+      const owners = (file.components ?? []).filter((name) => installed.has(name))
+      const required = file.core ? core : owners.length > 0
+      if (!required) continue
+      const entry = {
+        source: file.source,
+        version: file.version,
+        integrity: file.integrity,
+      }
+      if (owners.length > 0) entry.components = owners
+      if (file.core) entry.core = true
+      nextLock.files[target] = entry
+    }
+    const lock = normalizeLock(nextLock)
+    const files = Object.keys(lock.files).length
+    const summary = `Adopted ${options.from} baseline: ${installed.size} component(s), ${files} file(s).`
+    if (options.dryRun) {
+      console.log(summary)
+      return
+    }
+    await writeLock(options.cwd, lock)
+    console.log(summary)
+    return
+  }
+
   if (command === 'status') {
     const lock = await readLock(options.cwd)
     const components = installedComponents(registry, options.cwd, lock)
@@ -367,17 +459,64 @@ async function run() {
       includeCore,
     })
     if (lock) {
-      const drift = await lockDrift(lock, options.cwd)
+      const { version } = await readJson(join(packageRoot, 'package.json'))
+      const source = await classifySource({
+        lock,
+        plan,
+        registry,
+        registryRoot,
+        projectRoot: options.cwd,
+      })
       plan.lock = {
         versions: lockVersions(lock),
         components: Object.keys(lock.components).length,
         files: Object.keys(lock.files).length,
-        drift,
       }
-      if (!options.json) printLockSummary(lock, drift)
+      plan.source = { targetVersion: version, ...source }
+      if (!options.json) printLockSummary(lock, sourceSummary(source.counts))
+      if (sourceNeedsAttention(source.counts)) process.exitCode = 1
     }
     printPlan(plan, options)
     if (planNeedsAttention(plan)) process.exitCode = 1
+    return
+  }
+
+  if (command === 'diff') {
+    const lock = await readLock(options.cwd)
+    if (!lock) throw new Error('No yam3x.lock.json found.')
+    const components = installedComponents(registry, options.cwd, lock)
+    const includeCore = coreInstalled(options.cwd, project, lock) || components.length > 0
+    if (!components.length && !includeCore) {
+      console.log('No YAM3X components are installed.')
+      return
+    }
+    if (options.component && !components.includes(options.component)) {
+      throw new Error(`Component "${options.component}" is not installed.`)
+    }
+    const plan = await planReconcile({
+      registry,
+      registryRoot,
+      projectRoot: options.cwd,
+      project,
+      componentNames: components,
+      includeCore,
+    })
+    const source = await classifySource({
+      lock,
+      plan,
+      registry,
+      registryRoot,
+      projectRoot: options.cwd,
+    })
+    const files = filterSourceFiles(source.files, options.component)
+    const counts = sourceCounts(files)
+    const { version } = await readJson(join(packageRoot, 'package.json'))
+    if (options.json) {
+      console.log(JSON.stringify({ targetVersion: version, counts, files }, null, 2))
+    } else {
+      printSourceDiff(files)
+    }
+    if (hasSourceChanges(files)) process.exitCode = 1
     return
   }
 

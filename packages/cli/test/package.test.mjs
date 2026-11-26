@@ -35,6 +35,8 @@ test('packed CLI contains a runnable registry and installs a component', async (
     assert.deepEqual(manifest.bin, { yam3x: 'src/index.mjs' })
     assert.ok(manifest.dependencies.semver)
     assert.ok(existsSync(join(packageRoot, 'package/src/plan.mjs')))
+    assert.ok(existsSync(join(packageRoot, 'package/src/source.mjs')))
+    assert.ok(existsSync(join(packageRoot, 'package/baselines/0.6.0.json')))
     assert.ok(existsSync(join(packageRoot, 'package/registry/registry.json')))
     assert.match(
       await readFile(join(packageRoot, 'package/LICENSE'), 'utf8'),

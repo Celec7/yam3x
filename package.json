@@ -29,7 +29,8 @@
     "motion:generate": "node --import ./scripts/register-mcu-esm-loader.mjs scripts/generate-motion.mjs",
     "docs:dev": "pnpm dev",
     "docs:build": "pnpm build",
-    "docs:check": "node scripts/check-docs.mjs"
+    "docs:check": "node scripts/check-docs.mjs",
+    "baseline:generate": "node scripts/generate-baseline.mjs"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

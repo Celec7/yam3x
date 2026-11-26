@@ -16,7 +16,8 @@
     "src/**",
     "registry/**",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "baselines/**"
   ],
   "bin": {
     "yam3x": "src/index.mjs"

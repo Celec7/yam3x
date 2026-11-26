@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { chmod, mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -412,13 +413,193 @@ test('repeated add preserves a local edit and the lock baseline', async (t) => {
   const status = runCli(['status'], directory)
   assert.equal(status.status, 0, status.stderr || status.stdout)
   assert.match(status.stdout, /Lock baseline: 0\.6\.0/)
-  assert.match(status.stdout, /Source: \d+ unchanged, 1 locally modified, 0 missing\./)
+  assert.match(status.stdout, /Source: .*1 local-only/)
 
   const json = runCli(['status', '--json'], directory)
   assert.equal(json.status, 0, json.stderr || json.stdout)
   const plan = JSON.parse(json.stdout)
   assert.deepEqual(plan.lock.versions, ['0.6.0'])
-  assert.equal(plan.lock.drift.modified, 1)
+  assert.equal(plan.source.counts['local-only'], 1)
+})
+
+test('diff reports local changes and supports component filtering', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button', 'switch'], directory).status, 0)
+  await writeFile(
+    join(directory, 'src/components/yam3x/button/button.vue'),
+    '<template><button>Local edit</button></template>\n',
+  )
+
+  const result = runCli(['diff'], directory)
+  assert.equal(result.status, 1)
+  assert.match(result.stdout, /local-only\s+src\/components\/yam3x\/button\/button\.vue/)
+
+  const json = runCli(['diff', '--json'], directory)
+  assert.equal(json.status, 1)
+  const source = JSON.parse(json.stdout)
+  assert.equal(source.counts['local-only'], 1)
+  const button = source.files.find(
+    (file) => file.target === 'src/components/yam3x/button/button.vue',
+  )
+  assert.equal(button.state, 'local-only')
+  assert.deepEqual(button.components, ['button'])
+
+  const switchDiff = runCli(['diff', '--component', 'switch'], directory)
+  assert.equal(switchDiff.status, 0)
+  assert.match(switchDiff.stdout, /Source is up to date\./)
+
+  const unknown = runCli(['diff', '--component', 'missing-component'], directory)
+  assert.equal(unknown.status, 1)
+  assert.match(unknown.stderr, /is not installed/)
+})
+
+test('diff distinguishes upstream-only from conflict', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const componentPath = join(directory, 'src/components/yam3x/button/button.vue')
+  const lockPath = join(directory, 'yam3x.lock.json')
+  const oldSource = '<template><button>Previous upstream</button></template>\n'
+  await writeFile(componentPath, oldSource)
+
+  const lock = JSON.parse(await readFile(lockPath, 'utf8'))
+  lock.files['src/components/yam3x/button/button.vue'].integrity = await hashFile(componentPath)
+  lock.files['src/components/yam3x/button/button.vue'].version = '0.5.0'
+  await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`)
+
+  const upstream = runCli(['diff', '--json'], directory)
+  assert.equal(upstream.status, 1)
+  assert.equal(
+    JSON.parse(upstream.stdout).files.find(
+      (file) => file.target === 'src/components/yam3x/button/button.vue',
+    ).state,
+    'upstream-only',
+  )
+
+  await writeFile(componentPath, '<template><button>Local edit</button></template>\n')
+  const conflict = runCli(['diff', '--json'], directory)
+  assert.equal(conflict.status, 1)
+  assert.equal(
+    JSON.parse(conflict.stdout).files.find(
+      (file) => file.target === 'src/components/yam3x/button/button.vue',
+    ).state,
+    'conflict',
+  )
+})
+
+test('diff reports missing, untracked, added, and removed source files', async (t) => {
+  const directory = await fixture(t)
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const componentPath = join(directory, 'src/components/yam3x/button/button.vue')
+  const lockPath = join(directory, 'yam3x.lock.json')
+
+  await rm(componentPath)
+  assert.equal(
+    JSON.parse(runCli(['diff', '--json'], directory).stdout).files.find(
+      (file) => file.target === 'src/components/yam3x/button/button.vue',
+    ).state,
+    'missing',
+  )
+
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  let lock = JSON.parse(await readFile(lockPath, 'utf8'))
+  delete lock.files['src/components/yam3x/button/button.vue']
+  await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`)
+  assert.equal(
+    JSON.parse(runCli(['diff', '--json'], directory).stdout).files.find(
+      (file) => file.target === 'src/components/yam3x/button/button.vue',
+    ).state,
+    'untracked',
+  )
+
+  await rm(componentPath)
+  assert.equal(
+    JSON.parse(runCli(['diff', '--json'], directory).stdout).files.find(
+      (file) => file.target === 'src/components/yam3x/button/button.vue',
+    ).state,
+    'added',
+  )
+
+  lock = JSON.parse(await readFile(lockPath, 'utf8'))
+  lock.files['src/components/yam3x/button/removed.vue'] = {
+    source: 'components/button/removed.vue',
+    version: '0.6.0',
+    integrity: 'sha256-removed',
+    components: ['button'],
+  }
+  await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`)
+  assert.equal(
+    JSON.parse(runCli(['diff', '--json'], directory).stdout).files.find(
+      (file) => file.target === 'src/components/yam3x/button/removed.vue',
+    ).state,
+    'removed',
+  )
+})
+
+test('adopt records a 0.6.0 baseline without changing copied source', async (t) => {
+  const directory = await fixture(t)
+  const baseline = JSON.parse(
+    await readFile(join(projectRoot, 'packages/cli/baselines/0.6.0.json'), 'utf8'),
+  )
+  const entry = baseline.components.button.entry
+  const entryPath = join(directory, entry)
+  await mkdir(dirname(entryPath), { recursive: true })
+  await writeFile(entryPath, '<template><button>Local</button></template>\n')
+  const sharedPath = join(directory, 'src/components/yam3x/_shared/ripple.ts')
+  await mkdir(dirname(sharedPath), { recursive: true })
+  await writeFile(sharedPath, '// local\n')
+
+  const result = runCli(['adopt'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.match(result.stdout, /Adopted 0\.6\.0 baseline: 1 component\(s\)/)
+
+  const lock = JSON.parse(await readFile(join(directory, 'yam3x.lock.json'), 'utf8'))
+  assert.deepEqual(lock.components, { button: baseline.components.button })
+  assert.equal(lock.files[entry].version, '0.6.0')
+  assert.equal(lock.files[entry].integrity, baseline.files[entry].integrity)
+  assert.deepEqual(lock.files['src/components/yam3x/_shared/ripple.ts'].components, ['button'])
+  assert.ok(lock.files['src/components/yam3x/button/button.vue'])
+  assert.equal(lock.files['src/yam3x.css'], undefined)
+  assert.equal(await readFile(entryPath, 'utf8'), '<template><button>Local</button></template>\n')
+})
+
+test('adopt records foundation files when the foundation stylesheet exists', async (t) => {
+  const directory = await fixture(t)
+  await writeFile(join(directory, 'src/yam3x.css'), '/* local */\n')
+
+  const result = runCli(['adopt'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  const lock = JSON.parse(await readFile(join(directory, 'yam3x.lock.json'), 'utf8'))
+
+  assert.deepEqual(lock.components, {})
+  assert.equal(lock.files['src/yam3x.css'].core, true)
+  assert.ok(lock.files['src/styles/yam3x-base.css'].core)
+})
+
+test('adopt --dry-run does not write a lock', async (t) => {
+  const directory = await fixture(t)
+  const baseline = JSON.parse(
+    await readFile(join(projectRoot, 'packages/cli/baselines/0.6.0.json'), 'utf8'),
+  )
+  const entryPath = join(directory, baseline.components.button.entry)
+  await mkdir(dirname(entryPath), { recursive: true })
+  await writeFile(entryPath, '')
+
+  const result = runCli(['adopt', '--dry-run'], directory)
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.match(result.stdout, /Adopted 0\.6\.0 baseline/)
+  assert.equal(existsSync(join(directory, 'yam3x.lock.json')), false)
+})
+
+test('adopt rejects unsupported versions and an existing lock', async (t) => {
+  const directory = await fixture(t)
+  const unsupported = runCli(['adopt', '--from', '0.5.0'], directory)
+  assert.equal(unsupported.status, 1)
+  assert.match(unsupported.stderr, /No adopt baseline is available/)
+
+  assert.equal(runCli(['add', 'button'], directory).status, 0)
+  const existing = runCli(['adopt'], directory)
+  assert.equal(existing.status, 1)
+  assert.match(existing.stderr, /yam3x\.lock\.json already exists/)
 })
 
 test('init records foundation files in the source baseline lock', async (t) => {
